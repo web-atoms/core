@@ -1,0 +1,24 @@
+{
+  "name": "web-atoms-core",
+  "version": "1.0.0",
+  "description": "Web Atoms Core",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neurospeech/web-atoms-core.git"
+  },
+  "keywords": [
+    "web",
+    "atoms",
+    "core"
+  ],
+  "author": "Akash Kava",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neurospeech/web-atoms-core/issues"
+  },
+  "homepage": "https://github.com/neurospeech/web-atoms-core#readme"
+}
