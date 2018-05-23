@@ -1,10 +1,13 @@
-define(["require", "exports", "./core/atom-ui-tests"], function (require, exports, atom_ui_tests_1) {
+define(["require", "exports", "./unit/base-test", "./core/atom-ui-tests"], function (require, exports, base_test_1, AtomUITests) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var instance = base_test_1.TestRunner.instance;
+    // register unit test class
+    instance.discover(AtomUITests);
     function test() {
-        atom_ui_tests_1.AtomUITests();
+        return instance.run();
     }
     exports.test = test;
 });
-// export Atom; 
+// export Atom;
 //# sourceMappingURL=test.js.map

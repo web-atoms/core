@@ -28,3 +28,10 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 #### Phase 3 
 ...
 
+
+## How to run unit tests?
+
+1. Import test class `src\test.ts`
+2. Register unit test class as `instance.discover(unitTestModule)`
+3. Run `node index.js`
+

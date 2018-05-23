@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "web-atoms-unit": "^1.0.23"
+    "amd-loader": "0.0.8"
   }
 }
