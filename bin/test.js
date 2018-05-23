@@ -1,7 +1,10 @@
 define(["require", "exports", "./core/atom-ui-tests"], function (require, exports, atom_ui_tests_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    atom_ui_tests_1.AtomUITests();
+    function test() {
+        atom_ui_tests_1.AtomUITests();
+    }
+    exports.test = test;
 });
 // export Atom; 
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=test.js.map

@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/neurospeech/web-atoms-core/issues"
   },
-  "homepage": "https://github.com/neurospeech/web-atoms-core#readme"
+  "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
+  "devDependencies": {
+    "web-atoms-unit": "^1.0.23"
+  }
 }
