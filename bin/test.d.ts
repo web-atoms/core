@@ -1,1 +1,1 @@
-export declare function test(): Promise<any>;
+import "./core/atom-ui-tests";

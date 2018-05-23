@@ -1,6 +1,15 @@
-define(["require", "exports", "./atom-ui"], function (require, exports, atom_ui_1) {
+(function (factory) {
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./atom-ui"], factory);
+    }
+})(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var atom_ui_1 = require("./atom-ui");
     var AtomUri = /** @class */ (function () {
         /**
          *

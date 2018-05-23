@@ -32,6 +32,12 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 ## How to run unit tests?
 
 1. Import test class `src\test.ts`
-2. Register unit test class as `instance.discover(unitTestModule)`
-3. Run `node index.js`
+2. Run `node .\bin\test.js`
 
+## How to get code coverage?
+
+1. Install istanbul, `npm install istanbul --save-dev`
+2. Install remap-istanbul, `npm install remap-istanbul`
+3. Cover Run, `.\node_modules\.bin\istanbul.cmd cover .\bin\test.js`
+4. Report Run, `.\node_modules\.bin\remap-istanbul -i .\coverage\coverage.json -t html -o html-report`
+5. Open generated html-report on browser

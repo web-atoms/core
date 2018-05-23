@@ -1,6 +1,15 @@
-define(["require", "exports", "./core/types"], function (require, exports, WebAtoms) {
+(function (factory) {
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./core/types"], factory);
+    }
+})(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var WebAtoms = require("./core/types");
     var Atom = /** @class */ (function () {
         function Atom() {
         }
