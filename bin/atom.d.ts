@@ -1,5 +1,6 @@
-import * as types from "./core/types";
+import * as WebAtoms from "./core/types";
 export declare class Atom {
-    static encodeParameters(p: types.NameValuePair): string;
-    static url(url: string, query?: types.NameValuePair, hash?: types.NameValuePair): string;
+    static encodeParameters(p: WebAtoms.NameValuePairs): string;
+    static url(url: string, query?: WebAtoms.NameValuePairs, hash?: WebAtoms.NameValuePairs): string;
+    static watch(): WebAtoms.AtomDisposable;
 }

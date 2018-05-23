@@ -1,8 +1,5 @@
-export declare type NameValuePairs = {
+export declare type NameValuePair = {
     [key: string]: any;
-};
-export declare type NameValues = {
-    [key: string]: (string | number | boolean);
 };
 export interface IDisposable {
     dispose(): void;

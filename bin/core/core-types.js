@@ -15,4 +15,4 @@ define(["require", "exports"], function (require, exports) {
     }());
     exports.AtomDisposable = AtomDisposable;
 });
-//# sourceMappingURL=types.js.map
+//# sourceMappingURL=core-types.js.map

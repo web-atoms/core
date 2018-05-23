@@ -1,4 +1,4 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "./core/types"], function (require, exports, WebAtoms) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Atom = /** @class */ (function () {
@@ -23,8 +23,8 @@ define(["require", "exports"], function (require, exports) {
             }
             var p = Atom.encodeParameters(query);
             if (p) {
-                if (url.indexOf('?') === -1) {
-                    url += '?';
+                if (url.indexOf("?") === -1) {
+                    url += "?";
                 }
                 url += p;
             }
@@ -36,6 +36,11 @@ define(["require", "exports"], function (require, exports) {
                 url += p;
             }
             return url;
+        };
+        Atom.watch = function () {
+            return new WebAtoms.AtomDisposable(function () {
+                console.log("Disposed");
+            });
         };
         return Atom;
     }());
