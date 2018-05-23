@@ -4,6 +4,9 @@ import { AtomControl } from "../controls/atom-control";
 export class AtomUI {
 
 
+    static attr(arg0: any, arg1: any): any {
+        throw new Error("Method not implemented.");
+    }
     static atomParent(element: HTMLElement):AtomControl {
         var eany:NameValuePairs = element as NameValuePairs;
         if (eany.atomControl) {
@@ -72,5 +75,30 @@ export class AtomUI {
             r[key] = AtomUI.parseValue(val);
         }
         return r;
+    }
+
+
+    static *childEnumerator (e:HTMLElement): Iterable<HTMLElement> {
+        var en:Element = e.firstElementChild;
+        while(en) {
+            if(en as HTMLElement) {
+                yield en as HTMLElement;
+            }
+            en = en.nextElementSibling;
+        }
+    }
+
+    static findPresenter(e:HTMLElement):HTMLElement {
+        for(const item of AtomUI.childEnumerator(e)) {
+            var ap:any = AtomUI.attr(item,"atom-presenter");
+            if (ap) {
+                return item;
+            }
+            var c:HTMLElement = AtomUI.findPresenter(item);
+            if (c) {
+                return c;
+            }
+        }
+        return null;
     }
 }
