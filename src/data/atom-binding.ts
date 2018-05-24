@@ -93,7 +93,8 @@ export class AtomBinding {
                     value = (this.element as HTMLInputElement).checked ? true : false;
                     break;
                 default:
-                    value = $(this.element).val();
+                // doubt
+                    // value = $(this.element).val();
             }
         } else {
             value = AtomBinder.getValue(this.control, this.key);
@@ -147,13 +148,14 @@ export class AtomBinding {
                     }
                 }
                 property.value = target;
-                target = newTarget;
+                // doubt
+               // target = newTarget;
             }
 
             // doubt
-            if (newTarget === undefined && AtomConfig.debug) {
-                log("Undefined:" + this.control._element.id + " -> " + ($.map(path, function (a) { return a.path; })).join("."));
-            }
+            // if (newTarget === undefined && AtomConfig.debug) {
+            //     log("Undefined:" + this.control._element.id + " -> " + ($.map(path, function (a) { return a.path; })).join("."));
+            // }
             return newTarget;
         }
     }
@@ -165,7 +167,7 @@ export class AtomBinding {
         // AtomDispatcher.callLater(self.onPropChanged(null, null));
     }
 
-    setup(): void {
+    setup(): any {
         if (this.twoWays) {
             if (this.jq) {
                 AtomComponent.bindEvent(this.element, "change", "onValChanged", null);
@@ -179,8 +181,8 @@ export class AtomBinding {
                 AtomComponent.bindEvent(this.control, "WatchHandler", "onPropChanged", this.key);
             }
         }
-
-        this.onDataChanged(this, null);
+        // doubt
+        // this.onDataChanged(this, null);
     }
     setValue(value: any): any {
         if (!this.pathList && this.vf) {
@@ -190,7 +192,8 @@ export class AtomBinding {
         if (this.vf) {
             value.push(Atom);
             value.push(AtomPromise);
-            value.push($x);
+            // doubt
+            // value.push($x);
             value = this.vf.apply(this, value);
         }
 
