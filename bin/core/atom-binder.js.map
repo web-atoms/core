@@ -1,0 +1,1 @@
+{"version":3,"file":"atom-binder.js","sourceRoot":"","sources":["../../src/core/atom-binder.ts"],"names":[],"mappings":";;;IACA;QAAA;QAOA,CAAC;QANU,mBAAQ,GAAf,UAAgB,IAAS,EAAE,IAAS,EAAE,IAAS;YAC3C,MAAM,IAAI,KAAK,CAAC,yBAAyB,CAAC,CAAC;QAC/C,CAAC;QACM,mBAAQ,GAAf,UAAgB,IAAS,EAAE,IAAS;YAChC,MAAM,IAAI,KAAK,CAAC,yBAAyB,CAAC,CAAC;QAC/C,CAAC;QACL,iBAAC;IAAD,CAAC,AAPD,IAOC;IAPY,gCAAU"}
