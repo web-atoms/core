@@ -69,20 +69,21 @@ define(["require", "exports", "./atom-binder"], function (require, exports, atom
             }
             var value = null;
             // doubt
-            // if (this.jq) {
-            //     switch (this.key) {
-            //         case "valueAsDate":
-            //             value = this.element.valueAsDate;
-            //             break;
-            //         case "checked":
-            //             value = this.element.checked ? true : false;
-            //             break;
-            //         default:
-            //             value = $(this.element).val();
-            //     }
-            // } else {
-            //     value = AtomBinder.getValue(this.control, this.key);
-            // }
+            if (this.jq) {
+                switch (this.key) {
+                    case "valueAsDate":
+                        value = this.element.valueAsDate;
+                        break;
+                    case "checked":
+                        value = this.element.checked ? true : false;
+                        break;
+                    default:
+                        value = $(this.element).val();
+                }
+            }
+            else {
+                value = atom_binder_1.AtomBinder.getValue(this.control, this.key);
+            }
             atom_binder_1.AtomBinder.setValue(obj, objKey.path, value);
         };
         AtomBinding.prototype.onDataChanged = function (sender, key) {
@@ -112,7 +113,7 @@ define(["require", "exports", "./atom-binder"], function (require, exports, atom
                 var path = this.path;
                 var nTarget = this.evaluate(target, path);
                 if (nTarget !== undefined) {
-                    this.setValue(newTarget);
+                    this.setValue(nTarget);
                 }
             }
         };
@@ -128,7 +129,7 @@ define(["require", "exports", "./atom-binder"], function (require, exports, atom
                     newTarget = atom_binder_1.AtomBinder.getValue(target, property.path);
                     if (!(/scope|appScope|atomParent|templateParent|localScope/gi.test(property.path))) {
                         // doubt
-                        // var _this = this;
+                        // var this = this;
                         if (!property.value) {
                             this.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
                         }
@@ -152,11 +153,23 @@ define(["require", "exports", "./atom-binder"], function (require, exports, atom
             // var self= this;
             // webAtoms.dispatcher.callLater(function () { self.onPropChanged(null, null); });
         };
-        AtomBinding.prototype.unbindEvent = function (arg0, arg1, arg2, arg3) {
-            throw new Error("Method not implemented.");
-        };
-        AtomBinding.prototype.bindEvent = function (arg0, arg1, arg2, arg3) {
-            throw new Error("Method not implemented.");
+        AtomBinding.prototype.setup = function () {
+            if (this.twoWays) {
+                if (this.jq) {
+                    this.bindEvent(this.element, "change", "onValChanged", null);
+                    this.bindEvent(this.element, "blur", "onValChanged", null);
+                    if (this.events) {
+                        var list = new AtomEnumerator(this.events.split(","));
+                        while (list.next()) {
+                            this.bindEvent(this.element, list.current(), "onValChanged", null);
+                        }
+                    }
+                }
+                else {
+                    this.bindEvent(this.control, "WatchHandler", "onPropChanged", this.key);
+                }
+            }
+            this.onDataChanged(this, null);
         };
         AtomBinding.prototype.setValue = function (arg0) {
             throw new Error("Method not implemented.");

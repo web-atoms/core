@@ -1,8 +1,13 @@
-import { NameValues, NameValuePairs } from "./types";
+import { NameValues, NameValuePairs } from "../core/types";
 import { AtomControl } from "../controls/atom-control";
-import { AtomBinder } from "./atom-binder";
+import { AtomComponent } from "../core/atom-component";
+import { AtomDispatcher } from "../core/atom-dispatcher";
+import { AtomBinder } from "../core/atom-binder";
+import { Atom } from "../core/atom";
+import { AtomPromise } from "../data/atom-promise";
 
 export class AtomBinding {
+    lastValue: any;
     twoWays: NameValues;
     isUpdating: boolean;
     pathList: Array<{path:string,value:any}>[];
@@ -76,24 +81,23 @@ export class AtomBinding {
                 obj = AtomBinder.getValue(obj, objKey.path);
             }
         }
-        var value:boolean = null;
+        var value: any = null;
 
         // doubt
-
-        // if (this.jq) {
-        //     switch (this.key) {
-        //         case "valueAsDate":
-        //             value = this.element.valueAsDate;
-        //             break;
-        //         case "checked":
-        //             value = this.element.checked ? true : false;
-        //             break;
-        //         default:
-        //             value = $(this.element).val();
-        //     }
-        // } else {
-        //     value = AtomBinder.getValue(this.control, this.key);
-        // }
+        if (this.jq) {
+            switch (this.key) {
+                case "valueAsDate":
+                    value = (this.element as HTMLInputElement).valueAsDate;
+                    break;
+                case "checked":
+                    value = (this.element as HTMLInputElement).checked ? true : false;
+                    break;
+                default:
+                    value = $(this.element).val();
+            }
+        } else {
+            value = AtomBinder.getValue(this.control, this.key);
+        }
         AtomBinder.setValue(obj, objKey.path, value);
     }
 
@@ -121,7 +125,7 @@ export class AtomBinding {
             var path: Array<{path:string,value:any}> = this.path;
             var nTarget: {path:string,value:any} = this.evaluate(target, path);
             if (nTarget !== undefined) {
-                this.setValue(newTarget);
+                this.setValue(nTarget);
             }
         }
     }
@@ -135,14 +139,11 @@ export class AtomBinding {
                 property = v ;
                 newTarget = AtomBinder.getValue(target, property.path);
                 if (!(/scope|appScope|atomParent|templateParent|localScope/gi.test(property.path))) {
-
-                    // doubt
-                    // var _this = this;
                     if (!property.value) {
-                    this.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
+                    AtomComponent.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
                     } else if (property.value !== target) {
-                        this.unbindEvent(property.value, "WatchHandler", null, property.path);
-                        this.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
+                        AtomComponent.unbindEvent(property.value, "WatchHandler", null, property.path);
+                        AtomComponent.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
                     }
                 }
                 property.value = target;
@@ -150,9 +151,9 @@ export class AtomBinding {
             }
 
             // doubt
-            // if (newTarget === undefined && AtomConfig.debug) {
-            //     log("Undefined:" + this.control._element.id + " -> " + ($.map(path, function (a) { return a.path; })).join("."));
-            // }
+            if (newTarget === undefined && AtomConfig.debug) {
+                log("Undefined:" + this.control._element.id + " -> " + ($.map(path, function (a) { return a.path; })).join("."));
+            }
             return newTarget;
         }
     }
@@ -160,16 +161,46 @@ export class AtomBinding {
     static onValChanged(): any {
         // doubt
         // var self= this;
-        // webAtoms.dispatcher.callLater(function () { self.onPropChanged(null, null); });
+        // tslint:disable-next-line:comment-format
+        // AtomDispatcher.callLater(self.onPropChanged(null, null));
     }
 
-    unbindEvent(arg0: any, arg1: any, arg2: any, arg3: any): any {
-        throw new Error("Method not implemented.");
+    setup(): void {
+        if (this.twoWays) {
+            if (this.jq) {
+                AtomComponent.bindEvent(this.element, "change", "onValChanged", null);
+                AtomComponent.bindEvent(this.element, "blur", "onValChanged", null);
+                if (this.events) {
+                    for (const a of this.events.split(",")) {
+                        AtomComponent.bindEvent(this.element, a, "onValChanged", null);
+                    }
+                }
+            } else {
+                AtomComponent.bindEvent(this.control, "WatchHandler", "onPropChanged", this.key);
+            }
+        }
+
+        this.onDataChanged(this, null);
     }
-    bindEvent(arg0: any, arg1: any, arg2: any, arg3: any): any {
-        throw new Error("Method not implemented.");
-    }
-    setValue(arg0: any): any {
-        throw new Error("Method not implemented.");
+    setValue(value: any): any {
+        if (!this.pathList && this.vf) {
+            value = [value];
+        }
+
+        if (this.vf) {
+            value.push(Atom);
+            value.push(AtomPromise);
+            value.push($x);
+            value = this.vf.apply(this, value);
+        }
+
+        if (value instanceof AtomPromise) {
+            value.persist = true;
+        }
+
+        this.lastValue = value;
+        this.isUpdating = true;
+        this.control.setLocalValue(this.key, value, this.element, true);
+        this.isUpdating = false;
     }
 }

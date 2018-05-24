@@ -31,7 +31,6 @@ export declare class AtomBinding {
         value: any;
     };
     static onValChanged(): any;
-    unbindEvent(arg0: any, arg1: any, arg2: any, arg3: any): any;
-    bindEvent(arg0: any, arg1: any, arg2: any, arg3: any): any;
+    setup(): NameValues;
     setValue(arg0: any): any;
 }
