@@ -1,6 +1,7 @@
 import { NameValues } from "./types";
 import { AtomControl } from "../controls/atom-control";
 export declare class AtomUI {
+    static createDelegate(arg0: any, arg1: any): any;
     static attr(arg0: any, arg1: any): any;
     static atomParent(element: HTMLElement): AtomControl;
     /**

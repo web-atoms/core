@@ -9,10 +9,13 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    ;
+    ;
     var AtomDisposable = /** @class */ (function () {
         /**
          *
          */
+        // tslint:disable-next-line:ban-types
         function AtomDisposable(f) {
             this.f = f;
         }

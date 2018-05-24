@@ -4,6 +4,9 @@ import { AtomControl } from "../controls/atom-control";
 export class AtomUI {
 
 
+    static createDelegate(arg0: any, arg1: any): any {
+        throw new Error("Method not implemented.");
+    }
     static attr(arg0: any, arg1: any): any {
         throw new Error("Method not implemented.");
     }

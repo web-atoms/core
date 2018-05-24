@@ -1,9 +1,9 @@
-export declare type NameValuePairs = {
+export interface NameValuePairs {
     [key: string]: any;
-};
-export declare type NameValues = {
+}
+export interface NameValues {
     [key: string]: (string | number | boolean);
-};
+}
 export interface IDisposable {
     dispose(): void;
 }

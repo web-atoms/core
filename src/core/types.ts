@@ -1,31 +1,31 @@
 
 
-export type NameValuePairs = {
-    [key:string]: any
+export interface NameValuePairs {
+    [key: string]: any;
 };
 
-export type NameValues = {
-    [key:string]: (string|number|boolean)
+export interface NameValues {
+    [key: string]: (string|number|boolean);
 };
 
 export interface IDisposable {
-    dispose():void ;
+    dispose(): void ;
 }
-
-
 
 export class AtomDisposable implements IDisposable {
 
-    private f:Function;
+    // tslint:disable-next-line:ban-types
+    private f: Function;
 
     /**
      *
      */
-    constructor(f:Function) {
+    // tslint:disable-next-line:ban-types
+     constructor(f: Function) {
         this.f = f;
     }
 
-    dispose(): void {
+    public dispose(): void {
         this.f();
     }
 }

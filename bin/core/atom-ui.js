@@ -49,6 +49,9 @@ var __values = (this && this.__values) || function (o) {
     var AtomUI = /** @class */ (function () {
         function AtomUI() {
         }
+        AtomUI.createDelegate = function (arg0, arg1) {
+            throw new Error("Method not implemented.");
+        };
         AtomUI.attr = function (arg0, arg1) {
             throw new Error("Method not implemented.");
         };

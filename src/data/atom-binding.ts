@@ -130,9 +130,9 @@ export class AtomBinding {
             }
         }
     }
-    evaluate(target: AtomControl, path: Array<{path:string,value:any}>): {path:string,value:any} {
-        var newTarget: {path:string,value:any} = null;
-        var property: {path:string,value:any} = null;
+    evaluate(target: AtomControl, path: Array<{path:string,value:any}>): {path: string,value:any} {
+        var newTarget: {path: string,value: any} = null;
+        var property: {path: string,value: any} = null;
         for(const v of path) {
            // first remove old handlers...
             var remove: boolean = false;
@@ -160,14 +160,14 @@ export class AtomBinding {
         }
     }
 
-    static onValChanged(): any {
+    public static onValChanged(): any {
         // doubt
         // var self= this;
         // tslint:disable-next-line:comment-format
         // AtomDispatcher.callLater(self.onPropChanged(null, null));
     }
 
-    setup(): any {
+    public setup(): any {
         if (this.twoWays) {
             if (this.jq) {
                 AtomComponent.bindEvent(this.element, "change", "onValChanged", null);
@@ -184,7 +184,7 @@ export class AtomBinding {
         // doubt
         // this.onDataChanged(this, null);
     }
-    setValue(value: any): any {
+    public setValue(value: any): any {
         if (!this.pathList && this.vf) {
             value = [value];
         }
