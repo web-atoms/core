@@ -14,12 +14,15 @@ var __values = (this && this.__values) || function (o) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./atom-binder"], factory);
+        define(["require", "exports", "../core/atom-component", "../core/atom-binder", "../core/atom", "../data/atom-promise"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var atom_binder_1 = require("./atom-binder");
+    var atom_component_1 = require("../core/atom-component");
+    var atom_binder_1 = require("../core/atom-binder");
+    var atom_1 = require("../core/atom");
+    var atom_promise_1 = require("../data/atom-promise");
     var AtomBinding = /** @class */ (function () {
         /**
          *
@@ -134,7 +137,8 @@ var __values = (this && this.__values) || function (o) {
                         value = this.element.checked ? true : false;
                         break;
                     default:
-                        value = $(this.element).val();
+                    // doubt
+                    // value = $(this.element).val();
                 }
             }
             else {
@@ -196,25 +200,26 @@ var __values = (this && this.__values) || function (o) {
         AtomBinding.prototype.evaluate = function (target, path) {
             var newTarget = null;
             var property = null;
-            for (var _i = 0, path_2 = path; _i < path_2.length; _i++) {
-                var v = path_2[_i];
-                // first remove old handlers...
-                var remove = false;
-                while (target) {
-                    property = v;
-                    newTarget = atom_binder_1.AtomBinder.getValue(target, property.path);
-                    if (!(/scope|appScope|atomParent|templateParent|localScope/gi.test(property.path))) {
-                        // doubt
-                        // var this = this;
-                        if (!property.value) {
-                            this.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
-                        }
-                        else if (property.value !== target) {
-                            this.unbindEvent(property.value, "WatchHandler", null, property.path);
-                            this.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
+            try {
+                for (var path_2 = __values(path), path_2_1 = path_2.next(); !path_2_1.done; path_2_1 = path_2.next()) {
+                    var v = path_2_1.value;
+                    // first remove old handlers...
+                    var remove = false;
+                    while (target) {
+                        property = v;
+                        newTarget = atom_binder_1.AtomBinder.getValue(target, property.path);
+                        if (!(/scope|appScope|atomParent|templateParent|localScope/gi.test(property.path))) {
+                            if (!property.value) {
+                                atom_component_1.AtomComponent.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
+                            }
+                            else if (property.value !== target) {
+                                atom_component_1.AtomComponent.unbindEvent(property.value, "WatchHandler", null, property.path);
+                                atom_component_1.AtomComponent.bindEvent(target, "WatchHandler", "onDataChanged", property.path);
+                            }
                         }
                         property.value = target;
-                        target = newTarget;
+                        // doubt
+                        // target = newTarget;
                     }
                     // doubt
                     // if (newTarget === undefined && AtomConfig.debug) {
@@ -235,28 +240,56 @@ var __values = (this && this.__values) || function (o) {
         AtomBinding.onValChanged = function () {
             // doubt
             // var self= this;
-            // webAtoms.dispatcher.callLater(function () { self.onPropChanged(null, null); });
+            // tslint:disable-next-line:comment-format
+            // AtomDispatcher.callLater(self.onPropChanged(null, null));
         };
         AtomBinding.prototype.setup = function () {
             if (this.twoWays) {
                 if (this.jq) {
-                    this.bindEvent(this.element, "change", "onValChanged", null);
-                    this.bindEvent(this.element, "blur", "onValChanged", null);
+                    atom_component_1.AtomComponent.bindEvent(this.element, "change", "onValChanged", null);
+                    atom_component_1.AtomComponent.bindEvent(this.element, "blur", "onValChanged", null);
                     if (this.events) {
-                        var list = new AtomEnumerator(this.events.split(","));
-                        while (list.next()) {
-                            this.bindEvent(this.element, list.current(), "onValChanged", null);
+                        try {
+                            for (var _a = __values(this.events.split(",")), _b = _a.next(); !_b.done; _b = _a.next()) {
+                                var a = _b.value;
+                                atom_component_1.AtomComponent.bindEvent(this.element, a, "onValChanged", null);
+                            }
+                        }
+                        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+                        finally {
+                            try {
+                                if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
+                            }
+                            finally { if (e_8) throw e_8.error; }
                         }
                     }
                 }
                 else {
-                    this.bindEvent(this.control, "WatchHandler", "onPropChanged", this.key);
+                    atom_component_1.AtomComponent.bindEvent(this.control, "WatchHandler", "onPropChanged", this.key);
                 }
             }
-            this.onDataChanged(this, null);
+            var e_8, _c;
+            // doubt
+            // this.onDataChanged(this, null);
         };
-        AtomBinding.prototype.setValue = function (arg0) {
-            throw new Error("Method not implemented.");
+        AtomBinding.prototype.setValue = function (value) {
+            if (!this.pathList && this.vf) {
+                value = [value];
+            }
+            if (this.vf) {
+                value.push(atom_1.Atom);
+                value.push(atom_promise_1.AtomPromise);
+                // doubt
+                // value.push($x);
+                value = this.vf.apply(this, value);
+            }
+            if (value instanceof atom_promise_1.AtomPromise) {
+                value.persist = true;
+            }
+            this.lastValue = value;
+            this.isUpdating = true;
+            this.control.setLocalValue(this.key, value, this.element, true);
+            this.isUpdating = false;
         };
         return AtomBinding;
     }());

@@ -9,14 +9,17 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var AtomControl = /** @class */ (function () {
-        function AtomControl() {
+    var AtomComponent = /** @class */ (function () {
+        function AtomComponent() {
         }
-        AtomControl.prototype.setLocalValue = function (arg0, arg1, arg2, arg3) {
+        AtomComponent.unbindEvent = function (arg0, arg1, arg2, arg3) {
             throw new Error("Method not implemented.");
         };
-        return AtomControl;
+        AtomComponent.bindEvent = function (arg0, arg1, arg2, arg3) {
+            throw new Error("Method not implemented.");
+        };
+        return AtomComponent;
     }());
-    exports.AtomControl = AtomControl;
+    exports.AtomComponent = AtomComponent;
 });
-//# sourceMappingURL=atom-control.js.map
+//# sourceMappingURL=atom-component.js.map

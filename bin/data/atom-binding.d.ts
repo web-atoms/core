@@ -1,6 +1,7 @@
-import { NameValues } from "./types";
+import { NameValues } from "../core/types";
 import { AtomControl } from "../controls/atom-control";
 export declare class AtomBinding {
+    lastValue: any;
     twoWays: NameValues;
     isUpdating: boolean;
     pathList: Array<{
@@ -31,6 +32,6 @@ export declare class AtomBinding {
         value: any;
     };
     static onValChanged(): any;
-    setup(): NameValues;
-    setValue(arg0: any): any;
+    setup(): any;
+    setValue(value: any): any;
 }
