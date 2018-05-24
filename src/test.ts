@@ -1,20 +1,18 @@
-// declare function require(s:string):void;
+// tslint:disable:no-console
 import { TestContext, TestRunner } from "./unit/base-test";
 
 // import unit test modules here
 import "./core/atom-ui-tests";
 
-var instance:TestRunner = TestRunner.instance;
-
+const instance: TestRunner = TestRunner.instance;
 
 // export Atom;
-declare var process:any;
+declare var process: any;
 
 instance.run().then(() => {
     console.log("Tests ran successfully.");
     process.exit();
-}).catch(e=>{
+}).catch( (e) => {
     console.error(e);
     process.abort();
 });
-

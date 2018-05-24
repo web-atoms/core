@@ -9,21 +9,21 @@ export declare class Assert {
 }
 export declare function Category(name: string): (target: any) => any;
 export declare class TestContext {
-    logs: Array<any>;
-    errors: Array<any>;
+    logs: any[];
+    errors: any[];
     log(a: any): void;
     error(a: any): void;
     reset(): void;
 }
 export declare class TestMethod {
-    constructor(desc: any, name: string, category: string, target: any);
     name: string;
     category: string;
     description: any;
     testClass: any;
-    readonly path: string;
     error: any;
     logText: string;
+    constructor(desc: any, name: string, category: string, target: any);
+    readonly path: string;
 }
 export declare class TestItem {
     logText: string;
@@ -32,16 +32,15 @@ export declare class TestItem {
     log(text: string): void;
     delay(n: number): Promise<any>;
 }
-export declare function Test(name?: string): Function;
+export declare function Test(name?: string): (target: TestItem, propertyKey: string, descriptor: any) => void;
 export declare class TestRunner {
     private static _instance;
     static readonly instance: TestRunner;
+    tests: TestMethod[];
+    executed: TestMethod[];
     constructor();
-    tests: Array<TestMethod>;
-    executed: Array<TestMethod>;
     printAll(): void;
     runTest(f: any, target: any): Promise<any>;
-    discover(...a: any[]): void;
     run(filter?: string): Promise<any>;
     _run(): Promise<any>;
 }

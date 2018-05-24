@@ -9,7 +9,7 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    // declare function require(s:string):void;
+    // tslint:disable:no-console
     var base_test_1 = require("./unit/base-test");
     // import unit test modules here
     require("./core/atom-ui-tests");

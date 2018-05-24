@@ -54,6 +54,8 @@ var __values = (this && this.__values) || function (o) {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    // tslint:disable-next-line:no-console
+    // tslint:disable:no-console
     var Assert = /** @class */ (function () {
         function Assert() {
         }
@@ -63,8 +65,9 @@ var __values = (this && this.__values) || function (o) {
             }
         };
         Assert.doesNotEqual = function (expected, result, msg) {
-            if (result === expected)
+            if (result === expected) {
                 Assert.throw(msg || "Not Expected " + expected + ", found " + result);
+            }
         };
         Assert.throws = function (expected, f, msg) {
             try {
@@ -72,7 +75,7 @@ var __values = (this && this.__values) || function (o) {
                 Assert.throw(msg || "Expected " + expected + ", no exception was thrown.");
             }
             catch (e) {
-                if (e.message != expected) {
+                if (e.message !== expected) {
                     Assert.throw(msg || "Expected error " + expected + ", found " + e.message);
                 }
             }
@@ -91,7 +94,7 @@ var __values = (this && this.__values) || function (o) {
                             return [3 /*break*/, 3];
                         case 2:
                             e_1 = _a.sent();
-                            if (e_1.message != expected) {
+                            if (e_1.message !== expected) {
                                 Assert.throw(msg || "Expected error " + expected + ", found " + e_1.message);
                             }
                             return [3 /*break*/, 3];
@@ -101,12 +104,14 @@ var __values = (this && this.__values) || function (o) {
             });
         };
         Assert.isTrue = function (b, msg) {
-            if (b !== true)
+            if (b !== true) {
                 Assert.throw(msg || "Expected isTrue");
+            }
         };
         Assert.isFalse = function (b, msg) {
-            if (b !== false)
+            if (b !== false) {
                 Assert.throw(msg || "Expected isFalse");
+            }
         };
         Assert.throw = function (message) {
             throw new Error("Assertion Failed, " + message);
@@ -116,8 +121,8 @@ var __values = (this && this.__values) || function (o) {
     exports.Assert = Assert;
     function Category(name) {
         return function (target) {
-            //target.testCategory = name;
-            //return target;
+            // target.testCategory = name;
+            // return target;
             // save a reference to the original constructor
             var original = target;
             // a utility function to generate instances of a class
@@ -285,32 +290,26 @@ var __values = (this && this.__values) || function (o) {
                 }
             });
         };
-        TestRunner.prototype.discover = function () {
-            var a = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                a[_i] = arguments[_i];
-            }
-        };
         TestRunner.prototype.run = function (filter) {
             return __awaiter(this, void 0, void 0, function () {
-                var r, index, options, exp, categories;
+                var r_1, index, options, exp, categories_1;
                 return __generator(this, function (_a) {
                     if (filter) {
-                        r = null;
+                        r_1 = null;
                         if (filter.startsWith("/")) {
                             index = filter.lastIndexOf("/");
                             options = filter.substr(index + 1);
                             filter = filter.substr(0, index);
                             exp = filter.substr(1);
-                            r = new RegExp(exp, options);
-                            this.tests = this.tests.filter(function (x) { return r.test(x.path); });
+                            r_1 = new RegExp(exp, options);
+                            this.tests = this.tests.filter(function (x) { return r_1.test(x.path); });
                         }
                         else {
-                            categories = filter.split(",").map(function (x) { return x.trim().toLowerCase().split("."); });
+                            categories_1 = filter.split(",").map(function (x) { return x.trim().toLowerCase().split("."); });
                             this.tests = this.tests.filter(function (x) {
                                 var lc = x.category.toLowerCase();
                                 var ln = x.name.toLowerCase();
-                                var b = categories.find(function (c) { return c[0] === lc && ((!c[1]) || (c[1] === ln)); });
+                                var b = categories_1.find(function (c) { return c[0] === lc && ((!c[1]) || (c[1] === ln)); });
                                 return b;
                             });
                         }
@@ -331,7 +330,7 @@ var __values = (this && this.__values) || function (o) {
                             }
                             peek = this.tests.shift();
                             this.executed.push(peek);
-                            test = new peek.testClass;
+                            test = new peek.testClass();
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 4, 5, 10]);
