@@ -1,3 +1,3 @@
 export declare class AtomDispatcher {
-    static callLater(arg0: any): any;
+    callLater(arg0: any): any;
 }

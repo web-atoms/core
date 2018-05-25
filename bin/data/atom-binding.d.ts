@@ -1,37 +1,38 @@
-import { NameValues } from "../core/types";
 import { AtomControl } from "../controls/atom-control";
+import { AtomComponent } from "../core/atom-component";
+import { AtomDispatcher } from "../core/atom-dispatcher";
+import { NameValues } from "../core/types";
 export declare class AtomBinding {
     lastValue: any;
     twoWays: NameValues;
     isUpdating: boolean;
-    pathList: Array<{
-        path: string;
-        value: any;
-    }>[];
     events: string;
     key: string;
-    vf: Function;
+    vf: (() => any);
     control: AtomControl;
     element: HTMLElement;
-    jq: Boolean;
+    jq: boolean;
+    com: AtomComponent;
+    disp: AtomDispatcher;
     path: Array<{
         path: string;
         value: any;
     }>;
+    pathList: Array<{
+        path: string;
+        value: any;
+    }>[];
     /**
      *
      */
-    constructor(control: AtomControl, element: HTMLElement, key: string, path: string, twoWays: NameValues, jq: boolean, vf: Function, events: string);
+    constructor(control: AtomControl, element: HTMLElement, key: string, path: string, twoWays: NameValues, jq: boolean, vf: (() => any), events: string);
     onPropChanged(sender: NameValues, key: string): NameValues;
-    onDataChanged(sender: NameValues, key: string): NameValues;
-    evaluate(target: AtomControl, path: Array<{
+    onDataChanged(sender: any, key: string): NameValues;
+    evaluate(target: any, path: Array<{
         path: string;
         value: any;
-    }>): {
-        path: string;
-        value: any;
-    };
-    static onValChanged(): any;
-    setup(): any;
+    }>): any;
+    onValChanged(): any;
+    setup(): void;
     setValue(value: any): any;
 }

@@ -1,1 +1,1 @@
-{"version":3,"file":"atom-dispatcher.js","sourceRoot":"","sources":["../../src/core/atom-dispatcher.ts"],"names":[],"mappings":";;;;;;;;;;;IACA;QAAA;QAIA,CAAC;QAHU,wBAAS,GAAhB,UAAiB,IAAS;YACtB,MAAM,IAAI,KAAK,CAAC,yBAAyB,CAAC,CAAC;QAC/C,CAAC;QACL,qBAAC;IAAD,CAAC,AAJD,IAIC;IAJY,wCAAc"}
+{"version":3,"file":"atom-dispatcher.js","sourceRoot":"","sources":["../../src/core/atom-dispatcher.ts"],"names":[],"mappings":";;;;;;;;;;;IACA;QAAA;QAIA,CAAC;QAHU,kCAAS,GAAhB,UAAiB,IAAS;YACtB,MAAM,IAAI,KAAK,CAAC,yBAAyB,CAAC,CAAC;QAC/C,CAAC;QACL,qBAAC;IAAD,CAAC,AAJD,IAIC;IAJY,wCAAc"}

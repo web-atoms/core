@@ -15,10 +15,10 @@
             this.eventHandlers = [];
         }
         AtomComponent.prototype.bindEvent = function (element, name, 
-        // tslint:disable-next-line:ban-types
-        methodName, key, 
-        // tslint:disable-next-line:ban-types
-        method) {
+            // tslint:disable-next-line:ban-types
+            methodName, key, 
+            // tslint:disable-next-line:ban-types
+            method) {
             if (!element) {
                 return;
             }
