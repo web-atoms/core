@@ -13,6 +13,7 @@
     var types_1 = require("./types");
     var PropertyBinding = /** @class */ (function () {
         function PropertyBinding(target, element, name, path, twoWays) {
+            this.isTwoWaySetup = false;
             this.name = name;
             this.twoWays = twoWays;
             this.target = target;
@@ -33,10 +34,14 @@
                 this.twoWaysDisposable = PropertyBinding.onSetupTwoWayBinding(this);
                 return;
             }
-            var watcher = new atom_watcher_1.AtomWatcher(this.target, [name], false, false);
+            var watcher = new atom_watcher_1.AtomWatcher(this.target, [this.name], false, false);
             watcher.func = function (t, values) {
-                _this.setInverseValue(values[0]);
+                if (_this.isTwoWaySetup) {
+                    _this.setInverseValue(values[0]);
+                }
             };
+            watcher.evaluate();
+            this.isTwoWaySetup = true;
             this.twoWaysDisposable = new types_1.AtomDisposable(function () {
                 watcher.dispose();
             });

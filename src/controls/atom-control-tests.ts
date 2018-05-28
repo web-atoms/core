@@ -22,13 +22,17 @@ export class AtomControlTests extends TestItem {
         tv.name = "a";
         control.viewModel = tv;
 
-        control.bind(root, "data", ["viewModel.name"], false);
+        control.bind(root, "data", ["viewModel.name"], true);
 
         Assert.equals("a", control.data);
 
         tv.name = "b";
 
         Assert.equals("b", control.data);
+
+        control.data = "d";
+
+        Assert.equals("d", tv.name);
 
         control.viewModel = new TestViewModel();
 

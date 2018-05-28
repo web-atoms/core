@@ -48,10 +48,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             var tv = new TestViewModel();
             tv.name = "a";
             control.viewModel = tv;
-            control.bind(root, "data", ["viewModel.name"], false);
+            control.bind(root, "data", ["viewModel.name"], true);
             base_test_1.Assert.equals("a", control.data);
             tv.name = "b";
             base_test_1.Assert.equals("b", control.data);
+            control.data = "d";
+            base_test_1.Assert.equals("d", tv.name);
             control.viewModel = new TestViewModel();
             tv.name = "c";
             base_test_1.Assert.equals(undefined, control.data);

@@ -9,6 +9,7 @@ export declare class PropertyBinding implements IDisposable {
     name: string;
     private watcher;
     private twoWaysDisposable;
+    private isTwoWaySetup;
     constructor(target: any, element: IAtomElement, name: string, path: string[], twoWays: boolean);
     setupTwoWayBinding(): void;
     setInverseValue(value: any): void;

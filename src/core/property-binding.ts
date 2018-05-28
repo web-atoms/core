@@ -14,6 +14,7 @@ export class PropertyBinding implements IDisposable {
 
     private watcher: AtomWatcher<any>;
     private twoWaysDisposable: IDisposable;
+    private isTwoWaySetup: boolean = false;
 
     constructor(
         target: any,
@@ -42,10 +43,14 @@ export class PropertyBinding implements IDisposable {
             return;
         }
 
-        const watcher = new AtomWatcher(this.target, [name], false, false);
+        const watcher = new AtomWatcher(this.target, [this.name], false, false);
         watcher.func = (t: any, values: any[]) => {
-            this.setInverseValue(values[0]);
+            if (this.isTwoWaySetup) {
+                this.setInverseValue(values[0]);
+            }
         };
+        watcher.evaluate();
+        this.isTwoWaySetup = true;
         this.twoWaysDisposable = new AtomDisposable(() => {
             watcher.dispose();
         });
