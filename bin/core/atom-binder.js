@@ -23,12 +23,6 @@ var __values = (this && this.__values) || function (o) {
     var AtomBinder = /** @class */ (function () {
         function AtomBinder() {
         }
-        AtomBinder.setValue = function (arg0, arg1, arg2) {
-            throw new Error("Method not implemented.");
-        };
-        AtomBinder.getValue = function (arg0, arg1) {
-            throw new Error("Method not implemented.");
-        };
         AtomBinder.refreshValue = function (target, key) {
             var handlers = AtomBinder.get_WatchHandler(target, key);
             if (handlers === undefined || handlers == null) {

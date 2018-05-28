@@ -20,13 +20,13 @@ var __values = (this && this.__values) || function (o) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var atom_binder_1 = require("./atom-binder");
-    var _viewModelParseWatchCache = {};
+    var viewModelParseWatchCache = {};
     function parsePath(f) {
         var str = f.toString().trim();
         var key = str;
-        var px = _viewModelParseWatchCache[key];
-        if (px) {
-            return px;
+        var px1 = viewModelParseWatchCache[key];
+        if (px1) {
+            return px1;
         }
         if (str.endsWith("}")) {
             str = str.substr(0, str.length - 1);
@@ -61,19 +61,22 @@ var __values = (this && this.__values) || function (o) {
             if (!path.find(function (y) { return y === px; })) {
                 path.push(px);
             }
-            path = path.filter(function (f) { return !f.endsWith("("); });
+            path = path.filter(function (f1) { return !f1.endsWith("("); });
             return m;
         });
         // debugger;
         path = path.sort(function (a, b) { return b.localeCompare(a); });
         var rp = [];
+        var _loop_1 = function (rpitem) {
+            if (rp.find(function (x) { return x.startsWith(rpitem); })) {
+                return "continue";
+            }
+            rp.push(rpitem);
+        };
         try {
             for (var path_1 = __values(path), path_1_1 = path_1.next(); !path_1_1.done; path_1_1 = path_1.next()) {
                 var rpitem = path_1_1.value;
-                if (rp.find(function (x) { return x.startsWith(rpitem); })) {
-                    continue;
-                }
-                rp.push(rpitem);
+                _loop_1(rpitem);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -84,7 +87,7 @@ var __values = (this && this.__values) || function (o) {
             finally { if (e_1) throw e_1.error; }
         }
         // console.log(`Watching: ${path.join(", ")}`);
-        _viewModelParseWatchCache[key] = path;
+        viewModelParseWatchCache[key] = path;
         return path;
         var e_1, _a;
     }
@@ -103,14 +106,14 @@ var __values = (this && this.__values) || function (o) {
      *
      * @export
      * @class AtomWatcher
-     * @implements {AtomDisposable}
+     * @implements {IDisposable}
      * @template T
      */
     var AtomWatcher = /** @class */ (function () {
         /**
          * Creates an instance of AtomWatcher.
          *
-         *      var w = new AtomWatcher(this, x => x.data.fullName = `${x.data.firstName} ${x.data.lastName}`);
+         *      let w = new AtomWatcher(this, x => x.data.fullName = `${x.data.firstName} ${x.data.lastName}`);
          *
          * You must dispose `w` in order to avoid memory leaks.
          * Above method will set fullName whenver, data or its firstName,lastName property is modified.
@@ -119,7 +122,7 @@ var __values = (this && this.__values) || function (o) {
          *
          * In order to avoid null, you can rewrite above expression as,
          *
-         *      var w = new AtomWatcher(this,
+         *      let w = new AtomWatcher(this,
          *                  x => {
          *                      if(x.data.firstName && x.data.lastName){
          *                        x.data.fullName = `${x.data.firstName} ${x.data.lastName}`
@@ -135,7 +138,7 @@ var __values = (this && this.__values) || function (o) {
          */
         function AtomWatcher(target, path, runAfterSetup, forValidation) {
             var _this = this;
-            this._isExecuting = false;
+            this.isExecuting = false;
             this.target = target;
             var e = false;
             if (forValidation === true) {
@@ -159,45 +162,12 @@ var __values = (this && this.__values) || function (o) {
                 }
                 // else {
                 //     // setup watcher...
-                //     for(var p of this.path) {
+                //     for(let p of this.path) {
                 //         this.evaluatePath(this.target,p);
                 //     }
                 // }
             }
         }
-        AtomWatcher.prototype.evaluatePath = function (target, path) {
-            // console.log(`\tevaluatePath: ${path.map(op=>op.name).join(", ")}`);
-            var newTarget = null;
-            try {
-                for (var path_2 = __values(path), path_2_1 = path_2.next(); !path_2_1.done; path_2_1 = path_2.next()) {
-                    var p = path_2_1.value;
-                    newTarget = atom_binder_1.AtomBinder.getValue(target, p.name);
-                    if (!p.target) {
-                        p.watcher = atom_binder_1.AtomBinder.watch(target, p.name, this.runEvaluate);
-                    }
-                    else if (p.target !== target) {
-                        if (p.watcher) {
-                            p.watcher.dispose();
-                        }
-                        p.watcher = atom_binder_1.AtomBinder.watch(target, p.name, this.runEvaluate);
-                    }
-                    p.target = target;
-                    target = newTarget;
-                    if (newTarget === undefined || newTarget === null) {
-                        break;
-                    }
-                }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (path_2_1 && !path_2_1.done && (_a = path_2.return)) _a.call(path_2);
-                }
-                finally { if (e_2) throw e_2.error; }
-            }
-            return newTarget;
-            var e_2, _a;
-        };
         /**
          *
          *
@@ -206,11 +176,11 @@ var __values = (this && this.__values) || function (o) {
          * @memberof AtomWatcher
          */
         AtomWatcher.prototype.evaluate = function (force) {
-            if (this._isExecuting) {
+            if (this.isExecuting) {
                 return;
             }
             var disposeWatchers = [];
-            this._isExecuting = true;
+            this.isExecuting = true;
             try {
                 var values = [];
                 var logs = [];
@@ -220,19 +190,19 @@ var __values = (this && this.__values) || function (o) {
                         values.push(this.evaluatePath(this.target, p));
                     }
                 }
-                catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                catch (e_2_1) { e_2 = { error: e_2_1 }; }
                 finally {
                     try {
                         if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
                     }
-                    finally { if (e_3) throw e_3.error; }
+                    finally { if (e_2) throw e_2.error; }
                 }
                 if (force === true) {
                     this.forValidation = false;
                 }
                 if (this.forValidation) {
                     var x = true;
-                    if (values.find(function (x) { return x ? true : false; })) {
+                    if (values.find(function (x1) { return x1 ? true : false; })) {
                         this.forValidation = false;
                     }
                     else {
@@ -243,26 +213,27 @@ var __values = (this && this.__values) || function (o) {
                     this.func.call(this.target, this.target);
                 }
                 catch (e) {
+                    // tslint:disable-next-line:no-console
                     console.warn(e);
                 }
             }
             finally {
-                this._isExecuting = false;
+                this.isExecuting = false;
                 try {
                     for (var disposeWatchers_1 = __values(disposeWatchers), disposeWatchers_1_1 = disposeWatchers_1.next(); !disposeWatchers_1_1.done; disposeWatchers_1_1 = disposeWatchers_1.next()) {
                         var d = disposeWatchers_1_1.value;
                         d.dispose();
                     }
                 }
-                catch (e_4_1) { e_4 = { error: e_4_1 }; }
+                catch (e_3_1) { e_3 = { error: e_3_1 }; }
                 finally {
                     try {
                         if (disposeWatchers_1_1 && !disposeWatchers_1_1.done && (_d = disposeWatchers_1.return)) _d.call(disposeWatchers_1);
                     }
-                    finally { if (e_4) throw e_4.error; }
+                    finally { if (e_3) throw e_3.error; }
                 }
             }
-            var e_3, _c, e_4, _d;
+            var e_2, _c, e_3, _d;
         };
         AtomWatcher.prototype.toString = function () {
             return this.func.toString();
@@ -286,26 +257,59 @@ var __values = (this && this.__values) || function (o) {
                             }
                         }
                     }
-                    catch (e_5_1) { e_5 = { error: e_5_1 }; }
+                    catch (e_4_1) { e_4 = { error: e_4_1 }; }
                     finally {
                         try {
                             if (p_1_1 && !p_1_1.done && (_c = p_1.return)) _c.call(p_1);
                         }
-                        finally { if (e_5) throw e_5.error; }
+                        finally { if (e_4) throw e_4.error; }
+                    }
+                }
+            }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
+            finally {
+                try {
+                    if (_b && !_b.done && (_d = _a.return)) _d.call(_a);
+                }
+                finally { if (e_5) throw e_5.error; }
+            }
+            this.func = null;
+            this.path.length = 0;
+            this.path = null;
+            var e_5, _d, e_4, _c;
+        };
+        AtomWatcher.prototype.evaluatePath = function (target, path) {
+            // console.log(`\tevaluatePath: ${path.map(op=>op.name).join(", ")}`);
+            var newTarget = null;
+            try {
+                for (var path_2 = __values(path), path_2_1 = path_2.next(); !path_2_1.done; path_2_1 = path_2.next()) {
+                    var p = path_2_1.value;
+                    newTarget = target[p.name];
+                    if (!p.target) {
+                        p.watcher = atom_binder_1.AtomBinder.watch(target, p.name, this.runEvaluate);
+                    }
+                    else if (p.target !== target) {
+                        if (p.watcher) {
+                            p.watcher.dispose();
+                        }
+                        p.watcher = atom_binder_1.AtomBinder.watch(target, p.name, this.runEvaluate);
+                    }
+                    p.target = target;
+                    target = newTarget;
+                    if (newTarget === undefined || newTarget === null) {
+                        break;
                     }
                 }
             }
             catch (e_6_1) { e_6 = { error: e_6_1 }; }
             finally {
                 try {
-                    if (_b && !_b.done && (_d = _a.return)) _d.call(_a);
+                    if (path_2_1 && !path_2_1.done && (_a = path_2.return)) _a.call(path_2);
                 }
                 finally { if (e_6) throw e_6.error; }
             }
-            this.func = null;
-            this.path.length = 0;
-            this.path = null;
-            var e_6, _d, e_5, _c;
+            return newTarget;
+            var e_6, _a;
         };
         return AtomWatcher;
     }());

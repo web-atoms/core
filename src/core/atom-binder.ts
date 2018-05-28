@@ -9,13 +9,6 @@ export interface IWatchableObject {
 }
 export class AtomBinder {
 
-    public static setValue(arg0: any, arg1: any, arg2: any): any {
-        throw new Error("Method not implemented.");
-    }
-    public static getValue(arg0: any, arg1: any): any {
-        throw new Error("Method not implemented.");
-    }
-
     public static refreshValue(target, key) {
         const handlers = AtomBinder.get_WatchHandler(target, key);
         if (handlers === undefined || handlers == null) {
@@ -120,7 +113,7 @@ export class AtomBinder {
         }
     }
 
-    public static watch(item: any, property: string, f: () => void): IDisposable {
+    public static watch(item: any, property: string, f: WatchFunction): IDisposable {
         AtomBinder.add_WatchHandler(item, property, f);
         return new AtomDisposable( () => {
             AtomBinder.remove_WatchHandler(item, property, f);

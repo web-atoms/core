@@ -2,14 +2,11 @@ import { AtomUI } from "./atom-ui";
 
 interface IEventObject {
 
-    element: any;
+    element: HTMLElement;
 
     name?: string;
 
-    methodName?: string;
-
-    // tslint:disable-next-line:ban-types
-    handler?: Function;
+    handler?: EventListenerOrEventListenerObject;
 
     key?: string;
 
@@ -21,28 +18,19 @@ export class AtomComponent {
     private eventHandlers: IEventObject[] = [];
 
     public bindEvent(
-        element: any,
+        element: HTMLElement,
         name?: string,
-        // tslint:disable-next-line:ban-types
-        methodName?: (string | Function),
-        key?: string,
-        // tslint:disable-next-line:ban-types
-        method?: Function): void {
+        method?: EventListenerOrEventListenerObject,
+        key?: string): void {
         if (!element) {
             return;
         }
         if (!method) {
-            if (methodName instanceof String) {
-                method = AtomUI.createDelegate(this, methodName);
-            } else {
-                // tslint:disable-next-line:ban-types
-                method = methodName as Function;
-            }
+            return;
         }
         const be: IEventObject = {
             element,
             name,
-            methodName: methodName as string,
             handler: method
         };
         if (key) {
@@ -50,19 +38,44 @@ export class AtomComponent {
         }
         if (element.addEventListener) {
             element.addEventListener(name, method, false);
+            this.eventHandlers.push(be);
         } else {
-            // var f: Function = element["add_" + name];
+            throw new Error("Not supported");
         }
     }
-    public unbindEvent(arg0: any, arg1?: any, arg2?: any, arg3?: any): void {
-        throw new Error("Method not implemented.");
+    public unbindEvent(
+        element: HTMLElement,
+        name?: string,
+        method?: EventListenerOrEventListenerObject,
+        key?: string): void {
+        const deleted: IEventObject[] = [];
+        for (const be of this.eventHandlers) {
+            if (element && be.element !== element) {
+                return;
+            }
+            if (key && be.key !== key) {
+                return;
+            }
+            if (name && be.name !== name) {
+                return;
+            }
+            if (method && be.handler !== method) {
+                return;
+            }
+            be.element.removeEventListener(be.name, be.handler);
+            deleted.push(be);
+        }
+        this.eventHandlers = this.eventHandlers.filter( (x) => deleted.findIndex( (d) => d === x ) !== -1 );
     }
 
     public init(): void {
         // initialization used by derived controls
     }
 
-    public dispose(): void {
+    public dispose(e?: HTMLElement): void {
+        if (e) {
+            return;
+        }
         this.unbindEvent(null, null, null);
     }
 }

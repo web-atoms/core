@@ -1,72 +1,72 @@
-import { IDisposable } from "./types";
 import { AtomBinder } from "./atom-binder";
+import { IDisposable } from "./types";
 
-var _viewModelParseWatchCache:any = {};
+const viewModelParseWatchCache: any = {};
 
-function parsePath(f:any):string[] {
-    var str:string = f.toString().trim();
+function parsePath(f: any): string[] {
+    let str: string = f.toString().trim();
 
-    var key:string = str;
+    const key: string = str;
 
-    var px:string[] = _viewModelParseWatchCache[key];
-    if(px) {
-        return px;
+    const px1: string[] = viewModelParseWatchCache[key];
+    if (px1) {
+        return px1;
     }
 
-    if(str.endsWith("}")) {
-        str = str.substr(0,str.length-1);
+    if (str.endsWith("}")) {
+        str = str.substr(0, str.length - 1);
     }
 
-    if(str.startsWith("function (")) {
+    if (str.startsWith("function (")) {
         str = str.substr("function (".length);
     }
 
-    if(str.startsWith("function(")) {
+    if (str.startsWith("function(")) {
         str = str.substr("function(".length);
     }
 
     str = str.trim();
 
-    var index:number = str.indexOf(")");
+    const index: number = str.indexOf(")");
 
-    var isThis:boolean = index === 0;
+    const isThis: boolean = index === 0;
 
-    var p:string = isThis ? "\_this|this" : str.substr(0,index);
+    const p: string = isThis ? "\_this|this" : str.substr(0, index);
 
-    str = str.substr(index+1);
+    str = str.substr(index + 1);
 
-    var regExp:string = `(?:(${p})(?:(\\.[a-zA-Z_][a-zA-Z_0-9]*)+)(?:\\(?))`;
+    const regExp: string = `(?:(${p})(?:(\\.[a-zA-Z_][a-zA-Z_0-9]*)+)(?:\\(?))`;
 
-    var re:RegExp = new RegExp(regExp, "gi");
+    const re: RegExp = new RegExp(regExp, "gi");
 
-    var path: string[] = [];
+    let path: string[] = [];
 
-    var ms:any = str.replace(re, m => {
+    const ms: any = str.replace(re, (m) => {
         // console.log(`m: ${m}`);
-        var px:string = m;
-        if(px.startsWith("this.")) {
+        let px: string = m;
+        if (px.startsWith("this.")) {
             px = px.substr(5);
-        } else if(px.startsWith("_this.")) {
+        } else if (px.startsWith("_this.")) {
             px = px.substr(6);
         } else {
             px = px.substr(p.length + 1);
         }
         // console.log(px);
-        if(!path.find(y => y === px)) {
+        if (!path.find((y) => y === px)) {
             path.push(px);
         }
 
-        path = path.filter( f => !f.endsWith("(") );
+        path = path.filter( (f1) => !f1.endsWith("(") );
 
         return m;
     });
     // debugger;
 
-    path = path.sort( (a,b) => b.localeCompare(a) );
+    path = path.sort( (a, b) => b.localeCompare(a) );
 
-    var rp:string[] = [];
-    for(var rpitem of path) {
-        if(rp.find( x => x.startsWith(rpitem) )) {
+    const rp: string[] = [];
+    for (const rpitem of path) {
+        if (rp.find( (x) => x.startsWith(rpitem) )) {
             continue;
         }
         rp.push(rpitem);
@@ -74,25 +74,22 @@ function parsePath(f:any):string[] {
 
     // console.log(`Watching: ${path.join(", ")}`);
 
-    _viewModelParseWatchCache[key] = path;
+    viewModelParseWatchCache[key] = path;
 
     return path;
 }
 
-
-
 export class ObjectProperty {
 
-    target: object;
-    name: string;
-    watcher: IDisposable;
+    public target: object;
+    public name: string;
+    public watcher: IDisposable;
 
-
-    constructor(name:string) {
+    constructor(name: string) {
         this.name = name;
     }
 
-    toString():string {
+    public toString(): string {
         return this.name;
     }
 
@@ -103,11 +100,10 @@ export class ObjectProperty {
  *
  * @export
  * @class AtomWatcher
- * @implements {AtomDisposable}
+ * @implements {IDisposable}
  * @template T
  */
 export class AtomWatcher<T> implements IDisposable {
-    private forValidation: boolean;
 
     /**
      * If path was given as an array of string property path, you can use this `func` that will be executed
@@ -117,100 +113,24 @@ export class AtomWatcher<T> implements IDisposable {
      *
      * @memberof AtomWatcher
      */
-    func: (t:T) => any;
-
-    private _isExecuting:boolean = false;
+    public func: (t: T) => any;
 
     public funcText: string;
 
-    private evaluatePath(target:any, path: ObjectProperty[]): any {
+    public path: ObjectProperty[][];
 
-        // console.log(`\tevaluatePath: ${path.map(op=>op.name).join(", ")}`);
+    public target: any;
 
-        var newTarget:any = null;
-        for(var p of path) {
-            newTarget = AtomBinder.getValue(target, p.name);
-            if(!p.target) {
-                p.watcher = AtomBinder.watch(target,p.name, this.runEvaluate);
-            }else if(p.target !== target) {
-                if(p.watcher) {
-                    p.watcher.dispose();
-                }
-                p.watcher = AtomBinder.watch(target, p.name, this.runEvaluate);
-            }
-            p.target = target;
-            target = newTarget;
-            if(newTarget === undefined || newTarget === null) {
-                break;
-            }
-        }
-        return newTarget;
-    }
+    public runEvaluate: () => any;
 
-    /**
-     *
-     *
-     * @param {boolean} [force]
-     * @returns {*}
-     * @memberof AtomWatcher
-     */
-    evaluate(force?: boolean): any {
+    private forValidation: boolean;
 
-        if(this._isExecuting) {
-            return;
-        }
-
-        var disposeWatchers: IDisposable[] = [];
-
-        this._isExecuting = true;
-
-        try {
-
-            var values:Array<any> = [];
-
-            var logs:Array<string>[] = [];
-
-            for(var p of this.path){
-
-                values.push(this.evaluatePath(this.target,p));
-            }
-
-            if(force === true) {
-                this.forValidation = false;
-            }
-
-            if(this.forValidation) {
-                var x:boolean = true;
-                if(values.find( x=> x ? true : false)) {
-                    this.forValidation = false;
-                }else {
-                    return;
-                }
-            }
-
-            try {
-                this.func.call(this.target,this.target);
-            }catch(e) {
-                console.warn(e);
-            }
-        }finally {
-            this._isExecuting = false;
-
-
-            for(var d of disposeWatchers){
-                d.dispose();
-            }
-        }
-    }
-
-    path: Array<ObjectProperty>[];
-
-    target: any;
+    private isExecuting: boolean = false;
 
     /**
      * Creates an instance of AtomWatcher.
      *
-     *      var w = new AtomWatcher(this, x => x.data.fullName = `${x.data.firstName} ${x.data.lastName}`);
+     *      let w = new AtomWatcher(this, x => x.data.fullName = `${x.data.firstName} ${x.data.lastName}`);
      *
      * You must dispose `w` in order to avoid memory leaks.
      * Above method will set fullName whenver, data or its firstName,lastName property is modified.
@@ -219,7 +139,7 @@ export class AtomWatcher<T> implements IDisposable {
      *
      * In order to avoid null, you can rewrite above expression as,
      *
-     *      var w = new AtomWatcher(this,
+     *      let w = new AtomWatcher(this,
      *                  x => {
      *                      if(x.data.firstName && x.data.lastName){
      *                        x.data.fullName = `${x.data.firstName} ${x.data.lastName}`
@@ -233,14 +153,14 @@ export class AtomWatcher<T> implements IDisposable {
      * @param {boolean} [forValidation] forValidtion - Ignore, used for internal purpose
      * @memberof AtomWatcher
      */
-    constructor(target:T, path:string[] | (() => any) , runAfterSetup:boolean, forValidation?:boolean) {
+    constructor(target: T, path: string[] | (() => any) , runAfterSetup: boolean, forValidation?: boolean) {
         this.target = target;
-        var e:boolean = false;
-        if(forValidation === true) {
+        let e: boolean = false;
+        if (forValidation === true) {
             this.forValidation = true;
         }
-        if(path instanceof Function) {
-            var f: () => any = path;
+        if (path instanceof Function) {
+            const f: () => any = path;
             path = parsePath(path);
             e = true;
             this.func = f;
@@ -254,13 +174,13 @@ export class AtomWatcher<T> implements IDisposable {
         (this.runEvaluate as any).watcher = this;
 
         this.path = path.map( (x) => x.split(".").map( (y) => new ObjectProperty(y) ) );
-        if(e) {
-            if(runAfterSetup) {
+        if (e) {
+            if (runAfterSetup) {
                 this.evaluate();
             }
             // else {
             //     // setup watcher...
-            //     for(var p of this.path) {
+            //     for(let p of this.path) {
             //         this.evaluatePath(this.target,p);
             //     }
             // }
@@ -268,23 +188,75 @@ export class AtomWatcher<T> implements IDisposable {
 
     }
 
-    runEvaluate: () => any;
+    /**
+     *
+     *
+     * @param {boolean} [force]
+     * @returns {*}
+     * @memberof AtomWatcher
+     */
+    public evaluate(force?: boolean): any {
 
-    toString():string {
-        return this.func.toString();
+        if (this.isExecuting) {
+            return;
+        }
+
+        const disposeWatchers: IDisposable[] = [];
+
+        this.isExecuting = true;
+
+        try {
+
+            const values: any[] = [];
+
+            const logs: string[][] = [];
+
+            for (const p of this.path) {
+
+                values.push(this.evaluatePath(this.target, p));
+            }
+
+            if (force === true) {
+                this.forValidation = false;
+            }
+
+            if (this.forValidation) {
+                const x: boolean = true;
+                if (values.find( (x1) => x1 ? true : false)) {
+                    this.forValidation = false;
+                } else {
+                    return;
+                }
+            }
+
+            try {
+                this.func.call(this.target, this.target);
+            } catch (e) {
+                // tslint:disable-next-line:no-console
+                console.warn(e);
+            }
+        } finally {
+            this.isExecuting = false;
+
+            for (const d of disposeWatchers) {
+                d.dispose();
+            }
+        }
     }
 
-
+    public toString(): string {
+        return this.func.toString();
+    }
 
     /**
      * This will dispose and unregister all watchers
      *
      * @memberof AtomWatcher
      */
-    dispose():void {
-        for(var p of this.path){
-            for(var op of p){
-                if(op.watcher) {
+    public dispose(): void {
+        for (const p of this.path) {
+            for (const op of p) {
+                if (op.watcher) {
                     op.watcher.dispose();
                     op.watcher = null;
                     op.target = null;
@@ -294,6 +266,30 @@ export class AtomWatcher<T> implements IDisposable {
         this.func = null;
         this.path.length = 0;
         this.path = null;
+    }
+
+    private evaluatePath(target: any, path: ObjectProperty[]): any {
+
+        // console.log(`\tevaluatePath: ${path.map(op=>op.name).join(", ")}`);
+
+        let newTarget: any = null;
+        for (const p of path) {
+            newTarget = target[p.name];
+            if (!p.target) {
+                p.watcher = AtomBinder.watch(target, p.name, this.runEvaluate);
+            } else if (p.target !== target) {
+                if (p.watcher) {
+                    p.watcher.dispose();
+                }
+                p.watcher = AtomBinder.watch(target, p.name, this.runEvaluate);
+            }
+            p.target = target;
+            target = newTarget;
+            if (newTarget === undefined || newTarget === null) {
+                break;
+            }
+        }
+        return newTarget;
     }
 
 }

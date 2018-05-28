@@ -7,8 +7,6 @@ export interface IWatchableObject {
     _$_handlers?: IWatchFunctionCollection;
 }
 export declare class AtomBinder {
-    static setValue(arg0: any, arg1: any, arg2: any): any;
-    static getValue(arg0: any, arg1: any): any;
     static refreshValue(target: any, key: any): void;
     static add_WatchHandler(target: any, key: any, handler: WatchFunction): void;
     static get_WatchHandler(target: IWatchableObject, key: string): WatchFunction[];
@@ -17,5 +15,5 @@ export declare class AtomBinder {
     static refreshItems(ary: any): void;
     static add_CollectionChanged(target: any[], handler: WatchFunction): void;
     static remove_CollectionChanged(t: any[], handler: WatchFunction): void;
-    static watch(item: any, property: string, f: () => void): IDisposable;
+    static watch(item: any, property: string, f: WatchFunction): IDisposable;
 }

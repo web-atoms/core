@@ -11,11 +11,10 @@ export declare class ObjectProperty {
  *
  * @export
  * @class AtomWatcher
- * @implements {AtomDisposable}
+ * @implements {IDisposable}
  * @template T
  */
 export declare class AtomWatcher<T> implements IDisposable {
-    private forValidation;
     /**
      * If path was given as an array of string property path, you can use this `func` that will be executed
      * when any of property is updated.
@@ -25,23 +24,16 @@ export declare class AtomWatcher<T> implements IDisposable {
      * @memberof AtomWatcher
      */
     func: (t: T) => any;
-    private _isExecuting;
     funcText: string;
-    private evaluatePath(target, path);
-    /**
-     *
-     *
-     * @param {boolean} [force]
-     * @returns {*}
-     * @memberof AtomWatcher
-     */
-    evaluate(force?: boolean): any;
-    path: Array<ObjectProperty>[];
+    path: ObjectProperty[][];
     target: any;
+    runEvaluate: () => any;
+    private forValidation;
+    private isExecuting;
     /**
      * Creates an instance of AtomWatcher.
      *
-     *      var w = new AtomWatcher(this, x => x.data.fullName = `${x.data.firstName} ${x.data.lastName}`);
+     *      let w = new AtomWatcher(this, x => x.data.fullName = `${x.data.firstName} ${x.data.lastName}`);
      *
      * You must dispose `w` in order to avoid memory leaks.
      * Above method will set fullName whenver, data or its firstName,lastName property is modified.
@@ -50,7 +42,7 @@ export declare class AtomWatcher<T> implements IDisposable {
      *
      * In order to avoid null, you can rewrite above expression as,
      *
-     *      var w = new AtomWatcher(this,
+     *      let w = new AtomWatcher(this,
      *                  x => {
      *                      if(x.data.firstName && x.data.lastName){
      *                        x.data.fullName = `${x.data.firstName} ${x.data.lastName}`
@@ -65,7 +57,14 @@ export declare class AtomWatcher<T> implements IDisposable {
      * @memberof AtomWatcher
      */
     constructor(target: T, path: string[] | (() => any), runAfterSetup: boolean, forValidation?: boolean);
-    runEvaluate: () => any;
+    /**
+     *
+     *
+     * @param {boolean} [force]
+     * @returns {*}
+     * @memberof AtomWatcher
+     */
+    evaluate(force?: boolean): any;
     toString(): string;
     /**
      * This will dispose and unregister all watchers
@@ -73,4 +72,5 @@ export declare class AtomWatcher<T> implements IDisposable {
      * @memberof AtomWatcher
      */
     dispose(): void;
+    private evaluatePath(target, path);
 }
