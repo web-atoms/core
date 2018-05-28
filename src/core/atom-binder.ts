@@ -50,30 +50,6 @@ export class AtomBinder {
     //     return retObj;
     // }
 
-<<<<<<< HEAD
-=======
-    public static setValue(target, key, value): any {
-        if (!target && value === undefined) {
-            return;
-        }
-        const oldValue = AtomBinder.getValue(target, key);
-        if (oldValue === value) {
-            return;
-        }
-        const f = target["set_" + key];
-        if (f) {
-            f.apply(target, [value]);
-        } else {
-            target[key] = value;
-        }
-        AtomBinder.refreshValue(target, key);
-    }
-
-    public static getValue(target, key): any {
-        throw new Error("Method not implemented.");
-    }
-
->>>>>>> a1c4a4b376d1a6c0c675e6671fd8ada37af21a47
     public static refreshValue(target, key) {
         const handlers = AtomBinder.get_WatchHandler(target, key);
         if (handlers === undefined || handlers == null) {
