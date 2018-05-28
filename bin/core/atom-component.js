@@ -23,15 +23,7 @@ var __values = (this && this.__values) || function (o) {
         function AtomComponent() {
             this.eventHandlers = [];
         }
-<<<<<<< HEAD
         AtomComponent.prototype.bindEvent = function (element, name, method, key) {
-=======
-        AtomComponent.prototype.bindEvent = function (element, name, 
-            // tslint:disable-next-line:ban-types
-            methodName, key, 
-            // tslint:disable-next-line:ban-types
-            method) {
->>>>>>> a1c4a4b376d1a6c0c675e6671fd8ada37af21a47
             if (!element) {
                 return;
             }

@@ -11,6 +11,7 @@
     Object.defineProperty(exports, "__esModule", { value: true });
     var PropertyBinding = /** @class */ (function () {
         function PropertyBinding(name, path, twoWays) {
+            this.name = name;
         }
         PropertyBinding.prototype.dispose = function () {
             throw new Error("Method not implemented.");

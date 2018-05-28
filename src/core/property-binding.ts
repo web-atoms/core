@@ -2,8 +2,10 @@ import { IDisposable } from "./types";
 
 export class PropertyBinding implements IDisposable {
 
-    constructor(name: string, path: string[] | (() => void), twoWays: boolean) {
+    public name: string;
 
+    constructor(name: string, path: string[] | (() => void), twoWays: boolean) {
+        this.name = name;
     }
 
     public dispose(): void {
