@@ -15,7 +15,6 @@
          *
          */
         function AtomUri(url) {
-            this.atomUi = new atom_ui_1.AtomUI();
             var path;
             var query = "";
             var hash = "";
@@ -55,8 +54,8 @@
             this.protocol = scheme;
             this.port = port;
             this.path = path;
-            this.query = this.atomUi.parseUrl(query);
-            this.hash = this.atomUi.parseUrl(hash);
+            this.query = atom_ui_1.AtomUI.parseUrl(query);
+            this.hash = atom_ui_1.AtomUI.parseUrl(hash);
         }
         return AtomUri;
     }());

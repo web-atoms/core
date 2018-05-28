@@ -22,6 +22,7 @@
                 target[name] = values[0];
             };
             this.path = this.watcher.path;
+            this.watcher.evaluate();
             if (twoWays) {
                 this.setupTwoWayBinding();
             }

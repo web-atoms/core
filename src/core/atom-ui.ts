@@ -3,19 +3,26 @@ import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUI {
 
-    public static parent(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
-    
-    public atomParent(element: HTMLElement): AtomControl {
-        const eany: INameValuePairs = element as INameValuePairs;
-        if (eany.atomControl) {
-            return eany.atomControl;
+    // moved to AtomBridge
+    // public atomParent(element: HTMLElement): AtomControl {
+    //     const eany: INameValuePairs = element as INameValuePairs;
+    //     if (eany.atomControl) {
+    //         return eany.atomControl;
+    //     }
+    //     if (!element.parentNode) {
+    //         return null;
+    //     }
+    //     return this.atomParent(eany._logicalParent || element.parentNode);
+    // }
+
+    public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
+        let en: Element = e.firstElementChild;
+        while (en) {
+            if (en as HTMLElement) {
+                yield en as HTMLElement;
+            }
+            en = en.nextElementSibling;
         }
-        if (!element.parentNode) {
-            return null;
-        }
-        return this.atomParent(eany._logicalParent || element.parentNode);
     }
 
     /**
@@ -25,11 +32,11 @@ export class AtomUI {
      * @returns {HTMLElement}
      * @memberof AtomUI
      */
-    public cloneNode(e: HTMLElement): HTMLElement {
+    public static cloneNode(e: HTMLElement): HTMLElement {
         return e.cloneNode(true) as HTMLElement;
     }
 
-    public parseValue(val: string): (number|boolean|string) {
+    public static parseValue(val: string): (number|boolean|string) {
         let n: number;
         if (/^[0-9]+$/.test(val)) {
             n = parseInt(val, 10);
@@ -59,7 +66,7 @@ export class AtomUI {
         return val;
     }
 
-    public parseUrl(url: string): INameValues {
+    public static parseUrl(url: string): INameValues {
         const r: INameValues = {};
 
         const plist: string[] = url.split("&");
@@ -77,18 +84,8 @@ export class AtomUI {
         return r;
     }
 
-    public *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
-        let en: Element = e.firstElementChild;
-        while (en) {
-            if (en as HTMLElement) {
-                yield en as HTMLElement;
-            }
-            en = en.nextElementSibling;
-        }
-    }
-
-    public findPresenter(e: HTMLElement): HTMLElement {
-        for (const item of this.childEnumerator(e)) {
+    public static findPresenter(e: HTMLElement): HTMLElement {
+        for (const item of AtomUI.childEnumerator(e)) {
             const ap: any = this.attr(item, "atom-presenter");
             if (ap) {
                 return item;
@@ -100,7 +97,7 @@ export class AtomUI {
         }
         return null;
     }
-    public attr(arg0: any, arg1: any): any {
+    public static attr(arg0: any, arg1: any): any {
         throw new Error("Method not implemented.");
     }
 }

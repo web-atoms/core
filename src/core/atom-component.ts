@@ -1,7 +1,8 @@
 import { AtomDispatcher } from "./atom-dispatcher";
 import { AtomUI } from "./atom-ui";
+import { AtomBridge } from "./bridge";
 import { PropertyBinding } from "./property-binding";
-import { AtomDisposable, AtomElementExtensions, IAtomElement, IDisposable } from "./types";
+import { AtomDisposable, IAtomElement, IDisposable } from "./types";
 
 interface IEventObject {
 
@@ -12,6 +13,8 @@ interface IEventObject {
     handler?: EventListenerOrEventListenerObject;
 
     key?: string;
+
+    disposable?: IDisposable;
 
 }
 export class AtomComponent {
@@ -60,11 +63,7 @@ export class AtomComponent {
         if (key) {
             be.key = key;
         }
-        if (element instanceof HTMLElement) {
-            element.addEventListener(name, method, false);
-        } else {
-            AtomElementExtensions.addEventHandler(name, method);
-        }
+        be.disposable = AtomBridge.instance.addEventHandler(element, name, method, false);
         this.eventHandlers.push(be);
     }
 
@@ -87,11 +86,11 @@ export class AtomComponent {
             if (method && be.handler !== method) {
                 return;
             }
-            if (be.element instanceof HTMLElement) {
-                be.element.removeEventListener(be.name, be.handler);
-            } else {
-                AtomElementExtensions.removeEventHandler(name, method);
-            }
+            be.disposable.dispose();
+            be.handler = null;
+            be.element = null;
+            be.name = null;
+            be.key = null;
             deleted.push(be);
         }
         this.eventHandlers = this.eventHandlers.filter( (x) => deleted.findIndex( (d) => d === x ) !== -1 );
@@ -101,7 +100,7 @@ export class AtomComponent {
         // initialization used by derived controls
     }
 
-    public dispose(e?: HTMLElement): void {
+    public dispose(e?: IAtomElement): void {
         if (e) {
             return;
         }

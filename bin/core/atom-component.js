@@ -14,11 +14,12 @@ var __values = (this && this.__values) || function (o) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./property-binding", "./types"], factory);
+        define(["require", "exports", "./bridge", "./property-binding", "./types"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var bridge_1 = require("./bridge");
     var property_binding_1 = require("./property-binding");
     var types_1 = require("./types");
     var AtomComponent = /** @class */ (function () {
@@ -57,12 +58,7 @@ var __values = (this && this.__values) || function (o) {
             if (key) {
                 be.key = key;
             }
-            if (element instanceof HTMLElement) {
-                element.addEventListener(name, method, false);
-            }
-            else {
-                types_1.AtomElementExtensions.addEventHandler(name, method);
-            }
+            be.disposable = bridge_1.AtomBridge.instance.addEventHandler(element, name, method, false);
             this.eventHandlers.push(be);
         };
         AtomComponent.prototype.unbindEvent = function (element, name, method, key) {
@@ -82,12 +78,11 @@ var __values = (this && this.__values) || function (o) {
                     if (method && be.handler !== method) {
                         return;
                     }
-                    if (be.element instanceof HTMLElement) {
-                        be.element.removeEventListener(be.name, be.handler);
-                    }
-                    else {
-                        types_1.AtomElementExtensions.removeEventHandler(name, method);
-                    }
+                    be.disposable.dispose();
+                    be.handler = null;
+                    be.element = null;
+                    be.name = null;
+                    be.key = null;
                     deleted.push(be);
                 }
             }

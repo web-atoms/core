@@ -1,6 +1,20 @@
 
 export class AtomDispatcher {
-    public callLater(arg0: any): any {
-        throw new Error("Method not implemented.");
+
+    public static instance: AtomDispatcher = new AtomDispatcher();
+
+    // tslint:disable-next-line:ban-types
+    public callLater(f: Function): void {
+        
     }
+
+    public pause(): void {
+
+    }
+
+    public start(): void {
+
+    }
+
+    // do not write setupControls, no longer needed
 }

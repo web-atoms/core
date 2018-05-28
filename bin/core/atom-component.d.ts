@@ -7,5 +7,5 @@ export declare class AtomComponent {
     bindEvent(element: IAtomElement, name?: string, method?: EventListenerOrEventListenerObject, key?: string): void;
     unbindEvent(element: HTMLElement, name?: string, method?: EventListenerOrEventListenerObject, key?: string): void;
     init(): void;
-    dispose(e?: HTMLElement): void;
+    dispose(e?: IAtomElement): void;
 }

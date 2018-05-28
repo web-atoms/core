@@ -9,7 +9,6 @@ export class AtomUri {
     public scheme: string;
     public host: string;
     public port: string;
-    public atomUi: AtomUI = new AtomUI();
 
     /**
      *
@@ -57,7 +56,7 @@ export class AtomUri {
         this.protocol = scheme;
         this.port = port;
         this.path = path;
-        this.query = this.atomUi.parseUrl(query);
-        this.hash = this.atomUi.parseUrl(hash);
+        this.query = AtomUI.parseUrl(query);
+        this.hash = AtomUI.parseUrl(hash);
     }
 }

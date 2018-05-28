@@ -49,18 +49,37 @@ var __values = (this && this.__values) || function (o) {
     var AtomUI = /** @class */ (function () {
         function AtomUI() {
         }
-        AtomUI.parent = function (arg0) {
-            throw new Error("Method not implemented.");
-        };
-        AtomUI.prototype.atomParent = function (element) {
-            var eany = element;
-            if (eany.atomControl) {
-                return eany.atomControl;
-            }
-            if (!element.parentNode) {
-                return null;
-            }
-            return this.atomParent(eany._logicalParent || element.parentNode);
+        // moved to AtomBridge
+        // public atomParent(element: HTMLElement): AtomControl {
+        //     const eany: INameValuePairs = element as INameValuePairs;
+        //     if (eany.atomControl) {
+        //         return eany.atomControl;
+        //     }
+        //     if (!element.parentNode) {
+        //         return null;
+        //     }
+        //     return this.atomParent(eany._logicalParent || element.parentNode);
+        // }
+        AtomUI.childEnumerator = function (e) {
+            var en;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        en = e.firstElementChild;
+                        _a.label = 1;
+                    case 1:
+                        if (!en) return [3 /*break*/, 4];
+                        if (!en) return [3 /*break*/, 3];
+                        return [4 /*yield*/, en];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3:
+                        en = en.nextElementSibling;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/];
+                }
+            });
         };
         /**
          * Don't use
@@ -69,10 +88,10 @@ var __values = (this && this.__values) || function (o) {
          * @returns {HTMLElement}
          * @memberof AtomUI
          */
-        AtomUI.prototype.cloneNode = function (e) {
+        AtomUI.cloneNode = function (e) {
             return e.cloneNode(true);
         };
-        AtomUI.prototype.parseValue = function (val) {
+        AtomUI.parseValue = function (val) {
             var n;
             if (/^[0-9]+$/.test(val)) {
                 n = parseInt(val, 10);
@@ -100,7 +119,7 @@ var __values = (this && this.__values) || function (o) {
             }
             return val;
         };
-        AtomUI.prototype.parseUrl = function (url) {
+        AtomUI.parseUrl = function (url) {
             var r = {};
             var plist = url.split("&");
             try {
@@ -126,30 +145,9 @@ var __values = (this && this.__values) || function (o) {
             return r;
             var e_1, _a;
         };
-        AtomUI.prototype.childEnumerator = function (e) {
-            var en;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        en = e.firstElementChild;
-                        _a.label = 1;
-                    case 1:
-                        if (!en) return [3 /*break*/, 4];
-                        if (!en) return [3 /*break*/, 3];
-                        return [4 /*yield*/, en];
-                    case 2:
-                        _a.sent();
-                        _a.label = 3;
-                    case 3:
-                        en = en.nextElementSibling;
-                        return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        };
-        AtomUI.prototype.findPresenter = function (e) {
+        AtomUI.findPresenter = function (e) {
             try {
-                for (var _a = __values(this.childEnumerator(e)), _b = _a.next(); !_b.done; _b = _a.next()) {
+                for (var _a = __values(AtomUI.childEnumerator(e)), _b = _a.next(); !_b.done; _b = _a.next()) {
                     var item = _b.value;
                     var ap = this.attr(item, "atom-presenter");
                     if (ap) {
@@ -171,7 +169,7 @@ var __values = (this && this.__values) || function (o) {
             return null;
             var e_2, _c;
         };
-        AtomUI.prototype.attr = function (arg0, arg1) {
+        AtomUI.attr = function (arg0, arg1) {
             throw new Error("Method not implemented.");
         };
         return AtomUI;

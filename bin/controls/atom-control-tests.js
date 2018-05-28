@@ -20,31 +20,50 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../unit/base-test", "./atom-ui"], factory);
+        define(["require", "exports", "../unit/base-test", "../../node_modules/test-dom", "../core/bindable-properties", "./atom-control"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var base_test_1 = require("../unit/base-test");
-    var atom_ui_1 = require("./atom-ui");
-    var TestUnit = /** @class */ (function (_super) {
-        __extends(TestUnit, _super);
-        function TestUnit() {
+    require("../../node_modules/test-dom");
+    var bindable_properties_1 = require("../core/bindable-properties");
+    var atom_control_1 = require("./atom-control");
+    var TestViewModel = /** @class */ (function () {
+        function TestViewModel() {
+        }
+        __decorate([
+            bindable_properties_1.bindableProperty
+        ], TestViewModel.prototype, "name", void 0);
+        return TestViewModel;
+    }());
+    var AtomControlTests = /** @class */ (function (_super) {
+        __extends(AtomControlTests, _super);
+        function AtomControlTests() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        TestUnit.prototype.run = function () {
-            var a = atom_ui_1.AtomUI.parseUrl("a=b&c=1");
-            base_test_1.Assert.equals("b", a.a);
-            base_test_1.Assert.equals(1, a.c);
+        AtomControlTests.prototype.test1 = function () {
+            var root = document.createElement("div");
+            var control = new atom_control_1.AtomControl(root);
+            var tv = new TestViewModel();
+            tv.name = "a";
+            control.viewModel = tv;
+            control.bind(root, "data", ["viewModel.name"], false);
+            base_test_1.Assert.equals("a", control.data);
+            tv.name = "b";
+            base_test_1.Assert.equals("b", control.data);
+            control.viewModel = new TestViewModel();
+            tv.name = "c";
+            base_test_1.Assert.equals(undefined, control.data);
         };
         __decorate([
             base_test_1.Test()
-        ], TestUnit.prototype, "run", null);
-        TestUnit = __decorate([
-            base_test_1.Category("atom-ui")
-        ], TestUnit);
-        return TestUnit;
+        ], AtomControlTests.prototype, "test1", null);
+        AtomControlTests = __decorate([
+            base_test_1.Category("Atom-Control")
+        ], AtomControlTests);
+        return AtomControlTests;
     }(base_test_1.TestItem));
-    exports.TestUnit = TestUnit;
+    exports.AtomControlTests = AtomControlTests;
 });
-//# sourceMappingURL=atom-ui-tests.js.map
+//# sourceMappingURL=atom-control-tests.js.map

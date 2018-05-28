@@ -12,9 +12,14 @@
     var AtomDispatcher = /** @class */ (function () {
         function AtomDispatcher() {
         }
-        AtomDispatcher.prototype.callLater = function (arg0) {
-            throw new Error("Method not implemented.");
+        // tslint:disable-next-line:ban-types
+        AtomDispatcher.prototype.callLater = function (f) {
         };
+        AtomDispatcher.prototype.pause = function () {
+        };
+        AtomDispatcher.prototype.start = function () {
+        };
+        AtomDispatcher.instance = new AtomDispatcher();
         return AtomDispatcher;
     }());
     exports.AtomDispatcher = AtomDispatcher;

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
     "amd-loader": "0.0.8",
-    "remap-istanbul": "^0.11.1"
+    "remap-istanbul": "^0.11.1",
+    "test-dom": "^1.0.0"
   }
 }

@@ -1,3 +1,6 @@
 export declare class AtomDispatcher {
-    callLater(arg0: any): any;
+    static instance: AtomDispatcher;
+    callLater(f: Function): void;
+    pause(): void;
+    start(): void;
 }

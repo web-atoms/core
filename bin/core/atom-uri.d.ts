@@ -1,4 +1,3 @@
-import { AtomUI } from "./atom-ui";
 import { INameValues } from "./types";
 export declare class AtomUri {
     protocol: string;
@@ -8,7 +7,6 @@ export declare class AtomUri {
     scheme: string;
     host: string;
     port: string;
-    atomUi: AtomUI;
     /**
      *
      */
