@@ -1,15 +1,15 @@
+import { Assert, Category, Test, TestItem } from "../unit/base-test";
 import { AtomUI } from "./atom-ui";
-import { TestItem, Category, Test, Assert } from "../unit/base-test";
-import { NameValues } from "./types";
-
+import { INameValues } from "./types";
 
 @Category("atom-ui")
 export class TestUnit extends TestItem {
 
+    public atomUi: AtomUI = new AtomUI();
     @Test()
-    run():void{
-        var a:NameValues = AtomUI.parseUrl("a=b&c=1");
-        Assert.equals("b",a["a"]);
-        Assert.equals(1, a["c"]);
+     public run(): void {
+        const a: INameValues = this.atomUi.parseUrl("a=b&c=1");
+        Assert.equals("b", a[" a"]);
+        Assert.equals(1, a[" c"]);
     }
 }

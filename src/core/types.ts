@@ -1,6 +1,7 @@
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
 
+<<<<<<< HEAD
 }
 
 export declare class AtomElementExtensions {
@@ -11,12 +12,15 @@ export declare class AtomElementExtensions {
 export type IAtomElement = HTMLElement | INativeComponent;
 
 export interface NameValuePairs {
+=======
+export interface INameValuePairs {
+>>>>>>> cb8a44c2dd6d8dbeaeb052fff2b7a61b07ee83cb
     [key: string]: any;
-};
+}
 
-export interface NameValues {
+export interface INameValues {
     [key: string]: (string|number|boolean);
-};
+}
 
 export interface IDisposable {
     dispose(): void ;

@@ -1,7 +1,7 @@
-import { IDisposable, AtomDisposable } from "./types";
 import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-binder";
+import { AtomDisposable, IDisposable } from "./types";
 
- /**
+    /**
      *
      *
      * @export
@@ -10,7 +10,14 @@ import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-b
      * @template T
      */
     export class AtomList<T> extends Array<T> {
+        // public next: Function;
+        // public prev: Function;
+        public next: (() => any);
+        public prev: (() => any);
 
+        private startValue: number = 0;
+        private totalValue: number = 0;
+        private sizeValue: number = 10;
         constructor() {
             super();
 
@@ -22,62 +29,52 @@ import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-b
             };
 
             this.prev = () => {
-                if(this.start >= this.size) {
+                if (this.start >= this.size) {
                     this.start = this.start - this.size;
                 }
             };
         }
-
-        public next: Function;
-        public prev: Function;
-
-        private _start: number = 0;
         public get start(): number {
-            return this._start;
+            return this.startValue;
         }
         public set start(v: number) {
-            if(v === this._start) {
+            if (v === this.startValue) {
                 return ;
             }
-            this._start = v;
+            this.startValue = v;
             AtomBinder.refreshValue(this, "start");
         }
 
-        private _total: number = 0;
         public get total(): number {
-            return this._total;
+            return this.totalValue;
         }
         public set total(v: number) {
-            if(v === this._total) {
+            if (v === this.totalValue) {
                 return ;
             }
-            this._total = v;
-            AtomBinder.refreshValue(this,"total");
+            this.totalValue = v;
+            AtomBinder.refreshValue(this, "total");
         }
 
-        private _size: number = 10;
         public get size(): number {
-            return this._size;
+            return this.sizeValue;
         }
         public set size(v: number) {
-            if(v === this._size) {
+            if (v === this.sizeValue) {
                 return ;
             }
-            this._size = v;
-            AtomBinder.refreshValue(this,"size");
+            this.sizeValue = v;
+            AtomBinder.refreshValue(this, "size");
         }
-
-
-
         /**
          * Adds the item in the list and refresh bindings
          * @param {T} item
          * @returns {number}
          * @memberof AtomList
          */
-        add(item: T): number {
-            var i: number = this.length;
-            var n: number = this.push(item);
+        public add(item: T): number {
+            const i: number = this.length;
+            const n: number = this.push(item);
             AtomBinder.invokeItemsEvent(this, "add", i, item);
             AtomBinder.refreshValue(this, "length");
             return n;
@@ -108,21 +105,21 @@ import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-b
          * @param {T[]} items
          * @memberof AtomList
          */
-        public replace(items:T[], start?:number, size?:number): void {
+        public replace(items: T[], start?: number, size?: number): void {
             this.length = items.length;
-            for(var i: number=0;i<items.length;i++) {
+            for (let i: number = 0; i < items.length; i++) {
                 this[i] = items[i];
             }
             this.refresh();
             // tslint:disable-next-line:no-string-literal
-            var t: number = items["total"];
-            if(t) {
+            const t: number = items["total"];
+            if (t) {
                 this.total = t;
             }
-            if(start !== undefined) {
+            if (start !== undefined) {
                 this.start = start;
             }
-            if(size !== undefined) {
+            if (size !== undefined) {
                 this.size = size;
             }
         }
@@ -135,7 +132,7 @@ import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-b
          * @memberof AtomList
          */
         public insert(i: number, item: T): void {
-            var n: any = this.splice(i, 0, item);
+            const n: any = this.splice(i, 0, item);
             AtomBinder.invokeItemsEvent(this, "add", i, item);
             AtomBinder.refreshValue(this, "length");
         }
@@ -146,7 +143,7 @@ import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-b
          * @memberof AtomList
          */
         public removeAt(i: number): void {
-            var item: T = this[i];
+            const item: T = this[i];
             this.splice(i, 1);
             AtomBinder.invokeItemsEvent(this, "remove", i, item);
             AtomBinder.refreshValue(this, "length");
@@ -159,13 +156,13 @@ import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-b
          * @returns {boolean} `true` if any item was removed
          * @memberof AtomList
          */
-        public remove(item: T | ((i:T) => boolean)): boolean {
+        public remove(item: T | ((i: T) => boolean)): boolean {
 
-            if(item instanceof Function) {
-                var index: number = 0;
-                var removed : boolean = false;
-                for(var it of this) {
-                    if(item(it)) {
+            if (item instanceof Function) {
+                let index: number = 0;
+                let removed: boolean = false;
+                for (const it of this) {
+                    if (item(it)) {
                         this.removeAt(index);
                         removed = true;
                     }
@@ -174,7 +171,7 @@ import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-b
                 return removed;
             }
 
-            var n: number = this.indexOf(item);
+            const n: number = this.indexOf(item);
             if (n !== -1) {
                 this.removeAt(n);
                 return true;
