@@ -1,12 +1,11 @@
 
-
-export interface NameValuePairs {
+export interface INameValuePairs {
     [key: string]: any;
-};
+}
 
-export interface NameValues {
+export interface INameValues {
     [key: string]: (string|number|boolean);
-};
+}
 
 export interface IDisposable {
     dispose(): void ;

@@ -1,23 +1,24 @@
-import { NameValuePairs, NameValues } from "./types";
 import { AtomUI } from "./atom-ui";
+import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUri {
-    protocol: string;
-    path: string;
-    query: NameValues;
-    hash: NameValues;
-    scheme: string;
-    host: string;
-    port: string;
+    public protocol: string;
+    public path: string;
+    public query: INameValues;
+    public hash: INameValues;
+    public scheme: string;
+    public host: string;
+    public port: string;
+    public atomUi: AtomUI = new AtomUI();
 
     /**
      *
      */
     constructor(url: string) {
-        var path: string ;
-        var query: string = "";
-        var hash:string  = "";
-        var t:string[] = url.split("?");
+        let path: string ;
+        let query: string = "";
+        let hash: string  = "";
+        let t: string[] = url.split("?");
         path = t[0];
         if (t.length === 2) {
             query = t[1] || "";
@@ -33,16 +34,14 @@ export class AtomUri {
 
         // extract protocol and domain...
 
-        var scheme: string = location.protocol;
-        var host:string = location.host;
-        var port:string = location.port;
+        let scheme: string = location.protocol;
+        let host: string = location.host;
+        let port: string = location.port;
 
-        var i:number = path.indexOf("//");
+        let i: number = path.indexOf("//");
         if (i !== -1) {
             scheme = path.substr(0, i);
             path = path.substr(i + 2);
-
-
             i = path.indexOf("/");
             if (i !== -1) {
                 host = path.substr(0, i);
@@ -58,10 +57,7 @@ export class AtomUri {
         this.protocol = scheme;
         this.port = port;
         this.path = path;
-
-
-
-        this.query = AtomUI.parseUrl(query);
-        this.hash = AtomUI.parseUrl(hash);
+        this.query = this.atomUi.parseUrl(query);
+        this.hash = this.atomUi.parseUrl(hash);
     }
 }

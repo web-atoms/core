@@ -1,4 +1,4 @@
 
 export class AtomPromise {
-    persist: boolean;
+    public persist: boolean;
 }
