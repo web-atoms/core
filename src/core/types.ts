@@ -1,4 +1,14 @@
+// tslint:disable-next-line:no-empty-interface
+export interface INativeComponent {
 
+}
+
+export declare class AtomElementExtensions {
+    public static addEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
+    public static removeEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
+}
+
+export type IAtomElement = HTMLElement | INativeComponent;
 
 export interface NameValuePairs {
     [key: string]: any;

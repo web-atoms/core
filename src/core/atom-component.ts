@@ -1,8 +1,9 @@
 import { AtomUI } from "./atom-ui";
+import { IAtomElement, AtomElementExtensions } from "./types";
 
 interface IEventObject {
 
-    element: HTMLElement;
+    element: IAtomElement;
 
     name?: string;
 
@@ -13,12 +14,14 @@ interface IEventObject {
 }
 export class AtomComponent {
 
+    public readonly isWebComponent: boolean = true;
+
     [key: string]: any;
 
     private eventHandlers: IEventObject[] = [];
 
     public bindEvent(
-        element: HTMLElement,
+        element: IAtomElement,
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string): void {
@@ -36,12 +39,12 @@ export class AtomComponent {
         if (key) {
             be.key = key;
         }
-        if (element.addEventListener) {
+        if (element instanceof HTMLElement) {
             element.addEventListener(name, method, false);
-            this.eventHandlers.push(be);
         } else {
-            throw new Error("Not supported");
+            AtomElementExtensions.addEventHandler(name, method);
         }
+        this.eventHandlers.push(be);
     }
     public unbindEvent(
         element: HTMLElement,
@@ -62,7 +65,11 @@ export class AtomComponent {
             if (method && be.handler !== method) {
                 return;
             }
-            be.element.removeEventListener(be.name, be.handler);
+            if (be.element instanceof HTMLElement) {
+                be.element.removeEventListener(be.name, be.handler);
+            } else {
+                AtomElementExtensions.removeEventHandler(name, method);
+            }
             deleted.push(be);
         }
         this.eventHandlers = this.eventHandlers.filter( (x) => deleted.findIndex( (d) => d === x ) !== -1 );

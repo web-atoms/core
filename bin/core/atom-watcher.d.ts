@@ -23,7 +23,7 @@ export declare class AtomWatcher<T> implements IDisposable {
      *
      * @memberof AtomWatcher
      */
-    func: (t: T) => any;
+    func: (t: T, values: any[]) => any;
     funcText: string;
     path: ObjectProperty[][];
     target: any;

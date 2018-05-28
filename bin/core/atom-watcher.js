@@ -210,7 +210,7 @@ var __values = (this && this.__values) || function (o) {
                     }
                 }
                 try {
-                    this.func.call(this.target, this.target);
+                    this.func.call(this.target, this.target, values);
                 }
                 catch (e) {
                     // tslint:disable-next-line:no-console

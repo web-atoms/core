@@ -14,13 +14,15 @@ var __values = (this && this.__values) || function (o) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports"], factory);
+        define(["require", "exports", "./types"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var types_1 = require("./types");
     var AtomComponent = /** @class */ (function () {
         function AtomComponent() {
+            this.isWebComponent = true;
             this.eventHandlers = [];
         }
         AtomComponent.prototype.bindEvent = function (element, name, method, key) {
@@ -38,13 +40,13 @@ var __values = (this && this.__values) || function (o) {
             if (key) {
                 be.key = key;
             }
-            if (element.addEventListener) {
+            if (element instanceof HTMLElement) {
                 element.addEventListener(name, method, false);
-                this.eventHandlers.push(be);
             }
             else {
-                throw new Error("Not supported");
+                types_1.AtomElementExtensions.addEventHandler(name, method);
             }
+            this.eventHandlers.push(be);
         };
         AtomComponent.prototype.unbindEvent = function (element, name, method, key) {
             var deleted = [];
@@ -63,7 +65,12 @@ var __values = (this && this.__values) || function (o) {
                     if (method && be.handler !== method) {
                         return;
                     }
-                    be.element.removeEventListener(be.name, be.handler);
+                    if (be.element instanceof HTMLElement) {
+                        be.element.removeEventListener(be.name, be.handler);
+                    }
+                    else {
+                        types_1.AtomElementExtensions.removeEventHandler(name, method);
+                    }
                     deleted.push(be);
                 }
             }
