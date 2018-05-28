@@ -1,14 +1,14 @@
 export interface INativeComponent {
 }
+export declare type IAtomElement = HTMLElement | INativeComponent;
 export declare class AtomElementExtensions {
     static addEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
     static removeEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
 }
-export declare type IAtomElement = HTMLElement | INativeComponent;
-export interface NameValuePairs {
+export interface INameValuePairs {
     [key: string]: any;
 }
-export interface NameValues {
+export interface INameValues {
     [key: string]: (string | number | boolean);
 }
 export interface IDisposable {

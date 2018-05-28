@@ -20,22 +20,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./atom-ui", "../unit/base-test"], factory);
+        define(["require", "exports", "../unit/base-test", "./atom-ui"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var atom_ui_1 = require("./atom-ui");
     var base_test_1 = require("../unit/base-test");
+    var atom_ui_1 = require("./atom-ui");
     var TestUnit = /** @class */ (function (_super) {
         __extends(TestUnit, _super);
         function TestUnit() {
-            return _super !== null && _super.apply(this, arguments) || this;
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.atomUi = new atom_ui_1.AtomUI();
+            return _this;
         }
         TestUnit.prototype.run = function () {
-            var a = atom_ui_1.AtomUI.parseUrl("a=b&c=1");
-            base_test_1.Assert.equals("b", a["a"]);
-            base_test_1.Assert.equals(1, a["c"]);
+            var a = this.atomUi.parseUrl("a=b&c=1");
+            base_test_1.Assert.equals("b", a[" a"]);
+            base_test_1.Assert.equals(1, a[" c"]);
         };
         __decorate([
             base_test_1.Test()

@@ -13,7 +13,7 @@
     var Atom = /** @class */ (function () {
         function Atom() {
         }
-        Atom.encodeParameters = function (p) {
+        Atom.prototype.encodeParameters = function (p) {
             if (!p) {
                 return "";
             }
@@ -26,18 +26,18 @@
             }
             return s;
         };
-        Atom.url = function (url, query, hash) {
+        Atom.prototype.url = function (url, query, hash) {
             if (!url) {
                 return url;
             }
-            var p = Atom.encodeParameters(query);
+            var p = this.encodeParameters(query);
             if (p) {
                 if (url.indexOf("?") === -1) {
                     url += "?";
                 }
                 url += p;
             }
-            p = Atom.encodeParameters(hash);
+            p = this.encodeParameters(hash);
             if (p) {
                 if (url.indexOf("#") === -1) {
                     url += "#";
@@ -46,9 +46,10 @@
             }
             return url;
         };
-        Atom.watch = function () {
+        Atom.prototype.watch = function () {
             return new WebAtoms.AtomDisposable(function () {
-                console.log("Disposed");
+                // console.log("Disposed");
+                window.console.log("Disposed");
             });
         };
         return Atom;

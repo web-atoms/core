@@ -49,13 +49,7 @@ var __values = (this && this.__values) || function (o) {
     var AtomUI = /** @class */ (function () {
         function AtomUI() {
         }
-        AtomUI.createDelegate = function (arg0, arg1) {
-            throw new Error("Method not implemented.");
-        };
-        AtomUI.attr = function (arg0, arg1) {
-            throw new Error("Method not implemented.");
-        };
-        AtomUI.atomParent = function (element) {
+        AtomUI.prototype.atomParent = function (element) {
             var eany = element;
             if (eany.atomControl) {
                 return eany.atomControl;
@@ -63,7 +57,7 @@ var __values = (this && this.__values) || function (o) {
             if (!element.parentNode) {
                 return null;
             }
-            return AtomUI.atomParent(eany._logicalParent || element.parentNode);
+            return this.atomParent(eany._logicalParent || element.parentNode);
         };
         /**
          * Don't use
@@ -72,12 +66,12 @@ var __values = (this && this.__values) || function (o) {
          * @returns {HTMLElement}
          * @memberof AtomUI
          */
-        AtomUI.cloneNode = function (e) {
+        AtomUI.prototype.cloneNode = function (e) {
             return e.cloneNode(true);
         };
-        AtomUI.parseValue = function (val) {
+        AtomUI.prototype.parseValue = function (val) {
+            var n;
             if (/^[0-9]+$/.test(val)) {
-                var n;
                 n = parseInt(val, 10);
                 if (!isNaN(n)) {
                     return n;
@@ -93,7 +87,7 @@ var __values = (this && this.__values) || function (o) {
             }
             if (/true/.test(val)) {
                 // val = true;
-                // eturn val;
+                // return val;
                 return true;
             }
             if (/false/.test(val)) {
@@ -103,7 +97,7 @@ var __values = (this && this.__values) || function (o) {
             }
             return val;
         };
-        AtomUI.parseUrl = function (url) {
+        AtomUI.prototype.parseUrl = function (url) {
             var r = {};
             var plist = url.split("&");
             try {
@@ -116,7 +110,7 @@ var __values = (this && this.__values) || function (o) {
                         val = decodeURIComponent(val);
                     }
                     // val = AtomUI.parseValue(val);
-                    r[key] = AtomUI.parseValue(val);
+                    r[key] = this.parseValue(val);
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -129,7 +123,7 @@ var __values = (this && this.__values) || function (o) {
             return r;
             var e_1, _a;
         };
-        AtomUI.childEnumerator = function (e) {
+        AtomUI.prototype.childEnumerator = function (e) {
             var en;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -150,15 +144,15 @@ var __values = (this && this.__values) || function (o) {
                 }
             });
         };
-        AtomUI.findPresenter = function (e) {
+        AtomUI.prototype.findPresenter = function (e) {
             try {
-                for (var _a = __values(AtomUI.childEnumerator(e)), _b = _a.next(); !_b.done; _b = _a.next()) {
+                for (var _a = __values(this.childEnumerator(e)), _b = _a.next(); !_b.done; _b = _a.next()) {
                     var item = _b.value;
-                    var ap = AtomUI.attr(item, "atom-presenter");
+                    var ap = this.attr(item, "atom-presenter");
                     if (ap) {
                         return item;
                     }
-                    var c = AtomUI.findPresenter(item);
+                    var c = this.findPresenter(item);
                     if (c) {
                         return c;
                     }
@@ -173,6 +167,9 @@ var __values = (this && this.__values) || function (o) {
             }
             return null;
             var e_2, _c;
+        };
+        AtomUI.prototype.attr = function (arg0, arg1) {
+            throw new Error("Method not implemented.");
         };
         return AtomUI;
     }());

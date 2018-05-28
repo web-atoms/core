@@ -24,28 +24,28 @@ var __values = (this && this.__values) || function (o) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./types", "./atom-binder"], factory);
+        define(["require", "exports", "./atom-binder", "./types"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var types_1 = require("./types");
     var atom_binder_1 = require("./atom-binder");
+    var types_1 = require("./types");
     /**
-        *
-        *
-        * @export
-        * @class AtomList
-        * @extends {Array<T>}
-        * @template T
-        */
+     *
+     *
+     * @export
+     * @class AtomList
+     * @extends {Array<T>}
+     * @template T
+     */
     var AtomList = /** @class */ (function (_super) {
         __extends(AtomList, _super);
         function AtomList() {
             var _this = _super.call(this) || this;
-            _this._start = 0;
-            _this._total = 0;
-            _this._size = 10;
+            _this.startValue = 0;
+            _this.totalValue = 0;
+            _this.sizeValue = 10;
             // tslint:disable-next-line
             _this["__proto__"] = AtomList.prototype;
             _this.next = function () {
@@ -60,13 +60,13 @@ var __values = (this && this.__values) || function (o) {
         }
         Object.defineProperty(AtomList.prototype, "start", {
             get: function () {
-                return this._start;
+                return this.startValue;
             },
             set: function (v) {
-                if (v === this._start) {
+                if (v === this.startValue) {
                     return;
                 }
-                this._start = v;
+                this.startValue = v;
                 atom_binder_1.AtomBinder.refreshValue(this, "start");
             },
             enumerable: true,
@@ -74,13 +74,13 @@ var __values = (this && this.__values) || function (o) {
         });
         Object.defineProperty(AtomList.prototype, "total", {
             get: function () {
-                return this._total;
+                return this.totalValue;
             },
             set: function (v) {
-                if (v === this._total) {
+                if (v === this.totalValue) {
                     return;
                 }
-                this._total = v;
+                this.totalValue = v;
                 atom_binder_1.AtomBinder.refreshValue(this, "total");
             },
             enumerable: true,
@@ -88,13 +88,13 @@ var __values = (this && this.__values) || function (o) {
         });
         Object.defineProperty(AtomList.prototype, "size", {
             get: function () {
-                return this._size;
+                return this.sizeValue;
             },
             set: function (v) {
-                if (v === this._size) {
+                if (v === this.sizeValue) {
                     return;
                 }
-                this._size = v;
+                this.sizeValue = v;
                 atom_binder_1.AtomBinder.refreshValue(this, "size");
             },
             enumerable: true,

@@ -1,20 +1,16 @@
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
 
-<<<<<<< HEAD
 }
+
+export type IAtomElement = HTMLElement | INativeComponent;
 
 export declare class AtomElementExtensions {
     public static addEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
     public static removeEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
 }
 
-export type IAtomElement = HTMLElement | INativeComponent;
-
-export interface NameValuePairs {
-=======
 export interface INameValuePairs {
->>>>>>> cb8a44c2dd6d8dbeaeb052fff2b7a61b07ee83cb
     [key: string]: any;
 }
 

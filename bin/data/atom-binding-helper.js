@@ -1,3 +1,4 @@
+// import { Atom } from "../core/atom";
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);

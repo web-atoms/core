@@ -1,21 +1,21 @@
 import { IDisposable } from "./types";
 /**
-    *
-    *
-    * @export
-    * @class AtomList
-    * @extends {Array<T>}
-    * @template T
-    */
+ *
+ *
+ * @export
+ * @class AtomList
+ * @extends {Array<T>}
+ * @template T
+ */
 export declare class AtomList<T> extends Array<T> {
+    next: (() => any);
+    prev: (() => any);
+    private startValue;
+    private totalValue;
+    private sizeValue;
     constructor();
-    next: Function;
-    prev: Function;
-    private _start;
     start: number;
-    private _total;
     total: number;
-    private _size;
     size: number;
     /**
      * Adds the item in the list and refresh bindings

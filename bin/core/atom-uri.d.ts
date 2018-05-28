@@ -1,12 +1,14 @@
-import { NameValues } from "./types";
+import { AtomUI } from "./atom-ui";
+import { INameValues } from "./types";
 export declare class AtomUri {
     protocol: string;
     path: string;
-    query: NameValues;
-    hash: NameValues;
+    query: INameValues;
+    hash: INameValues;
     scheme: string;
     host: string;
     port: string;
+    atomUi: AtomUI;
     /**
      *
      */
