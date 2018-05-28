@@ -1,11 +1,12 @@
 import { AtomControl } from "../controls/atom-control";
 import { AtomWatcher, ObjectProperty } from "./atom-watcher";
-import { AtomDisposable, IDisposable } from "./types";
+import { AtomDisposable, IAtomElement, IDisposable } from "./types";
 
 export class PropertyBinding implements IDisposable {
 
     public static onSetupTwoWayBinding: (binding: PropertyBinding) => IDisposable;
 
+    public element: IAtomElement;
     public path: ObjectProperty[][];
     public target: any;
     public twoWays: boolean;
@@ -16,12 +17,14 @@ export class PropertyBinding implements IDisposable {
 
     constructor(
         target: any,
+        element: IAtomElement,
         name: string,
         path: string[],
         twoWays: boolean) {
         this.name = name;
         this.twoWays = twoWays;
         this.target = target;
+        this.element = element;
         this.watcher = new AtomWatcher(target, path, true, false);
         this.watcher.func = (t: any, values: any[]) => {
             target[name] = values[0];

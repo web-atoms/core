@@ -1,5 +1,7 @@
+import { AtomDispatcher } from "./atom-dispatcher";
 import { AtomUI } from "./atom-ui";
-import { IAtomElement, AtomElementExtensions } from "./types";
+import { PropertyBinding } from "./property-binding";
+import { AtomDisposable, AtomElementExtensions, IAtomElement, IDisposable } from "./types";
 
 interface IEventObject {
 
@@ -14,11 +16,30 @@ interface IEventObject {
 }
 export class AtomComponent {
 
-    public readonly isWebComponent: boolean = true;
-
     [key: string]: any;
 
     private eventHandlers: IEventObject[] = [];
+
+    private bindings: PropertyBinding[] = [];
+
+    public bind(element: IAtomElement, name: string, path: string[], twoWays: boolean): IDisposable {
+
+        // remove exisiting binding if any
+        let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
+        if (binding) {
+            binding.dispose();
+        }
+        binding = new PropertyBinding(this, element, name, path, twoWays);
+        this.bindings.push(binding);
+
+        if (binding.twoWays) {
+            binding.setupTwoWayBinding();
+        }
+
+        return new AtomDisposable(() => {
+            this.bindings = this.bindings.filter( (x) => x !== binding);
+        });
+    }
 
     public bindEvent(
         element: IAtomElement,
@@ -46,6 +67,7 @@ export class AtomComponent {
         }
         this.eventHandlers.push(be);
     }
+
     public unbindEvent(
         element: HTMLElement,
         name?: string,
@@ -84,5 +106,8 @@ export class AtomComponent {
             return;
         }
         this.unbindEvent(null, null, null);
+        for (const binding of this.bindings) {
+            binding.dispose();
+        }
     }
 }

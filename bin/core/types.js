@@ -9,6 +9,12 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var AtomElementExtensions = /** @class */ (function () {
+        function AtomElementExtensions() {
+        }
+        return AtomElementExtensions;
+    }());
+    exports.AtomElementExtensions = AtomElementExtensions;
     var AtomDisposable = /** @class */ (function () {
         /**
          *

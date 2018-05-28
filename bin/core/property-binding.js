@@ -12,10 +12,11 @@
     var atom_watcher_1 = require("./atom-watcher");
     var types_1 = require("./types");
     var PropertyBinding = /** @class */ (function () {
-        function PropertyBinding(target, name, path, twoWays) {
+        function PropertyBinding(target, element, name, path, twoWays) {
             this.name = name;
             this.twoWays = twoWays;
             this.target = target;
+            this.element = element;
             this.watcher = new atom_watcher_1.AtomWatcher(target, path, true, false);
             this.watcher.func = function (t, values) {
                 target[name] = values[0];

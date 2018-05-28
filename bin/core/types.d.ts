@@ -2,8 +2,9 @@ export interface INativeComponent {
 }
 export declare type IAtomElement = HTMLElement | INativeComponent;
 export declare class AtomElementExtensions {
-    static addEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
-    static removeEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
+    static addEventHandler: (target: INativeComponent, handler: EventListenerOrEventListenerObject) => void;
+    static removeEventHandler: (target: INativeComponent, handler: EventListenerOrEventListenerObject) => void;
+    static parent: (arg0: any) => any;
 }
 export interface INameValuePairs {
     [key: string]: any;

@@ -14,17 +14,34 @@ var __values = (this && this.__values) || function (o) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./types"], factory);
+        define(["require", "exports", "./property-binding", "./types"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var property_binding_1 = require("./property-binding");
     var types_1 = require("./types");
     var AtomComponent = /** @class */ (function () {
         function AtomComponent() {
-            this.isWebComponent = true;
             this.eventHandlers = [];
+            this.bindings = [];
         }
+        AtomComponent.prototype.bind = function (element, name, path, twoWays) {
+            var _this = this;
+            // remove exisiting binding if any
+            var binding = this.bindings.find(function (x) { return x.name === name && (element ? x.element === element : true); });
+            if (binding) {
+                binding.dispose();
+            }
+            binding = new property_binding_1.PropertyBinding(this, element, name, path, twoWays);
+            this.bindings.push(binding);
+            if (binding.twoWays) {
+                binding.setupTwoWayBinding();
+            }
+            return new types_1.AtomDisposable(function () {
+                _this.bindings = _this.bindings.filter(function (x) { return x !== binding; });
+            });
+        };
         AtomComponent.prototype.bindEvent = function (element, name, method, key) {
             if (!element) {
                 return;
@@ -92,6 +109,20 @@ var __values = (this && this.__values) || function (o) {
                 return;
             }
             this.unbindEvent(null, null, null);
+            try {
+                for (var _a = __values(this.bindings), _b = _a.next(); !_b.done; _b = _a.next()) {
+                    var binding = _b.value;
+                    binding.dispose();
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+            var e_2, _c;
         };
         return AtomComponent;
     }());

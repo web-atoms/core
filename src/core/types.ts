@@ -5,9 +5,14 @@ export interface INativeComponent {
 
 export type IAtomElement = HTMLElement | INativeComponent;
 
-export declare class AtomElementExtensions {
-    public static addEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
-    public static removeEventHandler(target: INativeComponent, handler: EventListenerOrEventListenerObject): void;
+export class AtomElementExtensions {
+
+    public static addEventHandler: (target: INativeComponent, handler: EventListenerOrEventListenerObject) => void ;
+
+    public static removeEventHandler: (target: INativeComponent, handler: EventListenerOrEventListenerObject) => void ;
+
+    public static parent: (arg0: any) => any ;
+
 }
 
 export interface INameValuePairs {

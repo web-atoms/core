@@ -49,6 +49,9 @@ var __values = (this && this.__values) || function (o) {
     var AtomUI = /** @class */ (function () {
         function AtomUI() {
         }
+        AtomUI.parent = function (arg0) {
+            throw new Error("Method not implemented.");
+        };
         AtomUI.prototype.atomParent = function (element) {
             var eany = element;
             if (eany.atomControl) {

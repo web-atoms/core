@@ -1,3 +1,9 @@
-export declare class AtomControl {
-    setLocalValue(arg0: any, arg1: any, arg2: any, arg3: any): any;
+import { AtomComponent } from "../core/atom-component";
+import { IAtomElement } from "../core/types";
+export declare class AtomControl extends AtomComponent {
+    element: IAtomElement;
+    private mData;
+    readonly data: any;
+    readonly parent: AtomControl;
+    constructor(e: IAtomElement);
 }

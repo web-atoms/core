@@ -1,6 +1,7 @@
 import { AtomControl } from "../controls/atom-control";
 import { INameValues } from "./types";
 export declare class AtomUI {
+    static parent(arg0: any): any;
     atomParent(element: HTMLElement): AtomControl;
     /**
      * Don't use

@@ -3,6 +3,10 @@ import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUI {
 
+    public static parent(arg0: any): any {
+        throw new Error("Method not implemented.");
+    }
+    
     public atomParent(element: HTMLElement): AtomControl {
         const eany: INameValuePairs = element as INameValuePairs;
         if (eany.atomControl) {
