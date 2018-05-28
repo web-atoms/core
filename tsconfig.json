@@ -2,11 +2,17 @@
     "compilerOptions": {
         "target": "es5",
         "watch": true,
-        "module":"amd",
+        "module":"umd",
         "sourceMap": true,
         "declaration": true,
         "moduleResolution": "node",
-        "outDir": "bin"
+        "outDir": "bin",
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "lib": [
+            "es6",
+            "dom"
+        ]
     },
     "include": [
         "src/**/*"

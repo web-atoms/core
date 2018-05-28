@@ -1,10 +1,19 @@
-define(["require", "exports"], function (require, exports) {
+(function (factory) {
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./core/types"], factory);
+    }
+})(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var WebAtoms = require("./core/types");
     var Atom = /** @class */ (function () {
         function Atom() {
         }
-        Atom.encodeParameters = function (p) {
+        Atom.prototype.encodeParameters = function (p) {
             if (!p) {
                 return "";
             }
@@ -17,18 +26,18 @@ define(["require", "exports"], function (require, exports) {
             }
             return s;
         };
-        Atom.url = function (url, query, hash) {
+        Atom.prototype.url = function (url, query, hash) {
             if (!url) {
                 return url;
             }
-            var p = Atom.encodeParameters(query);
+            var p = this.encodeParameters(query);
             if (p) {
-                if (url.indexOf('?') === -1) {
-                    url += '?';
+                if (url.indexOf("?") === -1) {
+                    url += "?";
                 }
                 url += p;
             }
-            p = Atom.encodeParameters(hash);
+            p = this.encodeParameters(hash);
             if (p) {
                 if (url.indexOf("#") === -1) {
                     url += "#";
@@ -36,6 +45,12 @@ define(["require", "exports"], function (require, exports) {
                 url += p;
             }
             return url;
+        };
+        Atom.prototype.watch = function () {
+            return new WebAtoms.AtomDisposable(function () {
+                // console.log("Disposed");
+                window.console.log("Disposed");
+            });
         };
         return Atom;
     }());

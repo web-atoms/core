@@ -1,41 +1,47 @@
-import * as types from "./core/types";
+import * as WebAtoms from "./core/types";
 
 export class Atom {
 
-
-    static encodeParameters(p:types.NameValuePair): string {
-        if(!p) {
+    public encodeParameters(p: WebAtoms.INameValuePairs): string {
+        if (!p) {
             return "";
         }
-        var s:string = "";
+        let s: string = "";
         for (const key in p) {
             if (p.hasOwnProperty(key)) {
-                const element = p[key];
-                s += `&${key}=${encodeURIComponent(element)}`;                    
+                const element: any = p[key];
+                s += `&${key}=${encodeURIComponent(element)}`;
             }
         }
         return s;
     }
 
-    static url(url:string, query?:types.NameValuePair, hash?:types.NameValuePair):string {
-        if(!url) {
+    public url(url: string, query?: WebAtoms.INameValuePairs, hash?: WebAtoms.INameValuePairs): string {
+        if (!url) {
             return url;
         }
-        var p:string = Atom.encodeParameters(query);
-        if(p){
-            if(url.indexOf('?')===-1){
-                url += '?';
+        let p: string = this.encodeParameters(query);
+        if (p) {
+            if (url.indexOf("?") === -1) {
+                url += "?";
             }
             url += p;
         }
-        p = Atom.encodeParameters(hash);
-        if(p) {
-            if(url.indexOf("#") === -1){
+        p = this.encodeParameters(hash);
+        if (p) {
+            if (url.indexOf("#") === -1) {
                 url += "#";
             }
             url += p;
         }
         return url;
+    }
+
+    public watch(): WebAtoms.AtomDisposable {
+        return new WebAtoms.AtomDisposable(() => {
+            // console.log("Disposed");
+            window.console.log("Disposed");
+        });
     }
 
 }
