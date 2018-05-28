@@ -7,8 +7,73 @@ export interface IWatchFunctionCollection {
 export interface IWatchableObject {
     _$_handlers?: IWatchFunctionCollection;
 }
-export class AtomBinder {
 
+export class AtomBinder {
+    // public static getClone(dupeObj): any {
+    //     let retObj = {};
+    //     if (typeof (dupeObj) === "object") {
+    //         if (typeof (dupeObj.length) !== "undefined") {
+    //             retObj = new Array();
+    //         }
+    //         for (const objInd in dupeObj) {
+    //             if (dupeObj.hasOwnProperty()) {
+    //                 const val = dupeObj[objInd];
+    //                 if (val === undefined) {
+    //                     continue;
+    //                 }
+    //                 if (val === null) {
+    //                     retObj[objInd] = null;
+    //                     continue;
+    //                 }
+    //                 if (/^\_\$\_/gi.test(objInd)) {
+    //                     continue;
+    //                 }
+    //                 const type = typeof (val);
+    //                 if (type === "object") {
+    //                     if (val.constructor === Date) {
+    //                         // retObj[objInd] = "/DateISO(" + AtomDate.toLocalTime(val) + ")/";
+    //                     } else {
+    //                         retObj[objInd] = AtomBinder.getClone(val);
+    //                     }
+    //                 } else if (type === "string") {
+    //                     retObj[objInd] = val;
+    //                 } else if (type === "number") {
+    //                     retObj[objInd] = val;
+    //                 } else if (type === "boolean") {
+    //                     ((val === true) ? retObj[objInd] = true : retObj[objInd] = false);
+    //                 } else if (type === "date") {
+    //                     retObj[objInd] = val.getTime();
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return retObj;
+    // }
+
+<<<<<<< HEAD
+=======
+    public static setValue(target, key, value): any {
+        if (!target && value === undefined) {
+            return;
+        }
+        const oldValue = AtomBinder.getValue(target, key);
+        if (oldValue === value) {
+            return;
+        }
+        const f = target["set_" + key];
+        if (f) {
+            f.apply(target, [value]);
+        } else {
+            target[key] = value;
+        }
+        AtomBinder.refreshValue(target, key);
+    }
+
+    public static getValue(target, key): any {
+        throw new Error("Method not implemented.");
+    }
+
+>>>>>>> a1c4a4b376d1a6c0c675e6671fd8ada37af21a47
     public static refreshValue(target, key) {
         const handlers = AtomBinder.get_WatchHandler(target, key);
         if (handlers === undefined || handlers == null) {

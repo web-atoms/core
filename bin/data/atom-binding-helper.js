@@ -9,14 +9,11 @@
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var AtomDispatcher = /** @class */ (function () {
-        function AtomDispatcher() {
+    var AtomBindingHelper = /** @class */ (function () {
+        function AtomBindingHelper() {
         }
-        AtomDispatcher.prototype.callLater = function (arg0) {
-            throw new Error("Method not implemented.");
-        };
-        return AtomDispatcher;
+        return AtomBindingHelper;
     }());
-    exports.AtomDispatcher = AtomDispatcher;
+    exports.AtomBindingHelper = AtomBindingHelper;
 });
-//# sourceMappingURL=atom-dispatcher.js.map
+//# sourceMappingURL=atom-binding-helper.js.map
