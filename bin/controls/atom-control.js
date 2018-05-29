@@ -31,6 +31,7 @@ var __values = (this && this.__values) || function (o) {
             this.eventHandlers = [];
             this.bindings = [];
             this.element = e;
+            bridge_1.AtomBridge.instance.attachControl(e, this);
         }
         Object.defineProperty(AtomControl.prototype, "data", {
             get: function () {
@@ -110,6 +111,7 @@ var __values = (this && this.__values) || function (o) {
             var binding = this.bindings.find(function (x) { return x.name === name && (element ? x.element === element : true); });
             if (binding) {
                 binding.dispose();
+                types_1.ArrayHelper.remove(this.bindings, function (x) { return x === binding; });
             }
             binding = new property_binding_1.PropertyBinding(this, element, name, path, twoWays, valueFunc);
             this.bindings.push(binding);
@@ -117,7 +119,8 @@ var __values = (this && this.__values) || function (o) {
                 binding.setupTwoWayBinding();
             }
             return new types_1.AtomDisposable(function () {
-                _this.bindings = _this.bindings.filter(function (x) { return x !== binding; });
+                binding.dispose();
+                types_1.ArrayHelper.remove(_this.bindings, function (x) { return x === binding; });
             });
         };
         AtomControl.prototype.bindEvent = function (element, name, method, key) {
@@ -207,7 +210,10 @@ var __values = (this && this.__values) || function (o) {
                     }
                     finally { if (e_2) throw e_2.error; }
                 }
+                this.bindings.length = 0;
+                this.bindings = null;
                 bridge_1.AtomBridge.instance.dispose(this.element);
+                this.element = null;
             }
             var e_2, _c;
         };

@@ -4,14 +4,14 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./atom-watcher", "./types", "./bridge"], factory);
+        define(["require", "exports", "./atom-watcher", "./bridge", "./types"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var atom_watcher_1 = require("./atom-watcher");
-    var types_1 = require("./types");
     var bridge_1 = require("./bridge");
+    var types_1 = require("./types");
     var PropertyBinding = /** @class */ (function () {
         function PropertyBinding(target, element, name, path, twoWays, valueFunc) {
             var _this = this;

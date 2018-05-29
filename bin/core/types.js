@@ -23,5 +23,21 @@
         return AtomDisposable;
     }());
     exports.AtomDisposable = AtomDisposable;
+    var ArrayHelper = /** @class */ (function () {
+        function ArrayHelper() {
+        }
+        ArrayHelper.remove = function (a, filter) {
+            for (var i = 0; i < a.length; i++) {
+                var item = a[i];
+                if (filter(item)) {
+                    a.splice(i, 1);
+                    return true;
+                }
+            }
+            return false;
+        };
+        return ArrayHelper;
+    }());
+    exports.ArrayHelper = ArrayHelper;
 });
 //# sourceMappingURL=types.js.map

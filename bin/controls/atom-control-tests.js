@@ -20,13 +20,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../unit/base-test", "test-dom", "../core/bindable-properties", "./atom-control"], factory);
+        define(["require", "exports", "../unit/base-test", "test-dom", "../core/atom-binder", "../core/bindable-properties", "./atom-control"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var base_test_1 = require("../unit/base-test");
     require("test-dom");
+    var atom_binder_1 = require("../core/atom-binder");
     var bindable_properties_1 = require("../core/bindable-properties");
     var atom_control_1 = require("./atom-control");
     var TestViewModel = /** @class */ (function () {
@@ -49,6 +50,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             tv.name = "a";
             control.viewModel = tv;
             control.bind(root, "data", ["viewModel.name"], true);
+            var watches = atom_binder_1.AtomBinder.get_WatchHandler(tv, "name");
+            base_test_1.Assert.equals(watches.length, 1);
             base_test_1.Assert.equals("a", control.data);
             tv.name = "b";
             base_test_1.Assert.equals("b", control.data);
@@ -57,6 +60,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             control.viewModel = new TestViewModel();
             tv.name = "c";
             base_test_1.Assert.equals(undefined, control.data);
+            base_test_1.Assert.equals(control, root.atomControl);
+            control.dispose();
+            base_test_1.Assert.equals(null, control.element);
+            base_test_1.Assert.equals(watches.length, 0);
+            base_test_1.Assert.equals(control.bindings, null);
         };
         AtomControlTests.prototype.testElements = function () {
             var root = document.createElement("div");

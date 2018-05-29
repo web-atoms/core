@@ -3,7 +3,7 @@ import { AtomBinder } from "../core/atom-binder";
 import { AtomUI } from "../core/atom-ui";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/property-binding";
-import { AtomDisposable, IAtomElement, IDisposable, INativeComponent } from "../core/types";
+import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent } from "../core/types";
 
 interface IEventObject {
 
@@ -92,6 +92,7 @@ export class AtomControl {
 
     constructor(e: IAtomElement) {
         this.element = e;
+        AtomBridge.instance.attachControl(e, this);
     }
 
     [key: string]: any;
@@ -107,6 +108,7 @@ export class AtomControl {
         let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
         if (binding) {
             binding.dispose();
+            ArrayHelper.remove(this.bindings, (x) => x === binding);
         }
         binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc);
         this.bindings.push(binding);
@@ -116,7 +118,8 @@ export class AtomControl {
         }
 
         return new AtomDisposable(() => {
-            this.bindings = this.bindings.filter( (x) => x !== binding);
+            binding.dispose();
+            ArrayHelper.remove(this.bindings, (x) => x === binding);
         });
     }
 
@@ -199,7 +202,10 @@ export class AtomControl {
             for (const binding of this.bindings) {
                 binding.dispose();
             }
+            this.bindings.length = 0;
+            this.bindings = null;
             AtomBridge.instance.dispose(this.element);
+            this.element = null;
         }
     }
 

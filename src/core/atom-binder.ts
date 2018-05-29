@@ -1,4 +1,4 @@
-import { AtomDisposable, IDisposable  } from "./types";
+import { ArrayHelper, AtomDisposable, IDisposable  } from "./types";
 
 export type WatchFunction = (target: any, key: string, index?: number, item?: any) => void;
 export interface IWatchFunctionCollection {
@@ -95,14 +95,13 @@ export class AtomBinder {
         if (!target._$_handlers) {
             return;
         }
-        let handlersForKey = target._$_handlers[key];
+        const handlersForKey = target._$_handlers[key];
         if (handlersForKey === undefined || handlersForKey == null) {
             return;
         }
-        handlersForKey = handlersForKey.filter( (f) => f !== handler);
-        if (handlersForKey.length) {
-            target._$_handlers[key] = handlersForKey;
-        } else {
+        // handlersForKey = handlersForKey.filter( (f) => f !== handler);
+        ArrayHelper.remove(handlersForKey, (f) => f === handler);
+        if (!handlersForKey.length) {
             target._$_handlers[key] = null;
             delete target._$_handlers[key];
         }
@@ -141,14 +140,12 @@ export class AtomBinder {
             return;
         }
         const key = "_items";
-        let handlersForKey = target._$_handlers[key];
+        const handlersForKey = target._$_handlers[key];
         if (handlersForKey === undefined || handlersForKey == null) {
             return;
         }
-        handlersForKey = handlersForKey.filter( (f) => f === handler);
-        if (handlersForKey.length) {
-            target._$_handlers[key] = handlersForKey;
-        } else {
+        ArrayHelper.remove(handlersForKey, (f) => f === handler);
+        if (!handlersForKey.length) {
             target._$_handlers[key] = null;
             delete target._$_handlers[key];
         }

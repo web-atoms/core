@@ -18,3 +18,6 @@ export declare class AtomDisposable implements IDisposable {
     constructor(f: Function);
     dispose(): void;
 }
+export declare class ArrayHelper {
+    static remove<T>(a: T[], filter: (item: T) => boolean): boolean;
+}

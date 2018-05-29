@@ -125,6 +125,9 @@ var __values = (this && this.__values) || function (o) {
                 element.removeEventListener("change", l, false);
             });
         };
+        AtomElementBridge.prototype.attachControl = function (element, control) {
+            element.atomControl = control;
+        };
         return AtomElementBridge;
     }(BaseElementBridge));
     exports.AtomElementBridge = AtomElementBridge;

@@ -5,6 +5,8 @@ import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComp
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
 
+    public abstract attachControl(element: T, control: AtomControl): void;
+
     public abstract addEventHandler(
         element: T,
         name: string,
@@ -116,6 +118,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         return new AtomDisposable(() => {
             element.removeEventListener("change", l, false);
         });
+    }
+
+    public attachControl(element: HTMLElement, control: AtomControl): void {
+        (element as any).atomControl = control;
     }
 }
 

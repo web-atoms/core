@@ -117,11 +117,9 @@ var __values = (this && this.__values) || function (o) {
             if (handlersForKey === undefined || handlersForKey == null) {
                 return;
             }
-            handlersForKey = handlersForKey.filter(function (f) { return f !== handler; });
-            if (handlersForKey.length) {
-                target._$_handlers[key] = handlersForKey;
-            }
-            else {
+            // handlersForKey = handlersForKey.filter( (f) => f !== handler);
+            types_1.ArrayHelper.remove(handlersForKey, function (f) { return f === handler; });
+            if (!handlersForKey.length) {
                 target._$_handlers[key] = null;
                 delete target._$_handlers[key];
             }
@@ -171,11 +169,8 @@ var __values = (this && this.__values) || function (o) {
             if (handlersForKey === undefined || handlersForKey == null) {
                 return;
             }
-            handlersForKey = handlersForKey.filter(function (f) { return f === handler; });
-            if (handlersForKey.length) {
-                target._$_handlers[key] = handlersForKey;
-            }
-            else {
+            types_1.ArrayHelper.remove(handlersForKey, function (f) { return f === handler; });
+            if (!handlersForKey.length) {
                 target._$_handlers[key] = null;
                 delete target._$_handlers[key];
             }

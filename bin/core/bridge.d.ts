@@ -1,6 +1,7 @@
 import { AtomControl } from "../controls/atom-control";
 import { IAtomElement, IDisposable } from "./types";
 export declare abstract class BaseElementBridge<T extends IAtomElement> {
+    abstract attachControl(element: T, control: AtomControl): void;
     abstract addEventHandler(element: T, name: string, handler: EventListenerOrEventListenerObject, capture?: boolean): IDisposable;
     abstract atomParent(element: T, climbUp?: boolean): AtomControl;
     abstract elementParent(element: T): T;
@@ -21,6 +22,7 @@ export declare class AtomElementBridge extends BaseElementBridge<HTMLElement> {
     appendChild(parent: HTMLElement, child: HTMLElement): void;
     setValue(element: HTMLElement, name: string, value: any): void;
     watchProperty(element: HTMLElement, name: string, f: (v: any) => void): IDisposable;
+    attachControl(element: HTMLElement, control: AtomControl): void;
 }
 export declare class AtomBridge {
     static instance: BaseElementBridge<IAtomElement>;
