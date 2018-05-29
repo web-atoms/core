@@ -15,7 +15,7 @@ export class AtomUI {
     //     return this.atomParent(eany._logicalParent || element.parentNode);
     // }
 
-    public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
+    static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
         let en: Element = e.firstElementChild;
         while (en) {
             if (en as HTMLElement) {
@@ -32,11 +32,11 @@ export class AtomUI {
      * @returns {HTMLElement}
      * @memberof AtomUI
      */
-    public static cloneNode(e: HTMLElement): HTMLElement {
+    static cloneNode(e: HTMLElement): HTMLElement {
         return e.cloneNode(true) as HTMLElement;
     }
 
-    public static parseValue(val: string): (number|boolean|string) {
+    static parseValue(val: string): (number|boolean|string) {
         let n: number;
         if (/^[0-9]+$/.test(val)) {
             n = parseInt(val, 10);
@@ -66,7 +66,7 @@ export class AtomUI {
         return val;
     }
 
-    public static parseUrl(url: string): INameValues {
+    static parseUrl(url: string): INameValues {
         const r: INameValues = {};
 
         const plist: string[] = url.split("&");
@@ -84,7 +84,7 @@ export class AtomUI {
         return r;
     }
 
-    public static findPresenter(e: HTMLElement): HTMLElement {
+    static findPresenter(e: HTMLElement): HTMLElement {
         for (const item of AtomUI.childEnumerator(e)) {
             const ap: any = this.attr(item, "atom-presenter");
             if (ap) {
@@ -97,7 +97,7 @@ export class AtomUI {
         }
         return null;
     }
-    public static attr(arg0: any, arg1: any): any {
+    static attr(arg0: any, arg1: any): any {
         throw new Error("Method not implemented.");
     }
 }
