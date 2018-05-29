@@ -81,15 +81,31 @@ var __values = (this && this.__values) || function (o) {
                 }
             });
         };
-        /**
-         * Don't use
-         * @static
-         * @param {HTMLElement} e
-         * @returns {HTMLElement}
-         * @memberof AtomUI
-         */
-        AtomUI.cloneNode = function (e) {
-            return e.cloneNode(true);
+        AtomUI.parseUrl = function (url) {
+            var r = {};
+            var plist = url.split("&");
+            try {
+                for (var plist_1 = __values(plist), plist_1_1 = plist_1.next(); !plist_1_1.done; plist_1_1 = plist_1.next()) {
+                    var item = plist_1_1.value;
+                    var p = item.split("=");
+                    var key = p[0];
+                    var val = p[1];
+                    if (val) {
+                        val = decodeURIComponent(val);
+                    }
+                    // val = AtomUI.parseValue(val);
+                    r[key] = this.parseValue(val);
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (plist_1_1 && !plist_1_1.done && (_a = plist_1.return)) _a.call(plist_1);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            return r;
+            var e_1, _a;
         };
         AtomUI.parseValue = function (val) {
             var n;
@@ -119,59 +135,26 @@ var __values = (this && this.__values) || function (o) {
             }
             return val;
         };
-        AtomUI.parseUrl = function (url) {
-            var r = {};
-            var plist = url.split("&");
-            try {
-                for (var plist_1 = __values(plist), plist_1_1 = plist_1.next(); !plist_1_1.done; plist_1_1 = plist_1.next()) {
-                    var item = plist_1_1.value;
-                    var p = item.split("=");
-                    var key = p[0];
-                    var val = p[1];
-                    if (val) {
-                        val = decodeURIComponent(val);
-                    }
-                    // val = AtomUI.parseValue(val);
-                    r[key] = this.parseValue(val);
-                }
+        AtomUI.assignID = function (element) {
+            if (!element.id) {
+                element.id = "__waID" + AtomUI.getNewIndex();
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (plist_1_1 && !plist_1_1.done && (_a = plist_1.return)) _a.call(plist_1);
-                }
-                finally { if (e_1) throw e_1.error; }
-            }
-            return r;
-            var e_1, _a;
+            return element.id;
         };
-        AtomUI.findPresenter = function (e) {
-            try {
-                for (var _a = __values(AtomUI.childEnumerator(e)), _b = _a.next(); !_b.done; _b = _a.next()) {
-                    var item = _b.value;
-                    var ap = this.attr(item, "atom-presenter");
-                    if (ap) {
-                        return item;
-                    }
-                    var c = this.findPresenter(item);
-                    if (c) {
-                        return c;
-                    }
-                }
+        AtomUI.toNumber = function (text) {
+            if (!text) {
+                return 0;
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
-                }
-                finally { if (e_2) throw e_2.error; }
+            if (text.constructor === String) {
+                return parseFloat(text);
             }
-            return null;
-            var e_2, _c;
+            return 0;
         };
-        AtomUI.attr = function (arg0, arg1) {
-            throw new Error("Method not implemented.");
+        AtomUI.getNewIndex = function () {
+            this.index = this.index + 1;
+            return this.index;
         };
+        AtomUI.index = 1000;
         return AtomUI;
     }());
     exports.AtomUI = AtomUI;
