@@ -3,6 +3,8 @@ import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUI {
 
+    public static index: number = 1000;
+
     // moved to AtomBridge
     // public atomParent(element: HTMLElement): AtomControl {
     //     const eany: INameValuePairs = element as INameValuePairs;
@@ -25,15 +27,22 @@ export class AtomUI {
         }
     }
 
-    /**
-     * Don't use
-     * @static
-     * @param {HTMLElement} e
-     * @returns {HTMLElement}
-     * @memberof AtomUI
-     */
-    public static cloneNode(e: HTMLElement): HTMLElement {
-        return e.cloneNode(true) as HTMLElement;
+    public static parseUrl(url: string): INameValues {
+        const r: INameValues = {};
+
+        const plist: string[] = url.split("&");
+
+        for (const item of plist) {
+            const p: string[] = item.split("=");
+            const key: string = p[0];
+            let val: string = p[1];
+            if (val) {
+                val = decodeURIComponent(val);
+            }
+            // val = AtomUI.parseValue(val);
+            r[key] = this.parseValue(val);
+        }
+        return r;
     }
 
     public static parseValue(val: string): (number|boolean|string) {
@@ -66,38 +75,25 @@ export class AtomUI {
         return val;
     }
 
-    public static parseUrl(url: string): INameValues {
-        const r: INameValues = {};
-
-        const plist: string[] = url.split("&");
-
-        for (const item of plist) {
-            const p: string[] = item.split("=");
-            const key: string = p[0];
-            let val: string = p[1];
-            if (val) {
-                val = decodeURIComponent(val);
-            }
-            // val = AtomUI.parseValue(val);
-            r[key] = this.parseValue(val);
+    public static assignID(element: HTMLElement): string {
+        if (!element.id) {
+            element.id = "__waID" + AtomUI.getNewIndex();
         }
-        return r;
+        return element.id;
     }
 
-    public static findPresenter(e: HTMLElement): HTMLElement {
-        for (const item of AtomUI.childEnumerator(e)) {
-            const ap: any = this.attr(item, "atom-presenter");
-            if (ap) {
-                return item;
-            }
-            const c: HTMLElement = this.findPresenter(item);
-            if (c) {
-                return c;
-            }
+    public static toNumber(text: string): number {
+        if (!text) {
+            return 0;
         }
-        return null;
+        if (text.constructor === String) {
+            return parseFloat(text);
+        }
+        return 0;
     }
-    public static attr(arg0: any, arg1: any): any {
-        throw new Error("Method not implemented.");
+
+    public static getNewIndex(): number {
+        this.index = this.index + 1;
+        return this.index;
     }
 }
