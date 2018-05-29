@@ -1,6 +1,6 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
-import "../../node_modules/test-dom";
+import "test-dom";
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomControl } from "./atom-control";
 

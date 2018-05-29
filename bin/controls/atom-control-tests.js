@@ -20,13 +20,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../unit/base-test", "../../node_modules/test-dom", "../core/bindable-properties", "./atom-control"], factory);
+        define(["require", "exports", "../unit/base-test", "test-dom", "../core/bindable-properties", "./atom-control"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var base_test_1 = require("../unit/base-test");
-    require("../../node_modules/test-dom");
+    require("test-dom");
     var bindable_properties_1 = require("../core/bindable-properties");
     var atom_control_1 = require("./atom-control");
     var TestViewModel = /** @class */ (function () {

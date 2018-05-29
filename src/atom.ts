@@ -2,7 +2,7 @@ import * as WebAtoms from "./core/types";
 
 export class Atom {
 
-    static encodeParameters(p: WebAtoms.INameValuePairs): string {
+    public static encodeParameters(p: WebAtoms.INameValuePairs): string {
         if (!p) {
             return "";
         }
@@ -16,7 +16,7 @@ export class Atom {
         return s;
     }
 
-    static url(url: string, query?: WebAtoms.INameValuePairs, hash?: WebAtoms.INameValuePairs): string {
+    public static url(url: string, query?: WebAtoms.INameValuePairs, hash?: WebAtoms.INameValuePairs): string {
         if (!url) {
             return url;
         }
@@ -37,7 +37,7 @@ export class Atom {
         return url;
     }
 
-    static watch(): WebAtoms.AtomDisposable {
+    public static watch(): WebAtoms.AtomDisposable {
         return new WebAtoms.AtomDisposable(() => {
             // console.log("Disposed");
             window.console.log("Disposed");
