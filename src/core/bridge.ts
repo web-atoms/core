@@ -5,6 +5,8 @@ import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComp
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
 
+    public abstract create(type: string): T;
+
     public abstract attachControl(element: T, control: AtomControl): void;
 
     public abstract addEventHandler(
@@ -24,6 +26,8 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
     public abstract dispose(element: T): void;
 
     public abstract appendChild(parent: T, child: T): void;
+
+    public abstract getValue(element: HTMLElement, name: string): any;
 
     public abstract setValue(element: T, name: string, value: any): void;
 
@@ -109,6 +113,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         element[name] = value;
     }
 
+    public getValue(element: HTMLElement, name: string): any {
+        return element[name];
+    }
+
     public watchProperty(element: HTMLElement, name: string, f: (v: any) => void): IDisposable {
         const l = (e) => {
             f((element as HTMLInputElement).value);
@@ -122,6 +130,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
     public attachControl(element: HTMLElement, control: AtomControl): void {
         (element as any).atomControl = control;
+    }
+
+    public create(type: string): HTMLElement {
+        return document.createElement(type);
     }
 }
 

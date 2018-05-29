@@ -95,7 +95,7 @@ export class AtomControl {
         AtomBridge.instance.attachControl(e, this);
     }
 
-    [key: string]: any;
+    // [key: string]: any;
 
     public bind(
         element: IAtomElement,

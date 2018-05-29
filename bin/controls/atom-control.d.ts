@@ -12,7 +12,6 @@ export declare class AtomControl {
     private eventHandlers;
     private bindings;
     constructor(e: IAtomElement);
-    [key: string]: any;
     bind(element: IAtomElement, name: string, path: string[], twoWays: boolean, valueFunc?: (v: any[]) => any): IDisposable;
     bindEvent(element: IAtomElement, name?: string, method?: EventListenerOrEventListenerObject, key?: string): void;
     unbindEvent(element: HTMLElement, name?: string, method?: EventListenerOrEventListenerObject, key?: string): void;

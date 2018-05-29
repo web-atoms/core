@@ -116,6 +116,9 @@ var __values = (this && this.__values) || function (o) {
         AtomElementBridge.prototype.setValue = function (element, name, value) {
             element[name] = value;
         };
+        AtomElementBridge.prototype.getValue = function (element, name) {
+            return element[name];
+        };
         AtomElementBridge.prototype.watchProperty = function (element, name, f) {
             var l = function (e) {
                 f(element.value);
@@ -127,6 +130,9 @@ var __values = (this && this.__values) || function (o) {
         };
         AtomElementBridge.prototype.attachControl = function (element, control) {
             element.atomControl = control;
+        };
+        AtomElementBridge.prototype.create = function (type) {
+            return document.createElement(type);
         };
         return AtomElementBridge;
     }(BaseElementBridge));

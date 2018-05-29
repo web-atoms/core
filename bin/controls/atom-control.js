@@ -105,6 +105,7 @@ var __values = (this && this.__values) || function (o) {
             enumerable: true,
             configurable: true
         });
+        // [key: string]: any;
         AtomControl.prototype.bind = function (element, name, path, twoWays, valueFunc) {
             var _this = this;
             // remove exisiting binding if any
