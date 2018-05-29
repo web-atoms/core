@@ -20,13 +20,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "../unit/base-test", "../../node_modules/test-dom", "../core/bindable-properties", "./atom-control"], factory);
+        define(["require", "exports", "../unit/base-test", "test-dom", "../core/bindable-properties", "./atom-control"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var base_test_1 = require("../unit/base-test");
-    require("../../node_modules/test-dom");
+    require("test-dom");
     var bindable_properties_1 = require("../core/bindable-properties");
     var atom_control_1 = require("./atom-control");
     var TestViewModel = /** @class */ (function () {
@@ -48,17 +48,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             var tv = new TestViewModel();
             tv.name = "a";
             control.viewModel = tv;
-            control.bind(root, "data", ["viewModel.name"], false);
+            control.bind(root, "data", ["viewModel.name"], true);
             base_test_1.Assert.equals("a", control.data);
             tv.name = "b";
             base_test_1.Assert.equals("b", control.data);
+            control.data = "d";
+            base_test_1.Assert.equals("d", tv.name);
             control.viewModel = new TestViewModel();
             tv.name = "c";
             base_test_1.Assert.equals(undefined, control.data);
         };
+        AtomControlTests.prototype.testElements = function () {
+            var root = document.createElement("div");
+            var input = document.createElement("input");
+            var control = new atom_control_1.AtomControl(root);
+            var tv = new TestViewModel();
+            tv.name = "a";
+            control.viewModel = tv;
+            control.append(input);
+            control.bind(input, "value", ["viewModel.name"], false);
+            base_test_1.Assert.equals("a", input.value);
+            // two way binding
+            control.bind(input, "value", ["viewModel.name"], true);
+            base_test_1.Assert.equals("a", input.value);
+            input.value = "b";
+            base_test_1.Assert.equals("b", input.value);
+        };
         __decorate([
             base_test_1.Test()
         ], AtomControlTests.prototype, "test1", null);
+        __decorate([
+            base_test_1.Test()
+        ], AtomControlTests.prototype, "testElements", null);
         AtomControlTests = __decorate([
             base_test_1.Category("Atom-Control")
         ], AtomControlTests);

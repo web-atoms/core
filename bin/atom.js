@@ -13,7 +13,7 @@
     var Atom = /** @class */ (function () {
         function Atom() {
         }
-        Atom.prototype.encodeParameters = function (p) {
+        Atom.encodeParameters = function (p) {
             if (!p) {
                 return "";
             }
@@ -26,7 +26,7 @@
             }
             return s;
         };
-        Atom.prototype.url = function (url, query, hash) {
+        Atom.url = function (url, query, hash) {
             if (!url) {
                 return url;
             }
@@ -46,7 +46,7 @@
             }
             return url;
         };
-        Atom.prototype.watch = function () {
+        Atom.watch = function () {
             return new WebAtoms.AtomDisposable(function () {
                 // console.log("Disposed");
                 window.console.log("Disposed");

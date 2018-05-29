@@ -1,6 +1,5 @@
 import { Atom } from "../atom";
 import { AtomControl } from "../controls/atom-control";
-import { AtomComponent } from "./atom-component";
 import { AtomUI } from "./atom-ui";
 import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
 
@@ -22,6 +21,11 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
 
     public abstract dispose(element: T): void;
 
+    public abstract appendChild(parent: T, child: T): void;
+
+    public abstract setValue(element: T, name: string, value: any): void;
+
+    public abstract watchProperty(element: T, name: string, f: (v: any) => void): IDisposable;
 }
 
 export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
@@ -93,6 +97,25 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         const eany = element as any;
         eany.atomControl = undefined;
         delete eany.atomControl;
+    }
+
+    public appendChild(parent: HTMLElement, child: HTMLElement): void {
+        parent.appendChild(child);
+    }
+
+    public setValue(element: HTMLElement, name: string, value: any): void {
+        element[name] = value;
+    }
+
+    public watchProperty(element: HTMLElement, name: string, f: (v: any) => void): IDisposable {
+        const l = (e) => {
+            f((element as HTMLInputElement).value);
+        };
+        element.addEventListener("change", l , false);
+
+        return new AtomDisposable(() => {
+            element.removeEventListener("change", l, false);
+        });
     }
 }
 

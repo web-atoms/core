@@ -1,6 +1,7 @@
 import { AtomControl } from "../controls/atom-control";
 import { AtomWatcher, ObjectProperty } from "./atom-watcher";
 import { AtomDisposable, IAtomElement, IDisposable } from "./types";
+import { AtomBridge } from "./bridge";
 
 export class PropertyBinding implements IDisposable {
 
@@ -8,26 +9,31 @@ export class PropertyBinding implements IDisposable {
 
     public element: IAtomElement;
     public path: ObjectProperty[][];
-    public target: any;
+    public target: AtomControl;
     public twoWays: boolean;
     public name: string;
 
     private watcher: AtomWatcher<any>;
     private twoWaysDisposable: IDisposable;
+    private isTwoWaySetup: boolean = false;
+    private valueFunc: (v: any[]) => any;
 
     constructor(
-        target: any,
+        target: AtomControl,
         element: IAtomElement,
         name: string,
         path: string[],
-        twoWays: boolean) {
+        twoWays: boolean,
+        valueFunc: (v: any[]) => any) {
         this.name = name;
         this.twoWays = twoWays;
         this.target = target;
         this.element = element;
         this.watcher = new AtomWatcher(target, path, true, false);
+        this.valueFunc = valueFunc;
         this.watcher.func = (t: any, values: any[]) => {
-            target[name] = values[0];
+            const cv = this.valueFunc ? this.valueFunc(values) : values[0];
+            this.target.setLocalValue(this.element, this.name, cv);
         };
         this.path = this.watcher.path;
         this.watcher.evaluate();
@@ -42,10 +48,26 @@ export class PropertyBinding implements IDisposable {
             return;
         }
 
-        const watcher = new AtomWatcher(this.target, [name], false, false);
+        if (!this.target.hasProperty(this.name)) {
+            // most likely it has change event..
+            this.twoWaysDisposable = AtomBridge.instance.watchProperty(
+                this.element,
+                this.name,
+                (v) => {
+                    this.setInverseValue(v);
+                }
+            );
+            return;
+        }
+
+        const watcher = new AtomWatcher(this.target, [this.name], false, false);
         watcher.func = (t: any, values: any[]) => {
-            this.setInverseValue(values[0]);
+            if (this.isTwoWaySetup) {
+                this.setInverseValue(values[0]);
+            }
         };
+        watcher.evaluate();
+        this.isTwoWaySetup = true;
         this.twoWaysDisposable = new AtomDisposable(() => {
             watcher.dispose();
         });

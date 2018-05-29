@@ -4,22 +4,27 @@
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "./atom-watcher", "./types"], factory);
+        define(["require", "exports", "./atom-watcher", "./types", "./bridge"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var atom_watcher_1 = require("./atom-watcher");
     var types_1 = require("./types");
+    var bridge_1 = require("./bridge");
     var PropertyBinding = /** @class */ (function () {
-        function PropertyBinding(target, element, name, path, twoWays) {
+        function PropertyBinding(target, element, name, path, twoWays, valueFunc) {
+            var _this = this;
+            this.isTwoWaySetup = false;
             this.name = name;
             this.twoWays = twoWays;
             this.target = target;
             this.element = element;
             this.watcher = new atom_watcher_1.AtomWatcher(target, path, true, false);
+            this.valueFunc = valueFunc;
             this.watcher.func = function (t, values) {
-                target[name] = values[0];
+                var cv = _this.valueFunc ? _this.valueFunc(values) : values[0];
+                _this.target.setLocalValue(_this.element, _this.name, cv);
             };
             this.path = this.watcher.path;
             this.watcher.evaluate();
@@ -33,10 +38,21 @@
                 this.twoWaysDisposable = PropertyBinding.onSetupTwoWayBinding(this);
                 return;
             }
-            var watcher = new atom_watcher_1.AtomWatcher(this.target, [name], false, false);
+            if (!this.target.hasProperty(this.name)) {
+                // most likely it has change event..
+                this.twoWaysDisposable = bridge_1.AtomBridge.instance.watchProperty(this.element, this.name, function (v) {
+                    _this.setInverseValue(v);
+                });
+                return;
+            }
+            var watcher = new atom_watcher_1.AtomWatcher(this.target, [this.name], false, false);
             watcher.func = function (t, values) {
-                _this.setInverseValue(values[0]);
+                if (_this.isTwoWaySetup) {
+                    _this.setInverseValue(values[0]);
+                }
             };
+            watcher.evaluate();
+            this.isTwoWaySetup = true;
             this.twoWaysDisposable = new types_1.AtomDisposable(function () {
                 watcher.dispose();
             });

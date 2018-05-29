@@ -1,5 +1,6 @@
 import { TestItem } from "../unit/base-test";
-import "../../node_modules/test-dom";
+import "test-dom";
 export declare class AtomControlTests extends TestItem {
     test1(): void;
+    testElements(): void;
 }

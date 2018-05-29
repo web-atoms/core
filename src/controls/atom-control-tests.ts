@@ -1,6 +1,6 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
-import "../../node_modules/test-dom";
+import "test-dom";
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomControl } from "./atom-control";
 
@@ -22,7 +22,7 @@ export class AtomControlTests extends TestItem {
         tv.name = "a";
         control.viewModel = tv;
 
-        control.bind(root, "data", ["viewModel.name"], false);
+        control.bind(root, "data", ["viewModel.name"], true);
 
         Assert.equals("a", control.data);
 
@@ -30,12 +30,39 @@ export class AtomControlTests extends TestItem {
 
         Assert.equals("b", control.data);
 
+        control.data = "d";
+
+        Assert.equals("d", tv.name);
+
         control.viewModel = new TestViewModel();
 
         tv.name = "c";
 
         Assert.equals(undefined, control.data);
 
+    }
+
+    @Test()
+    public testElements(): void {
+        const root = document.createElement("div");
+        const input = document.createElement("input");
+        const control = new AtomControl(root);
+
+        const tv = new TestViewModel();
+        tv.name = "a";
+        control.viewModel = tv;
+
+        control.append(input);
+        control.bind(input, "value", ["viewModel.name"], false);
+
+        Assert.equals("a", input.value);
+
+        // two way binding
+        control.bind(input, "value", ["viewModel.name"], true);
+        Assert.equals("a", input.value);
+
+        input.value = "b";
+        Assert.equals("b", input.value);
     }
 
 }
