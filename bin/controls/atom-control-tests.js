@@ -58,9 +58,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             tv.name = "c";
             base_test_1.Assert.equals(undefined, control.data);
         };
+        AtomControlTests.prototype.testElements = function () {
+            var root = document.createElement("div");
+            var input = document.createElement("input");
+            var control = new atom_control_1.AtomControl(root);
+            var tv = new TestViewModel();
+            tv.name = "a";
+            control.viewModel = tv;
+            control.append(input);
+            control.bind(input, "value", ["viewModel.name"], false);
+            base_test_1.Assert.equals("a", input.value);
+            // two way binding
+            control.bind(input, "value", ["viewModel.name"], true);
+            base_test_1.Assert.equals("a", input.value);
+            input.value = "b";
+            base_test_1.Assert.equals("b", input.value);
+        };
         __decorate([
             base_test_1.Test()
         ], AtomControlTests.prototype, "test1", null);
+        __decorate([
+            base_test_1.Test()
+        ], AtomControlTests.prototype, "testElements", null);
         AtomControlTests = __decorate([
             base_test_1.Category("Atom-Control")
         ], AtomControlTests);

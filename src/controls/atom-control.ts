@@ -1,11 +1,25 @@
 import { Atom } from "../atom";
 import { AtomBinder } from "../core/atom-binder";
-import { AtomComponent } from "../core/atom-component";
 import { AtomUI } from "../core/atom-ui";
 import { AtomBridge } from "../core/bridge";
-import { IAtomElement, INativeComponent } from "../core/types";
+import { PropertyBinding } from "../core/property-binding";
+import { AtomDisposable, IAtomElement, IDisposable, INativeComponent } from "../core/types";
 
-export class AtomControl extends AtomComponent {
+interface IEventObject {
+
+    element: IAtomElement;
+
+    name?: string;
+
+    handler?: EventListenerOrEventListenerObject;
+
+    key?: string;
+
+    disposable?: IDisposable;
+
+}
+
+export class AtomControl {
 
     public element: IAtomElement;
 
@@ -72,9 +86,102 @@ export class AtomControl extends AtomComponent {
         return AtomBridge.instance.templateParent(this.element);
     }
 
+    private eventHandlers: IEventObject[] = [];
+
+    private bindings: PropertyBinding[] = [];
+
     constructor(e: IAtomElement) {
-        super();
         this.element = e;
+    }
+
+    [key: string]: any;
+
+    public bind(
+        element: IAtomElement,
+        name: string,
+        path: string[],
+        twoWays: boolean,
+        valueFunc?: (v: any[]) => any): IDisposable {
+
+        // remove exisiting binding if any
+        let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
+        if (binding) {
+            binding.dispose();
+        }
+        binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc);
+        this.bindings.push(binding);
+
+        if (binding.twoWays) {
+            binding.setupTwoWayBinding();
+        }
+
+        return new AtomDisposable(() => {
+            this.bindings = this.bindings.filter( (x) => x !== binding);
+        });
+    }
+
+    public bindEvent(
+        element: IAtomElement,
+        name?: string,
+        method?: EventListenerOrEventListenerObject,
+        key?: string): void {
+        if (!element) {
+            return;
+        }
+        if (!method) {
+            return;
+        }
+        const be: IEventObject = {
+            element,
+            name,
+            handler: method
+        };
+        if (key) {
+            be.key = key;
+        }
+        be.disposable = AtomBridge.instance.addEventHandler(element, name, method, false);
+        this.eventHandlers.push(be);
+    }
+
+    public unbindEvent(
+        element: HTMLElement,
+        name?: string,
+        method?: EventListenerOrEventListenerObject,
+        key?: string): void {
+        const deleted: IEventObject[] = [];
+        for (const be of this.eventHandlers) {
+            if (element && be.element !== element) {
+                return;
+            }
+            if (key && be.key !== key) {
+                return;
+            }
+            if (name && be.name !== name) {
+                return;
+            }
+            if (method && be.handler !== method) {
+                return;
+            }
+            be.disposable.dispose();
+            be.handler = null;
+            be.element = null;
+            be.name = null;
+            be.key = null;
+            deleted.push(be);
+        }
+        this.eventHandlers = this.eventHandlers.filter( (x) => deleted.findIndex( (d) => d === x ) !== -1 );
+    }
+
+    public hasProperty(name: string): boolean {
+        return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(this), name) as boolean;
+    }
+
+    public setLocalValue(element: IAtomElement, name: string, value: any): void {
+        if ((!element || element === this.element) &&  this.hasProperty(name)) {
+            this[name] = value;
+        } else {
+            AtomBridge.instance.setValue(element, name, value);
+        }
     }
 
     public dispose(e?: IAtomElement): void {
@@ -87,11 +194,30 @@ export class AtomControl extends AtomComponent {
             return true;
         });
 
-        super.dispose(e);
-
         if (!e) {
+            this.unbindEvent(null, null, null);
+            for (const binding of this.bindings) {
+                binding.dispose();
+            }
             AtomBridge.instance.dispose(this.element);
         }
+    }
+
+    public append(element: IAtomElement | AtomControl): AtomControl {
+        const ac = element instanceof AtomControl ? element : null;
+        const e = ac ? ac.element : element;
+        AtomBridge.instance.appendChild(this.element, e);
+        if (ac) {
+            ac.refreshInherited("viewModel", (a) => a.mViewModel === undefined);
+            ac.refreshInherited("localViewModel", (a) => a.mLocalViewModel === undefined);
+            ac.refreshInherited("data", (a) => a.mData === undefined);
+        }
+        return this;
+    }
+
+    // tslint:disable-next-line:no-empty
+    public init(): void {
+
     }
 
     private refreshInherited(name: string, fx: (ac: AtomControl) => boolean): void {
@@ -106,4 +232,5 @@ export class AtomControl extends AtomComponent {
             return true;
         });
     }
+
 }

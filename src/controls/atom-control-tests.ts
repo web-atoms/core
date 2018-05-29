@@ -42,4 +42,27 @@ export class AtomControlTests extends TestItem {
 
     }
 
+    @Test()
+    public testElements(): void {
+        const root = document.createElement("div");
+        const input = document.createElement("input");
+        const control = new AtomControl(root);
+
+        const tv = new TestViewModel();
+        tv.name = "a";
+        control.viewModel = tv;
+
+        control.append(input);
+        control.bind(input, "value", ["viewModel.name"], false);
+
+        Assert.equals("a", input.value);
+
+        // two way binding
+        control.bind(input, "value", ["viewModel.name"], true);
+        Assert.equals("a", input.value);
+
+        input.value = "b";
+        Assert.equals("b", input.value);
+    }
+
 }

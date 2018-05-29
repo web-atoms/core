@@ -110,6 +110,21 @@ var __values = (this && this.__values) || function (o) {
             eany.atomControl = undefined;
             delete eany.atomControl;
         };
+        AtomElementBridge.prototype.appendChild = function (parent, child) {
+            parent.appendChild(child);
+        };
+        AtomElementBridge.prototype.setValue = function (element, name, value) {
+            element[name] = value;
+        };
+        AtomElementBridge.prototype.watchProperty = function (element, name, f) {
+            var l = function (e) {
+                f(element.value);
+            };
+            element.addEventListener("change", l, false);
+            return new types_1.AtomDisposable(function () {
+                element.removeEventListener("change", l, false);
+            });
+        };
         return AtomElementBridge;
     }(BaseElementBridge));
     exports.AtomElementBridge = AtomElementBridge;
