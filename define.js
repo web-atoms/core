@@ -30,9 +30,11 @@ function define(requires, factory){
     var hasAll = true;
     for(var i = 0; i < requires.length ; i++){
         var item = requires[i];
-        if(!/^(require|exports)$/.test(item)){
-            item = bridge.resolveName(item);
+        if(/^(require|exports)$/.test(item)){
+            continue;
         }
+
+        item = bridge.resolveName(item);
 
         var module = amdLoader.modules[item];
         if(!module) {
