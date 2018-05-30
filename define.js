@@ -33,3 +33,5 @@ function define(requires, factory, name){
         modules[name || "exports"] = mExports;
     }
 }
+
+define.amd = true;
