@@ -13,7 +13,7 @@ export declare class AtomBinder {
     static remove_WatchHandler(target: IWatchableObject, key: string, handler: WatchFunction): void;
     static invokeItemsEvent(target: any[], mode: string, index: number, item: any): void;
     static refreshItems(ary: any): void;
-    static add_CollectionChanged(target: any[], handler: WatchFunction): void;
+    static add_CollectionChanged(target: any[], handler: WatchFunction): IDisposable;
     static remove_CollectionChanged(t: any[], handler: WatchFunction): void;
     static watch(item: any, property: string, f: WatchFunction): IDisposable;
 }

@@ -31,9 +31,6 @@
             }
             this[keyName] = newVal;
             atom_binder_1.AtomBinder.refreshValue(this, key);
-            if (this.onPropertyChanged) {
-                this.onPropertyChanged(key);
-            }
         };
         // delete property
         if (delete target[key]) {

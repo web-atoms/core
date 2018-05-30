@@ -232,6 +232,9 @@ var __values = (this && this.__values) || function (o) {
         // tslint:disable-next-line:no-empty
         AtomControl.prototype.init = function () {
         };
+        // tslint:disable-next-line:no-empty
+        AtomControl.prototype.onPropertyChanged = function (name) {
+        };
         AtomControl.prototype.refreshInherited = function (name, fx) {
             atom_binder_1.AtomBinder.refreshValue(this, name);
             bridge_1.AtomBridge.instance.visitDescendents(this.element, function (e, ac) {

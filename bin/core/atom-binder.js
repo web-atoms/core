@@ -81,6 +81,9 @@ var __values = (this && this.__values) || function (o) {
                 }
                 finally { if (e_1) throw e_1.error; }
             }
+            if (target.onPropertyChanged) {
+                target.onPropertyChanged(key);
+            }
             var e_1, _a;
         };
         AtomBinder.add_WatchHandler = function (target, key, handler) {
@@ -151,10 +154,13 @@ var __values = (this && this.__values) || function (o) {
         };
         AtomBinder.add_CollectionChanged = function (target, handler) {
             if (target == null) {
-                return;
+                return null;
             }
             var handlers = AtomBinder.get_WatchHandler(target, "_items");
             handlers.push(handler);
+            return new types_1.AtomDisposable(function () {
+                AtomBinder.remove_CollectionChanged(target, handler);
+            });
         };
         AtomBinder.remove_CollectionChanged = function (t, handler) {
             if (t == null) {
