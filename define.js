@@ -15,7 +15,7 @@ function define(requires, factory, name){
     for(var i = 0; i < requires.length ; i++){
         var item = requires[i];
         if(!modules[item]){
-            item = bridge.resolveName(item);
+            item = bridge.resolveName(name, item);
             hasAll = false;
             if(!pending[item]){
                 var fx = function(){
