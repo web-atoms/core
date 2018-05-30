@@ -101,7 +101,7 @@ export class AtomControl {
         element: IAtomElement,
         name: string,
         path: string[],
-        twoWays: boolean,
+        twoWays?: boolean,
         valueFunc?: (v: any[]) => any): IDisposable {
 
         // remove exisiting binding if any
