@@ -16,7 +16,7 @@ function define(requires, factory, name){
     for(var i = 0; i < requires.length ; i++){
         var item = requires[i];
         if(!/^(require|exports)$/.test(item)){
-            item = bridge.resolveName(item);
+            item = name || bridge.resolveName(item);
         }
         if(!modules[item]){
             hasAll = false;
