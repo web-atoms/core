@@ -12,12 +12,6 @@ var amdLoader = {
     },
 };
 
-
-
-modules.require = require;
-
-var pending = {};
-
 function define(requires, factory, name){
     var hasAll = true;
     for(var i = 0; i < requires.length ; i++){
