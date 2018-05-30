@@ -140,6 +140,9 @@ var __values = (this && this.__values) || function (o) {
     var AtomBridge = /** @class */ (function () {
         function AtomBridge() {
         }
+        AtomBridge.create = function (name) {
+            return this.instance.create(name);
+        };
         AtomBridge.instance = new AtomElementBridge();
         return AtomBridge;
     }());

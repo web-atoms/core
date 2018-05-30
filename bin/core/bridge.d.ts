@@ -30,4 +30,5 @@ export declare class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 }
 export declare class AtomBridge {
     static instance: BaseElementBridge<IAtomElement>;
+    static create(name: string): IAtomElement;
 }

@@ -141,4 +141,8 @@ export class AtomBridge {
 
     public static instance: BaseElementBridge<IAtomElement> = new AtomElementBridge();
 
+    public static create(name: string): IAtomElement {
+        return this.instance.create(name);
+    }
+
 }
