@@ -44,9 +44,11 @@ function define(requires, factory){
             };
             amdLoader.modules[item] = module;
         }
-        if(!module.isLoaded){
-            hasAll = false;
-        } else if(!module.isLoading){
+        if(module.isLoaded){
+            continue;
+        } 
+        hasAll = false;
+        if(!module.isLoading){
             module.isLoading = true;
             var fx = function(){
                 bridge.baseUrl = currentModule.name;
