@@ -1,12 +1,13 @@
 
 var modules = {
-    require: require,
     exports: {}
 };
 
 function require(name){
     return modules[name];
 }
+
+modules.require = require;
 
 var pending = {};
 
