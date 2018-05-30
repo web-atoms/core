@@ -61,7 +61,7 @@ function define(requires, factory){
     }
 
     if(hasAll) {
-        factory(amdLoader.require, currentModule.exports);
+        factory(amdLoader.modules.require, currentModule.exports);
         currentModule.isLoaded = true;
     }
 }
