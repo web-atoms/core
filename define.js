@@ -1,11 +1,18 @@
+var amdLoader = {
+    require: function(name){
+        return modules[name];
+    },
+    modules: {
+        exports: {
 
-var modules = {
-    exports: {}
+        }
+    },
+    pending: {
+
+    },
 };
 
-function require(name){
-    return modules[name];
-}
+
 
 modules.require = require;
 
@@ -18,13 +25,13 @@ function define(requires, factory, name){
         if(!/^(require|exports)$/.test(item)){
             item = name || bridge.resolveName(item);
         }
-        if(!modules[item]){
+        if(!amdLoader.modules[item]){
             hasAll = false;
-            if(!pending[item]){
+            if(!amdLoader.pending[item]){
                 var fx = function(){
                     define(requires, factory, item);
                 };
-                pending[item] = fx;
+                amdLoader.pending[item] = fx;
                 bridge.executeScript(item, fx);
             }
         }
@@ -32,8 +39,13 @@ function define(requires, factory, name){
 
     if(hasAll) {
         var mExports = {};
-        factory(require,mExports);
-        modules[name || "exports"] = mExports;
+        factory(amdLoader.require, mExports);
+        amdLoader.modules[name || "exports"] = mExports;
+
+        if(!name) {
+            // all modules are loaded...
+            bridge.appLoaded(mExports);
+        }
     }
 }
 
