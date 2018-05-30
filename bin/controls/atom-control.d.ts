@@ -20,5 +20,6 @@ export declare class AtomControl {
     dispose(e?: IAtomElement): void;
     append(element: IAtomElement | AtomControl): AtomControl;
     init(): void;
+    onPropertyChanged(name: string): void;
     private refreshInherited(name, fx);
 }

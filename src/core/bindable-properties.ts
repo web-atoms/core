@@ -26,10 +26,6 @@ export function bindableProperty(target: any, key: string): any {
         this[keyName] = newVal;
 
         AtomBinder.refreshValue(this, key);
-
-        if (this.onPropertyChanged) {
-            this.onPropertyChanged(key);
-        }
     };
 
     // delete property

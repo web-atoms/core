@@ -58,6 +58,10 @@ export class AtomBinder {
         for (const item of handlers) {
             item(target, key);
         }
+
+        if (target.onPropertyChanged) {
+            target.onPropertyChanged(key);
+        }
     }
 
     public static add_WatchHandler(target, key, handler: WatchFunction) {
@@ -123,12 +127,15 @@ export class AtomBinder {
         AtomBinder.invokeItemsEvent(ary, "refresh", -1, null);
     }
 
-    public static add_CollectionChanged(target: any[], handler: WatchFunction) {
+    public static add_CollectionChanged(target: any[], handler: WatchFunction): IDisposable {
         if (target == null) {
-            return;
+            return null;
         }
         const handlers = AtomBinder.get_WatchHandler(target as IWatchableObject, "_items");
         handlers.push(handler);
+        return new AtomDisposable(() => {
+            AtomBinder.remove_CollectionChanged(target, handler);
+        });
     }
 
     public static remove_CollectionChanged(t: any[], handler: WatchFunction) {

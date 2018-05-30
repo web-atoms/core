@@ -226,6 +226,11 @@ export class AtomControl {
 
     }
 
+    // tslint:disable-next-line:no-empty
+    public onPropertyChanged(name: string): void {
+
+    }
+
     private refreshInherited(name: string, fx: (ac: AtomControl) => boolean): void {
         AtomBinder.refreshValue(this, name);
         AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
