@@ -1,8 +1,11 @@
 var amdLoader = {
-    require: function(name){
-        return modules[name];
-    },
+    
     modules: {
+        
+        require: function(name){
+            return amdLoader.modules[name];
+        },
+
         exports: {
 
         }
