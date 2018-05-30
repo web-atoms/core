@@ -31,7 +31,7 @@ function define(requires, factory){
     for(var i = 0; i < requires.length ; i++){
         var item = requires[i];
         if(!/^(require|exports)$/.test(item)){
-            item = name || bridge.resolveName(item);
+            item = bridge.resolveName(item);
         }
 
         var module = amdLoader.modules[item];
@@ -46,8 +46,7 @@ function define(requires, factory){
         }
         if(!module.isLoaded){
             hasAll = false;
-        }
-        if(!module.isLoading){
+        } else if(!module.isLoading){
             module.isLoading = true;
             var fx = function(){
                 bridge.baseUrl = currentModule.name;
@@ -59,6 +58,7 @@ function define(requires, factory){
 
     if(hasAll) {
         factory(amdLoader.require, currentModule.exports);
+        currentModule.isLoaded = true;
     }
 }
 
