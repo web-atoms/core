@@ -3,6 +3,9 @@ import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUI {
 
+    public static getAtomType(arg0: any): any {
+        throw new Error("Method not implemented.");
+    }
     // moved to AtomBridge
     // public atomParent(element: HTMLElement): AtomControl {
     //     const eany: INameValuePairs = element as INameValuePairs;
