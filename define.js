@@ -40,10 +40,11 @@ function define(requires, factory){
         }
 
         item = bridge.resolveName(item);
+        // requires[i] = item;
+        amdLoader.name[requires[i]] = item;
 
         var module = modules[item];
         if(!module) {
-            amdLoader.names[requires[i]] = item;
             module = {
                 name: item,
                 exports: {
