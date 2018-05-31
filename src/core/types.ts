@@ -34,3 +34,16 @@ export class AtomDisposable implements IDisposable {
         this.f();
     }
 }
+
+export class ArrayHelper {
+    public static remove<T>(a: T[], filter: (item: T) => boolean): boolean {
+        for (let i = 0; i < a.length; i++) {
+            const item = a[i];
+            if (filter(item)) {
+                a.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+}
