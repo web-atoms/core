@@ -8,7 +8,7 @@ var amdLoader = {
         
         require: function(name){
             var mname = amdLoader.names[name];
-            return amdLoader.modules[name].exports;
+            return amdLoader.modules[mname].exports;
         },
 
         exports: {
