@@ -1,8 +1,13 @@
 var amdLoader = {
+
+    names: {
+
+    },
     
     modules: {
         
         require: function(name){
+            var mname = amdLoader.names[name];
             return amdLoader.modules[name].exports;
         },
 
@@ -38,6 +43,7 @@ function define(requires, factory){
 
         var module = modules[item];
         if(!module) {
+            amdLoader.names[requires[i]] = item;
             module = {
                 name: item,
                 exports: {
