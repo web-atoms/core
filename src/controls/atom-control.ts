@@ -91,7 +91,7 @@ export class AtomControl {
 
     private bindings: PropertyBinding[] = [];
 
-    constructor(e: IAtomElement) {
+    constructor(e?: IAtomElement) {
         this.element = e;
         this.create();
         AtomBridge.instance.attachControl(this.element, this);
@@ -223,15 +223,16 @@ export class AtomControl {
         return this;
     }
 
-    public init(): void {
-        AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-            if (ac) {
-                ac.init();
-                return false;
-            }
-            return true;
-        });
-    }
+    // init is no longer needed !!!
+    // public init(): void {
+    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
+    //         if (ac) {
+    //             ac.init();
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }
 
     // tslint:disable-next-line:no-empty
     public onPropertyChanged(name: string): void {
@@ -242,6 +243,12 @@ export class AtomControl {
     protected create(): void {
 
     }
+
+    // protected postInit(): void {
+    //     AtomDispatcher.instance.callLater(()=>{
+    //         this.init();
+    //     });
+    // }
 
     private refreshInherited(name: string, fx: (ac: AtomControl) => boolean): void {
         AtomBinder.refreshValue(this, name);

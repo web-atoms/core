@@ -32,6 +32,12 @@ export class PropertyBinding implements IDisposable {
         this.watcher = new AtomWatcher(target, path, true, false);
         this.valueFunc = valueFunc;
         this.watcher.func = (t: any, values: any[]) => {
+            // don't send undefined value , ignore if any is undefined
+            for (const iterator of values) {
+                if (iterator === undefined) {
+                    return;
+                }
+            }
             const cv = this.valueFunc ? this.valueFunc(values) : values[0];
             this.target.setLocalValue(this.element, this.name, cv);
         };
