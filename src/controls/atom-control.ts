@@ -1,5 +1,6 @@
 import { Atom } from "../atom";
 import { AtomBinder } from "../core/atom-binder";
+import { AtomDispatcher } from "../core/atom-dispatcher";
 import { AtomUI } from "../core/atom-ui";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/property-binding";
@@ -92,7 +93,8 @@ export class AtomControl {
 
     constructor(e: IAtomElement) {
         this.element = e;
-        AtomBridge.instance.attachControl(e, this);
+        this.create();
+        AtomBridge.instance.attachControl(this.element, this);
     }
 
     // [key: string]: any;
@@ -221,7 +223,6 @@ export class AtomControl {
         return this;
     }
 
-    // tslint:disable-next-line:no-empty
     public init(): void {
         AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
             if (ac) {
@@ -234,6 +235,11 @@ export class AtomControl {
 
     // tslint:disable-next-line:no-empty
     public onPropertyChanged(name: string): void {
+
+    }
+
+    // tslint:disable-next-line:no-empty
+    protected create(): void {
 
     }
 

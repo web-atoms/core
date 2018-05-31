@@ -3,9 +3,10 @@ import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUI {
 
-   public static getAtomType(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
+// no longer needed - Akash Kava
+//    public static getAtomType(arg0: any): any {
+//         throw new Error("Method not implemented.");
+//     }
 
     // moved to AtomBridge
     // public atomParent(element: HTMLElement): AtomControl {
@@ -95,7 +96,9 @@ export class AtomUI {
     }
 
     public static getNewIndex(): number {
-        this.index = this.index + 1;
-        return this.index;
+        AtomUI.index = AtomUI.index + 1;
+        return AtomUI.index;
     }
+
+    private static index: number = 1001;
 }
