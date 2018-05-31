@@ -223,7 +223,13 @@ export class AtomControl {
 
     // tslint:disable-next-line:no-empty
     public init(): void {
-
+        AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
+            if (ac) {
+                ac.init();
+                return false;
+            }
+            return true;
+        });
     }
 
     // tslint:disable-next-line:no-empty

@@ -1,5 +1,7 @@
 var amdLoader = {
 
+    root: null,
+
     names: {
 
     },
@@ -11,6 +13,30 @@ var amdLoader = {
         }
     },
     pending: [],
+
+    finish: function(){
+        var allLoaded = true;
+        var modules = amdLoader.modules;
+        for(var key in modules) {
+            if(/^(require|exports)$/.test(key)){
+                continue;
+            }
+            if(modules.hasOwnProperty(key)){
+                var m = modules[key];
+                if(m.isLoaded) {
+                    continue;
+                }
+                allLoaded = false;
+            }
+        }
+        if(allLoaded) {
+            if(!amdLoader.root.initialized){
+                amdLoader.root.factory(amdLoader.root.require,amdLoader.root.exports);
+                amdLoader.root.initialized = true;
+                bridge.appLoaded(amdLoader.root.require, amdLoader.root.exports);
+            }
+        }
+    }
 };
 
 function define(requires, factory){
@@ -25,13 +51,19 @@ function define(requires, factory){
             exports: modules.exports,
         };
         modules[bridge.baseUrl] = currentModule;
+        amdLoader.root = currentModule;
     }
 
     if(!currentModule.require) {
         var currentBaseUrl = bridge.baseUrl;
         currentModule.require = function(name){
-            var resolvedName = bridge.resolvedName(currentBaseUrl, name);
-            return amdLoader.modules[resolvedName].exports;
+            var resolvedName = bridge.resolveName(currentBaseUrl, name);
+            var resolvedModule = amdLoader.modules[resolvedName];
+            if(!resolvedModule.initialized){
+                resolvedModule.factory(resolvedModule.require,resolvedModule.exports);
+                resolvedModule.initialized = true;
+            }
+            return resolvedModule.exports;
         };
     }
 
@@ -60,38 +92,21 @@ function define(requires, factory){
         hasAll = false;
         if(!module.isLoading){
             module.isLoading = true;
-            var fx = function(){
-                var allLoaded = true;
-                for(var key in modules) {
-                    if(modules.hasOwnProperty(key)){
-                        var m = modules[key];
-                        if(m.onFinish){
-                            m.onFinish();
-                        }
-                        if(m.isLoaded) {
-                            m.onFinish = null;
-                            continue;
-                        }
-                        allLoaded = false;
-                    }
-                }
-                if(allLoaded) {
-                    bridge.appLoaded(modules.exports);
-                }
-            };
-            bridge.executeScript(item, fx);
+            bridge.executeScript(item, amdLoader.finish);
         }
     }
 
-    if (hasAll) {
-        factory(currentModule.require, currentModule.exports);
-        currentModule.isLoaded = true;
-    } else {
-        currentModule.onFinish = function () {
-            bridge.baseUrl = currentModule.name;
-            define(requires,factory);
-        }
-    }
+    currentModule.isLoaded = true;
+    currentModule.factory = factory;
+    amdLoader.finish();
 }
 
 define.amd = true;
+
+Array.prototype.find = function(fx) {
+    for(var i=0;i<this.length;i++){
+        var item = this[i];
+        if(fx(item))
+            return item;
+    }
+}
