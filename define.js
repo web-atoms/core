@@ -84,7 +84,7 @@ function define(requires, factory){
     }
 
     if (hasAll) {
-        factory(modules.require, currentModule.exports);
+        factory(currentModule.require, currentModule.exports);
         currentModule.isLoaded = true;
     } else {
         currentModule.onFinish = function () {
