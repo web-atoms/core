@@ -6,11 +6,6 @@ var amdLoader = {
     
     modules: {
         
-        require: function(name){
-            var mname = amdLoader.names[name];
-            return amdLoader.modules[mname].exports;
-        },
-
         exports: {
 
         }
@@ -27,9 +22,16 @@ function define(requires, factory){
         // seems first..
         currentModule = {
             name: bridge.baseUrl,
-            exports: modules.exports
+            exports: modules.exports,
         };
         modules[bridge.baseUrl] = currentModule;
+    }
+
+    if(!currentModule.require) {
+        currentModule.require = function(name){
+            var resolvedName = bridge.resolvedName(bridge.baseUrl, name);
+            return amdLoader.modules[resolvedName].exports;
+        };
     }
 
     var hasAll = true;
@@ -39,9 +41,7 @@ function define(requires, factory){
             continue;
         }
 
-        item = bridge.resolveName(item);
-        // requires[i] = item;
-        amdLoader.name[requires[i]] = item;
+        item = bridge.resolveName(bridge.baseUrl, item);
 
         var module = modules[item];
         if(!module) {
