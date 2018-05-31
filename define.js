@@ -15,16 +15,16 @@ var amdLoader = {
 
 function define(requires, factory){
 
-    var currentModule = amdLoader.modules[bridge.baseUrl];
+    var modules = amdLoader.modules;
+
+    var currentModule = modules[bridge.baseUrl];
     if(!currentModule){
         // seems first..
         currentModule = {
             name: bridge.baseUrl,
-            exports: {
-
-            }
+            exports: modules.exports
         };
-        amdLoader.modules[bridge.baseUrl] = currentModule;
+        modules[bridge.baseUrl] = currentModule;
     }
 
     var hasAll = true;
@@ -36,7 +36,7 @@ function define(requires, factory){
 
         item = bridge.resolveName(item);
 
-        var module = amdLoader.modules[item];
+        var module = modules[item];
         if(!module) {
             module = {
                 name: item,
@@ -44,7 +44,7 @@ function define(requires, factory){
 
                 }
             };
-            amdLoader.modules[item] = module;
+            modules[item] = module;
         }
         if(module.isLoaded){
             continue;
@@ -53,16 +53,36 @@ function define(requires, factory){
         if(!module.isLoading){
             module.isLoading = true;
             var fx = function(){
-                bridge.baseUrl = currentModule.name;
-                define(requires,factory);
+                var allLoaded = true;
+                for(var key in modules) {
+                    if(modules.hasOwnProperty(key)){
+                        var m = modules[key];
+                        if(m.onFinish){
+                            m.onFinish();
+                        }
+                        if(m.isLoaded) {
+                            m.onFinish = null;
+                            continue;
+                        }
+                        allLoaded = false;
+                    }
+                }
+                if(allLoaded) {
+                    bridge.appLoaded(modules.exports);
+                }
             };
             bridge.executeScript(item, fx);
         }
     }
 
-    if(hasAll) {
-        factory(amdLoader.modules.require, currentModule.exports);
+    if (hasAll) {
+        factory(modules.require, currentModule.exports);
         currentModule.isLoaded = true;
+    } else {
+        currentModule.onFinish = function () {
+            bridge.baseUrl = currentModule.name;
+            define(requires,factory);
+        }
     }
 }
 
