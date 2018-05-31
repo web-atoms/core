@@ -28,8 +28,9 @@ function define(requires, factory){
     }
 
     if(!currentModule.require) {
+        var currentBaseUrl = bridge.baseUrl;
         currentModule.require = function(name){
-            var resolvedName = bridge.resolvedName(bridge.baseUrl, name);
+            var resolvedName = bridge.resolvedName(currentBaseUrl, name);
             return amdLoader.modules[resolvedName].exports;
         };
     }
