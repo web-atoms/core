@@ -50,3 +50,5 @@ export class AtomDispatcher {
     }
 
 }
+
+AtomDispatcher.instance.start();

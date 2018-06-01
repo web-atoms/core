@@ -35,6 +35,44 @@ export class AtomDisposable implements IDisposable {
     }
 }
 
+/**
+ *
+ *
+ * @export
+ * @class CancelToken
+ */
+export class CancelToken {
+
+    private listeners: Array<() => void> = [];
+
+    private mCancelled: boolean;
+    get cancelled(): boolean {
+        return this.mCancelled;
+    }
+
+    public cancel(): void {
+        this.mCancelled = true;
+        for (const fx of this.listeners) {
+            fx();
+        }
+    }
+
+    public reset(): void {
+        this.mCancelled = false;
+        this.listeners.length = 0;
+    }
+
+    public registerForCancel(f: () => void): void {
+        if (this.mCancelled) {
+            f();
+            this.cancel();
+            return;
+        }
+        this.listeners.push(f);
+    }
+
+}
+
 export class ArrayHelper {
     public static remove<T>(a: T[], filter: (item: T) => boolean): boolean {
         for (let i = 0; i < a.length; i++) {

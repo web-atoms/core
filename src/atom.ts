@@ -1,8 +1,31 @@
-import * as WebAtoms from "./core/types";
+import { AtomDispatcher } from "./core/atom-dispatcher";
+import { CancelToken, INameValuePairs } from "./core/types";
 
 export class Atom {
 
-    public static encodeParameters(p: WebAtoms.INameValuePairs): string {
+    /**
+     * Await till given milliseconds have passed
+     * @param n
+     * @param ct
+     */
+    public static delay(n: number, ct?: CancelToken): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const h: any = {};
+            h.id = setTimeout(() => {
+                if (ct && ct.cancelled) {
+                    return;
+                }
+                resolve();
+            }, n);
+            if (ct) {
+                ct.registerForCancel(() => {
+                    clearTimeout(h.id);
+                });
+            }
+        });
+    }
+
+    public static encodeParameters(p: INameValuePairs): string {
         if (!p) {
             return "";
         }
@@ -16,7 +39,7 @@ export class Atom {
         return s;
     }
 
-    public static url(url: string, query?: WebAtoms.INameValuePairs, hash?: WebAtoms.INameValuePairs): string {
+    public static url(url: string, query?: INameValuePairs, hash?: INameValuePairs): string {
         if (!url) {
             return url;
         }
@@ -37,10 +60,25 @@ export class Atom {
         return url;
     }
 
-    public static watch(): WebAtoms.AtomDisposable {
-        return new WebAtoms.AtomDisposable(() => {
-            // console.log("Disposed");
-            window.console.log("Disposed");
+    /**
+     * Schedules given call in next available callLater slot and also returns
+     * promise that can be awaited, calling `Atom.postAsync` inside `Atom.postAsync`
+     * will create deadlock
+     * @static
+     * @param {()=>Promise<any>} f
+     * @returns {Promise<any>}
+     * @memberof Atom
+     */
+    public static postAsync(f: () => Promise<any>): Promise<any> {
+        return new Promise((resolve, reject) => {
+            AtomDispatcher.instance.callLater( async () => {
+                try {
+                    await f();
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            });
         });
     }
 
