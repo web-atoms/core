@@ -357,7 +357,7 @@ export class AtomErrors {
 
 type viewModelInit = (vm: AtomViewModel) => void;
 
-type viewModelInitFunc = (target: AtomViewModel, key: string | symbol) => void;
+export type viewModelInitFunc = (target: AtomViewModel, key: string | symbol) => void;
 
 function registerInit(target: AtomViewModel, fx: viewModelInit ): void {
     const t: any = target as any;
@@ -370,7 +370,7 @@ function registerInit(target: AtomViewModel, fx: viewModelInit ): void {
  * @param {(string | RegExp)} channel
  * @returns {Function}
  */
-function receive(...channel: string[]): viewModelInitFunc {
+export function receive(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | symbol): void => {
         registerInit(target, (vm) => {
             // tslint:disable-next-line:ban-types
@@ -387,7 +387,7 @@ function receive(...channel: string[]): viewModelInitFunc {
     };
 }
 
-function bindableReceive(...channel: string[]): viewModelInitFunc {
+export function bindableReceive(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | symbol): void => {
         const bp: any = bindableProperty(target, key as string);
 
@@ -406,7 +406,7 @@ function bindableReceive(...channel: string[]): viewModelInitFunc {
     };
 }
 
-function bindableBroadcast(...channel: string[]): viewModelInitFunc {
+export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | string): void => {
         const bp: any = bindableProperty(target, key as string);
 
@@ -436,7 +436,7 @@ function bindableBroadcast(...channel: string[]): viewModelInitFunc {
 
 }
 
-function watch(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+export function watch(target: AtomViewModel, key: string | symbol, descriptor: any): void {
     registerInit(target, (vm) => {
         // tslint:disable-next-line:ban-types no-string-literal
         const vfx: Function = vm["setupWatch"];
@@ -444,7 +444,7 @@ function watch(target: AtomViewModel, key: string | symbol, descriptor: any): vo
     });
 }
 
-function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
     registerInit(target, (vm) => {
         // tslint:disable-next-line:ban-types no-string-literal
         const vfx: Function = vm["addValidation"];
