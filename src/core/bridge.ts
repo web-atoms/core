@@ -32,6 +32,8 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
     public abstract setValue(element: T, name: string, value: any): void;
 
     public abstract watchProperty(element: T, name: string, f: (v: any) => void): IDisposable;
+
+    public abstract loadContent(element: T, text: string): void;
 }
 
 export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
@@ -134,6 +136,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
     public create(type: string): HTMLElement {
         return document.createElement(type);
+    }
+
+    public loadContent(element: HTMLElement, text: string): void {
+        throw new Error("Not supported");
     }
 }
 
