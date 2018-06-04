@@ -164,4 +164,9 @@ export class AtomBinder {
             AtomBinder.remove_WatchHandler(item, property, f);
         });
     }
+
+    public static clear(arg: any): any {
+        arg.length = 0;
+        this.invokeItemsEvent(arg, "refresh", 0, null);
+    }
 }
