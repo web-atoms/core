@@ -19,6 +19,21 @@ export class AtomUI {
     //     }
     //     return this.atomParent(eany._logicalParent || element.parentNode);
     // }
+    public static addClass(e: HTMLElement, names: string): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public static css(e: HTMLElement, names: {[key: string]: any}): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public static remove(e: HTMLElement): any {
+        throw new Error("Method not implemented.");
+    }
+
+    public static createControl(arg0: any, arg1: any, arg2: any, arg3: any): any {
+        throw new Error("Method not implemented.");
+    }
 
     public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
         let en: Element = e.firstElementChild;
