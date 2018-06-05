@@ -49,6 +49,9 @@ export class AtomBinder {
     //     }
     //     return retObj;
     // }
+    public static getClone(arg0: any): any {
+        throw new Error("Method not implemented.");
+    }
 
     public static refreshValue(target, key) {
         const handlers = AtomBinder.get_WatchHandler(target, key);
@@ -168,5 +171,13 @@ export class AtomBinder {
     public static clear(arg: any): any {
         arg.length = 0;
         this.invokeItemsEvent(arg, "refresh", 0, null);
+    }
+
+    public static addItem(arg0: any, arg1: any): any {
+        throw new Error("Method not implemented.");
+    }
+
+    public static removeItem(arg0: any, arg1: any): any {
+        throw new Error("Method not implemented.");
     }
 }

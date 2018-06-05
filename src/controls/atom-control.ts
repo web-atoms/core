@@ -273,4 +273,9 @@ export class AtomControl {
         throw new Error("Method not implemented.");
     }
 
+    // tslint:disable-next-line:member-ordering
+    public static invokeAction(arg0: any): any {
+        throw new Error("Method not implemented.");
+    }
+
 }
