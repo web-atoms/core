@@ -8,7 +8,7 @@ import { AtomControl } from "./atom-control";
 class TestViewModel {
 
     @bindableProperty
-    public name: any;
+    public name: any = "";
 }
 
 @Category("Atom-Control")
@@ -42,7 +42,7 @@ export class AtomControlTests extends TestItem {
 
         tv.name = "c";
 
-        Assert.equals(undefined, control.data);
+        Assert.equals("", control.data);
 
         Assert.equals(control, (root as any).atomControl);
 

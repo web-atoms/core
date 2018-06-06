@@ -651,6 +651,10 @@ export class AtomItemsControl extends AtomControl {
 
     public onCollectionChanged(key: string, index: number, item: any): any {
 
+        if (!this.mItemsPresenter) {
+            this.mItemsPresenter = this.element as HTMLElement;
+        }
+
         if (/reset|refresh/i.test(key)) {
             this.resetVirtulContainer();
         }
@@ -791,8 +795,9 @@ export class AtomItemsControl extends AtomControl {
         AtomBinder.refreshValue(this, "allValues");
         const value = this.mValue;
 
+        this.onCollectionChanged(key, index, item);
+
         if (value) {
-            this.onCollectionChanged(key, index, item);
             if (!(value || this.mAllowSelectFirst)) {
                 AtomBinder.clear(this.mSelectedItems);
             }
