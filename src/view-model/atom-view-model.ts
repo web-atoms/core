@@ -1,7 +1,7 @@
 import { Atom } from "../atom";
 import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
 import { AtomAction, AtomDevice } from "../core/atom-device";
-import { Inject } from "../di";
+import { Container, Inject } from "../di";
 
 interface IVMSubscription {
     channel: string;
@@ -53,7 +53,7 @@ export class AtomViewModel {
         return this.mIsReady;
     }
 
-    constructor(@Inject() protected device: AtomDevice) {
+    constructor(private device: AtomDevice = Container.get(AtomDevice)) {
 
         this.device.runAsync(() => this.privateInit());
 

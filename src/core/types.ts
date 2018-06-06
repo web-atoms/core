@@ -1,9 +1,14 @@
+import { AtomControl } from "../controls/atom-control";
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
 
 }
 
 export type IAtomElement = HTMLElement | INativeComponent;
+
+export interface IAtomControlElement {
+    atomControl: AtomControl;
+}
 
 export interface INameValuePairs {
     [key: string]: any;

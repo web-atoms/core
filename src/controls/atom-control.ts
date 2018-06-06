@@ -264,18 +264,18 @@ export class AtomControl {
     }
 
     // tslint:disable-next-line:member-ordering
-    public static updateUI(): any {
-        throw new Error("Method not implemented.");
-    }
+    // public static updateUI(): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
     // tslint:disable-next-line:member-ordering
-    public static disposeChildren(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
+    // public static disposeChildren(arg0: any): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
     // tslint:disable-next-line:member-ordering
-    public static invokeAction(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
+    // public static invokeAction(arg0: any): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
 }
