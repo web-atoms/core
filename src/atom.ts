@@ -25,10 +25,10 @@ export class Atom {
         });
     }
 
-    // tslint:disable-next-line:member-access
-    static query(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
+    // // tslint:disable-next-line:member-access
+    // static query(arg0: any): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
     public static encodeParameters(p: INameValuePairs): string {
         if (!p) {

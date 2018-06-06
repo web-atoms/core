@@ -30,10 +30,11 @@ export class AtomItemsControl extends AtomControl {
     private mSortPath: string;
 
     private mSelectedItems: any[] = [];
+    private mSelectedItemsWatcher: IDisposable;
 
     // private mFilteredItems: any[] = [];
 
-    private mSelectedItem: any = undefined;
+    // private mSelectedItem: any = undefined;
 
     private mFilter: any = undefined;
 
@@ -103,7 +104,7 @@ export class AtomItemsControl extends AtomControl {
             return items;
         }
 
-        let s = this.mSelectedItem;
+        let s = this.selectedItem;
         if (!s) {
             if (this.mValue !== undefined) {
                 return this.mValue;
@@ -138,8 +139,8 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public get selectedItem(): any {
-        if (this.mSelectedItem.length > 0) {
-                    return this.mSelectedItem[0];
+        if (this.selectedItems.length > 0) {
+            return this.selectedItems[0];
         }
         return null;
     }
@@ -158,8 +159,22 @@ export class AtomItemsControl extends AtomControl {
         return this.mSelectedItems;
     }
 
+    public set selectedItems(v: any[]) {
+        if (this.mSelectedItemsWatcher) {
+            this.mSelectedItemsWatcher.dispose();
+            this.mSelectedItemsWatcher = null;
+        }
+        this.mSelectedItems = v;
+        if (v) {
+            this.mSelectedItemsWatcher = AtomBinder.add_CollectionChanged(v,
+                (t, k, i, item) => {
+                    this.onSelectedItemsChanged(k, i, item);
+                });
+        }
+    }
+
     public get selectedIndex() {
-        const item: any = this.mSelectedItem;
+        const item: any = this.selectedItem;
         return this.mItems.indexOf(item);
     }
 
@@ -176,7 +191,11 @@ export class AtomItemsControl extends AtomControl {
     //     return -1;
     // }
 
-    public set itemTemplate(v: any) {
+    public get itemTemplate(): {new (): AtomControl } {
+        return this.mItemTemplate;
+    }
+
+    public set itemTemplate(v: {new (): AtomControl }) {
         this.mItemTemplate = v;
         this.onCollectionChangedInternal("refresh", -1, null);
     }
@@ -211,12 +230,14 @@ export class AtomItemsControl extends AtomControl {
     //     return $(this.mItemsPresenter).children();
     // }
 
+    constructor(e?: IAtomElement) {
+        super(e);
+        this.selectedItems = [];
+    }
+
     public dispose(e?: IAtomElement): void {
-        if (this.mItemsDisposable) {
-            this.mItemsDisposable.dispose();
-            this.mItemsDisposable = null;
-        }
-        this.mItems = null;
+        this.items = null;
+        this.selectedItems = null;
         // this.mFilteredItems = null;
         super.dispose(e);
     }
@@ -226,7 +247,9 @@ export class AtomItemsControl extends AtomControl {
             case "itemTemplate":
             case "labelPath":
             case "valuePath":
-                this.onCollectionChangedInternal("refresh", -1, null);
+                if (this.mItems) {
+                    this.onCollectionChangedInternal("refresh", -1, null);
+                }
                 break;
         }
     }
@@ -585,7 +608,7 @@ export class AtomItemsControl extends AtomControl {
 
     public onSelectedItemsChanged(type: any, index: any, item: any) {
         if (!this.mOnUIChanged) {
-            this.updateChildSelections(type, index, item);
+            // this.updateChildSelections(type, index, item);
             if (this.mAutoScrollToSelection) {
                 this.bringSelectionIntoView();
             }
@@ -650,6 +673,14 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {
+
+        if (!this.mItems) {
+            return;
+        }
+
+        if (!this.mItemTemplate) {
+            return;
+        }
 
         if (!this.mItemsPresenter) {
             this.mItemsPresenter = this.element as HTMLElement;
