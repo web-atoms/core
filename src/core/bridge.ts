@@ -1,4 +1,4 @@
-import { Atom } from "../Atom1";
+import { Atom } from "../Atom";
 import { AtomControl } from "../controls/AtomControl";
 import { AtomUI } from "./atom-ui";
 import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";

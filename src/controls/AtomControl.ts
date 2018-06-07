@@ -1,7 +1,7 @@
-import { Atom } from "../Atom1";
-import { AtomDispatcher } from "../core/AtomDispatcher";
+import { Atom } from "../Atom";
 import { AtomUI } from "../core/atom-ui";
 import { AtomBinder } from "../core/AtomBinder";
+import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent, PathList } from "../core/types";

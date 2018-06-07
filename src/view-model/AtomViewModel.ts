@@ -1,4 +1,4 @@
-import { Atom } from "../Atom1";
+import { Atom } from "../Atom";
 import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
 import { AtomAction, AtomDevice } from "../core/AtomDevice";
 import { Container, Inject } from "../di";

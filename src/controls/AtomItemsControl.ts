@@ -1,4 +1,4 @@
-import { Atom } from "../Atom1";
+import { Atom } from "../Atom";
 import { AtomUI } from "../core/atom-ui";
 import { AtomBinder } from "../core/AtomBinder";
 import "../core/AtomList";
