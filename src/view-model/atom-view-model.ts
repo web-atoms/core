@@ -417,7 +417,7 @@ export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
                     vm.broadcast(c, v);
                 }
             };
-            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [ key], false );
+            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], false );
             d.func = fx;
 
             // tslint:disable-next-line:ban-types no-string-literal

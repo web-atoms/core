@@ -44,7 +44,7 @@ class TestItemTemplate extends AtomControl {
         super.create();
 
         this.element = document.createElement("span");
-        this.bind(this.element, "textContent", ["data.label"]);
+        this.bind(this.element, "textContent", [["data", "label"]]);
     }
 
 }
@@ -66,7 +66,7 @@ export class TestCase extends TestItem {
 
         ic.viewModel = vm;
 
-        ic.bind(null, "items", ["viewModel.movies"]);
+        ic.bind(null, "items", [["viewModel", "movies"]]);
 
         const first = root.firstElementChild;
 
@@ -91,8 +91,8 @@ export class TestCase extends TestItem {
 
         ic.viewModel = vm;
 
-        ic.bind(null, "items", ["viewModel.movies"]);
-        ic.bind(null, "selectedItem", ["viewModel.selectedMovie"], true);
+        ic.bind(null, "items", [["viewModel", "movies"]]);
+        ic.bind(null, "selectedItem", [["viewModel", "selectedMovie"]], true);
 
         ic.selectedItem = vm.movies[0];
 
@@ -119,7 +119,7 @@ export class TestCase extends TestItem {
 
         ic.viewModel = vm;
 
-        ic.bind(null, "items", ["viewModel.movies"]);
+        ic.bind(null, "items", [["viewModel", "movies"]]);
 
         ic.selectedItems.add(vm.movies[0]);
 

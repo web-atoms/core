@@ -3,6 +3,17 @@ import { CancelToken, INameValuePairs } from "./core/types";
 
 export class Atom {
 
+    public static get(target: any, path: string): any {
+        const segments = path.split(".");
+        for (const iterator of segments) {
+            if (target === undefined || target === null) {
+                return target;
+            }
+            target = target[iterator];
+        }
+        return target;
+    }
+
     /**
      * Await till given milliseconds have passed
      * @param n

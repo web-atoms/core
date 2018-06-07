@@ -4,7 +4,7 @@ import { AtomDispatcher } from "../core/atom-dispatcher";
 import { AtomUI } from "../core/atom-ui";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/property-binding";
-import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent } from "../core/types";
+import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent, PathList } from "../core/types";
 
 interface IEventObject {
 
@@ -102,7 +102,7 @@ export class AtomControl {
     public bind(
         element: IAtomElement,
         name: string,
-        path: string[],
+        path: PathList[],
         twoWays?: boolean,
         valueFunc?: (v: any[]) => any): IDisposable {
 

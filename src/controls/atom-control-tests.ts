@@ -23,7 +23,7 @@ export class AtomControlTests extends TestItem {
         tv.name = "a";
         control.viewModel = tv;
 
-        control.bind(root, "data", ["viewModel.name"], true);
+        control.bind(root, "data", [["viewModel", "name"]], true);
 
         const watches = AtomBinder.get_WatchHandler(tv as IWatchableObject, "name");
         Assert.equals(watches.length, 1);
@@ -66,12 +66,12 @@ export class AtomControlTests extends TestItem {
         control.viewModel = tv;
 
         control.append(input);
-        control.bind(input, "value", ["viewModel.name"], false);
+        control.bind(input, "value", [["viewModel", "name"]], false);
 
         Assert.equals("a", input.value);
 
         // two way binding
-        control.bind(input, "value", ["viewModel.name"], true);
+        control.bind(input, "value", [["viewModel", "name"]], true);
         Assert.equals("a", input.value);
 
         input.value = "b";

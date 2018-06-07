@@ -1,7 +1,7 @@
 import { AtomControl } from "../controls/atom-control";
 import { AtomWatcher, ObjectProperty } from "./atom-watcher";
 import { AtomBridge } from "./bridge";
-import { AtomDisposable, IAtomElement, IDisposable } from "./types";
+import { AtomDisposable, IAtomElement, IDisposable, PathList } from "./types";
 
 export class PropertyBinding implements IDisposable {
 
@@ -22,7 +22,7 @@ export class PropertyBinding implements IDisposable {
         target: AtomControl,
         element: IAtomElement,
         name: string,
-        path: string[],
+        path: PathList[],
         twoWays: boolean,
         valueFunc: (v: any[]) => any) {
         this.name = name;
@@ -66,7 +66,7 @@ export class PropertyBinding implements IDisposable {
             return;
         }
 
-        const watcher = new AtomWatcher(this.target, [this.name], false, false);
+        const watcher = new AtomWatcher(this.target, [[this.name]], false, false);
         watcher.func = (t: any, values: any[]) => {
             if (this.isTwoWaySetup) {
                 this.setInverseValue(values[0]);

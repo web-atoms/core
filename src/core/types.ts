@@ -6,6 +6,8 @@ export interface INativeComponent {
 
 export type IAtomElement = HTMLElement | INativeComponent;
 
+export type PathList = string[];
+
 export interface IAtomControlElement {
     atomControl: AtomControl;
 }
