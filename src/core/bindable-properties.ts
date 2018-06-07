@@ -1,4 +1,4 @@
-import { AtomBinder } from "./atom-binder";
+import { AtomBinder } from "./AtomBinder";
 
 export function bindableProperty(target: any, key: string): any {
     // property value

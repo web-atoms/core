@@ -1,9 +1,9 @@
-import { Atom } from "../atom";
-import { AtomBinder } from "../core/atom-binder";
-import { AtomDispatcher } from "../core/atom-dispatcher";
+import { Atom } from "../Atom1";
+import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomUI } from "../core/atom-ui";
+import { AtomBinder } from "../core/AtomBinder";
 import { AtomBridge } from "../core/bridge";
-import { PropertyBinding } from "../core/property-binding";
+import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent, PathList } from "../core/types";
 
 interface IEventObject {

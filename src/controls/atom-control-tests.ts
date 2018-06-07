@@ -1,9 +1,9 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
 import "test-dom";
-import { AtomBinder, IWatchableObject } from "../core/atom-binder";
+import { AtomBinder, IWatchableObject } from "../core/AtomBinder";
 import { bindableProperty } from "../core/bindable-properties";
-import { AtomControl } from "./atom-control";
+import { AtomControl } from "./AtomControl";
 
 class TestViewModel {
 

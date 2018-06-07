@@ -1,4 +1,4 @@
-import { AtomDispatcher } from "./core/atom-dispatcher";
+import { AtomDispatcher } from "./core/AtomDispatcher";
 import { CancelToken, INameValuePairs } from "./core/types";
 
 export class Atom {

@@ -1,14 +1,14 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
 import "test-dom";
-import { AtomBinder, IWatchableObject } from "../core/atom-binder";
-import { AtomDevice } from "../core/atom-device";
-import "../core/atom-list";
+import { AtomBinder, IWatchableObject } from "../core/AtomBinder";
+import { AtomDevice } from "../core/AtomDevice";
+import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
 import { Container } from "../di";
-import { AtomViewModel } from "../view-model/atom-view-model";
-import { AtomControl } from "./atom-control";
-import { AtomItemsControl } from "./atom-items-control";
+import { AtomViewModel } from "../view-model/AtomViewModel";
+import { AtomControl } from "./AtomControl";
+import { AtomItemsControl } from "./AtomItemsControl";
 
 interface IMovie {
     label: string;

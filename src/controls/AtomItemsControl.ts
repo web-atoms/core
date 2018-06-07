@@ -1,11 +1,11 @@
-import { Atom } from "../atom";
-import { AtomBinder } from "../core/atom-binder";
-import "../core/atom-list";
+import { Atom } from "../Atom1";
 import { AtomUI } from "../core/atom-ui";
+import { AtomBinder } from "../core/AtomBinder";
+import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomBridge } from "../core/bridge";
 import { IAtomControlElement, IAtomElement, IDisposable } from "../core/types";
-import { AtomControl } from "./atom-control";
+import { AtomControl } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
     @bindableProperty

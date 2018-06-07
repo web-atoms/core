@@ -1,4 +1,4 @@
-import { AtomControl } from "../controls/atom-control";
+import { AtomControl } from "../controls/AtomControl";
 import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUI {

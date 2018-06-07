@@ -1,4 +1,4 @@
-import { AtomControl } from "../controls/atom-control";
+import { AtomControl } from "../controls/AtomControl";
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
 

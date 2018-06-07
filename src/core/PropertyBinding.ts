@@ -1,5 +1,5 @@
-import { AtomControl } from "../controls/atom-control";
-import { AtomWatcher, ObjectProperty } from "./atom-watcher";
+import { AtomControl } from "../controls/AtomControl";
+import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
 import { AtomBridge } from "./bridge";
 import { AtomDisposable, IAtomElement, IDisposable, PathList } from "./types";
 

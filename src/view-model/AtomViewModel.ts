@@ -1,6 +1,6 @@
-import { Atom } from "../atom";
+import { Atom } from "../Atom1";
 import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
-import { AtomAction, AtomDevice } from "../core/atom-device";
+import { AtomAction, AtomDevice } from "../core/AtomDevice";
 import { Container, Inject } from "../di";
 
 interface IVMSubscription {

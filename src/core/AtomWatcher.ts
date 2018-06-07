@@ -1,4 +1,4 @@
-import { AtomBinder } from "./atom-binder";
+import { AtomBinder } from "./AtomBinder";
 import { IDisposable, PathList } from "./types";
 
 const viewModelParseWatchCache: any = {};

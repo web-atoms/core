@@ -1,10 +1,10 @@
-export * from "./core/atom-binder";
+export * from "./core/AtomBinder";
 export * from "./core/bridge";
 export * from "./core/types";
-export * from "./core/property-binding";
-export * from "./core/atom-list";
+export * from "./core/PropertyBinding";
+export * from "./core/AtomList";
 export * from "./core/atom-ui";
 export * from "./core/atom-uri";
-export * from "./core/atom-watcher";
+export * from "./core/AtomWatcher";
 export * from "./core/bindable-properties";
 // export * from "./core/atom-dispatcher";

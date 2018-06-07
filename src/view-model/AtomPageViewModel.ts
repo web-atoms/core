@@ -1,7 +1,7 @@
-import { AtomDevice } from "../core/atom-device";
+import { AtomDevice } from "../core/AtomDevice";
 import { Inject } from "../di";
-import { WindowService } from "../services/window-service";
-import { AtomViewModel } from "./atom-view-model";
+import { WindowService } from "../services/WindowService";
+import { AtomViewModel } from "./AtomViewModel";
 
 export class AtomPageViewModel extends AtomViewModel {
 

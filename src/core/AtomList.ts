@@ -1,4 +1,4 @@
-import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-binder";
+import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./AtomBinder";
 import { AtomDisposable, IDisposable } from "./types";
 
     /**
