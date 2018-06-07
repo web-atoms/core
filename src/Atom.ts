@@ -3,6 +3,8 @@ import { CancelToken, INameValuePairs } from "./core/types";
 
 export class Atom {
 
+    public static designMode: boolean = false;
+
     public static get(target: any, path: string): any {
         const segments = path.split(".");
         for (const iterator of segments) {
