@@ -244,6 +244,10 @@ export class AtomControl {
 
     }
 
+    protected getValue(path: string) {
+        return Atom.get(this, path);
+    }
+
     // protected postInit(): void {
     //     AtomDispatcher.instance.callLater(()=>{
     //         this.init();
