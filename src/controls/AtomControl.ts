@@ -4,7 +4,9 @@ import { AtomBinder } from "../core/AtomBinder";
 import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
-import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent, PathList } from "../core/types";
+// tslint:disable-next-line:import-spacing
+import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INativeComponent, PathList }
+    from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IEventObject {
@@ -249,7 +251,7 @@ export class AtomControl {
         return Atom.get(this, path);
     }
 
-    protected resolve(c: {new()}): any {
+    protected resolve<T>(c: IClassOf<T> ): T {
         return ServiceProvider.global.get(c);
     }
 
