@@ -1,11 +1,8 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
 import "test-dom";
-import { AtomBinder, IWatchableObject } from "../core/AtomBinder";
-import { AtomDevice } from "../core/AtomDevice";
 import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
-import { Container } from "../di";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";

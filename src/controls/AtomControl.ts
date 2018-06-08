@@ -5,6 +5,7 @@ import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent, PathList } from "../core/types";
+import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IEventObject {
 
@@ -246,6 +247,10 @@ export class AtomControl {
 
     protected getValue(path: string) {
         return Atom.get(this, path);
+    }
+
+    protected resolve(c: {new()}): any {
+        return ServiceProvider.global.get(c);
     }
 
     // protected postInit(): void {

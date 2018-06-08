@@ -1,11 +1,14 @@
 import { AtomControl } from "../controls/AtomControl";
+
+import "reflect-metadata";
+
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
 
 }
 
 export interface IClassOf<T> {
-    new (): T;
+    new (...v: any[]): T;
 }
 
 export type IAtomElement = HTMLElement | INativeComponent;

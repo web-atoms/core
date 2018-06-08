@@ -1,10 +1,10 @@
 import { AtomControl } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
 import { IClassOf } from "../core/types";
-import { Service } from "../di";
+import { RegisterSingleton } from "../di/RegisterSingleton";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 
-@Service()
+@RegisterSingleton
 export class WindowService {
 
     public confirm(message: string, title: string): Promise<any> {
