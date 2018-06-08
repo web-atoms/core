@@ -2,10 +2,10 @@
 import { TestContext, TestRunner } from "./unit/base-test";
 
 // import unit test modules here
-// import "./core/atom-ui-tests";
+import "./core/atom-ui-tests";
 
-// import "./controls/atom-control-tests";
-// import "./controls/atom-items-control-tests";
+import "./controls/atom-control-tests";
+import "./controls/atom-items-control-tests";
 
 import "./di/tests";
 
