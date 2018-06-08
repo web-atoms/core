@@ -16,7 +16,7 @@ export class PropertyBinding implements IDisposable {
     private watcher: AtomWatcher<any>;
     private twoWaysDisposable: IDisposable;
     private isTwoWaySetup: boolean = false;
-    private valueFunc: (v: any[]) => any;
+    private valueFunc: (...v: any[]) => any;
 
     constructor(
         target: AtomControl,
@@ -24,7 +24,7 @@ export class PropertyBinding implements IDisposable {
         name: string,
         path: PathList[],
         twoWays: boolean,
-        valueFunc: (v: any[]) => any) {
+        valueFunc: (...v: any[]) => any) {
         this.name = name;
         this.twoWays = twoWays;
         this.target = target;

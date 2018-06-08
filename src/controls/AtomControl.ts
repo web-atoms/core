@@ -104,7 +104,7 @@ export class AtomControl {
         name: string,
         path: PathList[],
         twoWays?: boolean,
-        valueFunc?: (v: any[]) => any): IDisposable {
+        valueFunc?: (...v: any[]) => any): IDisposable {
 
         // remove exisiting binding if any
         let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
