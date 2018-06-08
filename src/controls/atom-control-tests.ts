@@ -1,13 +1,14 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
 import "test-dom";
+import { AtomBinder, IWatchableObject } from "../core/AtomBinder";
 import { bindableProperty } from "../core/bindable-properties";
-import { AtomControl } from "./atom-control";
+import { AtomControl } from "./AtomControl";
 
 class TestViewModel {
 
     @bindableProperty
-    public name: any;
+    public name: any = "";
 }
 
 @Category("Atom-Control")
@@ -22,7 +23,10 @@ export class AtomControlTests extends TestItem {
         tv.name = "a";
         control.viewModel = tv;
 
-        control.bind(root, "data", ["viewModel.name"], true);
+        control.bind(root, "data", [["viewModel", "name"]], true);
+
+        const watches = AtomBinder.get_WatchHandler(tv as IWatchableObject, "name");
+        Assert.equals(watches.length, 1);
 
         Assert.equals("a", control.data);
 
@@ -38,8 +42,17 @@ export class AtomControlTests extends TestItem {
 
         tv.name = "c";
 
-        Assert.equals(undefined, control.data);
+        Assert.equals("", control.data);
 
+        Assert.equals(control, (root as any).atomControl);
+
+        control.dispose();
+
+        Assert.equals(null, control.element);
+
+        Assert.equals(watches.length, 0);
+
+        Assert.equals((control as any).bindings, null);
     }
 
     @Test()
@@ -53,12 +66,12 @@ export class AtomControlTests extends TestItem {
         control.viewModel = tv;
 
         control.append(input);
-        control.bind(input, "value", ["viewModel.name"], false);
+        control.bind(input, "value", [["viewModel", "name"]], false);
 
         Assert.equals("a", input.value);
 
         // two way binding
-        control.bind(input, "value", ["viewModel.name"], true);
+        control.bind(input, "value", [["viewModel", "name"]], true);
         Assert.equals("a", input.value);
 
         input.value = "b";

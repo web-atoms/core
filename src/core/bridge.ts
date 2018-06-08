@@ -1,9 +1,13 @@
-import { Atom } from "../atom";
-import { AtomControl } from "../controls/atom-control";
+import { Atom } from "../Atom";
+import { AtomControl } from "../controls/AtomControl";
 import { AtomUI } from "./atom-ui";
 import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
+
+    public abstract create(type: string): T;
+
+    public abstract attachControl(element: T, control: AtomControl): void;
 
     public abstract addEventHandler(
         element: T,
@@ -23,9 +27,15 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
 
     public abstract appendChild(parent: T, child: T): void;
 
+    public abstract getValue(element: HTMLElement, name: string): any;
+
     public abstract setValue(element: T, name: string, value: any): void;
 
     public abstract watchProperty(element: T, name: string, f: (v: any) => void): IDisposable;
+
+    public abstract loadContent(element: T, text: string): void;
+
+    public abstract findChild(element: T, name: string): T;
 }
 
 export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
@@ -107,6 +117,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         element[name] = value;
     }
 
+    public getValue(element: HTMLElement, name: string): any {
+        return element[name];
+    }
+
     public watchProperty(element: HTMLElement, name: string, f: (v: any) => void): IDisposable {
         const l = (e) => {
             f((element as HTMLInputElement).value);
@@ -117,10 +131,30 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
             element.removeEventListener("change", l, false);
         });
     }
+
+    public attachControl(element: HTMLElement, control: AtomControl): void {
+        (element as any).atomControl = control;
+    }
+
+    public create(type: string): HTMLElement {
+        return document.createElement(type);
+    }
+
+    public loadContent(element: HTMLElement, text: string): void {
+        throw new Error("Not supported");
+    }
+
+    public findChild(element: HTMLElement, name: string): HTMLElement {
+        throw new Error("Not supported");
+    }
 }
 
 export class AtomBridge {
 
     public static instance: BaseElementBridge<IAtomElement> = new AtomElementBridge();
+
+    public static create(name: string): IAtomElement {
+        return this.instance.create(name);
+    }
 
 }
