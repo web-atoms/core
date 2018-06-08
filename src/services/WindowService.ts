@@ -10,10 +10,14 @@ export class WindowService {
     }
 
     public alert(message: string, title?: string): Promise<any> {
-        throw new Error("Not implemented");
+        throw new Error("Method not implemented.");
     }
 
     public openPopup<T>(c: {new(): AtomControl}, vm: AtomViewModel): Promise<T> {
-        throw new Error("Not implemented");
+        throw new Error("Method not implemented.");
+    }
+
+    public openWindow<T>(c: {new(): AtomControl}, vm: AtomViewModel): Promise<T> {
+        throw new Error("Method not implemented.");
     }
 }
