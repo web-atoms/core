@@ -1,6 +1,7 @@
 import { Atom } from "../Atom";
 import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
 import { AtomAction, AtomDevice } from "../core/AtomDevice";
+import { IClassOf } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IVMSubscription {
@@ -66,6 +67,11 @@ export class AtomViewModel {
 
         this.device.runAsync(() => this.privateInit());
 
+    }
+
+    public resolve<T>(c: IClassOf<T>, onlyRegistered?: boolean): T {
+        const create = !onlyRegistered;
+        return this.services.resolve(c, create);
     }
 
     public refresh(name: string): void {
