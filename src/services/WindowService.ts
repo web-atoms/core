@@ -1,4 +1,6 @@
 import { AtomControl } from "../controls/AtomControl";
+import { AtomWindow } from "../controls/AtomWindow";
+import { IClassOf } from "../core/types";
 import { Service } from "../di";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 
@@ -13,11 +15,11 @@ export class WindowService {
         throw new Error("Method not implemented.");
     }
 
-    public openPopup<T>(c: {new(): AtomControl}, vm: AtomViewModel): Promise<T> {
+    public openPopup<T>(c: IClassOf<AtomControl>, vm: AtomViewModel): Promise<T> {
         throw new Error("Method not implemented.");
     }
 
-    public openWindow<T>(c: {new(): AtomControl}, vm: AtomViewModel): Promise<T> {
+    public openWindow<T>(c: IClassOf<AtomWindow>, vm: AtomViewModel): Promise<T> {
         throw new Error("Method not implemented.");
     }
 }

@@ -4,7 +4,7 @@ import { AtomBinder } from "../core/AtomBinder";
 import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomBridge } from "../core/bridge";
-import { IAtomControlElement, IAtomElement, IDisposable } from "../core/types";
+import { IAtomControlElement, IAtomElement, IClassOf, IDisposable } from "../core/types";
 import { AtomControl } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
@@ -21,7 +21,7 @@ export class AtomItemsControl extends AtomControl {
     public labelPath: string = "label";
 
     @bindableProperty
-    public mItemTemplate: any;
+    public mItemTemplate: IClassOf<AtomControl>;
 
     public valueSeparator: string = ", ";
 
@@ -191,11 +191,11 @@ export class AtomItemsControl extends AtomControl {
     //     return -1;
     // }
 
-    public get itemTemplate(): {new (): AtomControl } {
+    public get itemTemplate(): IClassOf<AtomControl> {
         return this.mItemTemplate;
     }
 
-    public set itemTemplate(v: {new (): AtomControl }) {
+    public set itemTemplate(v: IClassOf<AtomControl>) {
         this.mItemTemplate = v;
         this.onCollectionChangedInternal("refresh", -1, null);
     }
@@ -983,7 +983,7 @@ export class AtomItemsControl extends AtomControl {
 
     protected createChild(df: DocumentFragment, data: any) {
         const t = this.itemTemplate;
-        const ac = new t() as AtomControl;
+        const ac = new t();
         (ac.element as any)._logicalParent = this.element;
         df.appendChild(ac.element as HTMLElement);
         ac.data = data;

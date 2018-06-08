@@ -4,6 +4,10 @@ export interface INativeComponent {
 
 }
 
+export interface IClassOf<T> {
+    new (): T;
+}
+
 export type IAtomElement = HTMLElement | INativeComponent;
 
 export type PathList = string[];
