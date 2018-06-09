@@ -1,7 +1,18 @@
 import { Scope, ServiceCollection } from "./ServiceCollection";
 
-export function Register(scope: Scope = Scope.Transient): ((t: any) => void) {
+export interface IServiceDef {
+    id?: string;
+    scope: Scope;
+}
+
+export function Register(def: IServiceDef): ((t: any) => void);
+export function Register(id: string, scope: Scope): ((t: any) => void);
+export function Register(id: string | IServiceDef, scope?: Scope): ((t: any) => void) {
     return (target: any) => {
-        ServiceCollection.instance.register(target, null, scope);
+        if (typeof id === "string") {
+            ServiceCollection.instance.register(target, null, scope, id);
+            return;
+        }
+        ServiceCollection.instance.register(target, null, id.scope || Scope.Transient, id.id);
     };
 }
