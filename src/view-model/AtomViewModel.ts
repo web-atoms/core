@@ -1,7 +1,8 @@
-import { Atom } from "../atom";
+import { Atom } from "../Atom";
 import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
-import { AtomAction, AtomDevice } from "../core/atom-device";
-import { Inject } from "../di";
+import { AtomAction, AtomDevice } from "../core/AtomDevice";
+import { IClassOf } from "../core/types";
+import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IVMSubscription {
     channel: string;
@@ -53,10 +54,24 @@ export class AtomViewModel {
         return this.mIsReady;
     }
 
-    constructor(@Inject() protected device: AtomDevice) {
+    private mServiceProvider: ServiceProvider = null;
+    public get services(): ServiceProvider {
+        return this.mServiceProvider;
+    }
+
+    constructor(private device: AtomDevice = ServiceProvider.global.get(AtomDevice)) {
+
+        this.mServiceProvider = ServiceProvider.global.newScope();
+
+        this.registerDisposable(this.mServiceProvider);
 
         this.device.runAsync(() => this.privateInit());
 
+    }
+
+    public resolve<T>(c: IClassOf<T>, onlyRegistered?: boolean): T {
+        const create = !onlyRegistered;
+        return this.services.resolve(c, create);
     }
 
     public refresh(name: string): void {
@@ -417,7 +432,7 @@ export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
                     vm.broadcast(c, v);
                 }
             };
-            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [ key], false );
+            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], false );
             d.func = fx;
 
             // tslint:disable-next-line:ban-types no-string-literal

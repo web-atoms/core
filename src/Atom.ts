@@ -1,11 +1,25 @@
-import { AtomDispatcher } from "./core/atom-dispatcher";
+import { AtomDispatcher } from "./core/AtomDispatcher";
 import { CancelToken, INameValuePairs } from "./core/types";
 
 export class Atom {
 
-    public static set(arg0: any, arg1: any, arg2: any): any {
-        throw new Error("Method not implemented.");
+     public static designMode: boolean = false;
+
+     public static set(arg0: any, arg1: any, arg2: any): any {
+    throw new Error("Method not implemented.");
+}
+
+    public static get(target: any, path: string): any {
+        const segments = path.split(".");
+        for (const iterator of segments) {
+            if (target === undefined || target === null) {
+                return target;
+            }
+            target = target[iterator];
+        }
+        return target;
     }
+
     /**
      * Await till given milliseconds have passed
      * @param n
@@ -28,10 +42,10 @@ export class Atom {
         });
     }
 
-    // tslint:disable-next-line:member-access
-    static query(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
+    // // tslint:disable-next-line:member-access
+    // static query(arg0: any): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
     public static encodeParameters(p: INameValuePairs): string {
         if (!p) {

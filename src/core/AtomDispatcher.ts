@@ -31,7 +31,9 @@ export class AtomDispatcher {
 
     public start(): void {
         this.paused = false;
-        window.setTimeout(this.onTimeout, 1);
+        window.setTimeout(() => {
+            this.onTimeout();
+        }, 1);
     }
 
     public callLater(f: () => void) {

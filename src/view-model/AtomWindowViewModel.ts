@@ -1,5 +1,5 @@
 import { AtomBinder } from "../core";
-import { AtomViewModel } from "./atom-view-model";
+import { AtomViewModel } from "./AtomViewModel";
 
 /**
  * This view model should be used with WindowService to create and open window.

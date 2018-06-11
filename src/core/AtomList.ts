@@ -1,4 +1,4 @@
-import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./atom-binder";
+import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./AtomBinder";
 import { AtomDisposable, IDisposable } from "./types";
 
     /**
@@ -211,6 +211,7 @@ import { AtomDisposable, IDisposable } from "./types";
     Array.prototype["removeAt"] = AtomList.prototype.removeAt;
     Array.prototype["watch"] = AtomList.prototype.watch;
 
+declare global { 
     interface Array<T> {
         add?(item:T):number;
         addAll?(item:T[]):void;
@@ -220,3 +221,4 @@ import { AtomDisposable, IDisposable } from "./types";
         removeAt?(i: number):void;
         watch?(f:()=>void): IDisposable;
     }
+}

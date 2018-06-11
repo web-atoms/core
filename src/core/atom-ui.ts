@@ -1,4 +1,4 @@
-import { AtomControl } from "../controls/atom-control";
+import { AtomControl } from "../controls/AtomControl";
 import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUI {
@@ -26,14 +26,6 @@ export class AtomUI {
         throw new Error("Method not implemented.");
     }
 
-    public static remove(e: HTMLElement): any {
-        throw new Error("Method not implemented.");
-    }
-
-    public static createControl(arg0: any, arg1: any, arg2: any, arg3: any): any {
-        throw new Error("Method not implemented.");
-    }
-
     public static outerHeight(arg0: any, arg1: boolean = false): any {
         throw new Error("Method not implemented.");
     }
@@ -51,10 +43,6 @@ export class AtomUI {
     }
 
     public static scrollTop(arg0: any, arg1: any): any {
-        throw new Error("Method not implemented.");
-    }
-
-    public static contains(arg0: any, arg1: any): any {
         throw new Error("Method not implemented.");
     }
 

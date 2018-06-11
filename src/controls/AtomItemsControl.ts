@@ -1,10 +1,11 @@
-import { Atom } from "../atom";
-import { AtomUI } from "../core";
-import { AtomBinder } from "../core/atom-binder";
-import "../core/atom-list";
+import { Atom } from "../Atom";
+import { AtomUI } from "../core/atom-ui";
+import { AtomBinder } from "../core/AtomBinder";
+import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
-import { IAtomElement, IDisposable } from "../core/types";
-import { AtomControl } from "./atom-control";
+import { AtomBridge } from "../core/bridge";
+import { IAtomControlElement, IAtomElement, IClassOf, IDisposable } from "../core/types";
+import { AtomControl } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
     @bindableProperty
@@ -20,7 +21,7 @@ export class AtomItemsControl extends AtomControl {
     public labelPath: string = "label";
 
     @bindableProperty
-    public mItemTemplate: any;
+    public mItemTemplate: IClassOf<AtomControl>;
 
     public valueSeparator: string = ", ";
 
@@ -29,16 +30,17 @@ export class AtomItemsControl extends AtomControl {
     private mSortPath: string;
 
     private mSelectedItems: any[] = [];
+    private mSelectedItemsWatcher: IDisposable;
 
-    private mFilteredItems: any[] = [];
+    // private mFilteredItems: any[] = [];
 
-    private mSelectedItem: any = undefined;
+    // private mSelectedItem: any = undefined;
 
     private mFilter: any = undefined;
 
     private mSelectAll: boolean = false;
 
-    private mItemsPresenter: any;
+    private mItemsPresenter: HTMLElement;
 
     private mFirstChild: any = null;
 
@@ -55,8 +57,6 @@ export class AtomItemsControl extends AtomControl {
     private mChildItemType: any;
 
     private scrollTimeout: any;
-
-    private mElement: any;
 
     private mTraining: any;
 
@@ -79,16 +79,6 @@ export class AtomItemsControl extends AtomControl {
     private mOnUIChanged: any;
 
     private mAutoScrollToSelection: any;
-
-    private mConfirm: any;
-
-    private mConfirmMessage: any;
-
-    private mPostUrl: any;
-
-    private mNext: any;
-
-    private mErrorNext: any;
 
     private lastScrollTop: any;
 
@@ -114,7 +104,7 @@ export class AtomItemsControl extends AtomControl {
             return items;
         }
 
-        let s = this.mSelectedItem;
+        let s = this.selectedItem;
         if (!s) {
             if (this.mValue !== undefined) {
                 return this.mValue;
@@ -137,7 +127,7 @@ export class AtomItemsControl extends AtomControl {
             this.mItemsDisposable = null;
         }
         this.mItems = v;
-        this.mFilteredItems = null;
+        // this.mFilteredItems = null;
         if (v != null) {
             this.mItemsDisposable = AtomBinder.add_CollectionChanged(this.mItems,
                 (target, key, index, item) => {
@@ -149,8 +139,8 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public get selectedItem(): any {
-        if (this.mSelectedItem.length > 0) {
-                    return this.mSelectedItem[0];
+        if (this.selectedItems.length > 0) {
+            return this.selectedItems[0];
         }
         return null;
     }
@@ -169,8 +159,22 @@ export class AtomItemsControl extends AtomControl {
         return this.mSelectedItems;
     }
 
+    public set selectedItems(v: any[]) {
+        if (this.mSelectedItemsWatcher) {
+            this.mSelectedItemsWatcher.dispose();
+            this.mSelectedItemsWatcher = null;
+        }
+        this.mSelectedItems = v;
+        if (v) {
+            this.mSelectedItemsWatcher = AtomBinder.add_CollectionChanged(v,
+                (t, k, i, item) => {
+                    this.onSelectedItemsChanged(k, i, item);
+                });
+        }
+    }
+
     public get selectedIndex() {
-        const item: any = this.mSelectedItem;
+        const item: any = this.selectedItem;
         return this.mItems.indexOf(item);
     }
 
@@ -187,7 +191,11 @@ export class AtomItemsControl extends AtomControl {
     //     return -1;
     // }
 
-    public set itemTemplate(v: any) {
+    public get itemTemplate(): IClassOf<AtomControl> {
+        return this.mItemTemplate;
+    }
+
+    public set itemTemplate(v: IClassOf<AtomControl>) {
         this.mItemTemplate = v;
         this.onCollectionChangedInternal("refresh", -1, null);
     }
@@ -222,13 +230,15 @@ export class AtomItemsControl extends AtomControl {
     //     return $(this.mItemsPresenter).children();
     // }
 
+    constructor(e?: IAtomElement) {
+        super(e);
+        this.selectedItems = [];
+    }
+
     public dispose(e?: IAtomElement): void {
-        if (this.mItemsDisposable) {
-            this.mItemsDisposable.dispose();
-            this.mItemsDisposable = null;
-        }
-        this.mItems = null;
-        this.mFilteredItems = null;
+        this.items = null;
+        this.selectedItems = null;
+        // this.mFilteredItems = null;
         super.dispose(e);
     }
 
@@ -237,7 +247,9 @@ export class AtomItemsControl extends AtomControl {
             case "itemTemplate":
             case "labelPath":
             case "valuePath":
-                this.onCollectionChangedInternal("refresh", -1, null);
+                if (this.mItems) {
+                    this.onCollectionChangedInternal("refresh", -1, null);
+                }
                 break;
         }
     }
@@ -266,7 +278,7 @@ export class AtomItemsControl extends AtomControl {
 
     public resetVirtulContainer() {
         if (this.mItemsPresenter) {
-            AtomControl.disposeChildren(this.mItemsPresenter);
+            this.disposeChildren(this.mItemsPresenter);
         }
         this.mFirstChild = null;
         this.mLastChild = null;
@@ -311,7 +323,7 @@ export class AtomItemsControl extends AtomControl {
 
        // const parentScope = this.get_scope();
 
-        const element = this.mElement;
+        const element = this.element;
 
         if (this.mTraining) {
             if (vcHeight >= itemsHeight) {
@@ -432,7 +444,7 @@ export class AtomItemsControl extends AtomControl {
             const index2 = ae.currentIndex();
             const data = ae.current();
             const elementChild = cache[index2];
-            if (elementChild && element.atomControl.get_data() === data) {
+            if (elementChild && (element as IAtomControlElement).atomControl.data === data) {
                         cache[index2] = null;
                 } else {
                    // elementChild = this.createChildElement(parentScope, null, data, ae, null);
@@ -474,58 +486,56 @@ export class AtomItemsControl extends AtomControl {
         //     this.mIsChanging = false;
         // });
         // WebAtoms.dispatcher.start();
-
-        AtomBinder.refreshValue(this, "childAtomControls");
     }
 
-    public createChildElement(parentScope: any, parentElement: any, data: any, ae: any, before: any): any {
-        const elementChild = null;
-        // const elementChild = AtomUI.cloneNode(this.mItemTemplate);
-        elementChild._logicalParent = parentElement || this.mItemsPresenter;
-        elementChild._templateParent = this;
-        elementChild._isDirty = true;
+    // public createChildElement(parentScope: any, parentElement: any, data: any, ae: any, before: any): any {
+    //     const elementChild = null;
+    //     // const elementChild = AtomUI.cloneNode(this.mItemTemplate);
+    //     elementChild._logicalParent = parentElement || this.mItemsPresenter;
+    //     elementChild._templateParent = this;
+    //     elementChild._isDirty = true;
 
-        if (parentElement) {
-            // WebAtoms.dispatcher.callLater(() => {
-            // if (before) {
-            //     parentElement.insertBefore(elementChild, before);
-            //     } else {
-            //          parentElement.appendChild(elementChild);
-            //     }
-            // });
-        }
+    //     if (parentElement) {
+    //         // WebAtoms.dispatcher.callLater(() => {
+    //         // if (before) {
+    //         //     parentElement.insertBefore(elementChild, before);
+    //         //     } else {
+    //         //          parentElement.appendChild(elementChild);
+    //         //     }
+    //         // });
+    //     }
 
-        const index = ae ? ae.currentIndex() : -1;
-        const scope = null;
+    //     const index = ae ? ae.currentIndex() : -1;
+    //     const scope = null;
 
-        if (this.mUiVirtualize) {
-            const scopes = this.mScopes || {
-            };
-            this.mScopes = scopes;
+    //     if (this.mUiVirtualize) {
+    //         const scopes = this.mScopes || {
+    //         };
+    //         this.mScopes = scopes;
 
-           // scope = scopes[index] || new AtomScope(this, parentScope, parentScope.__application);
-            scopes[index] = scope;
-        } else {
-           // scope = new AtomScope(this, parentScope, parentScope.__application);
-        }
+    //        // scope = scopes[index] || new AtomScope(this, parentScope, parentScope.__application);
+    //         scopes[index] = scope;
+    //     } else {
+    //        // scope = new AtomScope(this, parentScope, parentScope.__application);
+    //     }
 
-        if (ae) {
-            scope.itemIsFirst = ae.isFirst();
-            scope.itemIsLast = ae.isLast();
-            scope.itemIndex = index;
-            scope.itemExpanded = false;
-            scope.data = data;
-            scope.get_itemSelected = () => {
-                        return scope.owner.isSelected(data);
-                };
-            scope.set_itemSelected = (v) => {
-                        scope.owner.toggleSelection(data, true);
-                };
-        }
+    //     if (ae) {
+    //         scope.itemIsFirst = ae.isFirst();
+    //         scope.itemIsLast = ae.isLast();
+    //         scope.itemIndex = index;
+    //         scope.itemExpanded = false;
+    //         scope.data = data;
+    //         scope.get_itemSelected = () => {
+    //                     return scope.owner.isSelected(data);
+    //             };
+    //         scope.set_itemSelected = (v) => {
+    //                     scope.owner.toggleSelection(data, true);
+    //             };
+    //     }
 
-        const ac = AtomUI.createControl(elementChild, this.mChildItemType, data, scope);
-        return elementChild;
-    }
+    //     const ac = AtomUI.createControl(elementChild, this.mChildItemType, data, scope);
+    //     return elementChild;
+    // }
 
     public applyItemStyle(arg0: any, arg1: any, arg2: any, arg3: any): any {
         throw new Error("Method not implemented.");
@@ -598,71 +608,83 @@ export class AtomItemsControl extends AtomControl {
 
     public onSelectedItemsChanged(type: any, index: any, item: any) {
         if (!this.mOnUIChanged) {
-            this.updateChildSelections(type, index, item);
+            // this.updateChildSelections(type, index, item);
             if (this.mAutoScrollToSelection) {
                 this.bringSelectionIntoView();
             }
         }
         this.updateSelectionBindings();
-        AtomControl.updateUI();
+        // AtomControl.updateUI();
 
-        this.invokePost();
+        // this.invokePost();
     }
 
-    public invokePost() {
-        if (!this.mOnUIChanged) {
-            return;
-        }
+    // public invokePost() {
+    //     if (!this.mOnUIChanged) {
+    //         return;
+    //     }
 
-        const errors = undefined;
-       // const errors = this.get_errors();
-        if (errors.length) {
+    //     const errors = undefined;
+    //    // const errors = this.get_errors();
+    //     if (errors.length) {
 
-           // Atom.alert(errors.join("\n"));
+    //        // Atom.alert(errors.join("\n"));
 
-            return false;
-        }
+    //         return false;
+    //     }
 
-        if (this.mConfirm) {
-            if (!confirm(this.mConfirmMessage)) {
-                return;
-            }
-        }
+    //     if (this.mConfirm) {
+    //         if (!confirm(this.mConfirmMessage)) {
+    //             return;
+    //         }
+    //     }
 
-        if (!this.mPostUrl) {
-            AtomControl.invokeAction(this.mNext);
-            return;
-        }
-        let data = null;
-        // let data = this.get_postData();
+    //     if (!this.mPostUrl) {
+    //         AtomControl.invokeAction(this.mNext);
+    //         return;
+    //     }
+    //     let data = null;
+    //     // let data = this.get_postData();
 
-        if (data === null || data === undefined) {
-            return;
-        }
-        data = AtomBinder.getClone(data);
-        const p = null;
-       // const p = AtomPromise.json(this.mPostUrl, null, { type: "POST", data: data });
-        p.then(() => {
-            this.invokeNext();
-        });
-        const errorNext = this.mErrorNext;
-        if (errorNext) {
-            p.failed((pr) => {
-                AtomControl.invokeAction(errorNext);
-            });
-        }
-        p.invoke();
-    }
+    //     if (data === null || data === undefined) {
+    //         return;
+    //     }
+    //     data = AtomBinder.getClone(data);
+    //     const p = null;
+    //    // const p = AtomPromise.json(this.mPostUrl, null, { type: "POST", data: data });
+    //     p.then(() => {
+    //         this.invokeNext();
+    //     });
+    //     const errorNext = this.mErrorNext;
+    //     if (errorNext) {
+    //         p.failed((pr) => {
+    //             AtomControl.invokeAction(errorNext);
+    //         });
+    //     }
+    //     p.invoke();
+    // }
 
-    public invokeNext() {
-        AtomControl.invokeAction(this.mNext);
-    }
+    // public invokeNext() {
+    //     AtomControl.invokeAction(this.mNext);
+    // }
 
     public hasItems() {
         return this.mItems !== undefined && this.mItems !== null;
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {
+
+        if (!this.mItems) {
+            return;
+        }
+
+        if (!this.mItemTemplate) {
+            return;
+        }
+
+        if (!this.mItemsPresenter) {
+            this.mItemsPresenter = this.element as HTMLElement;
+        }
 
         if (/reset|refresh/i.test(key)) {
             this.resetVirtulContainer();
@@ -675,11 +697,11 @@ export class AtomItemsControl extends AtomControl {
                 const c: any = ce;
                 if (c.atomControl && c.atomControl.get_data() === item) {
                     c.atomControl.dispose();
-                    AtomUI.remove(c);
+                    ce.remove();
                     break;
                 }
             }
-            AtomControl.updateUI();
+            // AtomControl.updateUI();
             return;
         }
 
@@ -699,27 +721,48 @@ export class AtomItemsControl extends AtomControl {
         //     }
         // }
 
+        const items = this.mFilter ? this.mItems.filter(this.mFilter) : this.mItems;
+
         if (/add/gi.test(key)) {
            // WebAtoms.dispatcher.pause();
 
-            for (const aeItem of this.mItems) {
-                for (const ceItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
-                    const d: any = ceItem;
-                    if (aeItem.currentIndex() === index) {
-                        const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, d);
-                        this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
-                        break;
-                    }
-                    if (aeItem.isLast()) {
-                        const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, null);
-                        this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
-                        break;
-                    }
-                }
-            }
+            // for (const aeItem of this.mItems) {
+            //     for (const ceItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+            //         const d: any = ceItem;
+            //         if (aeItem.currentIndex() === index) {
+            //             const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, d);
+            //             this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
+            //             break;
+            //         }
+            //         if (aeItem.isLast()) {
+            // tslint:disable-next-line:max-line-length
+            //             const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, null);
+            //             this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
+            //             break;
+            //         }
+            //     }
+            // }
 
            // WebAtoms.dispatcher.start();
-            AtomControl.updateUI();
+            // AtomControl.updateUI();
+
+            const lastItem = items[index];
+            let last: HTMLElement = null;
+            let cindex: number = 0;
+            for (const ceItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+                if (cindex === index) {
+                    last = ceItem;
+                    break;
+                }
+                cindex++;
+            }
+            const df2 = document.createDocumentFragment();
+            this.createChild(df2, lastItem);
+            if (last) {
+                this.mItemsPresenter.insertBefore(df2, last);
+            } else {
+                this.mItemsPresenter.appendChild(df2);
+            }
             return;
         }
 
@@ -727,25 +770,31 @@ export class AtomItemsControl extends AtomControl {
 
         // const dataItems = this.get_dataItems();
 
-        AtomControl.disposeChildren(element);
+        // AtomControl.disposeChildren(element);
+
+        this.disposeChildren(this.mItemsPresenter);
 
         // WebAtoms.dispatcher.pause();
 
-        const items = undefined;
         // const items = this.get_dataItems(true);
 
         const added = [];
 
         // this.getTemplate("itemTemplate");
 
+        const df = document.createDocumentFragment();
+
         for (const mItem of items) {
             const data = mItem;
-            const elementChild = this.createChildElement(parentScope, element, data, mItem, null);
-            added.push(elementChild);
-            this.applyItemStyle(elementChild, data, mItem.isFirst(), mItem.isLast());
+            // const elementChild = this.createChildElement(parentScope, element, data, mItem, null);
+            // added.push(elementChild);
+            // this.applyItemStyle(elementChild, data, mItem.isFirst(), mItem.isLast());
+            this.createChild(df, data);
         }
 
-        const self = this;
+        (this.element as HTMLElement).appendChild(df);
+
+        // const self = this;
         // WebAtoms.dispatcher.callLater(() => {
         //     const dirty = [];
 
@@ -769,7 +818,7 @@ export class AtomItemsControl extends AtomControl {
 
        // WebAtoms.dispatcher.start();
 
-        AtomBinder.refreshValue(this, "childAtomControls");
+        // AtomBinder.refreshValue(this, "childAtomControls");
     }
 
     protected onCollectionChangedInternal(key: string, index: number, item: any): void {
@@ -777,8 +826,9 @@ export class AtomItemsControl extends AtomControl {
         AtomBinder.refreshValue(this, "allValues");
         const value = this.mValue;
 
+        this.onCollectionChanged(key, index, item);
+
         if (value) {
-            this.onCollectionChanged(key, index, item);
             if (!(value || this.mAllowSelectFirst)) {
                 AtomBinder.clear(this.mSelectedItems);
             }
@@ -804,7 +854,7 @@ export class AtomItemsControl extends AtomControl {
             return;
         }
         this.mFilter = f;
-        this.mFilteredItems = null;
+        // this.mFilteredItems = null;
         this.onCollectionChangedInternal("refresh", -1, null);
     }
 
@@ -822,7 +872,7 @@ export class AtomItemsControl extends AtomControl {
         this.mOnUIChanged = true;
         this.mValue = undefined;
         if (this.allowMultipleSelection) {
-            if (AtomUI.contains(this.mSelectedItems, data)) {
+            if (this.mSelectedItems.indexOf(data) !== -1) {
                 AtomBinder.removeItem(this.mSelectedItems, data);
             } else {
                 AtomBinder.addItem(this.mSelectedItems, data);
@@ -835,43 +885,43 @@ export class AtomItemsControl extends AtomControl {
         this.mOnUIChanged = false;
     }
 
-    protected refresh() {
-        if (this.mPromises && this.mPromises.items) {
-            this.mPromises.items.invoke();
-        }
+    // protected refresh() {
+    //     if (this.mPromises && this.mPromises.items) {
+    //         this.mPromises.items.invoke();
+    //     }
 
-    }
+    // }
 
-    protected onUpdateUI() {
-       // base.onUpdateUI.call(this);
+    // protected onUpdateUI() {
+    //    // base.onUpdateUI.call(this);
 
-        if (this.mUiVirtualize) {
-            this.onVirtualCollectionChanged();
-        }
+    //     if (this.mUiVirtualize) {
+    //         this.onVirtualCollectionChanged();
+    //     }
 
-        for (const aeItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
-            const item = aeItem as any;
-            if (!item.atomControl) {
-                continue;
-            }
-            const dataItem = item.atomControl.get_data();
-            AtomBinder.refreshValue(item.atomControl.get_scope(), "itemSelected");
-            this.applyItemStyle(item, dataItem, item.isFirst(), item.isLast());
-        }
-    }
+    //     for (const aeItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+    //         const item = aeItem as any;
+    //         if (!item.atomControl) {
+    //             continue;
+    //         }
+    //         const dataItem = item.atomControl.get_data();
+    //         AtomBinder.refreshValue(item.atomControl.get_scope(), "itemSelected");
+    //         this.applyItemStyle(item, dataItem, item.isFirst(), item.isLast());
+    //     }
+    // }
 
-    protected onCreated() {
-        if (this.mItems) {
-            this.onCollectionChangedInternal("refresh", -1, null);
-        }
+    // protected onCreated() {
+    //     if (this.mItems) {
+    //         this.onCollectionChangedInternal("refresh", -1, null);
+    //     }
 
-        // this.dispatcher.callLater(function () {
-        //     if (caller._autoScrollToSelection) {
-        //         caller.bringSelectionIntoView();
-        //     }
-        // });
+    //     // this.dispatcher.callLater(function () {
+    //     //     if (caller._autoScrollToSelection) {
+    //     //         caller.bringSelectionIntoView();
+    //     //     }
+    //     // });
 
-    }
+    // }
 
     protected validateScroller() {
 
@@ -879,7 +929,7 @@ export class AtomItemsControl extends AtomControl {
             return;
         }
         const ip = this.mItemsPresenter;
-        const e = this.mElement;
+        const e = this.element as HTMLElement;
 
         let vc = this.mVirtualContainer;
         if (!vc) {
@@ -887,13 +937,15 @@ export class AtomItemsControl extends AtomControl {
                 throw new Error("virtualContainer presenter not found, you must put itemsPresenter "
                         + "inside a virtualContainer in order for Virtualization to work");
             } else {
-                vc = this.mVirtualContainer = this.mElement;
+                vc = this.mVirtualContainer = this.element;
             }
         }
         AtomUI.css(vc, {
             overflow: "auto"
         } );
-        this.bindEvent(vc, "scroll", null, "onScroll");
+        this.bindEvent(vc, "scroll", () => {
+            this.onScroll();
+        });
         AtomUI.css(ip, {
             overflow: "hidden"
         } );
@@ -927,5 +979,21 @@ export class AtomItemsControl extends AtomControl {
         this.mTraining = true;
         this.mScrollerSetup = true;
 
+    }
+
+    protected createChild(df: DocumentFragment, data: any) {
+        const t = this.itemTemplate;
+        const ac = new t();
+        (ac.element as any)._logicalParent = this.element;
+        df.appendChild(ac.element as HTMLElement);
+        ac.data = data;
+    }
+
+    protected disposeChildren(e: HTMLElement): void {
+        for (const iterator of AtomUI.childEnumerator(e)) {
+            const ac = (iterator as any).atomControl as AtomControl;
+            ac.dispose();
+            iterator.remove();
+        }
     }
 }

@@ -1,11 +1,12 @@
+
 import { Atom } from "../atom";
 import { AtomBinder, bindableProperty } from "../core";
-import { AtomControl } from "./atom-control";
+import { AtomItemsControl } from "./AtomItemsControl";
 
-export class AtomCalendar extends AtomControl {
+export class AtomCalendar extends AtomItemsControl {
 
-   @bindableProperty
-    public mValue: any;
+//    @bindableProperty
+//     public mValue: any;
 
     @bindableProperty
     public month: number;
@@ -46,7 +47,7 @@ export class AtomCalendar extends AtomControl {
         this.mEndYear = 10;
 
         this.mCurrentYear = (new Date()).getFullYear();
-        this.mValue = null;
+       // this.mValue = null;
     }
 
     public set_month(v) {

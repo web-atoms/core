@@ -1,10 +1,13 @@
-import { Atom } from "../atom";
-import { AtomBinder } from "../core/atom-binder";
-import { AtomDispatcher } from "../core/atom-dispatcher";
+import { Atom } from "../Atom";
 import { AtomUI } from "../core/atom-ui";
+import { AtomBinder } from "../core/AtomBinder";
+import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
-import { PropertyBinding } from "../core/property-binding";
-import { ArrayHelper, AtomDisposable, IAtomElement, IDisposable, INativeComponent } from "../core/types";
+import { PropertyBinding } from "../core/PropertyBinding";
+// tslint:disable-next-line:import-spacing
+import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INativeComponent, PathList }
+    from "../core/types";
+import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IEventObject {
 
@@ -102,9 +105,9 @@ export class AtomControl {
     public bind(
         element: IAtomElement,
         name: string,
-        path: string[],
+        path: PathList[],
         twoWays?: boolean,
-        valueFunc?: (v: any[]) => any): IDisposable {
+        valueFunc?: (...v: any[]) => any): IDisposable {
 
         // remove exisiting binding if any
         let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
@@ -244,6 +247,14 @@ export class AtomControl {
 
     }
 
+    protected getValue(path: string) {
+        return Atom.get(this, path);
+    }
+
+    protected resolve<T>(c: IClassOf<T> ): T {
+        return ServiceProvider.global.get(c);
+    }
+
     // protected postInit(): void {
     //     AtomDispatcher.instance.callLater(()=>{
     //         this.init();
@@ -264,18 +275,18 @@ export class AtomControl {
     }
 
     // tslint:disable-next-line:member-ordering
-    public static updateUI(): any {
-        throw new Error("Method not implemented.");
-    }
+    // public static updateUI(): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
     // tslint:disable-next-line:member-ordering
-    public static disposeChildren(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
+    // public static disposeChildren(arg0: any): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
     // tslint:disable-next-line:member-ordering
-    public static invokeAction(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
+    // public static invokeAction(arg0: any): any {
+    //     throw new Error("Method not implemented.");
+    // }
 
 }

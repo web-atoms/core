@@ -1,14 +1,14 @@
-import { AtomBinder } from "./atom-binder";
-import { IDisposable } from "./types";
+import { AtomBinder } from "./AtomBinder";
+import { IDisposable, PathList } from "./types";
 
 const viewModelParseWatchCache: any = {};
 
-function parsePath(f: any): string[] {
+function parsePath(f: any): PathList[] {
     let str: string = f.toString().trim();
 
     const key: string = str;
 
-    const px1: string[] = viewModelParseWatchCache[key];
+    const px1: PathList[] = viewModelParseWatchCache[key];
     if (px1) {
         return px1;
     }
@@ -76,7 +76,7 @@ function parsePath(f: any): string[] {
 
     viewModelParseWatchCache[key] = path;
 
-    return path;
+    return path.map( (p1) => p1.split("."));
 }
 
 export class ObjectProperty {
@@ -147,13 +147,13 @@ export class AtomWatcher<T> implements IDisposable {
      *                  });
      *
      * @param {T} target - Target on which watch will be set to observe given set of properties
-     * @param {(string[] | ((x:T) => any))} path - Path is either lambda expression or array of
+     * @param {(PathList[] | ((x:T) => any))} path - Path is either lambda expression or array of
      *                      property path to watch, if path was lambda, it will be executed when any of
      *                      members will modify
      * @param {boolean} [forValidation] forValidtion - Ignore, used for internal purpose
      * @memberof AtomWatcher
      */
-    constructor(target: T, path: string[] | (() => any) , runAfterSetup: boolean, forValidation?: boolean) {
+    constructor(target: T, path: PathList[] | (() => any) , runAfterSetup: boolean, forValidation?: boolean) {
         this.target = target;
         let e: boolean = false;
         if (forValidation === true) {
@@ -173,7 +173,7 @@ export class AtomWatcher<T> implements IDisposable {
 
         (this.runEvaluate as any).watcher = this;
 
-        this.path = path.map( (x) => x.split(".").map( (y) => new ObjectProperty(y) ) );
+        this.path = path.map( (x) => x.map( (y) => new ObjectProperty(y) ) );
         if (e) {
             if (runAfterSetup) {
                 this.evaluate();

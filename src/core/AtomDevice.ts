@@ -1,4 +1,4 @@
-import { Service } from "../di";
+import { RegisterSingleton } from "../di/RegisterSingleton";
 import { AtomDisposable, IDisposable } from "./types";
 
 export type AtomAction = (channel: string, data: any) => void;
@@ -32,8 +32,8 @@ export class AtomMessageAction {
  * @export
  * @class AtomDevice
  */
-@Service()
- export class AtomDevice {
+@RegisterSingleton
+export class AtomDevice {
 
     // /**
     //  *

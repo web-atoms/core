@@ -1,7 +1,7 @@
-import { AtomDevice } from "../core/atom-device";
-import { Inject } from "../di";
-import { WindowService } from "../services/window-service";
-import { AtomViewModel } from "./atom-view-model";
+import { AtomDevice } from "../core/AtomDevice";
+import { Inject } from "../di/Inject";
+import { WindowService } from "../services/WindowService";
+import { AtomViewModel } from "./AtomViewModel";
 
 export class AtomPageViewModel extends AtomViewModel {
 
@@ -10,8 +10,8 @@ export class AtomPageViewModel extends AtomViewModel {
     public closeWarning: string;
 
     constructor(
-        @Inject() protected windowService: WindowService,
-        @Inject() private device1: AtomDevice
+        @Inject protected windowService: WindowService,
+        @Inject private device1: AtomDevice
     ) {
         super(device1);
     }
