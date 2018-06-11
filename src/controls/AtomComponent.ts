@@ -8,6 +8,7 @@ import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, PathList }
     from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
+import { PropertyMap } from "../core/PropertyMap";
 
 interface IEventObject<T> {
 
@@ -200,7 +201,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public hasProperty(name: string): boolean {
-        return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(this), name) as boolean;
+        const map = PropertyMap.from(this);
+        return map[name];
     }
 
     public setLocalValue(element: T, name: string, value: any): void {
