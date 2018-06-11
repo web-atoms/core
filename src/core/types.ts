@@ -1,5 +1,3 @@
-import { AtomControl } from "../controls/AtomControl";
-
 import "reflect-metadata";
 
 // tslint:disable-next-line:no-empty-interface
@@ -14,10 +12,6 @@ export interface IClassOf<T> {
 export type IAtomElement = HTMLElement | INativeComponent;
 
 export type PathList = string[];
-
-export interface IAtomControlElement {
-    atomControl: AtomControl;
-}
 
 export interface INameValuePairs {
     [key: string]: any;

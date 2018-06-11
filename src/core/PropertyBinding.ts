@@ -1,15 +1,14 @@
+import { IAtomComponent } from "../controls/AtomComponent";
 import { AtomControl } from "../controls/AtomControl";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
 import { AtomBridge } from "./bridge";
 import { AtomDisposable, IAtomElement, IDisposable, PathList } from "./types";
 
-export class PropertyBinding implements IDisposable {
+export class PropertyBinding<T extends IAtomElement> implements IDisposable {
 
-    public static onSetupTwoWayBinding: (binding: PropertyBinding) => IDisposable;
-
-    public element: IAtomElement;
+    public element: T;
     public path: ObjectProperty[][];
-    public target: AtomControl;
+    public target: IAtomComponent<T>;
     public twoWays: boolean;
     public name: string;
 
@@ -19,8 +18,8 @@ export class PropertyBinding implements IDisposable {
     private valueFunc: (...v: any[]) => any;
 
     constructor(
-        target: AtomControl,
-        element: IAtomElement,
+        target: IAtomComponent<T>,
+        element: T,
         name: string,
         path: PathList[],
         twoWays: boolean,
@@ -49,10 +48,6 @@ export class PropertyBinding implements IDisposable {
     }
 
     public setupTwoWayBinding(): void {
-        if (PropertyBinding.onSetupTwoWayBinding) {
-            this.twoWaysDisposable = PropertyBinding.onSetupTwoWayBinding(this);
-            return;
-        }
 
         if (!this.target.hasProperty(this.name)) {
             // most likely it has change event..

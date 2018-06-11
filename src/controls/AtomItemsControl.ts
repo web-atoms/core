@@ -4,8 +4,8 @@ import { AtomBinder } from "../core/AtomBinder";
 import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomBridge } from "../core/bridge";
-import { IAtomControlElement, IAtomElement, IClassOf, IDisposable } from "../core/types";
-import { AtomControl } from "./AtomControl";
+import { IAtomElement, IClassOf, IDisposable } from "../core/types";
+import { AtomControl, IAtomControlElement } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
     @bindableProperty
@@ -230,12 +230,12 @@ export class AtomItemsControl extends AtomControl {
     //     return $(this.mItemsPresenter).children();
     // }
 
-    constructor(e?: IAtomElement) {
+    constructor(e?: HTMLElement) {
         super(e);
         this.selectedItems = [];
     }
 
-    public dispose(e?: IAtomElement): void {
+    public dispose(e?: HTMLElement): void {
         this.items = null;
         this.selectedItems = null;
         // this.mFilteredItems = null;
