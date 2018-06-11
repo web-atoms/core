@@ -15,11 +15,11 @@ export class WindowService {
         throw new Error("Method not implemented.");
     }
 
-    public openPopup<T>(c: IClassOf<AtomControl>, vm: AtomViewModel): Promise<T> {
+    public openPopup<T>(windowId: string, vm: AtomViewModel): Promise<T> {
         throw new Error("Method not implemented.");
     }
 
-    public openWindow<T>(c: IClassOf<AtomWindow>, vm: AtomViewModel): Promise<T> {
+    public openWindow<T>(windowId: string, vm: AtomViewModel): Promise<T> {
         throw new Error("Method not implemented.");
     }
 }
