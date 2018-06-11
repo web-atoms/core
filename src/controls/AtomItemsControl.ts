@@ -29,7 +29,7 @@ export class AtomItemsControl extends AtomControl {
 
     private mSortPath: string;
 
-    private mSelectedItems: any[] = [];
+    private mSelectedItems: any[];
     private mSelectedItemsWatcher: IDisposable;
 
     // private mFilteredItems: any[] = [];
@@ -156,7 +156,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public get selectedItems() {
-        return this.mSelectedItems;
+        return this.mSelectedItems || (this.selectedItems = []);
     }
 
     public set selectedItems(v: any[]) {
@@ -232,7 +232,7 @@ export class AtomItemsControl extends AtomControl {
 
     constructor(e?: HTMLElement) {
         super(e);
-        this.selectedItems = [];
+        // this.selectedItems = [];
     }
 
     public dispose(e?: HTMLElement): void {

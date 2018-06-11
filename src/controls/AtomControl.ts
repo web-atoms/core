@@ -35,11 +35,14 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     public atomParent(e: HTMLElement): AtomControl {
-        const ep = this.element as IAtomControlElement;
+        if (!e) {
+            return;
+        }
+        const ep = e as IAtomControlElement;
         if (ep.atomControl) {
             return ep.atomControl;
         }
-        return this.atomParent(ep.parentElement as HTMLElement);
+        return this.atomParent(ep._logicalParent || ep.parentElement as HTMLElement);
     }
 
     public attachControl(): void {
@@ -71,6 +74,31 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             }
             return true;
         });
+    }
+
+    public setLocalValue(element: HTMLElement, name: string, value: any): void {
+        if ((!element || element === this.element) &&  this.hasProperty(name)) {
+            this[name] = value;
+        } else {
+            // AtomBridge.instance.setValue(element, name, value);
+
+            if (/^style/.test(name)) {
+                name = name.substr(5);
+                name = name.charAt(0).toLowerCase() + name.substr(1);
+                // tslint:disable-next-line:no-console
+                console.log(name);
+                element.style[name] = value;
+                return;
+            }
+
+            switch (name) {
+                case "text":
+                    element.textContent = value;
+                    break;
+                default:
+                    element[name] = value;
+            }
+        }
     }
 
     protected refreshInherited(name: string, fx: (ac: AtomControl) => boolean): void {

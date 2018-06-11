@@ -37,7 +37,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
                     return;
                 }
             }
-            const cv = this.valueFunc ? this.valueFunc(values) : values[0];
+            const cv = this.valueFunc ? this.valueFunc.apply(this, values) : values[0];
             this.target.setLocalValue(this.element, this.name, cv);
         };
         this.path = this.watcher.path;
