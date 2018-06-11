@@ -85,8 +85,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             if (/^style/.test(name)) {
                 name = name.substr(5);
                 name = name.charAt(0).toLowerCase() + name.substr(1);
-                // tslint:disable-next-line:no-console
-                console.log(name);
                 element.style[name] = value;
                 return;
             }
