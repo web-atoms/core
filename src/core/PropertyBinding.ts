@@ -41,10 +41,12 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             this.target.setLocalValue(this.element, this.name, cv);
         };
         this.path = this.watcher.path;
-        this.watcher.evaluate();
-        if (twoWays) {
-            this.setupTwoWayBinding();
-        }
+        this.target.runAfterInit(() => {
+            this.watcher.evaluate();
+            if (twoWays) {
+                this.setupTwoWayBinding();
+            }
+        });
     }
 
     public setupTwoWayBinding(): void {

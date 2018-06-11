@@ -987,6 +987,7 @@ export class AtomItemsControl extends AtomControl {
         (ac.element as any)._logicalParent = this.element;
         df.appendChild(ac.element as HTMLElement);
         ac.data = data;
+        ac.init();
     }
 
     protected disposeChildren(e: HTMLElement): void {

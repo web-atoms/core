@@ -59,11 +59,13 @@ export class TestCase extends TestItem {
 
         const vm = new TestViewModel();
 
-        await vm.waitForReady();
-
         ic.viewModel = vm;
 
         ic.bind(null, "items", [["viewModel", "movies"]]);
+
+        ic.init();
+
+        await vm.waitForReady();
 
         const first = root.firstElementChild;
 
@@ -90,6 +92,7 @@ export class TestCase extends TestItem {
 
         ic.bind(null, "items", [["viewModel", "movies"]]);
         ic.bind(null, "selectedItem", [["viewModel", "selectedMovie"]], true);
+        ic.init();
 
         ic.selectedItem = vm.movies[0];
 

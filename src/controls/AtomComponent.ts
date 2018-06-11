@@ -4,11 +4,11 @@ import { AtomBinder } from "../core/AtomBinder";
 import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
+import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
 import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, PathList }
     from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
-import { PropertyMap } from "../core/PropertyMap";
 
 interface IEventObject<T> {
 
@@ -31,12 +31,15 @@ export interface IAtomComponent<T> {
     localViewModel: any;
     setLocalValue(e: T, name: string, value: any): void;
     hasProperty(name: string);
+    runAfterInit(f: () => void ): void;
 }
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement> {
 
     public element: T;
+
+    protected pendingInits: Array<() => void> = [];
 
     private mData: any = undefined;
     public get data(): any {
@@ -137,10 +140,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
         binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc);
         this.bindings.push(binding);
-
-        if (binding.twoWays) {
-            binding.setupTwoWayBinding();
-        }
 
         return new AtomDisposable(() => {
             binding.dispose();
@@ -263,6 +262,16 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     public onPropertyChanged(name: string): void {
 
     }
+
+    public runAfterInit(f: () => void): void {
+        if (this.pendingInits) {
+            this.pendingInits.push(f);
+        } else {
+            f();
+        }
+    }
+
+    public abstract init(): void;
 
     // tslint:disable-next-line:no-empty
     protected create(): void {
