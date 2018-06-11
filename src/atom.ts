@@ -3,6 +3,9 @@ import { CancelToken, INameValuePairs } from "./core/types";
 
 export class Atom {
 
+    public static set(arg0: any, arg1: any, arg2: any): any {
+        throw new Error("Method not implemented.");
+    }
     /**
      * Await till given milliseconds have passed
      * @param n

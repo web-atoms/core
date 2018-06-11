@@ -9,6 +9,9 @@ export interface IWatchableObject {
 }
 
 export class AtomBinder {
+    public static setValue(arg0: any, arg1: any, arg2: any): any {
+        throw new Error("Method not implemented.");
+    }
     // public static getClone(dupeObj): any {
     //     let retObj = {};
     //     if (typeof (dupeObj) === "object") {
