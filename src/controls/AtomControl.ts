@@ -46,7 +46,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         (this.element as IAtomControlElement).atomControl = this;
     }
 
-    public append(element: AtomControl | HTMLElement): AtomControl {
+    public append(element: AtomControl | HTMLElement | Text): AtomControl {
         if (element instanceof AtomControl) {
             this.element.appendChild(element.element);
         } else {
