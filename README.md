@@ -13,6 +13,9 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 3. Organize single module in single TypeScript file
 4. Import only required module and retain naming convention
 5. Do not define any default export
+6. No `Atom.get` and `Atom.set`
+7. Do not use underscore `_` anywhere, not in field name not in get/set
+8. Do not use `set_name` method name, instead use `get name()` and `set name(v: T)` syntax for properties.
 
 
 ### List of controls Planned
