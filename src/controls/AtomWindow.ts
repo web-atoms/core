@@ -1,48 +1,36 @@
 import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf } from "../core/types";
-import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceProvider } from "../di/ServiceProvider";
+import { AtomTheme } from "../Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
-
-@RegisterSingleton
-export class AtomWindowStyle {
-    
-    public windowTemplate;
-
-    constructor() {
-
-    }
-}
-
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
     public commandPresenter: HTMLElement;
 
     protected create(): void {
 
-        const style = this.resolve(AtomWindowStyle);
+        const style = this.resolve(AtomTheme).window;
 
         this.element = document.createElement("div");
-        this.element.classList.add("window-template");
-        this.element.style.alignSelf = "center";
+        this.element.classList.add(style.frame.toString());
 
         // add title host
 
         const titleHost = document.createElement("div");
-        titleHost.classList.add("title-host");
+        titleHost.classList.add(style.titleHost.toString());
 
         // add title
 
         const title = document.createElement("span");
-        title.classList.add("title");
-        title.style.alignSelf = "left";
+        title.classList.add(style.title.toString());
+        this.bind(title, "text", [["templateParent.title"]], false);
 
         // add close button
         const closeButton = document.createElement("button");
-        closeButton.classList.add("close-button");
-        closeButton.style.alignSelf = "right";
+        closeButton.classList.add(style.closeButton.toString());
+
         this.bindEvent(closeButton, "click", (e) => {
             const w = this.templateParent as AtomWindow;
             w.close();
@@ -56,13 +44,13 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
         // add content presneter
         const cp = document.createElement("div");
-        cp.classList.add("content-presenter");
+        cp.classList.add(style.content.toString());
         this.contentPresenter = cp;
         this.element.appendChild(cp);
 
         // create command presenter
         const cdp = document.createElement("div");
-        cdp.classList.add("command-presenter");
+        cdp.classList.add(style.commandBar.toString());
         this.commandPresenter = cdp;
         this.element.appendChild(cdp);
 

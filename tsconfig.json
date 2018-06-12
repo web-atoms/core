@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es5",
         "watch": true,
-        "module":"esnext",
+        "module":"commonjs",
         "sourceMap": true,
         "declaration": true,
         "moduleResolution": "node",

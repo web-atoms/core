@@ -1,4 +1,5 @@
 import { AtomBinder } from "./AtomBinder";
+import { INotifyPropertyChanging } from "./types";
 
 export function bindableProperty(target: any, key: string): any {
     // property value
@@ -23,6 +24,12 @@ export function bindableProperty(target: any, key: string): any {
         if (oldValue == newVal) {
             return;
         }
+
+        const ce = this as INotifyPropertyChanging;
+        if (ce.onPropertyChanging) {
+            ce.onPropertyChanging(key, oldValue, newVal);
+        }
+
         this[keyName] = newVal;
 
         AtomBinder.refreshValue(this, key);

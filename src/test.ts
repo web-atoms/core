@@ -6,8 +6,8 @@ import "./core/atom-ui-tests";
 
 import "./controls/atom-control-tests";
 import "./controls/atom-items-control-tests";
-
 import "./di/tests";
+import "./view-model/test";
 
 const instance: TestRunner = TestRunner.instance;
 
