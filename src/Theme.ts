@@ -1,9 +1,10 @@
 import { bindableProperty } from "./core/bindable-properties";
 import { IDisposable, INameValuePairs, INotifyPropertyChanged, INotifyPropertyChanging } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
+import { AtomViewModel, bindableBroadcast } from "./view-model/AtomViewModel";
 
 @RegisterSingleton
-export class AtomTheme
+export class AtomTheme extends AtomViewModel
     implements
         INotifyPropertyChanging,
         IDisposable {
@@ -18,6 +19,7 @@ export class AtomTheme
     private lastUpdateId: number = 0;
 
     constructor() {
+        super();
         this.window = new WindowStyle(this);
         this.button = new ButtonStyle(this);
 

@@ -9,10 +9,10 @@ interface ICustomer {
 
 class TestViewModel extends AtomViewModel {
 
+    public errorText: string;
+
     @bindableProperty
     public customer: ICustomer;
-
-    public errorText: string;
 
     @watch
     public get error(): string {

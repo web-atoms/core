@@ -20,7 +20,7 @@ export class AtomDispatcher {
         }
 
         item();
-        window.setTimeout(() => {
+        setTimeout(() => {
             this.onTimeout();
         }, 1);
     }
@@ -31,7 +31,7 @@ export class AtomDispatcher {
 
     public start(): void {
         this.paused = false;
-        window.setTimeout(() => {
+        setTimeout(() => {
             this.onTimeout();
         }, 1);
     }
