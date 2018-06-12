@@ -21,7 +21,7 @@ export class AtomItemsControl extends AtomControl {
     public labelPath: string = "label";
 
     @bindableProperty
-    public mItemTemplate: IClassOf<AtomControl>;
+    public itemTemplate: IClassOf<AtomControl>;
 
     public valueSeparator: string = ", ";
 
@@ -87,6 +87,15 @@ export class AtomItemsControl extends AtomControl {
     private mItems: any[] = undefined;
 
     private mItemsDisposable: IDisposable = null;
+
+    public get itemsPresenter(): HTMLElement {
+        return this.mItemsPresenter || (this.mItemsPresenter = this.element);
+    }
+
+    public set itemsPresenter(v: HTMLElement) {
+        this.mItemsPresenter = v;
+        AtomBinder.refreshValue(this, "itemsPresenter");
+    }
 
     public get value(): any {
         if (this.allowMultipleSelection) {
@@ -191,14 +200,14 @@ export class AtomItemsControl extends AtomControl {
     //     return -1;
     // }
 
-    public get itemTemplate(): IClassOf<AtomControl> {
-        return this.mItemTemplate;
-    }
+    // public get itemTemplate(): IClassOf<AtomControl> {
+    //     return this.mItemTemplate;
+    // }
 
-    public set itemTemplate(v: IClassOf<AtomControl>) {
-        this.mItemTemplate = v;
-        this.onCollectionChangedInternal("refresh", -1, null);
-    }
+    // public set itemTemplate(v: IClassOf<AtomControl>) {
+    //     this.mItemTemplate = v;
+    //     this.onCollectionChangedInternal("refresh", -1, null);
+    // }
 
     // public get_dataItems() {
     //     let r: any[] = this.mItems;
@@ -227,7 +236,7 @@ export class AtomItemsControl extends AtomControl {
     //         // }
     //         return r;
     //     }
-    //     return $(this.mItemsPresenter).children();
+    //     return $(this.itemsPresenter).children();
     // }
 
     constructor(e?: HTMLElement) {
@@ -244,12 +253,15 @@ export class AtomItemsControl extends AtomControl {
 
     public onPropertyChanged(name: string): void {
         switch (name) {
+            case "itemsPresenter":
             case "itemTemplate":
             case "labelPath":
             case "valuePath":
-                if (this.mItems) {
-                    this.onCollectionChangedInternal("refresh", -1, null);
-                }
+                this.runAfterInit(() => {
+                    if (this.mItems) {
+                        this.onCollectionChangedInternal("refresh", -1, null);
+                    }
+                });
                 break;
         }
     }
@@ -277,8 +289,9 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public resetVirtulContainer() {
-        if (this.mItemsPresenter) {
-            this.disposeChildren(this.mItemsPresenter);
+        const ip = this.itemsPresenter;
+        if (ip) {
+            this.disposeChildren(ip);
         }
         this.mFirstChild = null;
         this.mLastChild = null;
@@ -294,7 +307,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public onVirtualCollectionChanged(): any {
-        const ip = this.mItemsPresenter;
+        const ip = this.itemsPresenter;
         const items = null;
         // const items = this.get_dataItems();
         // if (!items.length) {
@@ -491,7 +504,7 @@ export class AtomItemsControl extends AtomControl {
     // public createChildElement(parentScope: any, parentElement: any, data: any, ae: any, before: any): any {
     //     const elementChild = null;
     //     // const elementChild = AtomUI.cloneNode(this.mItemTemplate);
-    //     elementChild._logicalParent = parentElement || this.mItemsPresenter;
+    //     elementChild._logicalParent = parentElement || this.itemsPresenter;
     //     elementChild._templateParent = this;
     //     elementChild._isDirty = true;
 
@@ -583,7 +596,7 @@ export class AtomItemsControl extends AtomControl {
             AtomUI.scrollTop(this.mVirtualContainer, scrollTop * vcHeight);
             return;
         }
-        for (const aeItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+        for (const aeItem of AtomUI.childEnumerator(this.itemsPresenter)) {
             const item: any = aeItem;
             const dataItem = item.atomControl ? item.atomControl.get_data() : item;
             if (this.isSelected(dataItem)) {
@@ -593,7 +606,7 @@ export class AtomItemsControl extends AtomControl {
         }
     }
 
-    public updateSelectionBindings() {
+    public updateSelectionBindings(): void {
         AtomBinder.refreshValue(this, "value");
         AtomBinder.refreshValue(this, "selectedItem");
         AtomBinder.refreshValue(this, "selectedItems");
@@ -678,12 +691,12 @@ export class AtomItemsControl extends AtomControl {
             return;
         }
 
-        if (!this.mItemTemplate) {
+        if (!this.itemTemplate) {
             return;
         }
 
-        if (!this.mItemsPresenter) {
-            this.mItemsPresenter = this.element as HTMLElement;
+        if (!this.itemsPresenter) {
+            this.itemsPresenter = this.element as HTMLElement;
         }
 
         if (/reset|refresh/i.test(key)) {
@@ -692,7 +705,7 @@ export class AtomItemsControl extends AtomControl {
 
         if (/remove/gi.test(key)) {
             // tslint:disable-next-line:no-shadowed-variable
-            for (const ce of AtomUI.childEnumerator(this.mItemsPresenter)) {
+            for (const ce of AtomUI.childEnumerator(this.itemsPresenter)) {
                 // tslint:disable-next-line:no-shadowed-variable
                 const c: any = ce;
                 if (c.atomControl && c.atomControl.get_data() === item) {
@@ -727,16 +740,16 @@ export class AtomItemsControl extends AtomControl {
            // WebAtoms.dispatcher.pause();
 
             // for (const aeItem of this.mItems) {
-            //     for (const ceItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+            //     for (const ceItem of AtomUI.childEnumerator(this.itemsPresenter)) {
             //         const d: any = ceItem;
             //         if (aeItem.currentIndex() === index) {
-            //             const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, d);
+            //             const ctl: any = this.createChildElement(parentScope, this.itemsPresenter, item, aeItem, d);
             //             this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
             //             break;
             //         }
             //         if (aeItem.isLast()) {
             // tslint:disable-next-line:max-line-length
-            //             const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, null);
+            //             const ctl: any = this.createChildElement(parentScope, this.itemsPresenter, item, aeItem, null);
             //             this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
             //             break;
             //         }
@@ -749,7 +762,7 @@ export class AtomItemsControl extends AtomControl {
             const lastItem = items[index];
             let last: HTMLElement = null;
             let cindex: number = 0;
-            for (const ceItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+            for (const ceItem of AtomUI.childEnumerator(this.itemsPresenter)) {
                 if (cindex === index) {
                     last = ceItem;
                     break;
@@ -759,20 +772,20 @@ export class AtomItemsControl extends AtomControl {
             const df2 = document.createDocumentFragment();
             this.createChild(df2, lastItem);
             if (last) {
-                this.mItemsPresenter.insertBefore(df2, last);
+                this.itemsPresenter.insertBefore(df2, last);
             } else {
-                this.mItemsPresenter.appendChild(df2);
+                this.itemsPresenter.appendChild(df2);
             }
             return;
         }
 
-        const element = this.mItemsPresenter;
+        const element = this.itemsPresenter;
 
         // const dataItems = this.get_dataItems();
 
         // AtomControl.disposeChildren(element);
 
-        this.disposeChildren(this.mItemsPresenter);
+        this.disposeChildren(this.itemsPresenter);
 
         // WebAtoms.dispatcher.pause();
 
@@ -899,7 +912,7 @@ export class AtomItemsControl extends AtomControl {
     //         this.onVirtualCollectionChanged();
     //     }
 
-    //     for (const aeItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+    //     for (const aeItem of AtomUI.childEnumerator(this.itemsPresenter)) {
     //         const item = aeItem as any;
     //         if (!item.atomControl) {
     //             continue;
@@ -928,7 +941,7 @@ export class AtomItemsControl extends AtomControl {
         if (this.mScrollerSetup) {
             return;
         }
-        const ip = this.mItemsPresenter;
+        const ip = this.itemsPresenter;
         const e = this.element as HTMLElement;
 
         let vc = this.mVirtualContainer;
@@ -981,13 +994,14 @@ export class AtomItemsControl extends AtomControl {
 
     }
 
-    protected createChild(df: DocumentFragment, data: any) {
+    protected createChild(df: DocumentFragment, data: any): AtomControl {
         const t = this.itemTemplate;
         const ac = new t();
         (ac.element as any)._logicalParent = this.element;
         df.appendChild(ac.element as HTMLElement);
         ac.data = data;
         ac.init();
+        return ac;
     }
 
     protected disposeChildren(e: HTMLElement): void {
