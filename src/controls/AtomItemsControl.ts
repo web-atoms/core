@@ -21,7 +21,7 @@ export class AtomItemsControl extends AtomControl {
     public labelPath: string = "label";
 
     @bindableProperty
-    public itemTemplate: IClassOf<AtomControl>;
+    public itemTemplate: IClassOf<AtomControl> = AtomItemsControlItemTemplate;
 
     public valueSeparator: string = ", ";
 
@@ -997,7 +997,9 @@ export class AtomItemsControl extends AtomControl {
     protected createChild(df: DocumentFragment, data: any): AtomControl {
         const t = this.itemTemplate;
         const ac = new t();
-        (ac.element as any)._logicalParent = this.element;
+        const e = ac.element as IAtomControlElement;
+        e._logicalParent = this.element as IAtomControlElement;
+        e._templateParent = this;
         df.appendChild(ac.element as HTMLElement);
         ac.data = data;
         ac.init();
@@ -1010,5 +1012,16 @@ export class AtomItemsControl extends AtomControl {
             ac.dispose();
             iterator.remove();
         }
+    }
+}
+
+class AtomItemsControlItemTemplate extends AtomControl {
+
+    protected create(): void {
+        this.element = document.createElement("div");
+        this.runAfterInit(() => {
+            const tp = this.templateParent as AtomItemsControl;
+            this.element.textContent = this.data[tp.valuePath];
+        });
     }
 }
