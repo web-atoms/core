@@ -16,7 +16,7 @@ export class TestCase extends TestItem {
         Assert.isTrue(theme.styleElement ? true : false);
 
         // tslint:disable-next-line:no-console
-        console.log(theme.styleElement.textContent);
+        // console.log(theme.styleElement.textContent);
     }
 
 }
