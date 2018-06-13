@@ -138,8 +138,6 @@ export class WindowService {
                 wvm.windowName = e.id;
             }
 
-            popup.init();
-
         });
     }
 }

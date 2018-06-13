@@ -10,8 +10,7 @@ export class AtomAlertWindow extends AtomWindow {
 
         this.windowTemplate = AtomAlertWindowTemplate;
         this.commandTemplate =  AtomAlertWindowCommandBar;
-        this.bind(this.element, "title", [["viewModel", "title"]]);
-        this.init();
+        // this.bind(this.element, "title", [["viewModel", "title"]]);
     }
 }
 
@@ -26,7 +25,6 @@ class AtomAlertWindowTemplate extends AtomControl {
 
         this.bind(span, "text", [["viewModel", "message"]]);
 
-        this.init();
     }
 }
 
@@ -54,7 +52,5 @@ class AtomAlertWindowCommandBar extends AtomControl {
 
             this.viewModel.onCancelClicked();
         });
-
-        this.init();
     }
 }

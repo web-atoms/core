@@ -58,23 +58,23 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         return this;
     }
 
-    public init(): void {
-        const a = this.pendingInits;
-        this.pendingInits = null;
-        if (a) {
-            for (const iterator of a) {
-                iterator();
-            }
-        }
-        this.pendingInits = null;
-        AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-            if (ac) {
-                ac.init();
-                return false;
-            }
-            return true;
-        });
-    }
+    // public init(): void {
+    //     const a = this.pendingInits;
+    //     this.pendingInits = null;
+    //     if (a) {
+    //         for (const iterator of a) {
+    //             iterator();
+    //         }
+    //     }
+    //     this.pendingInits = null;
+    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
+    //         if (ac) {
+    //             ac.init();
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }
 
     public setLocalValue(element: HTMLElement, name: string, value: any): void {
         if ((!element || element === this.element) &&  this.hasProperty(name)) {

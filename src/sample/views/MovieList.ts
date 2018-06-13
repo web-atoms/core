@@ -11,8 +11,6 @@ export class MovieList extends AtomControl {
         ul.itemTemplate = MovieListItemTemplate;
         ul.bind(ul.element, "items", [["viewModel", "movies"]], false);
         ul.bind(ul.element, "selectedItem", [["viewModel", "selectedMovie"]], true);
-
-        this.init();
     }
 }
 
@@ -20,7 +18,7 @@ class MovieListItemTemplate extends AtomControl {
 
     protected create(): void {
         this.element = document.createElement("li");
-
+        this.element.style.margin = "2px";
         const span = document.createElement("span");
         this.append(span);
         this.bind(span, "text", [["data", "label"], ["data", "category"]], false,
@@ -36,6 +34,8 @@ class MovieListItemTemplate extends AtomControl {
 
         const button = document.createElement("button");
         this.append(button);
+        button.textContent = "Delete";
+        button.style.marginLeft = "10px";
         this.bindEvent(button, "click", (e) => {
             this.viewModel.onDelete(this.data);
         });

@@ -2,7 +2,8 @@ import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
-import { AtomTheme } from "../Theme";
+import { AtomStyle } from "../styles/AtomStyle";
+import { AtomTheme, AtomWindowStyle } from "../Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
 export class AtomWindowFrameTemplate extends AtomTemplate {
@@ -15,7 +16,8 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
         this.element = document.createElement("div");
         this.element.classList.add(style.frame.className);
-
+        this.bind(this.element, "styleWidth", [["templateParent", "width"]]);
+        this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
         // add title host
 
         const titleHost = document.createElement("div");
@@ -25,7 +27,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
         const title = document.createElement("span");
         title.classList.add(style.title.className);
-        this.bind(title, "text", [["templateParent.title"]], false);
+        this.bind(title, "text", [["templateParent", "title"]], false);
 
         // add close button
         const closeButton = document.createElement("button");
@@ -54,8 +56,6 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.commandPresenter = cdp;
         this.element.appendChild(cdp);
 
-        this.init();
-
     }
 
 }
@@ -66,6 +66,12 @@ export class AtomWindow extends AtomControl {
     public title: string = "";
 
     @bindableProperty
+    public width: string = "300px";
+
+    @bindableProperty
+    public height: string = "200px";
+
+    @bindableProperty
     public windowTemplate: IClassOf<AtomControl>;
 
     @bindableProperty
@@ -74,9 +80,13 @@ export class AtomWindow extends AtomControl {
     @bindableProperty
     public frameTemplate: IClassOf<AtomWindowFrameTemplate> = AtomWindowFrameTemplate;
 
+    @bindableProperty
+    public style: AtomWindowStyle;
+
     constructor(e?: HTMLElement) {
         super(e);
         this.element.classList.add("atom-window");
+        this.style = this.resolve(AtomTheme).window;
     }
 
     public onPropertyChanged(name: string): void {
@@ -84,9 +94,7 @@ export class AtomWindow extends AtomControl {
             case "windowTemplate":
             case "commandTemplate":
             case "frameTemplate":
-                this.runAfterInit(() => {
-                    this.createWindow();
-                });
+                this.invalidate();
                 break;
         }
     }
@@ -97,7 +105,7 @@ export class AtomWindow extends AtomControl {
         device.broadcast(message, "canceled");
     }
 
-    private createWindow(): void {
+    public onUpdateUI(): void {
         if (!(this.windowTemplate && this.frameTemplate)) {
             return;
         }
@@ -105,6 +113,8 @@ export class AtomWindow extends AtomControl {
         // let us create frame first...
         const frame = new (this.frameTemplate)();
         const fe = frame.element as IAtomControlElement;
+
+        this.element.classList.add(this.style.frameHost.className);
 
         fe._logicalParent = this.element as IAtomControlElement;
         fe._templateParent = this;
@@ -126,9 +136,7 @@ export class AtomWindow extends AtomControl {
             (command.element as IAtomControlElement)._templateParent = this;
             frame.commandPresenter.appendChild(command.element);
         }
-
         this.append(frame);
-        this.init();
     }
 
 }

@@ -39,7 +39,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public element: T;
 
-    protected pendingInits: Array<() => void> = [];
+    protected pendingInits: Array<() => void>;
+
+    private mInvalidated: number = 0;
 
     private mData: any = undefined;
     public get data(): any {
@@ -105,8 +107,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     constructor(e?: T) {
         this.element = e;
+        const a = this.beginEdit();
         this.create();
         this.attachControl();
+        AtomDispatcher.instance.callLater(() => a.dispose());
     }
 
     public abstract atomParent(e: T): TC;
@@ -263,6 +267,36 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     }
 
+    public beginEdit(): IDisposable {
+        this.pendingInits = [];
+        const a = this.pendingInits;
+        return new AtomDisposable(() => {
+            this.pendingInits = null;
+            if (a) {
+                for (const iterator of a) {
+                    iterator();
+                }
+            }
+            this.invalidate();
+        });
+    }
+
+    public invalidate(): void {
+        if (this.mInvalidated) {
+            clearTimeout(this.mInvalidated);
+        }
+        this.mInvalidated = setTimeout(() => {
+            this.mInvalidated = 0;
+            AtomDispatcher.instance.callLater(() => {
+                this.onUpdateUI();
+            });
+        }, 5);
+    }
+
+    public onUpdateUI(): void {
+        // for implementors..
+    }
+
     public runAfterInit(f: () => void): void {
         if (this.pendingInits) {
             this.pendingInits.push(f);
@@ -271,7 +305,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    public abstract init(): void;
+    // public abstract init(): void;
 
     // tslint:disable-next-line:no-empty
     protected create(): void {

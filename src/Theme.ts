@@ -38,8 +38,8 @@ export class AtomButtonStyle extends AtomStyle {
 export class AtomWindowStyle extends AtomStyle {
 
     @watch
-    public get frame(): AtomStyleClass {
-        return this.createClass("frame", {
+    public get frameHost(): AtomStyleClass {
+        return this.createClass("frameHost", {
             position: "absolute",
             left: 0,
             right: 0,
@@ -49,11 +49,21 @@ export class AtomWindowStyle extends AtomStyle {
     }
 
     @watch
-    public get titleHost(): AtomStyleClass {
-        return this.createClass("frameHost", {
+    public get frame(): AtomStyleClass {
+        return this.createClass("frame", {
             position: "relative",
-            width: "100%",
-            height: "100%",
+            margin: "auto",
+            background: "#F0F0F0",
+            border: "solid 1px #808080"
+        });
+    }
+
+    @watch
+    public get titleHost(): AtomStyleClass {
+        return this.createClass("titleHost", {
+            position: "relative",
+            left: 0,
+            right: 0,
             padding: "5px",
             margin: "5px"
         });
@@ -80,18 +90,21 @@ export class AtomWindowStyle extends AtomStyle {
     @watch
     public get content(): AtomStyleClass {
         return this.createClass("content", {
-            position: "absolute",
-            right: "5px",
-            top: "5px"
+            position: "relative",
+            padding: "5px",
+            background: "white"
         });
     }
 
     @watch
     public get commandBar(): AtomStyleClass {
         return this.createClass("command-bar", {
-            position: "absolute",
-            right: "5px",
-            top: "5px"
+            "position": "absolute",
+            "left": "5px",
+            "right": "5px",
+            "bottom": "5px",
+            "padding": "5px",
+            "background-color": "#A0FFFF"
         });
     }
 }

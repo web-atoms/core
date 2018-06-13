@@ -9,7 +9,6 @@ export class SampleApp extends App {
         const ml = new MovieList();
         ml.viewModel = ServiceProvider.global.get(MovieListViewModel);
         document.body.appendChild(ml.element);
-        ml.init();
     }
 
 }

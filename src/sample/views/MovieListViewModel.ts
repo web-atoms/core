@@ -13,10 +13,12 @@ export class MovieListViewModel extends AtomViewModel {
 
     @bindableProperty
     public movies: IMovie[] = [
+        { label: "First", category: "None" },
         { label: "True Lies", category: "Action" },
         { label: "Jurassic Park", category: "Adventure" },
         { label: "Big", category: "Kids" },
-        { label: "Inception", category: "Suspense" }
+        { label: "Inception", category: "Suspense" },
+        { label: "Last", category: "None" },
     ];
 
     @bindableProperty
