@@ -5,6 +5,18 @@ export interface INativeComponent {
 
 }
 
+export interface INotifyPropertyChanging {
+
+    onPropertyChanging(name: string, newValue: any, oldValue: any): void;
+
+}
+
+export interface INotifyPropertyChanged {
+
+    onPropertyChanged(name: string): void;
+
+}
+
 export interface IClassOf<T> {
     new (...v: any[]): T;
 }

@@ -153,7 +153,13 @@ export class AtomWatcher<T> implements IDisposable {
      * @param {boolean} [forValidation] forValidtion - Ignore, used for internal purpose
      * @memberof AtomWatcher
      */
-    constructor(target: T, path: PathList[] | (() => any) , runAfterSetup: boolean, forValidation?: boolean) {
+    constructor(
+        target: T,
+        path: PathList[] | (() => any) ,
+        runAfterSetup: boolean,
+        forValidation?: boolean,
+        proxy?: () => any
+    ) {
         this.target = target;
         let e: boolean = false;
         if (forValidation === true) {
@@ -163,8 +169,10 @@ export class AtomWatcher<T> implements IDisposable {
             const f: () => any = path;
             path = parsePath(path);
             e = true;
-            this.func = f;
+            this.func = proxy || f;
             this.funcText = f.toString();
+        } else {
+            this.func = proxy;
         }
 
         this.runEvaluate = () => {
@@ -268,7 +276,7 @@ export class AtomWatcher<T> implements IDisposable {
         this.path = null;
     }
 
-    private evaluatePath(target: any, path: ObjectProperty[]): any {
+    public evaluatePath(target: any, path: ObjectProperty[]): any {
 
         // console.log(`\tevaluatePath: ${path.map(op=>op.name).join(", ")}`);
 
