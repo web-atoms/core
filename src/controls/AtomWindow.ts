@@ -14,22 +14,22 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         const style = this.resolve(AtomTheme).window;
 
         this.element = document.createElement("div");
-        this.element.classList.add(style.frame.toString());
+        this.element.classList.add(style.frame.className);
 
         // add title host
 
         const titleHost = document.createElement("div");
-        titleHost.classList.add(style.titleHost.toString());
+        titleHost.classList.add(style.titleHost.className);
 
         // add title
 
         const title = document.createElement("span");
-        title.classList.add(style.title.toString());
+        title.classList.add(style.title.className);
         this.bind(title, "text", [["templateParent.title"]], false);
 
         // add close button
         const closeButton = document.createElement("button");
-        closeButton.classList.add(style.closeButton.toString());
+        closeButton.classList.add(style.closeButton.className);
 
         this.bindEvent(closeButton, "click", (e) => {
             const w = this.templateParent as AtomWindow;
@@ -44,13 +44,13 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
         // add content presneter
         const cp = document.createElement("div");
-        cp.classList.add(style.content.toString());
+        cp.classList.add(style.content.className);
         this.contentPresenter = cp;
         this.element.appendChild(cp);
 
         // create command presenter
         const cdp = document.createElement("div");
-        cdp.classList.add(style.commandBar.toString());
+        cdp.classList.add(style.commandBar.className);
         this.commandPresenter = cdp;
         this.element.appendChild(cdp);
 
