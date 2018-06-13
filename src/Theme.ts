@@ -1,6 +1,7 @@
 import { bindableProperty } from "./core/bindable-properties";
 import { IDisposable, INameValuePairs, INotifyPropertyChanged, INotifyPropertyChanging } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
+import { ServiceProvider } from "./di/ServiceProvider";
 import { AtomStyle } from "./styles/AtomStyle";
 import { AtomStyleClass } from "./styles/AtomStyleClass";
 import { AtomStyleSheet } from "./styles/AtomStyleSheet";
@@ -27,6 +28,8 @@ export class AtomTheme extends AtomStyleSheet
     }
 
 }
+
+ServiceProvider.global.get(AtomTheme);
 
 export class AtomButtonStyle extends AtomStyle {
     // empty

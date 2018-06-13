@@ -47,6 +47,7 @@ export class AtomDevice {
     private bag: any;
 
     constructor() {
+
         this.bag = {};
     }
 
@@ -106,6 +107,7 @@ export class AtomDevice {
      * @memberof AtomDevice
      */
     public subscribe(channel: string, action: AtomAction): IDisposable {
+
         let ary: AtomHandler = this.bag[channel] as AtomHandler;
         if (!ary) {
             ary = new AtomHandler(channel);

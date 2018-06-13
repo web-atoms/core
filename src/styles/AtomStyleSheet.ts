@@ -25,7 +25,7 @@ export class AtomStyleSheet extends AtomStyle
         }
         this.lastUpdateId = setTimeout(() => {
             this.attach(true);
-        }, 100);
+        }, 1);
     }
 
     public dispose(): void {
@@ -58,7 +58,7 @@ export class AtomStyleSheet extends AtomStyle
         for (const key in pairs) {
             if (pairs.hasOwnProperty(key)) {
                 const element = pairs[key];
-                sl.push(`${key}: ${element} `);
+                sl.push(`.${key} ${element} `);
             }
         }
 

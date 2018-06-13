@@ -18,7 +18,6 @@ export function bindableProperty(target: any, key: string): any {
     // property setter
     const setter: (v: any) => void = function(newVal: any): void {
         // console.log(`Set: ${key} => ${newVal}`);
-        // debugger;
         const oldValue = this[keyName];
         // tslint:disable-next-line:triple-equals
         if (oldValue == newVal) {

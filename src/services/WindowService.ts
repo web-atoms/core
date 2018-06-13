@@ -1,11 +1,14 @@
 import { Atom } from "../Atom";
+import { AtomAlertWindow } from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
-import { AtomWindow } from "../controls/AtomWindow";
 import { AtomDevice } from "../core/AtomDevice";
+import { bindableProperty } from "../core/bindable-properties";
 import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
 import { RegisterSingleton } from "../di/RegisterSingleton";
+import { Scope, ServiceCollection } from "../di/ServiceCollection";
 import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomViewModel } from "../view-model/AtomViewModel";
+import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
 
 @RegisterSingleton
 export class WindowService {
@@ -17,6 +20,9 @@ export class WindowService {
     private currentTarget: HTMLElement = null;
 
     constructor() {
+
+        this.register("alert-window", AtomAlertWindow);
+
         if (window) {
             window.addEventListener("click", (e) => {
                 this.currentTarget = e.target as HTMLElement;
@@ -25,12 +31,25 @@ export class WindowService {
         }
     }
 
+    public register(id: string, type: IClassOf<AtomControl>): void {
+        ServiceCollection.instance.register(type, null, Scope.Transient, id);
+    }
+
     public confirm(message: string, title: string): Promise<any> {
-        throw new Error("Method not implemented.");
+        const vm = new AtomAlertViewModel();
+        vm.okTitle = "Yes";
+        vm.cancelTitle = "No";
+        vm.title = title;
+        vm.message = message;
+        return this.openWindow("alert-window", vm);
     }
 
     public alert(message: string, title?: string): Promise<any> {
-        throw new Error("Method not implemented.");
+        const vm = new AtomAlertViewModel();
+        vm.okTitle = "Ok";
+        vm.title = title;
+        vm.message = message;
+        return this.openWindow("alert-window", vm);
     }
 
     public async openPopup<T>(windowId: string, vm: AtomViewModel): Promise<T> {
@@ -69,7 +88,9 @@ export class WindowService {
     private openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {
         return new Promise((resolve, reject) => {
             const popup = ServiceProvider.global.resolve(windowId) as AtomControl;
-
+            if (vm) {
+                popup.viewModel = vm;
+            }
             const e = popup.element;
 
             e.id = `atom_popup_${this.lastPopupID++}`;
@@ -112,8 +133,36 @@ export class WindowService {
                 reject(i);
             }));
 
+            const wvm = vm as AtomWindowViewModel;
+            if (wvm) {
+                wvm.windowName = e.id;
+            }
+
             popup.init();
 
         });
+    }
+}
+
+class AtomAlertViewModel extends AtomWindowViewModel {
+
+    @bindableProperty
+    public title: string;
+
+    @bindableProperty
+    public message: string;
+
+    @bindableProperty
+    public okTitle: string;
+
+    @bindableProperty
+    public cancelTitle: string;
+
+    public onOkClicked(): void {
+        this.close(true);
+    }
+
+    public onCancelClicked(): void {
+        this.cancel();
     }
 }

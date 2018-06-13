@@ -114,6 +114,7 @@ export class AtomWindow extends AtomControl {
         }
 
         const content = new (this.windowTemplate)();
+        (content.element as IAtomControlElement)._templateParent = this;
         frame.contentPresenter.appendChild(content.element);
 
         if (this.commandTemplate) {
@@ -122,10 +123,12 @@ export class AtomWindow extends AtomControl {
                     "before creating window if command template is present");
             }
             const command = new (this.commandTemplate)();
+            (command.element as IAtomControlElement)._templateParent = this;
             frame.commandPresenter.appendChild(command.element);
         }
 
         this.append(frame);
+        this.init();
     }
 
 }

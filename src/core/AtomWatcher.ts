@@ -60,7 +60,6 @@ function parsePath(f: any): PathList[] {
 
         return m;
     });
-    // debugger;
 
     path = path.sort( (a, b) => b.localeCompare(a) );
 

@@ -4,9 +4,9 @@ import { ServiceProvider } from "./ServiceProvider";
 export type ServiceFactory = (sp: ServiceProvider) => any;
 
 export enum Scope {
-    Global,
-    Scoped,
-    Transient
+    Global = 1,
+    Scoped = 2,
+    Transient = 3
 }
 
 export class ServiceDescription {
@@ -51,6 +51,6 @@ export class ServiceCollection {
     }
 
     public get(type: any): ServiceDescription {
-        return this.registrations.find( (s) => s.type === type);
+        return this.registrations.find( (s) => s.id === type || s.type === type);
     }
 }
