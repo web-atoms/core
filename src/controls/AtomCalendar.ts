@@ -50,16 +50,16 @@ export class AtomCalendar extends AtomItemsControl {
        // this.mValue = null;
     }
 
-    public set_month(v) {
+    public set Month(v) {
         this.mMonth = v;
         this.updateCalendar();
     }
 
-    public set_year(v) {
+    public set Year(v) {
         this.mYear = v;
         this.updateCalendar();
     }
-    public set_visibleDate(v) {
+    public set VisibleDate(v) {
         if (!v) {
             return;
         }
@@ -153,10 +153,12 @@ export class AtomCalendar extends AtomItemsControl {
         m += n;
         if (m > 12) {
             m = 1;
-            Atom.set(this, "year", this.mYear + 1);
+            this.year = this.mYear + 1;
+           // Atom.set(this, "year", this.mYear + 1);
         }
         if (m === 0) {
-            Atom.set(this, "year", this.mYear - 1);
+            this.year = this.mYear - 1;
+           // Atom.set(this, "year", this.mYear - 1);
             m = 12;
         }
         AtomBinder.setValue(this, "month", m);
