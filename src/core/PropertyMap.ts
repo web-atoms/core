@@ -1,5 +1,9 @@
 import { TypeKey } from "../di/TypeKey";
 
+export interface IPropertyMap {
+    [key: string]: boolean;
+}
+
 export class PropertyMap {
 
     // tslint:disable-next-line:ban-types
@@ -7,18 +11,35 @@ export class PropertyMap {
         const c = Object.getPrototypeOf(o);
         const key = TypeKey.get(c);
         const map = PropertyMap.map;
-        const m = map[key] || (map[key] = new PropertyMap(c));
+        const m = map[key] || (map[key] = PropertyMap.createMap(c));
         return m;
     }
 
     private static map: { [key: string]: PropertyMap } = {};
 
-    constructor(c: any) {
+    private static createMap(c: any): PropertyMap {
+        const map: IPropertyMap = {};
+        const nameList: string[] = [];
         while (c) {
-            for (const name of Object.getOwnPropertyNames(c)) {
-                this[name] = true;
+            const names = Object.getOwnPropertyNames(c);
+            for (const name of names) {
+                if (/hasOwnProperty|constructor|toString/i.test(name)) {
+                    continue;
+                }
+                // map[name] = Object.getOwnPropertyDescriptor(c, name) ? true : false;
+                map[name] = true;
+                nameList.push(name);
             }
             c = Object.getPrototypeOf(c);
         }
+        const m = new PropertyMap();
+        m.map = map;
+        m.names = nameList;
+        return m;
     }
+
+    public names: string[];
+
+    public map: IPropertyMap;
+
 }

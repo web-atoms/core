@@ -4,11 +4,11 @@ import { AtomStyleClass } from "./AtomStyleClass";
 
 export class AtomStyleSheet extends AtomStyle
         implements INotifyPropertyChanging {
-    private styleElement: HTMLElement;
+    public styleElement: HTMLElement;
     private lastUpdateId: number = 0;
 
     constructor(prefix: string) {
-        super(null, null, prefix || "default_theme");
+        super(null, null, prefix);
         this.styleSheet = this;
         this.pushUpdate();
     }
@@ -42,24 +42,27 @@ export class AtomStyleSheet extends AtomStyle
         }
         const ss = document.createElement("style");
 
-        const sslist: string[] = [];
+        const pairs = this.toStyle();
 
-        for (const key in this) {
-            if (this.hasOwnProperty(key)) {
-                const element = this[key] as any;
-                const es = element as AtomStyleClass;
-                if (es && es.createStyle) {
-                    sslist.push(es.createStyle());
-                }
-            }
-        }
+        ss.textContent = this.flatten(pairs);
 
-        ss.textContent = sslist.join("\r\n");
         if (this.styleElement) {
             this.styleElement.remove();
         }
         document.head.appendChild(ss);
         this.styleElement = ss;
+    }
+
+    private flatten(pairs: INameValuePairs): string {
+        const sl: string[] = [];
+        for (const key in pairs) {
+            if (pairs.hasOwnProperty(key)) {
+                const element = pairs[key];
+                sl.push(`${key}: ${element} `);
+            }
+        }
+
+        return sl.join("\r\n");
     }
 
 }

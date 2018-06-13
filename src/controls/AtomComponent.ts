@@ -201,7 +201,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public hasProperty(name: string): boolean {
         const map = PropertyMap.from(this);
-        return map[name];
+        return map.map[name];
     }
 
     public setLocalValue(element: T, name: string, value: any): void {

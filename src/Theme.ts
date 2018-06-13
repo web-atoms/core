@@ -12,6 +12,10 @@ export class AtomTheme extends AtomStyleSheet
         INotifyPropertyChanging,
         IDisposable {
 
+    constructor() {
+        super("atom-theme");
+    }
+
     @watch
     public get window(): AtomWindowStyle {
         return this.createStyle(AtomWindowStyle, "window");
