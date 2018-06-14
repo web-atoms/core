@@ -183,6 +183,11 @@ export class AtomWatcher<T> implements IDisposable {
         (this.runEvaluate as any).watcher = this;
 
         this.path = path.map( (x) => x.map( (y) => new ObjectProperty(y) ) );
+
+        if(!this.path.length) {
+            throw new Error("There is nothing to watch");
+        }
+
         if (e) {
             if (runAfterSetup) {
                 this.evaluate();

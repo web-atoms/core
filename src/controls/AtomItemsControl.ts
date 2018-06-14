@@ -126,6 +126,35 @@ export class AtomItemsControl extends AtomControl {
         return s;
     }
 
+    public set value(v: any) {
+        this.mValue = v;
+        const sitems = this.selectedItems;
+        if (v === undefined || v === null) {
+            // reset...
+            AtomBinder.clear(sitems);
+            return;
+        }
+        const dataItems = this.items;
+        if (this.allowMultipleSelection && this.valueSeparator) {
+            if (typeof v !== "string") {
+                v = "" + v;
+            }
+            v = (v as string).split(this.valueSeparator);
+        } else {
+            v = [v];
+        }
+        // var items = AtomArray.intersect(dataItems, this._valuePath, v);
+        sitems.length = 0;
+        const vp = this.valuePath;
+        for (const item of v) {
+            // tslint:disable-next-line:triple-equals
+            if (dataItems.find( (f) => f[vp] == item )) {
+                sitems.push(item);
+            }
+        }
+        AtomBinder.refreshItems(sitems);
+    }
+
     public get items(): any[] {
         return this.mItems;
     }
