@@ -1,11 +1,11 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.74",
+  "version": "1.0.75",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postversion": "npm publish"
+    "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
     "type": "git",
