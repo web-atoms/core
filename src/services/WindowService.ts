@@ -108,6 +108,7 @@ export class WindowService {
                 e.style.left = x + "px";
                 e.style.top = (y + h) + "px";
                 popup.element.classList.add("close-popup");
+                this.popups.push(popup);
             }
 
             document.body.appendChild(e);
