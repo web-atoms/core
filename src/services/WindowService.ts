@@ -47,6 +47,7 @@ export class WindowService {
     public alert(message: string, title?: string): Promise<any> {
         const vm = new AtomAlertViewModel();
         vm.okTitle = "Ok";
+        vm.cancelTitle = "";
         vm.title = title;
         vm.message = message;
         return this.openWindow("alert-window", vm);

@@ -171,16 +171,27 @@ export class AtomBinder {
         });
     }
 
-    public static clear(arg: any): any {
-        arg.length = 0;
-        this.invokeItemsEvent(arg, "refresh", 0, null);
+    public static clear(a: any[]): any {
+        a.length = 0;
+        this.invokeItemsEvent(a, "refresh", -1, null);
+        AtomBinder.refreshValue(a, "length");
     }
 
-    public static addItem(arg0: any, arg1: any): any {
-        throw new Error("Method not implemented.");
+    public static addItem(a: any[], item: any): any {
+        const index = a.length;
+        a.push(item);
+        this.invokeItemsEvent(a, "add", index, item);
+        AtomBinder.refreshValue(a, "length");
     }
 
-    public static removeItem(arg0: any, arg1: any): any {
-        throw new Error("Method not implemented.");
+    public static removeItem(a: any[], item: any): boolean {
+        const i = a.findIndex( (x) => x === item);
+        if (i === -1) {
+            return false;
+        }
+        a.splice(i, 1);
+        AtomBinder.invokeItemsEvent(a, "remove", i, item);
+        AtomBinder.refreshValue(a, "length");
+        return true;
     }
 }

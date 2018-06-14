@@ -713,10 +713,11 @@ export class AtomItemsControl extends AtomControl {
 
         if (/remove/gi.test(key)) {
             // tslint:disable-next-line:no-shadowed-variable
-            for (const ce of AtomUI.childEnumerator(this.itemsPresenter)) {
+            const ip = this.itemsPresenter || this.element;
+            for (const ce of AtomUI.childEnumerator(ip)) {
                 // tslint:disable-next-line:no-shadowed-variable
-                const c: any = ce;
-                if (c.atomControl && c.atomControl.get_data() === item) {
+                const c = ce as IAtomControlElement;
+                if (c.atomControl && c.atomControl.data === item) {
                     c.atomControl.dispose();
                     ce.remove();
                     break;

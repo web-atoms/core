@@ -43,6 +43,9 @@ class AtomAlertWindowCommandBar extends AtomControl {
         this.bind(okButton, "text", [["viewModel", "okTitle"]]);
         this.bind(cancelButton, "text", [["viewModel", "cancelTitle"]]);
 
+        this.bind(okButton, "styleDisplay", [["viewModel", "okTitle"]], false, (v) => v ? "" : "none");
+        this.bind(cancelButton, "styleDisplay", [["viewModel", "cancelTitle"]], false, (v) => v ? "" : "none");
+
         this.bindEvent(okButton, "click", (e) => {
 
             this.viewModel.onOkClicked();

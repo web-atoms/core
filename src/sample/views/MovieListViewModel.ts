@@ -1,3 +1,4 @@
+import { AtomBinder } from "../../core/AtomBinder";
 import { bindableProperty } from "../../core/bindable-properties";
 import { Inject } from "../../di/Inject";
 import { WindowService } from "../../services/WindowService";
@@ -37,6 +38,8 @@ export class MovieListViewModel extends AtomViewModel {
         if (! (await this.windowService.confirm("Are you sure you want to delete?", "Confirm"))) {
             return;
         }
+        AtomBinder.removeItem(this.movies, data);
+        await this.windowService.alert("Movie deleted successfully.");
     }
 
 }

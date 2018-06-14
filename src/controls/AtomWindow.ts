@@ -32,6 +32,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         // add close button
         const closeButton = document.createElement("button");
         closeButton.classList.add(style.closeButton.className);
+        closeButton.textContent = "x";
 
         this.bindEvent(closeButton, "click", (e) => {
             const w = this.templateParent as AtomWindow;
@@ -72,6 +73,12 @@ export class AtomWindow extends AtomControl {
     public height: string = "200px";
 
     @bindableProperty
+    public x: number = -1;
+
+    @bindableProperty
+    public y: number = -1;
+
+    @bindableProperty
     public windowTemplate: IClassOf<AtomControl>;
 
     @bindableProperty
@@ -109,6 +116,8 @@ export class AtomWindow extends AtomControl {
         if (!(this.windowTemplate && this.frameTemplate)) {
             return;
         }
+
+        this.bind(this.element, "title", [["viewModel", "title"]]);
 
         // let us create frame first...
         const frame = new (this.frameTemplate)();

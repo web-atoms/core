@@ -26,7 +26,7 @@ export class AtomViewModel {
 
     private subscriptions: IVMSubscription[];
 
-    private validations: Array<AtomWatcher<AtomViewModel>> = [];
+    private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
     private mChannelPrefix: string = "";
     public get channelPrefix(): string {
@@ -52,6 +52,36 @@ export class AtomViewModel {
 
     public get isReady(): boolean {
         return this.pendingInits === null;
+    }
+
+    public get errors(): Array<{ name: string, error: string}> {
+        const e: Array<{ name: string, error: string}> = [];
+        for (const v of this.validations) {
+            if (!v.initialized) {
+                v.watcher.evaluate(true);
+                v.initialized = true;
+            }
+            const error = this [v.name];
+            if (error) {
+                e.push( { name: v.name, error});
+            }
+        }
+        return e;
+    }
+
+    public get isValid(): boolean {
+        let valid = true;
+        for (const v of this.validations) {
+            if (!v.initialized) {
+                v.watcher.evaluate(true);
+                v.initialized = true;
+            }
+            if (this[v.name]) {
+                valid = false;
+            }
+        }
+        AtomBinder.refreshValue(this, "errors");
+        return valid;
     }
 
     private mServiceProvider: ServiceProvider = null;
@@ -122,16 +152,16 @@ export class AtomViewModel {
         }
     }
 
-    /**
-     * Internal method, do not use, instead use errors.hasErrors()
-     *
-     * @memberof AtomViewModel
-     */
-    public runValidation(): void {
-        for (const v of this.validations) {
-            v.evaluate(true);
-        }
-    }
+    // /**
+    //  * Internal method, do not use, instead use errors.hasErrors()
+    //  *
+    //  * @memberof AtomViewModel
+    //  */
+    // public runValidation(): void {
+    //     for (const v of this.validations) {
+    //         v.watcher.evaluate(true);
+    //     }
+    // }
 
     /**
      * Register a disposable to be disposed when view model will be disposed.
@@ -268,72 +298,72 @@ export class AtomViewModel {
 
 }
 
-/**
- * AtomErrors class holds all validation errors registered in view model.
- *
- * hasErrors() method will return true if there are any validation errors in this AtomErrors object.
- *
- * @export
- * @class AtomErrors
- */
-export class AtomErrors {
+// /**
+//  * AtomErrors class holds all validation errors registered in view model.
+//  *
+//  * hasErrors() method will return true if there are any validation errors in this AtomErrors object.
+//  *
+//  * @export
+//  * @class AtomErrors
+//  */
+// export class AtomErrors {
 
-    private static isInternal = /^\_(\_target|\$\_)/;
+//     private static isInternal = /^\_(\_target|\$\_)/;
 
-    private mTarget: AtomViewModel;
+//     private mTarget: AtomViewModel;
 
-    /**
-     * Creates an instance of AtomErrors.
-     * @param {AtomViewModel} target
-     * @memberof AtomErrors
-     */
-    constructor(target: AtomViewModel) {
-        this.mTarget = target;
-    }
+//     /**
+//      * Creates an instance of AtomErrors.
+//      * @param {AtomViewModel} target
+//      * @memberof AtomErrors
+//      */
+//     constructor(target: AtomViewModel) {
+//         this.mTarget = target;
+//     }
 
-    /**
-     *
-     *
-     * @returns {boolean}
-     * @memberof AtomErrors
-     */
-    public hasErrors(): boolean {
+//     /**
+//      *
+//      *
+//      * @returns {boolean}
+//      * @memberof AtomErrors
+//      */
+//     public hasErrors(): boolean {
 
-        if (this.mTarget) {
-            this.mTarget.runValidation();
-        }
+//         if (this.mTarget) {
+//             this.mTarget.runValidation();
+//         }
 
-        for (const k in this) {
-            if (AtomErrors.isInternal.test(k)) {
-                continue;
-            }
-            if (this.hasOwnProperty(k)) {
-                if (this[k]) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//         for (const k in this) {
+//             if (AtomErrors.isInternal.test(k)) {
+//                 continue;
+//             }
+//             if (this.hasOwnProperty(k)) {
+//                 if (this[k]) {
+//                     return true;
+//                 }
+//             }
+//         }
+//         return false;
+//     }
 
-    /**
-     *
-     *
-     * @memberof AtomErrors
-     */
-    public clear(): void {
-        for (const k in this) {
-            if (AtomErrors.isInternal.test(k)) {
-                continue;
-            }
-            if (this.hasOwnProperty(k)) {
-                this[k] = null;
-                AtomBinder.refreshValue(this, k);
-            }
-        }
-    }
+//     /**
+//      *
+//      *
+//      * @memberof AtomErrors
+//      */
+//     public clear(): void {
+//         for (const k in this) {
+//             if (AtomErrors.isInternal.test(k)) {
+//                 continue;
+//             }
+//             if (this.hasOwnProperty(k)) {
+//                 this[k] = null;
+//                 AtomBinder.refreshValue(this, k);
+//             }
+//         }
+//     }
 
-}
+// }
 
 interface IAtomViewModel {
     setupWatch(ft: () => any, proxy?: () => any, forValidation?: boolean): IDisposable ;
