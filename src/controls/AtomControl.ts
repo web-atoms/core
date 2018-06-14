@@ -106,7 +106,26 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 name = name.substr(5);
                 name = name.charAt(0).toLowerCase() + name.substr(1);
                 // element.style[name] = value;
-                this.bindEvent(element, name, value);
+                this.bindEvent(element, name, (...e: any[]) => {
+                    try {
+                        const f = value as (...v: any[]) => any;
+                        const pr = f.apply(this, e) as Promise<any>;
+                        if (pr && pr.catch && pr.then) {
+                            pr.catch((error) => {
+                                if (/cancelled/i.test(error)) {
+                                    // tslint:disable-next-line:no-console
+                                    console.warn(error);
+                                    return;
+                                }
+                                // tslint:disable-next-line:no-console
+                                console.error(error);
+                            });
+                        }
+                    } catch (er1) {
+                        // tslint:disable-next-line:no-console
+                        console.error(er1);
+                    }
+                });
                 return;
             }
 

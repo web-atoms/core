@@ -467,7 +467,7 @@ export function watch(target: AtomViewModel, key: string | symbol, descriptor: a
 export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
 
     // tslint:disable-next-line:ban-types
-    const getMethod = descriptor.get as Function;
+    const getMethod = descriptor.get as (() => any);
 
     // // trick is to change property descriptor...
     // delete target[key];
