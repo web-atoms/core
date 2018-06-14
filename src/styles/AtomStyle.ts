@@ -26,8 +26,10 @@ export class AtomStyle extends AtomViewModel {
 
         pairs = pairs || {};
 
-        for (const iterator of this.toPairs()) {
-            const element = iterator.value;
+        const map = PropertyMap.from(this);
+
+        for (const iterator of map.names) {
+            const element = this[iterator];
 
             // if it is nested style
             const style = element as AtomStyle;

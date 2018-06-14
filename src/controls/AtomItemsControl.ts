@@ -1,5 +1,5 @@
 import { Atom } from "../Atom";
-import { AtomUI } from "../core/atom-ui";
+import { AtomUI, ChildEnumerator } from "../core/atom-ui";
 import { AtomBinder } from "../core/AtomBinder";
 import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
@@ -599,8 +599,9 @@ export class AtomItemsControl extends AtomControl {
             AtomUI.scrollTop(this.mVirtualContainer, scrollTop * vcHeight);
             return;
         }
-        for (const aeItem of AtomUI.childEnumerator(this.itemsPresenter)) {
-            const item: any = aeItem;
+        const en = new ChildEnumerator(this.itemsPresenter || this.element);
+        while (en.next()) {
+            const item: any = en.current;
             const dataItem = item.atomControl ? item.atomControl.get_data() : item;
             if (this.isSelected(dataItem)) {
                 item.scrollIntoView();
@@ -714,7 +715,9 @@ export class AtomItemsControl extends AtomControl {
         if (/remove/gi.test(key)) {
             // tslint:disable-next-line:no-shadowed-variable
             const ip = this.itemsPresenter || this.element;
-            for (const ce of AtomUI.childEnumerator(ip)) {
+            const en = new ChildEnumerator(ip);
+            while (en.next()) {
+                const ce = en.current;
                 // tslint:disable-next-line:no-shadowed-variable
                 const c = ce as IAtomControlElement;
                 if (c.atomControl && c.atomControl.data === item) {
@@ -771,9 +774,10 @@ export class AtomItemsControl extends AtomControl {
             const lastItem = items[index];
             let last: HTMLElement = null;
             let cindex: number = 0;
-            for (const ceItem of AtomUI.childEnumerator(this.itemsPresenter)) {
+            const en = new ChildEnumerator(this.itemsPresenter);
+            while (en.next()) {
                 if (cindex === index) {
-                    last = ceItem;
+                    last = en.current;
                     break;
                 }
                 cindex++;
@@ -1024,7 +1028,9 @@ export class AtomItemsControl extends AtomControl {
     }
 
     protected disposeChildren(e: HTMLElement): void {
-        for (const iterator of AtomUI.childEnumerator(e)) {
+        const en = new ChildEnumerator(e);
+        while (en.next()) {
+            const iterator = en.current;
             const ac = (iterator as any).atomControl as AtomControl;
             ac.dispose();
         }

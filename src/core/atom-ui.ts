@@ -1,6 +1,29 @@
 import { AtomControl } from "../controls/AtomControl";
 import { INameValuePairs, INameValues } from "./types";
 
+export class ChildEnumerator {
+
+    private item: HTMLElement;
+
+    public get current(): HTMLElement {
+        return this.item;
+    }
+
+    constructor(private e: HTMLElement) {
+        this.item = e.nextElementSibling as HTMLElement;
+    }
+
+    public next(): boolean {
+        if (!this.item) {
+            this.item = this.e.nextElementSibling as HTMLElement;
+            return true;
+        }
+        this.item = this.item.nextElementSibling as HTMLElement;
+        return this.item ? true : false;
+    }
+
+}
+
 export class AtomUI {
 // no longer needed - Akash Kava
 //    public static getAtomType(arg0: any): any {
@@ -46,15 +69,25 @@ export class AtomUI {
         throw new Error("Method not implemented.");
     }
 
-    public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
+    public static forEachChild(e: HTMLElement, a: (c: HTMLElement) => void): void {
         let en: Element = e.firstElementChild;
         while (en) {
             if (en as HTMLElement) {
-                yield en as HTMLElement;
+                a(e);
             }
             en = en.nextElementSibling;
         }
     }
+
+    // public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
+    //     let en: Element = e.firstElementChild;
+    //     while (en) {
+    //         if (en as HTMLElement) {
+    //             yield en as HTMLElement;
+    //         }
+    //         en = en.nextElementSibling;
+    //     }
+    // }
 
     public static parseUrl(url: string): INameValues {
         const r: INameValues = {};

@@ -1,6 +1,6 @@
 import { Atom } from "../Atom";
 import { AtomControl } from "../controls/AtomControl";
-import { AtomUI } from "./atom-ui";
+import { AtomUI, ChildEnumerator } from "./atom-ui";
 import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
@@ -91,8 +91,9 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
     public visitDescendents(element: HTMLElement, action: (e: HTMLElement, ac: AtomControl) => boolean): void  {
 
-        for (const iterator of AtomUI.childEnumerator(element)) {
-
+        const en = new ChildEnumerator(element);
+        while (en.next()) {
+            const iterator = en.current;
             const eany = iterator as any;
             const ac = eany ? eany.atomControl : undefined;
 

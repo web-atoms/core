@@ -1,4 +1,4 @@
-import { AtomUI } from "../core/atom-ui";
+import { AtomUI, ChildEnumerator } from "../core/atom-ui";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 
@@ -9,7 +9,10 @@ export class AtomListBox extends AtomItemsControl {
     public updateSelectionBindings(): void {
         super.updateSelectionBindings();
 
-        for (const i of AtomUI.childEnumerator(this.itemsPresenter)) {
+        const ip = this.itemsPresenter || this.element;
+        const en = new ChildEnumerator(ip);
+        while (en.next()) {
+            const i = en.current;
             const child = (i as IAtomControlElement).atomControl;
             if (child) {
                 if (this.selectedItems.find( (x) => x === child.data)) {

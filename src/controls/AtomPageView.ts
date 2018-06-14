@@ -1,6 +1,8 @@
 // tslint:disable:ban-types no-console
 import { Atom } from "../Atom";
+import { AtomUI } from "../core/atom-ui";
 import { AtomUri } from "../core/atom-uri";
+import { AtomDispatcher } from "../core/AtomDispatcher";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
@@ -8,8 +10,6 @@ import { WindowService } from "../services/WindowService";
 import { AtomPageViewModel } from "../view-model/AtomPageViewModel";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomControl } from "./AtomControl";
-import { AtomUI } from "../core/atom-ui";
-import { AtomDispatcher } from "../core/AtomDispatcher";
 
 export class AtomPageView
     extends AtomControl
@@ -162,7 +162,7 @@ export class AtomPageView
 
         const q: any = uri.query;
 
-        const ctrl: AtomControl = this.createControl(ct, null, q);
+        const ctrl: AtomControl = this.createControl(ct, q);
 
         Atom.postAsync(async () => {
             const vm = ctrl.viewModel;
