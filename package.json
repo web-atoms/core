@@ -1,6 +1,6 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.68",
+  "version": "1.0.69",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
