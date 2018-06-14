@@ -1,7 +1,7 @@
 import { AtomBinder } from "./AtomBinder";
 import { IDisposable, PathList } from "./types";
 
-const viewModelParseWatchCache: any = {};
+const viewModelParseWatchCache: {[key: string]: PathList[] } = {};
 
 function parsePath(f: any): PathList[] {
     let str: string = f.toString().trim();
@@ -73,9 +73,11 @@ function parsePath(f: any): PathList[] {
 
     // console.log(`Watching: ${path.join(", ")}`);
 
-    viewModelParseWatchCache[key] = path;
+    const pl = path.map( (p1) => p1.split("."));
 
-    return path.map( (p1) => p1.split("."));
+    viewModelParseWatchCache[key] = pl;
+
+    return pl;
 }
 
 export class ObjectProperty {
