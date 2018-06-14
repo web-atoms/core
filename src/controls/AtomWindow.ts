@@ -16,8 +16,8 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
         this.element = document.createElement("div");
         this.element.classList.add(style.frame.className);
-        this.bind(this.element, "styleMinWidth", [["templateParent", "width"]]);
-        this.bind(this.element, "styleMinHeight", [["templateParent", "height"]]);
+        this.bind(this.element, "styleWidth", [["templateParent", "width"]]);
+        this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
         // add title host
 
         const titleHost = document.createElement("div");
