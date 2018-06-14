@@ -185,7 +185,6 @@ export class AtomWatcher<T> implements IDisposable {
         this.path = path.map( (x) => x.map( (y) => new ObjectProperty(y) ) );
 
         if (!this.path.length) {
-            // throw new Error("There is nothing to watch");
             // tslint:disable-next-line:no-debugger
             debugger;
             // tslint:disable-next-line:no-console

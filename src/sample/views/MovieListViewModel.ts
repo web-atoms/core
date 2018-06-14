@@ -2,7 +2,7 @@ import { AtomBinder } from "../../core/AtomBinder";
 import { bindableProperty } from "../../core/bindable-properties";
 import { Inject } from "../../di/Inject";
 import { WindowService } from "../../services/WindowService";
-import { AtomViewModel } from "../../view-model/AtomViewModel";
+import { AtomViewModel, validate } from "../../view-model/AtomViewModel";
 
 export interface IMovie {
     label: string;
@@ -28,6 +28,11 @@ export class MovieListViewModel extends AtomViewModel {
     constructor(
         @Inject private windowService: WindowService) {
         super();
+    }
+
+    @validate
+    public get errorSelectedMovie(): string {
+        return this.selectedMovie ? "" : "Please select any movie";
     }
 
     public onItemClick(data: IMovie): void {

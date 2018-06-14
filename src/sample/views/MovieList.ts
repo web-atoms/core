@@ -11,6 +11,11 @@ export class MovieList extends AtomControl {
         ul.itemTemplate = MovieListItemTemplate;
         ul.bind(ul.element, "items", [["viewModel", "movies"]], false);
         ul.bind(ul.element, "selectedItem", [["viewModel", "selectedMovie"]], true);
+
+        const e = document.createElement("span");
+        this.append(e);
+        e.style.color = "red";
+        this.bind(e, "text", [["viewModel", "errorSelectedMovie"]]);
     }
 }
 

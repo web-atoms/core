@@ -206,7 +206,7 @@ export class AtomViewModel {
      * @returns {IDisposable}
      * @memberof AtomViewModel
      */
-    protected setupWatch(ft: () => any, proxy?: () => void, forValidation?: boolean): IDisposable {
+    protected setupWatch(ft: () => any, proxy?: () => void, forValidation?: boolean, name?: string): IDisposable {
 
         const d: AtomWatcher<any> = new AtomWatcher<any>(
             this, ft, !forValidation && this.isReady, forValidation, proxy );
@@ -217,6 +217,9 @@ export class AtomViewModel {
             this.runAfterInit(() => {
                 d.runEvaluate();
             });
+        } else {
+            this.validations = this.validations || [];
+            this.validations.push({ name, watcher: d, initialized: false});
         }
         return new AtomDisposable(() => {
             ArrayHelper.remove(this.disposables, (f) => f === d);
@@ -366,7 +369,7 @@ export class AtomViewModel {
 // }
 
 interface IAtomViewModel {
-    setupWatch(ft: () => any, proxy?: () => any, forValidation?: boolean): IDisposable ;
+    setupWatch(ft: () => any, proxy?: () => any, forValidation?: boolean, name?: string): IDisposable ;
     subscribe(channel: string, c: (ch: string, data: any) => void): void;
 }
 
@@ -462,20 +465,27 @@ export function watch(target: AtomViewModel, key: string | symbol, descriptor: a
 }
 
 export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
-    // tslint:disable-next-line:no-debugger
-    debugger;
+
+    const getMethod = descriptor.get;
+
+    // // trick is to change property descriptor...
+    // delete target[key];
+
+    descriptor.get = () => null;
+
+    // // repalce it with dummy descriptor...
+    // Object.defineProperty(target, key, descriptor);
+
     registerInit(target, (vm) => {
         const ivm = (vm as any) as IAtomViewModel;
-        if (descriptor && descriptor.get) {
-            const pv = descriptor.get;
-            descriptor.get = () => null;
-            ivm.setupWatch(pv, () => {
-                descriptor.get = pv;
-                vm.refresh(key.toString());
-            }, true);
-            return;
-        }
-        ivm.setupWatch(vm[key], null, true);
+        ivm.setupWatch(getMethod, () => {
+            descriptor.get = getMethod;
+
+            Object.defineProperty(target, key, descriptor);
+
+            vm.refresh(key.toString());
+        }, true, key.toString());
+        return;
     });
 
 }
