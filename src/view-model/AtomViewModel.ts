@@ -462,11 +462,11 @@ export function watch(target: AtomViewModel, key: string | symbol, descriptor: a
 }
 
 export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+    // tslint:disable-next-line:no-debugger
+    debugger;
     registerInit(target, (vm) => {
         const ivm = (vm as any) as IAtomViewModel;
         if (descriptor && descriptor.get) {
-            // tslint:disable-next-line:no-debugger
-            debugger;
             const pv = descriptor.get;
             descriptor.get = () => null;
             ivm.setupWatch(pv, () => {
