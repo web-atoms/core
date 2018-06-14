@@ -8,6 +8,7 @@ import { WindowService } from "../services/WindowService";
 import { AtomPageViewModel } from "../view-model/AtomPageViewModel";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomControl } from "./AtomControl";
+import { AtomUI } from "../core/atom-ui";
 
 export class AtomPageView
     extends AtomControl
@@ -36,6 +37,7 @@ export class AtomPageView
 
     constructor(e: HTMLElement) {
         super(e);
+        AtomUI.assignID(this.element);
         this.windowService = ServiceProvider.global.get(WindowService);
         e.style.position = "relative";
         this.backCommand = () => {
@@ -110,11 +112,10 @@ export class AtomPageView
         }
     }
 
-    public createControl(c: IClassOf<AtomControl>, vmt: IClassOf<AtomViewModel>, q?: any): AtomControl {
-        const div: HTMLElement = document.createElement("div");
-        div.id = `${(this.element as HTMLElement).id}_${this.stack.length + 1}`;
+    public createControl(ctrl: AtomControl, vmt: IClassOf<AtomViewModel>, q?: any): AtomControl {
 
-        const ctrl: any = new (c)(div);
+        const div: HTMLElement = ctrl.element;
+        div.id = `${this.element.id}_${this.stack.length + 1}`;
 
         let vm: any = null;
         if (vmt) {
