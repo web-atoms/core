@@ -80,7 +80,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
         // if value is a promise
         const p = value as Promise<any>;
-        if (p.then && p.catch) {
+        if (p && p.then && p.catch) {
             p.then( (r) => {
                 this.setLocalValue(element, name, r);
             }).catch((e) => {
