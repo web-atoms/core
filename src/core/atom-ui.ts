@@ -16,9 +16,9 @@ export class ChildEnumerator {
     public next(): boolean {
         if (!this.item) {
             this.item = this.e.nextElementSibling as HTMLElement;
-            return true;
+        } else {
+            this.item = this.item.nextElementSibling as HTMLElement;
         }
-        this.item = this.item.nextElementSibling as HTMLElement;
         return this.item ? true : false;
     }
 
