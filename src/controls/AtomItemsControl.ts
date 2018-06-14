@@ -128,13 +128,16 @@ export class AtomItemsControl extends AtomControl {
 
     public set value(v: any) {
         this.mValue = v;
+        const dataItems = this.items;
+        if (!dataItems) {
+            return;
+        }
         const sitems = this.selectedItems;
         if (v === undefined || v === null) {
             // reset...
             AtomBinder.clear(sitems);
             return;
         }
-        const dataItems = this.items;
         if (this.allowMultipleSelection && this.valueSeparator) {
             if (typeof v !== "string") {
                 v = "" + v;
