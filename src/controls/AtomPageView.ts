@@ -2,14 +2,17 @@
 import { Atom } from "../Atom";
 import { AtomUri } from "../core/atom-uri";
 import { bindableProperty } from "../core/bindable-properties";
-import { IClassOf, IDisposable } from "../core/types";
+import { IClassOf, IDisposable, INotifyPropertyChanged } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
 import { WindowService } from "../services/WindowService";
 import { AtomPageViewModel } from "../view-model/AtomPageViewModel";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomControl } from "./AtomControl";
 
-export class AtomPageView extends AtomControl {
+export class AtomPageView
+    extends AtomControl
+    implements INotifyPropertyChanged {
+
     public stack: AtomControl[] = [];
 
     @bindableProperty
@@ -28,6 +31,8 @@ export class AtomPageView extends AtomControl {
     private disposables: IDisposable[] = [];
 
     private windowService: WindowService;
+
+    private lastUrl: string;
 
     constructor(e: HTMLElement) {
         super(e);
@@ -189,4 +194,23 @@ export class AtomPageView extends AtomControl {
             .join("");
     }
 
+    public onUpdateUI(): void {
+        super.onUpdateUI();
+        if (this.url === this.lastUrl) {
+            return;
+        }
+
+        this.lastUrl = this.url;
+        this.load(this.lastUrl);
+    }
+
+    public onPropertyChanged(name: string): void {
+        super.onPropertyChanged(name);
+
+        switch (name) {
+            case "url":
+                this.invalidate();
+                break;
+        }
+    }
 }
