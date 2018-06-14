@@ -83,7 +83,7 @@ export class WindowService {
 
         const message = `atom-window-cancel:${peek.element.id}`;
         const device = ServiceProvider.global.get(AtomDevice);
-        device.broadcast(message, "canceled");
+        device.broadcast(message, "cancelled");
     }
 
     private openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {

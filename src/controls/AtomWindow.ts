@@ -109,7 +109,7 @@ export class AtomWindow extends AtomControl {
     public close(): void {
         const message = `atom-window-cancel:${this.element.id}`;
         const device = ServiceProvider.global.get(AtomDevice);
-        device.broadcast(message, "canceled");
+        device.broadcast(message, "cancelled");
     }
 
     public onUpdateUI(): void {
