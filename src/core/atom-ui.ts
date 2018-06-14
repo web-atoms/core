@@ -10,7 +10,6 @@ export class ChildEnumerator {
     }
 
     constructor(private e: HTMLElement) {
-        this.item = e.nextElementSibling as HTMLElement;
     }
 
     public next(): boolean {
