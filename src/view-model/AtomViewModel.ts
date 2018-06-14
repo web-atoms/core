@@ -466,7 +466,8 @@ export function watch(target: AtomViewModel, key: string | symbol, descriptor: a
 
 export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
 
-    const getMethod = descriptor.get;
+    // tslint:disable-next-line:ban-types
+    const getMethod = descriptor.get as Function;
 
     // // trick is to change property descriptor...
     // delete target[key];
@@ -477,12 +478,25 @@ export function validate(target: AtomViewModel, key: string | symbol, descriptor
     // Object.defineProperty(target, key, descriptor);
 
     registerInit(target, (vm) => {
+        const initialized = { i: false };
         const ivm = (vm as any) as IAtomViewModel;
+
+        Object.defineProperty(ivm, key, {
+            enumerable: true,
+            configurable: true,
+            get() {
+                if (initialized.i) {
+                    return getMethod.apply(this);
+                }
+                return null;
+            }
+        });
+
         ivm.setupWatch(getMethod, () => {
-            descriptor.get = getMethod;
+            // descriptor.get = getMethod;
 
-            Object.defineProperty(target, key, descriptor);
-
+            // Object.defineProperty(target, key, descriptor);
+            initialized.i = true;
             vm.refresh(key.toString());
         }, true, key.toString());
         return;
