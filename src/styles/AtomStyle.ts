@@ -48,14 +48,4 @@ export class AtomStyle extends AtomViewModel {
         return pairs;
     }
 
-    private *toPairs(): Iterable<{ key: string, value: any}> {
-        const map = PropertyMap.from(this);
-        for (const key of map.names) {
-            if (!/toPairs/i.test(key)) {
-                const element = this[key];
-                yield { key, value: element};
-            }
-        }
-    }
-
 }
