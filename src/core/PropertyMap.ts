@@ -23,7 +23,7 @@ export class PropertyMap {
         while (c) {
             const names = Object.getOwnPropertyNames(c);
             for (const name of names) {
-                if (/hasOwnProperty|constructor|toString/i.test(name)) {
+                if (/hasOwnProperty|constructor|toString|isValid|errors/i.test(name)) {
                     continue;
                 }
                 // map[name] = Object.getOwnPropertyDescriptor(c, name) ? true : false;
