@@ -17,12 +17,10 @@ export class AtomTheme extends AtomStyleSheet
         super("atom-theme");
     }
 
-    @watch
     public get window(): AtomWindowStyle {
         return this.createStyle(AtomWindowStyle, "window");
     }
 
-    @watch
     public get button(): AtomButtonStyle {
         return this.createStyle(AtomButtonStyle, "button");
     }
@@ -37,7 +35,6 @@ export class AtomButtonStyle extends AtomStyle {
 
 export class AtomWindowStyle extends AtomStyle {
 
-    @watch
     public get frameHost(): AtomStyleClass {
         return this.createClass("frameHost", {
             position: "absolute",
@@ -48,7 +45,6 @@ export class AtomWindowStyle extends AtomStyle {
         });
     }
 
-    @watch
     public get frame(): AtomStyleClass {
         return this.createClass("frame", {
             "position": "absolute",
@@ -66,7 +62,6 @@ export class AtomWindowStyle extends AtomStyle {
         });
     }
 
-    @watch
     public get titleHost(): AtomStyleClass {
         return this.createClass("titleHost", {
             "position": "absolute",
@@ -79,14 +74,12 @@ export class AtomWindowStyle extends AtomStyle {
         });
     }
 
-    @watch
     public get title(): AtomStyleClass {
         return this.createClass("title", {
             margin: "auto"
         });
     }
 
-    @watch
     public get closeButton(): AtomStyleClass {
         return this.createClass("close-button", {
             "position": "absolute",
@@ -106,7 +99,6 @@ export class AtomWindowStyle extends AtomStyle {
         });
     }
 
-    @watch
     public get content(): AtomStyleClass {
         return this.createClass("content", {
             "position": "relative",
@@ -116,7 +108,6 @@ export class AtomWindowStyle extends AtomStyle {
         });
     }
 
-    @watch
     public get commandBar(): AtomStyleClass {
         return this.createClass("command-bar", {
             "position": "absolute",
@@ -129,7 +120,6 @@ export class AtomWindowStyle extends AtomStyle {
         });
     }
 
-    @watch
     public get commandBarButton(): AtomStyleClass {
         return this.createClass("command-bar button", {
             "border-radius": "3px",

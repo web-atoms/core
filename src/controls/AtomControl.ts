@@ -77,6 +77,19 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     // }
 
     public setLocalValue(element: HTMLElement, name: string, value: any): void {
+
+        // if value is a promise
+        const p = value as Promise<any>;
+        if (p.then && p.catch) {
+            p.then( (r) => {
+                this.setLocalValue(element, name, r);
+            }).catch((e) => {
+                // tslint:disable-next-line:no-console
+                console.error(e);
+            });
+            return;
+        }
+
         if ((!element || element === this.element) &&  this.hasProperty(name)) {
             this[name] = value;
         } else {
