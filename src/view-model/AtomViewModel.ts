@@ -465,7 +465,10 @@ export function validate(target: AtomViewModel, key: string | symbol, descriptor
     registerInit(target, (vm) => {
         const ivm = (vm as any) as IAtomViewModel;
         if (descriptor && descriptor.get) {
-            ivm.setupWatch(descriptor.get, () => {
+            const pv = descriptor.get;
+            descriptor.get = () => null;
+            ivm.setupWatch(pv, () => {
+                descriptor.get = pv;
                 vm.refresh(key.toString());
             }, true);
             return;

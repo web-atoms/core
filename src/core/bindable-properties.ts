@@ -7,9 +7,7 @@ export function bindableProperty(target: any, key: string): any {
 
     const keyName: string = "_" + key;
 
-    if (!target[keyName]) {
-        target[keyName] = iVal;
-    }
+    target[keyName] = iVal;
 
     // property getter
     const getter: () => any = function(): any {
