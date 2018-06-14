@@ -9,6 +9,7 @@ import { AtomPageViewModel } from "../view-model/AtomPageViewModel";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomControl } from "./AtomControl";
 import { AtomUI } from "../core/atom-ui";
+import { AtomDispatcher } from "../core/AtomDispatcher";
 
 export class AtomPageView
     extends AtomControl
@@ -112,14 +113,13 @@ export class AtomPageView
         }
     }
 
-    public createControl(ctrl: AtomControl, vmt: IClassOf<AtomViewModel>, q?: any): AtomControl {
+    public createControl(ctrl: AtomControl, q?: any): AtomControl {
 
         const div: HTMLElement = ctrl.element;
         div.id = `${this.element.id}_${this.stack.length + 1}`;
 
-        let vm: any = null;
-        if (vmt) {
-            vm = this.resolve(vmt);
+        AtomDispatcher.call(() => {
+            const vm: any = ctrl.viewModel;
             if (q) {
                 for (const key in q) {
                     if (q.hasOwnProperty(key)) {
@@ -128,17 +128,7 @@ export class AtomPageView
                     }
                 }
             }
-            ctrl.viewModel = vm;
-        } else {
-            if (q) {
-                for (const key in q) {
-                    if (q.hasOwnProperty(key)) {
-                        const value = q[key];
-                        vm[key] = value;
-                    }
-                }
-            }
-        }
+        });
 
         return ctrl;
     }
