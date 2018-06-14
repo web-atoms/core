@@ -89,6 +89,14 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 return;
             }
 
+            if (/^event/.test(name)) {
+                name = name.substr(5);
+                name = name.charAt(0).toLowerCase() + name.substr(1);
+                // element.style[name] = value;
+                this.bindEvent(element, name, value);
+                return;
+            }
+
             switch (name) {
                 case "text":
                     element.textContent = value;
