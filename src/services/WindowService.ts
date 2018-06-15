@@ -1,16 +1,16 @@
 import { Atom } from "../Atom";
 import { AtomAlertWindow } from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
+import { AtomUI } from "../core/atom-ui";
 import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../di/ServiceCollection";
 import { ServiceProvider } from "../di/ServiceProvider";
-import { AtomTheme } from "../Theme";
+import { AtomTheme } from "../styles/Theme";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import { AtomUI } from "../core/atom-ui";
 
 @RegisterSingleton
 export class WindowService {

@@ -22,7 +22,7 @@ export class AtomStyle
     ) {
     }
 
-    public createClass(name: string, props: INameValuePairs ): AtomStyleClass {
+    public createClass(name: string, props: INameValuePairs): AtomStyleClass {
         return this.replace(new AtomStyleClass(this.styleSheet, this, `${this.name}-${name}`, props));
     }
 

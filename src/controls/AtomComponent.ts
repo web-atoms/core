@@ -6,7 +6,7 @@ import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
-import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, PathList }
+import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
 
@@ -35,7 +35,8 @@ export interface IAtomComponent<T> {
 }
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
-    implements IAtomComponent<IAtomElement> {
+    implements IAtomComponent<IAtomElement>,
+    INotifyPropertyChanged {
 
     public element: T;
 

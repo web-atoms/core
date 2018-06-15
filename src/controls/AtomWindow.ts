@@ -3,7 +3,8 @@ import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomStyle } from "../styles/AtomStyle";
-import { AtomTheme, AtomWindowStyle } from "../Theme";
+import { AtomWindowStyle } from "../styles/AtomWindowStyle";
+import { AtomTheme } from "../styles/Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
 export class AtomWindowFrameTemplate extends AtomTemplate {

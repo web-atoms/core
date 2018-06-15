@@ -1,6 +1,6 @@
 import "test-dom";
 import { ServiceProvider } from "../di/ServiceProvider";
-import { AtomTheme } from "../Theme";
+import { AtomTheme } from "../styles/Theme";
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
 @Category("Styles")

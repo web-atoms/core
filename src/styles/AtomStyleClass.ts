@@ -25,6 +25,15 @@ export class AtomStyleClass
         }
     }
 
+    public clone(name: string, pairs?: INameValuePairs): AtomStyleClass {
+        return this.parent.createClass(name, this.styles).updateStyle(pairs);
+    }
+
+    public clear(): AtomStyleClass {
+        this.styles = {};
+        return this;
+    }
+
     public updateStyle(props?: INameValuePairs): AtomStyleClass {
         for (const key in props) {
             if (props.hasOwnProperty(key)) {

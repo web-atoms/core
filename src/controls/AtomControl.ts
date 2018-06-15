@@ -1,5 +1,7 @@
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomBridge } from "../core/bridge";
+import { ServiceProvider } from "../di/ServiceProvider";
+import { AtomTheme } from "../styles/Theme";
 import { AtomComponent } from "./AtomComponent";
 
 // tslint:disable-next-line:interface-name
@@ -10,6 +12,18 @@ export interface IAtomControlElement extends HTMLElement {
 }
 
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
+
+    private mTheme: AtomTheme;
+    private mCachedTheme: AtomTheme;
+    public get theme(): AtomTheme {
+        return this.mTheme ||
+            this.mCachedTheme ||
+            (this.mCachedTheme = (this.parent ? this.parent.theme : ServiceProvider.global.get(AtomTheme) ));
+    }
+    public set theme(v: AtomTheme) {
+        this.mTheme = v;
+        this.refreshInherited("theme", (ac) => ac.mTheme === undefined);
+    }
 
     constructor(e?: HTMLElement) {
         super(e);
@@ -31,6 +45,15 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 return tp;
             }
             e = e._logicalParent || e.parentElement as IAtomControlElement;
+        }
+    }
+
+    public onPropertyChanged(name: string): void {
+        super.onPropertyChanged(name);
+        switch (name) {
+            case "theme":
+                this.mCachedTheme = null;
+                break;
         }
     }
 
