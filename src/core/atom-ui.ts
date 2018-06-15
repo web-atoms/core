@@ -81,7 +81,7 @@ export class AtomUI {
     public static screenOffset(e: HTMLElement): IRect {
         const r = {
             x: e.offsetLeft,
-            y: e.offsetHeight,
+            y: e.offsetTop,
             width: e.offsetWidth,
             height: e.offsetHeight
         };
