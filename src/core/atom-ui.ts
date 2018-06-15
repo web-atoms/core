@@ -86,7 +86,7 @@ export class AtomUI {
             height: e.offsetHeight
         };
 
-        if (e.offsetParent) {
+        if (e.offsetParent && e.offsetParent !== document.body) {
             const p =  this.screenOffset(e.offsetParent as HTMLElement);
             r.x += p.x;
             r.y += p.y;
