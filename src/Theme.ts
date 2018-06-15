@@ -25,12 +25,29 @@ export class AtomTheme extends AtomStyleSheet
         return this.createStyle(AtomButtonStyle, "button");
     }
 
+    public get popup(): AtomPopupStyle {
+        return this.createStyle(AtomPopupStyle, "popup");
+    }
+
 }
 
 ServiceProvider.global.get(AtomTheme);
 
 export class AtomButtonStyle extends AtomStyle {
     // empty
+}
+
+export class AtomPopupStyle extends AtomStyle {
+
+    public get host(): AtomStyleClass {
+        return this.createClass("popup", {
+            "background-color": "white",
+            "border": "solid 1px lightgray",
+            "padding": "5px",
+            "border-radius": "5px"
+        });
+    }
+
 }
 
 export class AtomWindowStyle extends AtomStyle {

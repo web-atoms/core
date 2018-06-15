@@ -7,6 +7,7 @@ import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../di/ServiceCollection";
 import { ServiceProvider } from "../di/ServiceProvider";
+import { AtomTheme } from "../Theme";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
 
@@ -70,8 +71,11 @@ export class WindowService {
         const element = peek.element;
         let target = this.currentTarget;
 
+        const theme = ServiceProvider.global.get(AtomTheme).popup;
+
         while (target) {
-            if (target.classList.contains("close-popup")) {
+
+            if (target.classList.contains(theme.host.className)) {
                 break;
             }
             if (target === element) {
@@ -94,6 +98,8 @@ export class WindowService {
             }
             const e = popup.element;
 
+            const theme = ServiceProvider.global.get(AtomTheme).popup;
+
             e.id = `atom_popup_${this.lastPopupID++}`;
             e.style.zIndex = 10000 + this.lastPopupID + "";
 
@@ -107,7 +113,8 @@ export class WindowService {
                 e.style.position = "absolute";
                 e.style.left = x + "px";
                 e.style.top = (y + h) + "px";
-                popup.element.classList.add("close-popup");
+                e.classList.add(theme.host.className);
+                // popup.element.classList.add("close-popup");
                 this.popups.push(popup);
             }
 
