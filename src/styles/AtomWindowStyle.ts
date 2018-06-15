@@ -1,4 +1,5 @@
 import { AtomStyle } from "../styles/AtomStyle";
+import "./AtomStyleClass";
 export class AtomWindowStyle extends AtomStyle {
     public readonly frameHost = this.createClass("frameHost", {
         position: "absolute",
