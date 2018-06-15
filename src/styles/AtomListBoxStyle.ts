@@ -1,5 +1,6 @@
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomStyle } from "./AtomStyle";
+import { AtomStyleClass } from "./AtomStyleClass";
 import { AtomTheme } from "./Theme";
 
 export class AtomListBoxStyle extends AtomStyle {

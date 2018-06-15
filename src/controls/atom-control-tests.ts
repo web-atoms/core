@@ -15,7 +15,7 @@ class TestViewModel {
 export class AtomControlTests extends TestItem {
 
     @Test()
-    public test1(): void {
+    public async test1(): Promise<any> {
         const root = document.createElement("div");
         const control = new AtomControl(root);
 
@@ -24,6 +24,8 @@ export class AtomControlTests extends TestItem {
         control.viewModel = tv;
 
         control.bind(root, "data", [["viewModel", "name"]], true);
+
+        await this.delay(100);
 
         const watches = AtomBinder.get_WatchHandler(tv as IWatchableObject, "name");
         Assert.equals(watches.length, 1);
@@ -56,7 +58,7 @@ export class AtomControlTests extends TestItem {
     }
 
     @Test()
-    public testElements(): void {
+    public async testElements(): Promise<void> {
         const root = document.createElement("div");
         const input = document.createElement("input");
         const control = new AtomControl(root);
@@ -67,6 +69,8 @@ export class AtomControlTests extends TestItem {
 
         control.append(input);
         control.bind(input, "value", [["viewModel", "name"]], false);
+
+        await this.delay(100);
 
         Assert.equals("a", input.value);
 
