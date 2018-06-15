@@ -10,6 +10,7 @@ import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomTheme } from "../Theme";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
+import { AtomUI } from "../core/atom-ui";
 
 @RegisterSingleton
 export class WindowService {
@@ -107,9 +108,11 @@ export class WindowService {
                 (popup.element as IAtomControlElement)._logicalParent
                     = this.currentTarget as IAtomControlElement;
 
-                const x = this.currentTarget.offsetLeft;
-                const y = this.currentTarget.offsetTop;
-                const h = this.currentTarget.offsetHeight;
+                const sr = AtomUI.screenOffset(this.currentTarget);
+
+                const x = sr.x;
+                const y = sr.y;
+                const h = sr.height;
                 e.style.position = "absolute";
                 e.style.left = x + "px";
                 e.style.top = (y + h) + "px";

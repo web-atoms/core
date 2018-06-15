@@ -37,6 +37,13 @@ export interface IDisposable {
     dispose(): void ;
 }
 
+export interface IRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 export class AtomDisposable implements IDisposable {
 
     // tslint:disable-next-line:ban-types

@@ -1,5 +1,5 @@
 import { AtomControl } from "../controls/AtomControl";
-import { INameValuePairs, INameValues } from "./types";
+import { INameValuePairs, INameValues, IRect } from "./types";
 
 export class ChildEnumerator {
 
@@ -76,6 +76,26 @@ export class AtomUI {
             }
             en = en.nextElementSibling;
         }
+    }
+
+    public static screenOffset(e: HTMLElement, start?: IRect): IRect {
+        const r = {
+            x: e.offsetLeft,
+            y: e.offsetHeight,
+            width: e.offsetWidth,
+            height: e.offsetHeight
+        };
+
+        if (start) {
+            r.x += start.x;
+            r.y += start.y;
+        }
+
+        if (e.offsetParent) {
+            return this.screenOffset(e.offsetParent as HTMLElement, r );
+        }
+
+        return r;
     }
 
     // public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
