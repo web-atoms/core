@@ -1,22 +1,25 @@
 import { INameValuePairs, INotifyPropertyChanged } from "../core/types";
 import { AtomViewModel } from "../view-model/AtomViewModel";
-import { AtomStyle } from "./AtomStyle";
+import { AtomStyle, IAtomStyle } from "./AtomStyle";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 
 export class AtomStyleClass
-    extends AtomViewModel
-    implements INotifyPropertyChanged {
+    implements INotifyPropertyChanged,
+    IAtomStyle {
 
     private styles: INameValuePairs = {};
 
     private mCached: string;
+
+    public get name(): string {
+        return this.className;
+    }
 
     constructor(
         public readonly styleSheet: AtomStyleSheet,
         public readonly parent: AtomStyle,
         public readonly className: string,
         props?: INameValuePairs ) {
-        super();
         if (props) {
             this.updateStyle(props);
         }

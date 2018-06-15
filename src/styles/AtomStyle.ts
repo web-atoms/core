@@ -1,35 +1,45 @@
 import { PropertyMap } from "../core/PropertyMap";
-import { IClassOf, INameValuePairs } from "../core/types";
+import { ArrayHelper, IClassOf, INameValuePairs } from "../core/types";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomStyleClass } from "./AtomStyleClass";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 
-export class AtomStyle extends AtomViewModel {
+export type StyleItem = AtomStyle | AtomStyleClass;
+
+export interface IAtomStyle {
+    name: string;
+}
+
+export class AtomStyle
+    implements IAtomStyle {
+
+    private children: StyleItem[] = [];
 
     constructor(
         public styleSheet: AtomStyleSheet,
         public readonly parent: AtomStyle,
         public readonly name: string
     ) {
-        super();
     }
 
     public createClass(name: string, props: INameValuePairs ): AtomStyleClass {
-        return new AtomStyleClass(this.styleSheet, this, `${this.name}-${name}`, props);
+        return this.replace(new AtomStyleClass(this.styleSheet, this, `${this.name}-${name}`, props));
     }
 
     public createStyle<T extends AtomStyle>(c: IClassOf<T>, name: string): T {
-        return new (c)(this.styleSheet, this, `${this.name}-${name}`);
+        return this.replace(new (c)(this.styleSheet, this, `${this.name}-${name}`));
+    }
+
+    public replace<T extends IAtomStyle>(item: T): T {
+        ArrayHelper.remove(this.children, (x) => x.name === item.name);
+        return item;
     }
 
     public toStyle(pairs?: INameValuePairs): INameValuePairs {
 
         pairs = pairs || {};
 
-        const map = PropertyMap.from(this);
-
-        for (const iterator of map.names) {
-            const element = this[iterator];
+        for (const element of this.children) {
 
             // if it is nested style
             const style = element as AtomStyle;
