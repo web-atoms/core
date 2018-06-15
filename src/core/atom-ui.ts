@@ -89,6 +89,8 @@ export class AtomUI {
         if (start) {
             r.x += start.x;
             r.y += start.y;
+            r.width = start.width;
+            r.height = start.height;
         }
 
         if (e.offsetParent) {
