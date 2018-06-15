@@ -32,6 +32,7 @@ export class AtomStyle
 
     public replace<T extends IAtomStyle>(item: T): T {
         ArrayHelper.remove(this.children, (x) => x.name === item.name);
+        this.children.push(item as any);
         return item;
     }
 
