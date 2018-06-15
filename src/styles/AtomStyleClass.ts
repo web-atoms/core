@@ -31,6 +31,7 @@ export class AtomStyleClass
 
     public clear(): AtomStyleClass {
         this.styles = {};
+        this.styleSheet.pushUpdate();
         return this;
     }
 
@@ -41,6 +42,7 @@ export class AtomStyleClass
                 this.styles[key] = element;
             }
         }
+        this.styleSheet.pushUpdate();
         return this;
     }
 
