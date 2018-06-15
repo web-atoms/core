@@ -4,9 +4,9 @@ import { ServiceProvider } from "./ServiceProvider";
 export type ServiceFactory = (sp: ServiceProvider) => any;
 
 export enum Scope {
-    Global,
-    Scoped,
-    Transient
+    Global = 1,
+    Scoped = 2,
+    Transient = 3
 }
 
 export class ServiceDescription {
@@ -32,23 +32,25 @@ export class ServiceCollection {
 
     private ids: number = 1;
 
-    public register(type: any, factory: ServiceFactory, scope: Scope = Scope.Transient): void {
-        ArrayHelper.remove(this.registrations, (r) => r.type === type);
-        const id = type.toString() + this.ids;
-        this.ids ++;
+    public register(type: any, factory: ServiceFactory, scope: Scope = Scope.Transient, id?: string): void {
+        ArrayHelper.remove(this.registrations, (r) => id ? r.id === id : r.type === type);
+        if (!id) {
+            id = type.toString() + this.ids;
+            this.ids ++;
+        }
         const sd = new ServiceDescription(id, scope, type, factory);
         this.registrations.push(sd);
     }
 
-    public registerScoped(type: any, factory?: ServiceFactory): void {
-        this.register(type, factory, Scope.Scoped);
+    public registerScoped(type: any, factory?: ServiceFactory, id?: string): void {
+        this.register(type, factory, Scope.Scoped, id);
     }
 
-    public registerSingleton(type: any, factory?: ServiceFactory): void {
-        this.register(type, factory, Scope.Global);
+    public registerSingleton(type: any, factory?: ServiceFactory, id?: string): void {
+        this.register(type, factory, Scope.Global, id);
     }
 
     public get(type: any): ServiceDescription {
-        return this.registrations.find( (s) => s.type === type);
+        return this.registrations.find( (s) => s.id === type || s.type === type);
     }
 }

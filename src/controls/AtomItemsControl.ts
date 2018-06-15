@@ -1,11 +1,11 @@
 import { Atom } from "../Atom";
-import { AtomUI } from "../core/atom-ui";
+import { AtomUI, ChildEnumerator } from "../core/atom-ui";
 import { AtomBinder } from "../core/AtomBinder";
 import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomBridge } from "../core/bridge";
-import { IAtomControlElement, IAtomElement, IClassOf, IDisposable } from "../core/types";
-import { AtomControl } from "./AtomControl";
+import { IAtomElement, IClassOf, IDisposable } from "../core/types";
+import { AtomControl, IAtomControlElement } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
     @bindableProperty
@@ -21,7 +21,7 @@ export class AtomItemsControl extends AtomControl {
     public labelPath: string = "label";
 
     @bindableProperty
-    public mItemTemplate: IClassOf<AtomControl>;
+    public itemTemplate: IClassOf<AtomControl> = AtomItemsControlItemTemplate;
 
     public valueSeparator: string = ", ";
 
@@ -29,7 +29,7 @@ export class AtomItemsControl extends AtomControl {
 
     private mSortPath: string;
 
-    private mSelectedItems: any[] = [];
+    private mSelectedItems: any[];
     private mSelectedItemsWatcher: IDisposable;
 
     // private mFilteredItems: any[] = [];
@@ -88,6 +88,15 @@ export class AtomItemsControl extends AtomControl {
 
     private mItemsDisposable: IDisposable = null;
 
+    public get itemsPresenter(): HTMLElement {
+        return this.mItemsPresenter || (this.mItemsPresenter = this.element);
+    }
+
+    public set itemsPresenter(v: HTMLElement) {
+        this.mItemsPresenter = v;
+        AtomBinder.refreshValue(this, "itemsPresenter");
+    }
+
     public get value(): any {
         if (this.allowMultipleSelection) {
             let items = this.mSelectedItems;
@@ -117,6 +126,38 @@ export class AtomItemsControl extends AtomControl {
         return s;
     }
 
+    public set value(v: any) {
+        this.mValue = v;
+        const dataItems = this.items;
+        if (!dataItems) {
+            return;
+        }
+        const sitems = this.selectedItems;
+        if (v === undefined || v === null) {
+            // reset...
+            AtomBinder.clear(sitems);
+            return;
+        }
+        if (this.allowMultipleSelection && this.valueSeparator) {
+            if (typeof v !== "string") {
+                v = "" + v;
+            }
+            v = (v as string).split(this.valueSeparator);
+        } else {
+            v = [v];
+        }
+        // var items = AtomArray.intersect(dataItems, this._valuePath, v);
+        sitems.length = 0;
+        const vp = this.valuePath;
+        for (const item of v) {
+            // tslint:disable-next-line:triple-equals
+            if (dataItems.filter( (f) => f[vp] == item ).length) {
+                sitems.push(item);
+            }
+        }
+        AtomBinder.refreshItems(sitems);
+    }
+
     public get items(): any[] {
         return this.mItems;
     }
@@ -129,11 +170,11 @@ export class AtomItemsControl extends AtomControl {
         this.mItems = v;
         // this.mFilteredItems = null;
         if (v != null) {
-            this.mItemsDisposable = AtomBinder.add_CollectionChanged(this.mItems,
+            this.mItemsDisposable = AtomBinder.add_CollectionChanged(v,
                 (target, key, index, item) => {
                     this.onCollectionChangedInternal(key, index, item);
             });
-            this.onCollectionChangedInternal("refresh", -1, null);
+            // this.onCollectionChangedInternal("refresh", -1, null);
         }
         AtomBinder.refreshValue(this, "items");
     }
@@ -156,7 +197,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public get selectedItems() {
-        return this.mSelectedItems;
+        return this.mSelectedItems || (this.selectedItems = []);
     }
 
     public set selectedItems(v: any[]) {
@@ -191,14 +232,14 @@ export class AtomItemsControl extends AtomControl {
     //     return -1;
     // }
 
-    public get itemTemplate(): IClassOf<AtomControl> {
-        return this.mItemTemplate;
-    }
+    // public get itemTemplate(): IClassOf<AtomControl> {
+    //     return this.mItemTemplate;
+    // }
 
-    public set itemTemplate(v: IClassOf<AtomControl>) {
-        this.mItemTemplate = v;
-        this.onCollectionChangedInternal("refresh", -1, null);
-    }
+    // public set itemTemplate(v: IClassOf<AtomControl>) {
+    //     this.mItemTemplate = v;
+    //     this.onCollectionChangedInternal("refresh", -1, null);
+    // }
 
     // public get_dataItems() {
     //     let r: any[] = this.mItems;
@@ -227,15 +268,15 @@ export class AtomItemsControl extends AtomControl {
     //         // }
     //         return r;
     //     }
-    //     return $(this.mItemsPresenter).children();
+    //     return $(this.itemsPresenter).children();
     // }
 
-    constructor(e?: IAtomElement) {
+    constructor(e?: HTMLElement) {
         super(e);
-        this.selectedItems = [];
+        // this.selectedItems = [];
     }
 
-    public dispose(e?: IAtomElement): void {
+    public dispose(e?: HTMLElement): void {
         this.items = null;
         this.selectedItems = null;
         // this.mFilteredItems = null;
@@ -244,12 +285,18 @@ export class AtomItemsControl extends AtomControl {
 
     public onPropertyChanged(name: string): void {
         switch (name) {
+            case "itemsPresenter":
             case "itemTemplate":
             case "labelPath":
             case "valuePath":
-                if (this.mItems) {
-                    this.onCollectionChangedInternal("refresh", -1, null);
-                }
+            case "items":
+            case "filter":
+                this.invalidate();
+                // this.runAfterInit(() => {
+                //     if (this.mItems) {
+                //         this.onCollectionChangedInternal("refresh", -1, null);
+                //     }
+                // });
                 break;
         }
     }
@@ -277,8 +324,9 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public resetVirtulContainer() {
-        if (this.mItemsPresenter) {
-            this.disposeChildren(this.mItemsPresenter);
+        const ip = this.itemsPresenter;
+        if (ip) {
+            this.disposeChildren(ip);
         }
         this.mFirstChild = null;
         this.mLastChild = null;
@@ -294,7 +342,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public onVirtualCollectionChanged(): any {
-        const ip = this.mItemsPresenter;
+        const ip = this.itemsPresenter;
         const items = null;
         // const items = this.get_dataItems();
         // if (!items.length) {
@@ -491,7 +539,7 @@ export class AtomItemsControl extends AtomControl {
     // public createChildElement(parentScope: any, parentElement: any, data: any, ae: any, before: any): any {
     //     const elementChild = null;
     //     // const elementChild = AtomUI.cloneNode(this.mItemTemplate);
-    //     elementChild._logicalParent = parentElement || this.mItemsPresenter;
+    //     elementChild._logicalParent = parentElement || this.itemsPresenter;
     //     elementChild._templateParent = this;
     //     elementChild._isDirty = true;
 
@@ -583,8 +631,9 @@ export class AtomItemsControl extends AtomControl {
             AtomUI.scrollTop(this.mVirtualContainer, scrollTop * vcHeight);
             return;
         }
-        for (const aeItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
-            const item: any = aeItem;
+        const en = new ChildEnumerator(this.itemsPresenter || this.element);
+        while (en.next()) {
+            const item: any = en.current;
             const dataItem = item.atomControl ? item.atomControl.get_data() : item;
             if (this.isSelected(dataItem)) {
                 item.scrollIntoView();
@@ -593,7 +642,7 @@ export class AtomItemsControl extends AtomControl {
         }
     }
 
-    public updateSelectionBindings() {
+    public updateSelectionBindings(): void {
         AtomBinder.refreshValue(this, "value");
         AtomBinder.refreshValue(this, "selectedItem");
         AtomBinder.refreshValue(this, "selectedItems");
@@ -672,18 +721,23 @@ export class AtomItemsControl extends AtomControl {
         return this.mItems !== undefined && this.mItems !== null;
     }
 
+    public onUpdateUI(): void {
+        super.onUpdateUI();
+        this.onCollectionChangedInternal("refresh", -1, null);
+    }
+
     public onCollectionChanged(key: string, index: number, item: any): any {
 
         if (!this.mItems) {
             return;
         }
 
-        if (!this.mItemTemplate) {
+        if (!this.itemTemplate) {
             return;
         }
 
-        if (!this.mItemsPresenter) {
-            this.mItemsPresenter = this.element as HTMLElement;
+        if (!this.itemsPresenter) {
+            this.itemsPresenter = this.element as HTMLElement;
         }
 
         if (/reset|refresh/i.test(key)) {
@@ -692,10 +746,13 @@ export class AtomItemsControl extends AtomControl {
 
         if (/remove/gi.test(key)) {
             // tslint:disable-next-line:no-shadowed-variable
-            for (const ce of AtomUI.childEnumerator(this.mItemsPresenter)) {
+            const ip = this.itemsPresenter || this.element;
+            const en = new ChildEnumerator(ip);
+            while (en.next()) {
+                const ce = en.current;
                 // tslint:disable-next-line:no-shadowed-variable
-                const c: any = ce;
-                if (c.atomControl && c.atomControl.get_data() === item) {
+                const c = ce as IAtomControlElement;
+                if (c.atomControl && c.atomControl.data === item) {
                     c.atomControl.dispose();
                     ce.remove();
                     break;
@@ -727,16 +784,16 @@ export class AtomItemsControl extends AtomControl {
            // WebAtoms.dispatcher.pause();
 
             // for (const aeItem of this.mItems) {
-            //     for (const ceItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+            //     for (const ceItem of AtomUI.childEnumerator(this.itemsPresenter)) {
             //         const d: any = ceItem;
             //         if (aeItem.currentIndex() === index) {
-            //             const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, d);
+            //             const ctl: any = this.createChildElement(parentScope, this.itemsPresenter, item, aeItem, d);
             //             this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
             //             break;
             //         }
             //         if (aeItem.isLast()) {
             // tslint:disable-next-line:max-line-length
-            //             const ctl: any = this.createChildElement(parentScope, this.mItemsPresenter, item, aeItem, null);
+            //             const ctl: any = this.createChildElement(parentScope, this.itemsPresenter, item, aeItem, null);
             //             this.applyItemStyle(ctl, item, aeItem.isFirst(), aeItem.isLast());
             //             break;
             //         }
@@ -749,9 +806,10 @@ export class AtomItemsControl extends AtomControl {
             const lastItem = items[index];
             let last: HTMLElement = null;
             let cindex: number = 0;
-            for (const ceItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+            const en = new ChildEnumerator(this.itemsPresenter);
+            while (en.next()) {
                 if (cindex === index) {
-                    last = ceItem;
+                    last = en.current;
                     break;
                 }
                 cindex++;
@@ -759,20 +817,20 @@ export class AtomItemsControl extends AtomControl {
             const df2 = document.createDocumentFragment();
             this.createChild(df2, lastItem);
             if (last) {
-                this.mItemsPresenter.insertBefore(df2, last);
+                this.itemsPresenter.insertBefore(df2, last);
             } else {
-                this.mItemsPresenter.appendChild(df2);
+                this.itemsPresenter.appendChild(df2);
             }
             return;
         }
 
-        const element = this.mItemsPresenter;
+        const element = this.itemsPresenter;
 
         // const dataItems = this.get_dataItems();
 
         // AtomControl.disposeChildren(element);
 
-        this.disposeChildren(this.mItemsPresenter);
+        this.disposeChildren(this.itemsPresenter);
 
         // WebAtoms.dispatcher.pause();
 
@@ -782,17 +840,24 @@ export class AtomItemsControl extends AtomControl {
 
         // this.getTemplate("itemTemplate");
 
-        const df = document.createDocumentFragment();
+        // tslint:disable-next-line:no-console
+        // console.log("Started");
+        // const df = document.createDocumentFragment();
+
+        const ip = this.itemsPresenter || this.element;
 
         for (const mItem of items) {
             const data = mItem;
             // const elementChild = this.createChildElement(parentScope, element, data, mItem, null);
             // added.push(elementChild);
             // this.applyItemStyle(elementChild, data, mItem.isFirst(), mItem.isLast());
-            this.createChild(df, data);
+            const ac = this.createChild(null, data);
+            ip.appendChild(ac.element);
         }
 
-        (this.element as HTMLElement).appendChild(df);
+        // (this.element as HTMLElement).appendChild(df);
+        // tslint:disable-next-line:no-console
+        // console.log("Ended");
 
         // const self = this;
         // WebAtoms.dispatcher.callLater(() => {
@@ -855,7 +920,7 @@ export class AtomItemsControl extends AtomControl {
         }
         this.mFilter = f;
         // this.mFilteredItems = null;
-        this.onCollectionChangedInternal("refresh", -1, null);
+        AtomBinder.refreshValue(this, "filter");
     }
 
     protected onScroll() {
@@ -899,7 +964,7 @@ export class AtomItemsControl extends AtomControl {
     //         this.onVirtualCollectionChanged();
     //     }
 
-    //     for (const aeItem of AtomUI.childEnumerator(this.mItemsPresenter)) {
+    //     for (const aeItem of AtomUI.childEnumerator(this.itemsPresenter)) {
     //         const item = aeItem as any;
     //         if (!item.atomControl) {
     //             continue;
@@ -928,7 +993,7 @@ export class AtomItemsControl extends AtomControl {
         if (this.mScrollerSetup) {
             return;
         }
-        const ip = this.mItemsPresenter;
+        const ip = this.itemsPresenter;
         const e = this.element as HTMLElement;
 
         let vc = this.mVirtualContainer;
@@ -981,19 +1046,37 @@ export class AtomItemsControl extends AtomControl {
 
     }
 
-    protected createChild(df: DocumentFragment, data: any) {
+    protected createChild(df: DocumentFragment, data: any): AtomControl {
         const t = this.itemTemplate;
         const ac = new t();
-        (ac.element as any)._logicalParent = this.element;
-        df.appendChild(ac.element as HTMLElement);
+        const e = ac.element as IAtomControlElement;
+        e._logicalParent = this.element as IAtomControlElement;
+        e._templateParent = this;
+        if (df) {
+            df.appendChild(ac.element as HTMLElement);
+        }
         ac.data = data;
+        return ac;
     }
 
     protected disposeChildren(e: HTMLElement): void {
-        for (const iterator of AtomUI.childEnumerator(e)) {
+        const en = new ChildEnumerator(e);
+        while (en.next()) {
+            const iterator = en.current;
             const ac = (iterator as any).atomControl as AtomControl;
             ac.dispose();
-            iterator.remove();
         }
+        e.innerHTML = "";
+    }
+}
+
+class AtomItemsControlItemTemplate extends AtomControl {
+
+    protected create(): void {
+        this.element = document.createElement("div");
+        this.runAfterInit(() => {
+            const tp = this.templateParent as AtomItemsControl;
+            this.element.textContent = this.data[tp.valuePath];
+        });
     }
 }

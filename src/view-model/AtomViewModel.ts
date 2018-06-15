@@ -1,7 +1,7 @@
 import { Atom } from "../Atom";
 import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
 import { AtomAction, AtomDevice } from "../core/AtomDevice";
-import { IClassOf } from "../core/types";
+import { ArrayHelper, IClassOf } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IVMSubscription {
@@ -26,7 +26,7 @@ export class AtomViewModel {
 
     private subscriptions: IVMSubscription[];
 
-    private validations: Array<AtomWatcher<AtomViewModel>> = [];
+    private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
     private mChannelPrefix: string = "";
     public get channelPrefix(): string {
@@ -48,10 +48,40 @@ export class AtomViewModel {
         this.refresh("channelPrefix");
     }
 
-    private mIsReady: boolean = false;
+    private pendingInits: Array<() => void> = [];
 
     public get isReady(): boolean {
-        return this.mIsReady;
+        return this.pendingInits === null;
+    }
+
+    public get errors(): Array<{ name: string, error: string}> {
+        const e: Array<{ name: string, error: string}> = [];
+        for (const v of this.validations) {
+            if (!v.initialized) {
+                v.watcher.evaluate(true);
+                v.initialized = true;
+            }
+            const error = this [v.name];
+            if (error) {
+                e.push( { name: v.name, error});
+            }
+        }
+        return e;
+    }
+
+    public get isValid(): boolean {
+        let valid = true;
+        for (const v of this.validations) {
+            if (!v.initialized) {
+                v.watcher.evaluate(true);
+                v.initialized = true;
+            }
+            if (this[v.name]) {
+                valid = false;
+            }
+        }
+        AtomBinder.refreshValue(this, "errors");
+        return valid;
     }
 
     private mServiceProvider: ServiceProvider = null;
@@ -69,6 +99,14 @@ export class AtomViewModel {
 
     }
 
+    public runAfterInit(f: () => void): void {
+        if (this.pendingInits) {
+            this.pendingInits.push(f);
+            return;
+        }
+        f();
+    }
+
     public resolve<T>(c: IClassOf<T>, onlyRegistered?: boolean): T {
         const create = !onlyRegistered;
         return this.services.resolve(c, create);
@@ -79,7 +117,7 @@ export class AtomViewModel {
     }
 
     public async waitForReady(): Promise<any> {
-        while (!this.mIsReady) {
+        while (this.pendingInits) {
             await Atom.delay(100);
         }
     }
@@ -114,16 +152,16 @@ export class AtomViewModel {
         }
     }
 
-    /**
-     * Internal method, do not use, instead use errors.hasErrors()
-     *
-     * @memberof AtomViewModel
-     */
-    public runValidation(): void {
-        for (const v of this.validations) {
-            v.evaluate(true);
-        }
-    }
+    // /**
+    //  * Internal method, do not use, instead use errors.hasErrors()
+    //  *
+    //  * @memberof AtomViewModel
+    //  */
+    // public runValidation(): void {
+    //     for (const v of this.validations) {
+    //         v.watcher.evaluate(true);
+    //     }
+    // }
 
     /**
      * Register a disposable to be disposed when view model will be disposed.
@@ -151,46 +189,6 @@ export class AtomViewModel {
     protected onReady(): void {}
 
     /**
-     * Adds validation expression to be executed when any bindable expression is updated.
-     *
-     * `target` must always be set to `this`.
-     *
-     *      this.addValidation(() => {
-     *          this.errors.nameError = this.data.firstName ? "" : "Name cannot be empty";
-     *      });
-     *
-     * Only difference here is, validation will not kick in first time, where else watch will
-     * be invoked as soon as it is setup.
-     *
-     * Validation will be invoked when any bindable property in given expression is updated.
-     *
-     * Validation can be invoked explicitly only by calling `errors.hasErrors()`.
-     *
-     * @protected
-     * @template T
-     * @param {() => any} ft
-     * @returns {IDisposable}
-     * @memberof AtomViewModel
-     */
-    protected addValidation(...fts: Array<() => any>): IDisposable {
-
-        const ds: IDisposable[] = [];
-
-        for (const ft of fts) {
-            const d: AtomWatcher<any> = new AtomWatcher<any>(this, ft, false, true);
-            this.validations.push(d);
-            this.registerDisposable(d);
-            ds.push(d);
-        }
-        return new AtomDisposable(() => {
-            this.disposables = this.disposables.filter( (f) => !ds.find((fd) => f === fd) );
-            for (const dispsoable of ds) {
-                dispsoable.dispose();
-            }
-        });
-    }
-
-    /**
      * Execute given expression whenever any bindable expression changes
      * in the expression.
      *
@@ -208,27 +206,23 @@ export class AtomViewModel {
      * @returns {IDisposable}
      * @memberof AtomViewModel
      */
-    protected setupWatch(...fts: Array<() => any>): IDisposable {
+    protected setupWatch(ft: () => any, proxy?: () => void, forValidation?: boolean, name?: string): IDisposable {
 
-        const dfd: IDisposable[] = [];
-        for (const ft of fts) {
-            const d: AtomWatcher<any> = new AtomWatcher<any>(this, ft, this.mIsReady );
-            // debugger;
-            this.registerDisposable(d);
-            dfd.push(d);
+        const d: AtomWatcher<any> = new AtomWatcher<any>(
+            this, ft, !forValidation && this.isReady, forValidation, proxy );
 
-            if (!this.mIsReady) {
-                this.postInit = this.postInit || [];
-                this.postInit.push(() => {
-                    d.runEvaluate();
-                });
-            }
+        this.registerDisposable(d);
+
+        if (!forValidation) {
+            this.runAfterInit(() => {
+                d.runEvaluate();
+            });
+        } else {
+            this.validations = this.validations || [];
+            this.validations.push({ name, watcher: d, initialized: false});
         }
         return new AtomDisposable(() => {
-            this.disposables = this.disposables.filter( (f) => ! dfd.find((fd) => f === fd) );
-            for (const disposable of dfd) {
-                disposable.dispose();
-            }
+            ArrayHelper.remove(this.disposables, (f) => f === d);
         });
     }
 
@@ -284,7 +278,11 @@ export class AtomViewModel {
                 this.postInit = null;
             }
         } finally {
-            this.mIsReady = true;
+            const pi = this.pendingInits;
+            this.pendingInits = null;
+            for (const iterator of pi) {
+                iterator();
+            }
         }
     }
 
@@ -303,71 +301,76 @@ export class AtomViewModel {
 
 }
 
-/**
- * AtomErrors class holds all validation errors registered in view model.
- *
- * hasErrors() method will return true if there are any validation errors in this AtomErrors object.
- *
- * @export
- * @class AtomErrors
- */
-export class AtomErrors {
+// /**
+//  * AtomErrors class holds all validation errors registered in view model.
+//  *
+//  * hasErrors() method will return true if there are any validation errors in this AtomErrors object.
+//  *
+//  * @export
+//  * @class AtomErrors
+//  */
+// export class AtomErrors {
 
-    private static isInternal = /^\_(\_target|\$\_)/;
+//     private static isInternal = /^\_(\_target|\$\_)/;
 
-    private mTarget: AtomViewModel;
+//     private mTarget: AtomViewModel;
 
-    /**
-     * Creates an instance of AtomErrors.
-     * @param {AtomViewModel} target
-     * @memberof AtomErrors
-     */
-    constructor(target: AtomViewModel) {
-        this.mTarget = target;
-    }
+//     /**
+//      * Creates an instance of AtomErrors.
+//      * @param {AtomViewModel} target
+//      * @memberof AtomErrors
+//      */
+//     constructor(target: AtomViewModel) {
+//         this.mTarget = target;
+//     }
 
-    /**
-     *
-     *
-     * @returns {boolean}
-     * @memberof AtomErrors
-     */
-    public hasErrors(): boolean {
+//     /**
+//      *
+//      *
+//      * @returns {boolean}
+//      * @memberof AtomErrors
+//      */
+//     public hasErrors(): boolean {
 
-        if (this.mTarget) {
-            this.mTarget.runValidation();
-        }
+//         if (this.mTarget) {
+//             this.mTarget.runValidation();
+//         }
 
-        for (const k in this) {
-            if (AtomErrors.isInternal.test(k)) {
-                continue;
-            }
-            if (this.hasOwnProperty(k)) {
-                if (this[k]) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//         for (const k in this) {
+//             if (AtomErrors.isInternal.test(k)) {
+//                 continue;
+//             }
+//             if (this.hasOwnProperty(k)) {
+//                 if (this[k]) {
+//                     return true;
+//                 }
+//             }
+//         }
+//         return false;
+//     }
 
-    /**
-     *
-     *
-     * @memberof AtomErrors
-     */
-    public clear(): void {
-        for (const k in this) {
-            if (AtomErrors.isInternal.test(k)) {
-                continue;
-            }
-            if (this.hasOwnProperty(k)) {
-                this[k] = null;
-                AtomBinder.refreshValue(this, k);
-            }
-        }
-    }
+//     /**
+//      *
+//      *
+//      * @memberof AtomErrors
+//      */
+//     public clear(): void {
+//         for (const k in this) {
+//             if (AtomErrors.isInternal.test(k)) {
+//                 continue;
+//             }
+//             if (this.hasOwnProperty(k)) {
+//                 this[k] = null;
+//                 AtomBinder.refreshValue(this, k);
+//             }
+//         }
+//     }
 
+// }
+
+interface IAtomViewModel {
+    setupWatch(ft: () => any, proxy?: () => any, forValidation?: boolean, name?: string): IDisposable ;
+    subscribe(channel: string, c: (ch: string, data: any) => void): void;
 }
 
 type viewModelInit = (vm: AtomViewModel) => void;
@@ -393,10 +396,9 @@ export function receive(...channel: string[]): viewModelInitFunc {
             const a: AtomAction = (ch: string, d: any): void => {
                 fx.call(vm, ch, d );
             };
-            // tslint:disable-next-line:ban-types no-string-literal
-            const s: Function = vm["subscribe"];
+            const ivm = (vm as any) as IAtomViewModel;
             for (const c of channel) {
-                s.call(vm, c, a);
+                ivm.subscribe(c, a);
             }
         });
     };
@@ -410,10 +412,9 @@ export function bindableReceive(...channel: string[]): viewModelInitFunc {
             const fx: AtomAction = (cx: string, m: any) => {
                 vm[key] = m;
             };
-            // tslint:disable-next-line:ban-types no-string-literal
-            const s: Function = vm["subscribe"];
+            const ivm = (vm as any) as IAtomViewModel;
             for (const c of channel) {
-                s.call(vm, c, fx);
+                ivm.subscribe(c, fx);
             }
         });
 
@@ -435,12 +436,8 @@ export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
             const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], false );
             d.func = fx;
 
-            // tslint:disable-next-line:ban-types no-string-literal
-            const f: Function = d["evaluatePath"];
-
-            // tslint:disable-next-line:no-string-literal
             for (const p of d.path) {
-                f.call(d, vm, p);
+                d.evaluatePath(vm, p);
             }
 
             vm.registerDisposable(d);
@@ -452,19 +449,57 @@ export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
 }
 
 export function watch(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+
     registerInit(target, (vm) => {
-        // tslint:disable-next-line:ban-types no-string-literal
-        const vfx: Function = vm["setupWatch"];
-        vfx.call(vm, vm[key]);
+
+        const ivm = (vm as any) as IAtomViewModel;
+        if (descriptor && descriptor.get) {
+            ivm.setupWatch(descriptor.get, () => {
+                vm.refresh(key.toString());
+            });
+            return;
+        }
+
+        ivm.setupWatch(vm[key]);
     });
 }
 
 export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+
+    // tslint:disable-next-line:ban-types
+    const getMethod = descriptor.get as (() => any);
+
+    // // trick is to change property descriptor...
+    // delete target[key];
+
+    descriptor.get = () => null;
+
+    // // repalce it with dummy descriptor...
+    // Object.defineProperty(target, key, descriptor);
+
     registerInit(target, (vm) => {
-        // tslint:disable-next-line:ban-types no-string-literal
-        const vfx: Function = vm["addValidation"];
-        // tslint:disable-next-line:no-string-literal
-        vfx.call(vm, vm["key"]);
+        const initialized = { i: false };
+        const ivm = (vm as any) as IAtomViewModel;
+
+        Object.defineProperty(ivm, key, {
+            enumerable: true,
+            configurable: true,
+            get() {
+                if (initialized.i) {
+                    return getMethod.apply(this);
+                }
+                return null;
+            }
+        });
+
+        ivm.setupWatch(getMethod, () => {
+            // descriptor.get = getMethod;
+
+            // Object.defineProperty(target, key, descriptor);
+            initialized.i = true;
+            vm.refresh(key.toString());
+        }, true, key.toString());
+        return;
     });
 
 }

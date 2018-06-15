@@ -59,11 +59,11 @@ export class TestCase extends TestItem {
 
         const vm = new TestViewModel();
 
-        await vm.waitForReady();
-
         ic.viewModel = vm;
 
         ic.bind(null, "items", [["viewModel", "movies"]]);
+
+        await vm.waitForReady();
 
         const first = root.firstElementChild;
 

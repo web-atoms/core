@@ -1,5 +1,27 @@
 import { AtomControl } from "../controls/AtomControl";
-import { INameValuePairs, INameValues } from "./types";
+import { INameValuePairs, INameValues, IRect } from "./types";
+
+export class ChildEnumerator {
+
+    private item: HTMLElement;
+
+    public get current(): HTMLElement {
+        return this.item;
+    }
+
+    constructor(private e: HTMLElement) {
+    }
+
+    public next(): boolean {
+        if (!this.item) {
+            this.item = this.e.firstElementChild as HTMLElement;
+        } else {
+            this.item = this.item.nextElementSibling as HTMLElement;
+        }
+        return this.item ? true : false;
+    }
+
+}
 
 export class AtomUI {
 // no longer needed - Akash Kava
@@ -46,15 +68,42 @@ export class AtomUI {
         throw new Error("Method not implemented.");
     }
 
-    public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
+    public static forEachChild(e: HTMLElement, a: (c: HTMLElement) => void): void {
         let en: Element = e.firstElementChild;
         while (en) {
             if (en as HTMLElement) {
-                yield en as HTMLElement;
+                a(e);
             }
             en = en.nextElementSibling;
         }
     }
+
+    public static screenOffset(e: HTMLElement): IRect {
+        const r = {
+            x: e.offsetLeft,
+            y: e.offsetTop,
+            width: e.offsetWidth,
+            height: e.offsetHeight
+        };
+
+        if (e.offsetParent) {
+            const p =  this.screenOffset(e.offsetParent as HTMLElement);
+            r.x += p.x;
+            r.y += p.y;
+        }
+
+        return r;
+    }
+
+    // public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
+    //     let en: Element = e.firstElementChild;
+    //     while (en) {
+    //         if (en as HTMLElement) {
+    //             yield en as HTMLElement;
+    //         }
+    //         en = en.nextElementSibling;
+    //     }
+    // }
 
     public static parseUrl(url: string): INameValues {
         const r: INameValues = {};

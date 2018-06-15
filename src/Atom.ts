@@ -3,7 +3,11 @@ import { CancelToken, INameValuePairs } from "./core/types";
 
 export class Atom {
 
-    public static designMode: boolean = false;
+     public static designMode: boolean = false;
+
+     public static set(arg0: any, arg1: any, arg2: any): any {
+    throw new Error("Method not implemented.");
+}
 
     public static get(target: any, path: string): any {
         const segments = path.split(".");

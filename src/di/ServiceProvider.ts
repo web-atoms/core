@@ -78,7 +78,6 @@ export class ServiceProvider implements IDisposable {
     }
 
     private create(key: any): any {
-        // tslint:disable-next-line:no-debugger
 
         const plist = InjectedTypes.paramList[TypeKey.get(key)];
 

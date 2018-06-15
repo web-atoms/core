@@ -2,12 +2,12 @@
     "compilerOptions": {
         "target": "es5",
         "watch": true,
-        "module":"umd",
+        "module":"commonjs",
         "sourceMap": true,
         "declaration": true,
         "moduleResolution": "node",
         "outDir": "bin",
-        "downlevelIteration": true,
+        "downlevelIteration": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "lib": [

@@ -1,9 +1,19 @@
-import { AtomControl } from "../controls/AtomControl";
-
 import "reflect-metadata";
 
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
+
+}
+
+export interface INotifyPropertyChanging {
+
+    onPropertyChanging(name: string, newValue: any, oldValue: any): void;
+
+}
+
+export interface INotifyPropertyChanged {
+
+    onPropertyChanged(name: string): void;
 
 }
 
@@ -15,10 +25,6 @@ export type IAtomElement = HTMLElement | INativeComponent;
 
 export type PathList = string[];
 
-export interface IAtomControlElement {
-    atomControl: AtomControl;
-}
-
 export interface INameValuePairs {
     [key: string]: any;
 }
@@ -29,6 +35,13 @@ export interface INameValues {
 
 export interface IDisposable {
     dispose(): void ;
+}
+
+export interface IRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
 }
 
 export class AtomDisposable implements IDisposable {

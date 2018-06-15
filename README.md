@@ -4,8 +4,69 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 ## Features
 1. Abstract Atom Component
 2. Abstract Device API (Browser Service, Message Broadcast)
-3. Recreated in TypeScript
-4. `AMD` Module support
+3. Theme and styles support without CSS
+4. One time, One way and Two way binding support
+5. Simple dependency Injection
+6. In built simple unit testing framework
+7. CommonJS module support
+8. Full featured MVVM Framework with powerful validation
+9. Single code base for Business Logic (View Model + Services) for Web as well as Mobile (through Xamarin.Forms)
+
+### Example View Model
+
+```typescript
+
+export class UserListViewModel extends AtomViewModel {
+
+    /// @bindableProperty will create accessor and mutator
+    /// for the given field name and it will automatically
+    /// refresh bindings
+    @bindableProperty
+    public user: any;
+
+    /// @validate decorator will process this accessor
+    /// in a way that it will always return null till
+    /// you call this.isValid. After this.isValid is 
+    /// called, it will display an error if data is invalid
+    @validate
+    public get errorName(): string {
+        return this.user.name ? "" : "Name cannot be empty";
+    }
+
+    /// You can bind UI element to this field, @watch decorator
+    /// will process this accessor in a way that UI element bound
+    /// to this field will automatically update whenver any of
+    /// fields referenced in this method is updated anywhere else
+    @watch
+    public get name(): string {
+        return `${this.user.firstName} ${this.user.lastName}`;
+    }
+
+    public async addNew(): Promise<any> {
+        // this will validate all accessors
+        // marked with @validate
+        if (!this.isValid) {
+            await this.windowService.alert("Please complete all required fields");
+        }
+        ... 
+    }
+
+}
+
+```
+
+## Web Controls
+1. AtomComboBox (wrapper for SELECT element)
+2. AtomControl (base class for all other controls)
+3. AtomItemsControl
+4. AtomListBox
+5. AtomPageView (control browser that hosts other control referenced by url)
+6. AtomWindow
+
+## Services
+1. WindowService - to host AtomWindow and retrive result
+2. RestService - RetroFit kind of service for simple ajax
+3. BrowserService - An abstract navigation service for Web and Xamarin
 
 ## Development guidelines
 1. Use TypeScript `module` pattern
@@ -16,20 +77,6 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 6. No `Atom.get` and `Atom.set`
 7. Do not use underscore `_` anywhere, not in field name not in get/set
 8. Do not use `set_name` method name, instead use `get name()` and `set name(v: T)` syntax for properties.
-
-
-### List of controls Planned
-
-#### Phase 1
-1. AtomControl
-2. AtomItemsControl
-...
-
-#### Phase 2
-...
-
-#### Phase 3 
-...
 
 
 ## How to run unit tests?
