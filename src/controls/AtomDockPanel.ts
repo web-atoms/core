@@ -1,7 +1,6 @@
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf } from "../core/types";
 import { AtomControl } from "./AtomControl";
-import { AtomTemplate } from "./AtomTemplate";
 
 export class AtomDockPanel extends AtomControl {
 
@@ -28,6 +27,31 @@ export class AtomDockPanel extends AtomControl {
 
         if (/Template$/.test(name)) {
             this.invalidate();
+        }
+    }
+
+    public onUpdateUI(): void {
+        this.removeAllChildren(this.element);
+
+        const tokens = this.order.split(",").map( (x) => x.trim());
+
+        for (let iterator of tokens) {
+            const resizable = iterator.startsWith("@");
+            if (resizable) {
+                iterator = iterator.substr(1);
+            }
+            switch (iterator) {
+                case "left":
+                    break;
+                case "top":
+                    break;
+                case "right":
+                    break;
+                case "bottom":
+                    break;
+                case "fill":
+                    break;
+            }
         }
     }
 }

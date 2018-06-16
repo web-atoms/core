@@ -197,4 +197,17 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         });
     }
 
+    protected removeAllChildren(e: HTMLElement): void {
+        let child = e.firstElementChild as HTMLElement;
+        while (child) {
+            const c = child;
+            child = child.nextElementSibling as HTMLElement;
+            const ac = c as IAtomControlElement;
+            if (ac && ac.atomControl) {
+                ac.atomControl.dispose();
+            }
+            c.remove();
+        }
+    }
+
 }
