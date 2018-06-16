@@ -1,6 +1,7 @@
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomBridge } from "../core/bridge";
 import { ServiceProvider } from "../di/ServiceProvider";
+import { AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomTheme } from "../styles/Theme";
 import { AtomComponent } from "./AtomComponent";
 
@@ -53,6 +54,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         switch (name) {
             case "theme":
                 this.mCachedTheme = null;
+                AtomBinder.refreshValue(this, "style");
                 break;
         }
     }
@@ -121,6 +123,26 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             if (/^style/.test(name)) {
                 name = name.substr(5);
                 name = name.charAt(0).toLowerCase() + name.substr(1);
+
+                // this is style class...
+                if (name === "class") {
+                    const last = (element as any)._lastClass;
+                    if (last) {
+                        element.classList.remove(last);
+                    }
+
+                    if (!value) {
+                        return;
+                    }
+
+                    const s = value as AtomStyleClass;
+                    if (s.className) {
+                        element.classList.add(s.className);
+                    } else {
+                        element.classList.add(value);
+                    }
+                }
+
                 element.style[name] = value;
                 return;
             }

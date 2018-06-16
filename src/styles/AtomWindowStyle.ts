@@ -22,6 +22,15 @@ export class AtomWindowStyle extends AtomStyle {
         "border-radius": "5px",
         "padding": "5px"
     });
+
+    public readonly titlePresenter = this.createClass("titlePresenter", {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0
+    });
+
     public readonly titleHost = this.createClass("titleHost", {
         "position": "absolute",
         "left": 0,
