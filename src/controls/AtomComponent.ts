@@ -152,6 +152,19 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         });
     }
 
+    /**
+     * Remove all bindings associated with given element and optional name
+     * @param element T
+     * @param name string
+     */
+    public unbind(element: T, name?: string): void {
+        const toDelete = this.bindings.filter( (x) => x.element === element && (!name || (x.name === name)));
+        for (const iterator of toDelete) {
+            iterator.dispose();
+            ArrayHelper.remove(this.bindings, (x) => x === iterator);
+        }
+    }
+
     public bindEvent(
         element: T,
         name?: string,

@@ -205,6 +205,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             const ac = c as IAtomControlElement;
             if (ac && ac.atomControl) {
                 ac.atomControl.dispose();
+            } else {
+                // remove all children events
+                this.unbindEvent(child);
+                // remove all bindings
+                this.unbind(child);
             }
             c.remove();
         }

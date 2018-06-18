@@ -6,6 +6,7 @@ import "./core/atom-ui-tests";
 
 import "./controls/atom-control-tests";
 import "./controls/atom-items-control-tests";
+import "./controls/AtomGridViewTests";
 import "./di/tests";
 import "./styles/tests";
 import "./view-model/test";

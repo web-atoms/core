@@ -1,57 +1,87 @@
-import { bindableProperty } from "../core/bindable-properties";
-import { IClassOf } from "../core/types";
+import { IRect } from "../core/types";
 import { AtomControl } from "./AtomControl";
 
 export class AtomDockPanel extends AtomControl {
 
-    @bindableProperty
-    public topTemplate: Array<IClassOf<AtomControl>>;
+    // private children: Array<HTMLElement| Text | AtomControl> = [];
 
-    @bindableProperty
-    public leftTemplate: Array<IClassOf<AtomControl>>;
+    // private availableRect: IRect = null;
 
-    @bindableProperty
-    public rightTemplate: Array<IClassOf<AtomControl>>;
+    // private attempt: number = 0;
 
-    @bindableProperty
-    public bottomTemplate: Array<IClassOf<AtomControl>>;
-
-    @bindableProperty
-    public fillTemplate: IClassOf<AtomControl>;
-
-    @bindableProperty
-    public order: string = "top, @left, @right, bottom, fill";
-
-    public onPropertyChanged(name: string): void {
-        super.onPropertyChanged(name);
-
-        if (/Template$/.test(name)) {
-            this.invalidate();
-        }
+    constructor(e?: HTMLElement) {
+        super(e || document.createElement("section"));
+        // tslint:disable-next-line:no-console
+        console.error("Use AtomGridView instead");
     }
 
-    public onUpdateUI(): void {
-        this.removeAllChildren(this.element);
+    // public append(e: HTMLElement | Text | AtomControl): AtomControl {
+    //     this.children.push(e);
+    //     return this;
+    // }
 
-        const tokens = this.order.split(",").map( (x) => x.trim());
+    // public onUpdateUI(): void {
 
-        for (let iterator of tokens) {
-            const resizable = iterator.startsWith("@");
-            if (resizable) {
-                iterator = iterator.substr(1);
-            }
-            switch (iterator) {
-                case "left":
-                    break;
-                case "top":
-                    break;
-                case "right":
-                    break;
-                case "bottom":
-                    break;
-                case "fill":
-                    break;
-            }
-        }
-    }
+    //     this.attempt ++;
+
+    //     this.removeAllChildren(this.element);
+
+    //     const width =  this.element.offsetWidth;
+    //     const height = this.element.offsetHeight;
+
+    //     if (!(width && height)) {
+    //         if (this.attempt > 100) {
+    //             // tslint:disable-next-line:no-console
+    //             console.error(`AtomDockPanel (${width}, ${height}) must both have non zero width and height`);
+    //             return;
+    //         }
+    //         // AtomDispatcher.instance.callLater(() => this.invalidate());
+    //         setTimeout(() => {
+    //             this.invalidate();
+    //         }, 100);
+    //         return;
+    //     }
+
+    //     this.attempt = 0;
+
+    //     this.availableRect = { width, height, x: 0, y: 0 };
+
+    //     for (const iterator of this.children) {
+    //         if (iterator instanceof AtomControl) {
+    //             const ac = iterator as AtomControl;
+    //             this.addChild(ac.element, ac);
+    //         } else {
+    //             this.addChild(iterator as HTMLElement);
+    //         }
+    //     }
+    //     super.onUpdateUI();
+    // }
+
+    // private addChild(e: HTMLElement, ac?: AtomControl): void {
+    //     let dock: string = "dock-fill";
+    //     for (let i = 0; i < e.classList.length ; i++) {
+    //         const item = e.classList.item(i);
+    //         if (!/^(dock\-)/i.test(item)) {
+    //             continue;
+    //         }
+    //         dock = item;
+    //         break;
+    //     }
+
+    //     switch (dock.toLowerCase()) {
+    //         case "dock-left":
+    //             this.availableRect.x +=
+    //             break;
+    //         case "dock-right":
+    //             break;
+    //         case "dock-top":
+    //             break;
+    //         case "dock-bottom":
+    //             break;
+    //         case "dock-fill":
+    //             break;
+    //     }
+
+    // }
+
 }
