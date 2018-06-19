@@ -1,3 +1,4 @@
+import { AtomUI } from "../core/atom-ui";
 import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf, IDisposable, IRect } from "../core/types";
@@ -6,7 +7,6 @@ import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomTheme } from "../styles/Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
-import { AtomUI } from "../core/atom-ui";
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
     public commandPresenter: HTMLElement;
@@ -24,7 +24,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
         this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v : undefined);
         this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v : undefined);
-
+        this.bind(this.element, "styleMargin", [["templateParent", "x"]], false, (v) => v ? "none" : undefined);
         // add title host
         const titlePresenter = document.createElement("div");
         this.bind(titlePresenter, "styleClass", [["templateParent", "style", "titlePresenter"]]);
