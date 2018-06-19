@@ -1,4 +1,4 @@
-import { Category, Test, TestItem } from "../unit/base-test";
+import { Category, Test, TestItem, Assert } from "../unit/base-test";
 import { AtomGridView } from "./AtomGridView";
 
 @Category("Grid view")
@@ -53,8 +53,40 @@ export class TestCase extends TestItem {
 
         await this.delay(100);
 
-        // tslint:disable-next-line:no-debugger
-        debugger;
+        const hps = header.parentElement.style;
+
+        Assert.equals("0px", hps.left);
+        Assert.equals("0px", hps.top);
+        Assert.equals("1000px" , hps.width);
+        Assert.equals("10px", hps.height);
+
+        const lps = left.parentElement.style;
+
+        Assert.equals("0px", lps.left);
+        Assert.equals("10px", lps.top);
+        Assert.equals("20px" , lps.width);
+        Assert.equals("690px", lps.height);
+
+        const rps = right.parentElement.style;
+
+        Assert.equals("950px", rps.left);
+        Assert.equals("10px", rps.top);
+        Assert.equals("50px" , rps.width);
+        Assert.equals("690px", rps.height);
+
+        const fillps = fill.parentElement.style;
+
+        Assert.equals("20px", fillps.left);
+        Assert.equals("10px", fillps.top);
+        Assert.equals("930px" , fillps.width);
+        Assert.equals("690px", fillps.height);
+
+        const footerps = footer.parentElement.style;
+
+        Assert.equals("0px", footerps.left);
+        Assert.equals("700px", footerps.top);
+        Assert.equals("1000px" , footerps.width);
+        Assert.equals("300px", footerps.height);
     }
 
 }

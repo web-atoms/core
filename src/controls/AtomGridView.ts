@@ -19,7 +19,7 @@ export class AtomGridView extends AtomControl {
 
     private rowSizes: IOffsetSize[];
 
-    private children: Array<HTMLElement| Text | AtomControl> = [];
+    private children: HTMLElement[] = [];
 
     private attempt: number = 0;
 
@@ -30,7 +30,7 @@ export class AtomGridView extends AtomControl {
     }
 
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
-        this.children.push(e);
+        this.children.push(e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement);
         return this;
     }
 
@@ -67,26 +67,28 @@ export class AtomGridView extends AtomControl {
         this.assignOffsets(this.rowSizes, this.availableRect.height);
 
         for (const iterator of this.children) {
-            if (iterator instanceof AtomControl) {
-                const ac = iterator as AtomControl;
-                this.addChild(ac.element, ac);
-            } else {
-                this.addChild(iterator as HTMLElement);
-            }
+            const host = document.createElement("section");
+            host.appendChild(iterator);
+            this.element.appendChild(host);
         }
         super.onUpdateUI();
+        this.updateSize();
     }
 
-    private addChild(e: HTMLElement, ac?: AtomControl): void {
+    protected onUpdateSize(): void {
+        for (const iterator of this.children) {
+            this.updateStyle(iterator);
+        }
+    }
 
-        // tslint:disable-next-line:no-debugger
-        debugger;
+    private updateStyle(e: HTMLElement): void {
+
         const row = (e as any).row || 0;
         const column = (e as any).column || 0;
         const rowSpan = (e as any).rowSpan || 1;
         const colSpan = (e as any).colSpan || 1;
 
-        const host = document.createElement("section");
+        const host = e.parentElement as HTMLElement;
         host.style.position = "absolute";
         host.style.overflow = "hidden";
         host.style.padding = "0";
@@ -140,9 +142,15 @@ export class AtomGridView extends AtomControl {
             }
             start += item.size;
         }
+        if (!fill) {
+            return;
+        }
         const lastStart = start;
         start = end;
-        for (const item of a.reverse()) {
+
+        const r = a.map((x) => x).reverse();
+
+        for (const item of r) {
             if (isNaN(item.size)) {
                 if (fill !== item) {
                     throw new Error("Multiple * cannot be defined");
