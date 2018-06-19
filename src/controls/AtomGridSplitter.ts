@@ -45,8 +45,8 @@ export class AtomGridSplitter extends AtomControl {
                 // do drag....
                 const { clientX, clientY } = me;
 
-                const dx = clientX - rect.x;
-                const dy = clientY - rect.y;
+                const dx = rect.x - clientX;
+                const dy = rect.y - clientY;
 
                 if (isVertical) {
                     parent.resize("column", cell[0][0], dx);
@@ -54,8 +54,8 @@ export class AtomGridSplitter extends AtomControl {
                     parent.resize("row", cell[1][0], dy);
                 }
 
-                // rect.x = clientX;
-                // rect.y = clientY;
+                rect.x = clientX;
+                rect.y = clientY;
 
             }));
 
