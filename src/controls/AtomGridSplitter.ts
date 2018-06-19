@@ -36,16 +36,17 @@ export class AtomGridSplitter extends AtomControl {
 
             const disposables: IDisposable[] = [];
 
-            const rect: IRect = { x: e.x, y: e.y };
+            const rect: IRect = { x: e.clientX, y: e.clientY };
 
             const cell = ((this.element as any).cell as string)
                 .split(",").map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
 
             disposables.push(this.bindEvent(this.element, "mousemove", (me: MouseEvent) => {
                 // do drag....
+                const { clientX, clientY } = me;
 
-                const dx = me.x - rect.x;
-                const dy = me.y - rect.y;
+                const dx = clientX - rect.x;
+                const dy = clientY - rect.y;
 
                 if (isVertical) {
                     parent.resize("column", cell[0][0], dx);
@@ -53,8 +54,8 @@ export class AtomGridSplitter extends AtomControl {
                     parent.resize("row", cell[1][0], dy);
                 }
 
-                rect.x = me.x;
-                rect.y = me.y;
+                rect.x = clientX;
+                rect.y = clientY;
 
             }));
 
