@@ -44,8 +44,8 @@ export class AtomGridSplitter extends AtomControl {
             disposables.push(this.bindEvent(this.element, "mousemove", (me: MouseEvent) => {
                 // do drag....
 
-                const dx = rect.x - me.x;
-                const dy = rect.y - me.y;
+                const dx = me.x - rect.x;
+                const dy = me.y - rect.y;
 
                 if (isVertical) {
                     parent.resize("column", cell[0][0], dx);
