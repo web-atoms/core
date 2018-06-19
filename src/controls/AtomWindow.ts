@@ -182,6 +182,7 @@ export class AtomWindow extends AtomControl {
 
     private setupDragging(tp: HTMLElement): void {
         this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
+            startEvent.preventDefault();
             const disposables: IDisposable[] = [];
             const offset = AtomUI.screenOffset(tp);
             const rect: IRect = { x: startEvent.screenX, y: startEvent.screenY };
