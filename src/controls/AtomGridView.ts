@@ -32,6 +32,10 @@ export class AtomGridView extends AtomControl {
         window.addEventListener("resize", (evt) => {
             this.updateSize();
         });
+
+        const style = this.element.style;
+        style.position = "absolute";
+        style.left = style.right = style.top = style.bottom = "0";
     }
 
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
@@ -82,9 +86,6 @@ export class AtomGridView extends AtomControl {
     }
 
     public resize(item: "column" | "row", index: number, delta: number): void {
-
-        // tslint:disable-next-line:no-console
-        console.log(`${item} ${delta}`);
 
         const a = item === "column" ? this.columnSizes : this.rowSizes;
         const prev = a[index - 1];
