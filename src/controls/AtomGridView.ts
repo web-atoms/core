@@ -19,7 +19,7 @@ export class AtomGridView extends AtomControl {
 
     private rowSizes: IOffsetSize[];
 
-    private children: HTMLElement[] = [];
+    private children: HTMLElement[];
 
     private attempt: number = 0;
 
