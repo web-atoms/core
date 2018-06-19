@@ -35,7 +35,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     constructor(e?: HTMLElement) {
-        super(e);
+        super(e || document.createElement("div"));
     }
 
     /**
