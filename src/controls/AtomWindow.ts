@@ -24,10 +24,10 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
         this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v : undefined);
         this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v : undefined);
-        this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v ? "0" : undefined);
-        this.bind(this.element, "styleMarginLeft", [["templateParent", "x"]], false, (v) => v ? "0" : undefined);
-        this.bind(this.element, "styleMarginRight", [["templateParent", "x"]], false, (v) => v ? "0" : undefined);
-        this.bind(this.element, "styleMarginBottom", [["templateParent", "x"]], false, (v) => v ? "0" : undefined);
+        this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
+        this.bind(this.element, "styleMarginLeft", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
+        this.bind(this.element, "styleMarginRight", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
+        this.bind(this.element, "styleMarginBottom", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         // add title host
         const titlePresenter = document.createElement("div");
         this.bind(titlePresenter, "styleClass", [["templateParent", "style", "titlePresenter"]]);
