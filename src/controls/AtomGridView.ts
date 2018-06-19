@@ -94,7 +94,6 @@ export class AtomGridView extends AtomControl {
         host.style.overflow = "hidden";
         host.style.padding = "0";
         host.style.margin = "0";
-        host.appendChild(e);
 
         const rowStart = this.rowSizes[row].offset;
         let rowSize = 0;
@@ -114,7 +113,6 @@ export class AtomGridView extends AtomControl {
         host.style.left = `${colStart}px`;
         host.style.width = `${colSize}px`;
 
-        this.element.appendChild(host);
     }
 
     private toSize(s: string, total: number): IOffsetSize {

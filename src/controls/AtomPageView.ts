@@ -40,7 +40,9 @@ export class AtomPageView
         super(e || document.createElement("section"));
         AtomUI.assignID(this.element);
         this.windowService = ServiceProvider.global.get(WindowService);
-        this.element.style.position = "relative";
+        const style = this.element.style;
+        style.position = "absolute";
+        style.left = style.right = style.top = style.bottom = "0";
         this.backCommand = () => {
             this.onBackCommand();
         };
