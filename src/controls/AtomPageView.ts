@@ -36,11 +36,11 @@ export class AtomPageView
 
     private lastUrl: string;
 
-    constructor(e: HTMLElement) {
-        super(e);
+    constructor(e?: HTMLElement) {
+        super(e || document.createElement("section"));
         AtomUI.assignID(this.element);
         this.windowService = ServiceProvider.global.get(WindowService);
-        e.style.position = "relative";
+        this.element.style.position = "relative";
         this.backCommand = () => {
             this.onBackCommand();
         };
