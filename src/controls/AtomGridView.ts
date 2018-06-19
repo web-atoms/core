@@ -82,6 +82,10 @@ export class AtomGridView extends AtomControl {
     }
 
     public resize(item: "column" | "row", index: number, delta: number): void {
+
+        // tslint:disable-next-line:no-console
+        console.log(`${item} ${delta}`);
+
         const a = item === "column" ? this.columnSizes : this.rowSizes;
         const prev = a[index - 1];
         const next = a[index + 1];

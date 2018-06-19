@@ -18,11 +18,16 @@ export class AtomGridSplitter extends AtomControl {
         this.bind(this.element, "styleCursor", [["direction"]], false,
             (v) => v === "vertical" ? "ew-resize" : "ns-resize");
 
+        this.bind(this.element, "styleBackgroundColor", [["dragging"]], false,
+            (v) => v  ? "blue" : "lightgray");
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.top = style.bottom = style.right = "0";
 
         this.bindEvent(this.element, "mousedown", (e: MouseEvent) => {
+
+            e.preventDefault();
+
             this.dragging = true;
 
             const parent = this.parent as AtomGridView;
