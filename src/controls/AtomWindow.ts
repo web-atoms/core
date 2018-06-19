@@ -2,7 +2,6 @@ import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
-import { AtomStyle } from "../styles/AtomStyle";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomTheme } from "../styles/Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";

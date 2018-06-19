@@ -1,6 +1,7 @@
 import { bindableProperty } from "../core/bindable-properties";
 import { IRect } from "../core/types";
 import { AtomControl } from "./AtomControl";
+import { AtomGridSplitter } from "./AtomGridSplitter";
 
 interface IOffsetSize {
     offset: number;
@@ -27,6 +28,10 @@ export class AtomGridView extends AtomControl {
 
     constructor(e?: HTMLElement) {
         super(e || document.createElement("section"));
+
+        window.addEventListener("resize", (evt) => {
+            this.updateSize();
+        });
     }
 
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
@@ -73,6 +78,21 @@ export class AtomGridView extends AtomControl {
             this.element.appendChild(host);
         }
         super.onUpdateUI();
+        this.updateSize();
+    }
+
+    public resize(item: "column" | "row", index: number, delta: number): void {
+        const a = item === "column" ? this.columnSizes : this.rowSizes;
+        const prev = a[index - 1];
+        const next = a[index + 1];
+        if ((!prev) || (!next)) {
+            throw new Error("Grid Splitter cannot be start or end element in GridView");
+        }
+        const current = a[index];
+        prev.size += delta;
+        current.offset += delta;
+        next.offset += delta;
+        next.size -= delta;
         this.updateSize();
     }
 

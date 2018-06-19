@@ -169,7 +169,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         element: T,
         name?: string,
         method?: EventListenerOrEventListenerObject,
-        key?: string): void {
+        key?: string): IDisposable {
         if (!element) {
             return;
         }
@@ -186,6 +186,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
         be.disposable = AtomBridge.instance.addEventHandler(element, name, method, false);
         this.eventHandlers.push(be);
+
+        return new AtomDisposable(() => {
+            be.disposable.dispose();
+            ArrayHelper.remove(this.eventHandlers, (e) => e.disposable === be.disposable);
+        });
     }
 
     public unbindEvent(
