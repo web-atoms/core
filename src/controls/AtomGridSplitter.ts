@@ -54,8 +54,8 @@ export class AtomGridSplitter extends AtomControl {
                     parent.resize("row", cell[1][0], dy);
                 }
 
-                rect.x = clientX;
-                rect.y = clientY;
+                // rect.x = clientX;
+                // rect.y = clientY;
 
             }));
 
