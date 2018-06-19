@@ -30,6 +30,7 @@ export class AtomGridView extends AtomControl {
     }
 
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
+        this.children = this.children || [];
         this.children.push(e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement);
         return this;
     }
