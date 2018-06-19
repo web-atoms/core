@@ -115,6 +115,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             });
             return;
         }
+
+        if (/^(viewModel|localViewModel)$/.test(name)) {
+            this[name] = value;
+            return;
+        }
+
         if ((!element || element === this.element) &&  this.hasProperty(name)) {
             this.runAfterInit(() => {
                 this[name] = value;
