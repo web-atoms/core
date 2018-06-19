@@ -8,6 +8,15 @@ interface IOffsetSize {
     size: number;
 }
 
+/**
+ * GridView columns or rows can accept comma separated strings with
+ * absolute pixel value, percent value and star (*).
+ *
+ * For example, 20% of total width for first column, 200 pixel for last column
+ * and rest of the space is for middle = "20%, *, 200"
+ *
+ * You can have only one star specification.
+ */
 export class AtomGridView extends AtomControl {
 
     @bindableProperty

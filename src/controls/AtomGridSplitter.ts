@@ -59,7 +59,7 @@ export class AtomGridSplitter extends AtomControl {
 
             }));
 
-            disposables.push(this.bindEvent(this.element, "mouseup", (mup) => {
+            disposables.push(this.bindEvent(document.body, "mouseup", (mup) => {
                 // stop
                 this.dragging = false;
                 for (const iterator of disposables) {

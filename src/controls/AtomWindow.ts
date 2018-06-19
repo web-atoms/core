@@ -1,11 +1,12 @@
 import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
-import { IClassOf } from "../core/types";
+import { IClassOf, IDisposable, IRect } from "../core/types";
 import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomTheme } from "../styles/Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
+import { AtomUI } from "../core/atom-ui";
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
     public commandPresenter: HTMLElement;
@@ -21,8 +22,10 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.bind(this.element, "styleClass", [["templateParent", "style", "frame"]]);
         this.bind(this.element, "styleWidth", [["templateParent", "width"]]);
         this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
-        // add title host
+        this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v : undefined);
+        this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v : undefined);
 
+        // add title host
         const titlePresenter = document.createElement("div");
         this.bind(titlePresenter, "styleClass", [["templateParent", "style", "titlePresenter"]]);
         // titleHost.classList.add(style.titleHost.className);
@@ -147,6 +150,8 @@ export class AtomWindow extends AtomControl {
         (titleContent.element as IAtomControlElement)._templateParent = this;
         frame.titlePresenter.appendChild(titleContent.element);
 
+        this.setupDragging(frame.titlePresenter);
+
         this.element.classList.add(this.style.frameHost.className);
 
         fe._logicalParent = this.element as IAtomControlElement;
@@ -170,6 +175,36 @@ export class AtomWindow extends AtomControl {
             frame.commandPresenter.appendChild(command.element);
         }
         this.append(frame);
+    }
+
+    private setupDragging(tp: HTMLElement): void {
+        this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
+            const disposables: IDisposable[] = [];
+            const offset = AtomUI.screenOffset(tp);
+            const rect: IRect = { x: startEvent.screenX, y: startEvent.screenY };
+            const cursor = tp.style.cursor;
+            tp.style.cursor = "move";
+            disposables.push(this.bindEvent(document.body, "mousemove", (moveEvent: MouseEvent) => {
+                const { screenX, screenY } = moveEvent;
+                const dx = screenX - rect.x;
+                const dy = screenY - rect.y;
+
+                offset.x += dx;
+                offset.y += dy;
+
+                this.x = offset.x;
+                this.y = offset.y;
+
+                rect.x = screenX;
+                rect.y = screenY;
+            }));
+            disposables.push(this.bindEvent(document.body, "mouseup", (endEvent: MouseEvent) => {
+                tp.style.cursor = cursor;
+                for (const iterator of disposables) {
+                    iterator.dispose();
+                }
+            }));
+        });
     }
 
 }

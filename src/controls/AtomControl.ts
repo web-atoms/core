@@ -164,6 +164,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected setElementValue(element: HTMLElement, name: string, value: any): void {
+
+        if (value === undefined) {
+            return;
+        }
+
         if (/^style/.test(name)) {
             name = name.substr(5);
             name = name.charAt(0).toLowerCase() + name.substr(1);
