@@ -24,10 +24,11 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
         // add title host
 
-        const titleHost = document.createElement("div");
-        this.bind(titleHost, "styleClass", [["templateParent", "style", "titlePresenter"]]);
+        const titlePresenter = document.createElement("div");
+        this.bind(titlePresenter, "styleClass", [["templateParent", "style", "titlePresenter"]]);
         // titleHost.classList.add(style.titleHost.className);
-        this.titlePresenter = titleHost;
+        this.titlePresenter = titlePresenter;
+        this.element.appendChild(titlePresenter);
 
         // add content presneter
         const cp = document.createElement("div");
