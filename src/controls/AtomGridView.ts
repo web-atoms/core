@@ -84,10 +84,15 @@ export class AtomGridView extends AtomControl {
 
     private updateStyle(e: HTMLElement): void {
 
-        const row = (e as any).row || 0;
-        const column = (e as any).column || 0;
-        const rowSpan = (e as any).rowSpan || 1;
-        const colSpan = (e as any).colSpan || 1;
+        const cell = (e as any).cell as string;
+        const tokens = cell.split(",")
+            .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
+
+        const column = tokens[0][0];
+        const row = tokens[1][0];
+
+        const colSpan = tokens[0][1] || 1;
+        const rowSpan = tokens[1][1] || 1;
 
         const host = e.parentElement as HTMLElement;
         host.style.position = "absolute";
