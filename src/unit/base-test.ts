@@ -274,36 +274,58 @@ export class TestRunner {
 
     public async _run(): Promise<any> {
 
-        if (this.tests.length === 0) {
-            this.printAll();
-            return;
-        }
-
-        const peek: TestMethod = this.tests.shift();
-
-        this.executed.push(peek);
-
-        const test: TestItem = new (peek.testClass as {new ()})();
-
-        try {
-            await test.init();
-
-            // tslint:disable-next-line:ban-types
-            const fx: Function = test[peek.name];
-
-            await this.runTest(fx, test);
-        } catch (e) {
-            peek.error = e;
-        } finally {
-            peek.logText = test.logText;
+        const promises = this.tests.map( async (peek) => {
+            this.executed.push(peek);
+            const test = new (peek.testClass)();
             try {
-                await test.dispose();
-            } catch (er) {
-                peek.error = er;
-            }
-        }
+                await test.init();
 
-        await this._run();
+                // tslint:disable-next-line:ban-types
+                const fx: Function = test[peek.name];
+
+                await this.runTest(fx, test);
+            } catch (e) {
+                peek.error = e;
+            } finally {
+                peek.logText = test.logText;
+                try {
+                    await test.dispose();
+                } catch (er) {
+                    peek.error = peek.error ?
+                        peek.error + er : er;
+                }
+            }
+        });
+
+        await Promise.all(promises);
+
+        this.printAll();
+
+        // const peek: TestMethod = this.tests.shift();
+
+        // this.executed.push(peek);
+
+        // const test: TestItem = new (peek.testClass as {new ()})();
+
+        // try {
+        //     await test.init();
+
+        //     // tslint:disable-next-line:ban-types
+        //     const fx: Function = test[peek.name];
+
+        //     await this.runTest(fx, test);
+        // } catch (e) {
+        //     peek.error = e;
+        // } finally {
+        //     peek.logText = test.logText;
+        //     try {
+        //         await test.dispose();
+        //     } catch (er) {
+        //         peek.error = er;
+        //     }
+        // }
+
+        // await this._run();
 
     }
 

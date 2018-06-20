@@ -152,11 +152,24 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         });
     }
 
+    /**
+     * Remove all bindings associated with given element and optional name
+     * @param element T
+     * @param name string
+     */
+    public unbind(element: T, name?: string): void {
+        const toDelete = this.bindings.filter( (x) => x.element === element && (!name || (x.name === name)));
+        for (const iterator of toDelete) {
+            iterator.dispose();
+            ArrayHelper.remove(this.bindings, (x) => x === iterator);
+        }
+    }
+
     public bindEvent(
         element: T,
         name?: string,
         method?: EventListenerOrEventListenerObject,
-        key?: string): void {
+        key?: string): IDisposable {
         if (!element) {
             return;
         }
@@ -173,6 +186,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
         be.disposable = AtomBridge.instance.addEventHandler(element, name, method, false);
         this.eventHandlers.push(be);
+
+        return new AtomDisposable(() => {
+            be.disposable.dispose();
+            ArrayHelper.remove(this.eventHandlers, (e) => e.disposable === be.disposable);
+        });
     }
 
     public unbindEvent(

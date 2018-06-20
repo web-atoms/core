@@ -1,6 +1,6 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.98",
+  "version": "1.0.127",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,8 @@
     "test-dom": "^1.0.0"
   },
   "dependencies": {
+    "golden-layout": "^1.5.9",
+    "jquery": "^3.3.1",
     "reflect-metadata": "^0.1.12"
   }
 }
