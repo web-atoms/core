@@ -6,6 +6,7 @@ export interface IWatchFunctionCollection {
 }
 export interface IWatchableObject {
     _$_handlers?: IWatchFunctionCollection;
+    _$_bindable?: string[];
 }
 
 export class AtomBinder {
@@ -76,6 +77,61 @@ export class AtomBinder {
         }
         const handlers = AtomBinder.get_WatchHandler(target, key);
         handlers.push(handler);
+
+        const tw = target as IWatchableObject;
+        if (!tw._$_bindable) {
+            tw._$_bindable = [];
+        }
+        if (tw._$_bindable.indexOf(key) === -1) {
+            tw._$_bindable.push(key);
+
+            const keyName = `_$_${key}`;
+
+            const set = function(v: any) {
+                // tslint:disable-next-line:triple-equals
+                if (this[keyName] == v) {
+                    return;
+                }
+                this[keyName] = v;
+                AtomBinder.refreshValue(this, key);
+            };
+
+            const get = function(): any {
+                return this[keyName];
+            };
+
+            // change definition...
+            const pv = AtomBinder.getPropertyDescriptor(target, key);
+            // tslint:disable-next-line:no-debugger
+            debugger;
+            if (pv) {
+                if (!pv.get) {
+                    const v = pv.value;
+                    target[keyName] = v;
+                    pv.get = get;
+                    pv.set = set;
+                    delete pv.value;
+                    delete pv.writable;
+
+                    Object.defineProperty(target, key, pv);
+                }
+            } else {
+                Object.defineProperty(target, key, {
+                    get, set, enumerable: true, configurable: true
+                });
+            }
+        }
+    }
+
+    public static getPropertyDescriptor(target, key: string): PropertyDescriptor {
+        const pv = Object.getOwnPropertyDescriptor(target, key);
+        if (!pv) {
+            const pt = Object.getPrototypeOf(target);
+            if (pt) {
+                return AtomBinder.getPropertyDescriptor(pt, key);
+            }
+        }
+        return pv;
     }
 
     public static get_WatchHandler(target: IWatchableObject, key: string): WatchFunction[] {

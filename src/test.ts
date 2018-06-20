@@ -2,11 +2,11 @@
 import { TestContext, TestRunner } from "./unit/base-test";
 
 // import unit test modules here
-import "./core/atom-ui-tests";
-
 import "./controls/atom-control-tests";
 import "./controls/atom-items-control-tests";
 import "./controls/AtomGridViewTests";
+import "./core/atom-ui-tests";
+import "./core/AtomBinderTests";
 import "./di/tests";
 import "./styles/tests";
 import "./view-model/test";
