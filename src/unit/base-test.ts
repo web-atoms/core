@@ -162,6 +162,9 @@ export class TestItem implements IServiceProvider {
     }
 
     public async dispose(): Promise<any> {
+        if (this.sp) {
+            this.sp.dispose();
+        }
         return 0;
     }
 
