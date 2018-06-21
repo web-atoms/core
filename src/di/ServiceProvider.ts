@@ -74,6 +74,9 @@ export class ServiceProvider implements IDisposable {
         for (const key in this.instances) {
             if (this.instances.hasOwnProperty(key)) {
                 const element = this.instances[key];
+                if (element === this) {
+                    continue;
+                }
                 const d = element as IDisposable;
                 if (d.dispose) {
                     d.dispose();
