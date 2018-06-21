@@ -24,13 +24,6 @@ export class WindowService {
     constructor() {
 
         this.register("alert-window", AtomAlertWindow);
-
-        if (window) {
-            window.addEventListener("click", (e) => {
-                this.currentTarget = e.target as HTMLElement;
-                this.closePopup();
-            });
-        }
     }
 
     public register(id: string, type: IClassOf<AtomControl>): void {
@@ -89,6 +82,16 @@ export class WindowService {
         const message = `atom-window-cancel:${peek.element.id}`;
         const device = ServiceProvider.global.get(AtomDevice);
         device.broadcast(message, "cancelled");
+    }
+
+    protected registerForPopup(): void {
+
+        if (window) {
+            window.addEventListener("click", (e) => {
+                this.currentTarget = e.target as HTMLElement;
+                this.closePopup();
+            });
+        }
     }
 
     private openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {

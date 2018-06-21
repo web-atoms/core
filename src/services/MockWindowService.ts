@@ -177,6 +177,10 @@ export class MockWindowService extends WindowService {
         throw new Error(`Expected windows did not open ${this.windowStack.map((x) => x.windowType).join(",")}`);
     }
 
+    protected registerForPopup(): void {
+        // nothing
+    }
+
 }
 
 ServiceCollection.instance.registerSingleton(WindowService, (sp) => new MockWindowService());
