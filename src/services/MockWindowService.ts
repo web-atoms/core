@@ -1,4 +1,5 @@
 import { AtomDisposable, IDisposable } from "../core/types";
+import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceCollection } from "../di/ServiceCollection";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
@@ -16,6 +17,7 @@ export class MockConfirmViewModel extends AtomWindowViewModel {
 
 }
 
+@RegisterSingleton
 /**
  * Mock of WindowService for unit tests
  * @export
