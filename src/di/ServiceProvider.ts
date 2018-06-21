@@ -23,6 +23,11 @@ export class ServiceProvider implements IDisposable {
         return this.resolve(key, true);
     }
 
+    public put(key: any, value: any): void {
+        const sd = ServiceCollection.instance.get(key);
+        this.instances[sd.id] = value;
+    }
+
     public resolve(key: any, create: boolean = false): any {
         const sd = ServiceCollection.instance.get(key);
 
