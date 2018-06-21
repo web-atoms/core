@@ -1,3 +1,7 @@
+import { IClassOf } from "../core/types";
+import { IServiceProvider } from "../di/IServiceProvider";
+import { ServiceProvider } from "../di/ServiceProvider";
+
                 // tslint:disable-next-line:no-console
 // tslint:disable:no-console
 export class Assert {
@@ -143,9 +147,15 @@ export class TestMethod {
 
 }
 
-export class TestItem {
+export class TestItem implements IServiceProvider {
 
     public logText: string = "";
+
+    private sp: ServiceProvider = null;
+
+    constructor() {
+        this.sp = ServiceProvider.global.newScope();
+    }
 
     public async init(): Promise<any> {
         return 0;
@@ -159,6 +169,10 @@ export class TestItem {
         if (text) {
             this.logText += text;
         }
+    }
+
+    public resolve<T>(c: IClassOf<T>, create: boolean = false): T {
+        return this.sp.resolve(c, create);
     }
 
     public delay(n: number): Promise<any> {
