@@ -79,8 +79,6 @@ export class MockWindowService extends NavigationService {
      */
     public openWindow<T>(c: string, vm: AtomViewModel): Promise<T> {
         return new Promise((resolve, reject) => {
-            // tslint:disable-next-line:no-debugger
-            debugger;
             const w: any = this.windowStack.find((x) => x.windowType === c);
             if (!w) {
                 const ex: Error = new Error(`No window registered for ${c}`);

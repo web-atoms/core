@@ -102,8 +102,6 @@ export class AtomBinder {
 
             // change definition...
             const pv = AtomBinder.getPropertyDescriptor(target, key);
-            // tslint:disable-next-line:no-debugger
-            debugger;
             if (pv) {
                 if (!pv.get) {
                     const v = pv.value;
