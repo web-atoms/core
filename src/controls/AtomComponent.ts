@@ -74,6 +74,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public set viewModel(v: any) {
+        const old = this.mViewModel;
+        if (old && old.dispose) {
+            old.dispose();
+        }
         this.mViewModel = v;
         this.refreshInherited("viewModel", (a) => a.mViewModel === undefined);
     }
@@ -91,6 +95,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public set localViewModel(v: any) {
+        const old = this.mLocalViewModel;
+        if (old && old.dispose) {
+            old.dispose();
+        }
         this.mLocalViewModel = v;
         this.refreshInherited("localViewModel", (a) => a.mLocalViewModel === undefined);
     }
