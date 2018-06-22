@@ -24,7 +24,7 @@ export class MockConfirmViewModel extends AtomWindowViewModel {
  * @class MockWindowService
  * @extends {WindowService}
  */
-export class MockWindowService extends NavigationService {
+export class MockNavigationService extends NavigationService {
 
     public title: string;
 
