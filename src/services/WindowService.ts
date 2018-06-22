@@ -1,6 +1,7 @@
 import { Atom } from "../Atom";
 import { AtomAlertWindow } from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
+import { AtomWindow } from "../controls/AtomWindow";
 import { AtomUI } from "../core/atom-ui";
 import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
@@ -11,9 +12,10 @@ import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomTheme } from "../styles/Theme";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
+import { ILocation, NavigationService } from "./NavigationService";
 
 @RegisterSingleton
-export class WindowService {
+export class WindowService extends NavigationService {
 
     private popups: AtomControl[] = [];
 
@@ -21,9 +23,55 @@ export class WindowService {
 
     private currentTarget: HTMLElement = null;
 
-    constructor() {
+    /**
+     * Get current window title
+     *
+     * @type {string}
+     * @memberof BrowserService
+     */
+    get title(): string {
+        return window.document.title;
+    }
 
-        this.register("alert-window", AtomAlertWindow);
+    /**
+     * Set current window title
+     * @memberof BrowserService
+     */
+    set title(v: string) {
+        window.document.title = v;
+    }
+
+    /**
+     * Gets current location of browser, this does not return
+     * actual location but it returns values of browser location.
+     * This is done to provide mocking behaviour for unit testing.
+     *
+     * @readonly
+     * @type {AtomLocation}
+     * @memberof BrowserService
+     */
+    public get location(): ILocation {
+        return {
+            href: location.href,
+            hash: location.hash,
+            host: location.host,
+            hostName: location.hostname,
+            port: location.port,
+            protocol: location.protocol
+        };
+    }
+
+    /**
+     * Navigate current browser to given url.
+     * @param {string} url
+     * @memberof BrowserService
+     */
+    public navigate(url: string): void {
+        location.href = url;
+    }
+
+    public back(): void {
+        window.history.back();
     }
 
     public register(id: string, type: IClassOf<AtomControl>): void {
@@ -46,6 +94,10 @@ export class WindowService {
         vm.title = title;
         vm.message = message;
         return this.openWindow("alert-window", vm);
+    }
+
+    public openPage<T>(pageName: string, vm: AtomViewModel): Promise<T> {
+        return this.openPopupAsync(pageName, vm, true);
     }
 
     public async openPopup<T>(windowId: string, vm: AtomViewModel): Promise<T> {
@@ -86,6 +138,8 @@ export class WindowService {
 
     protected registerForPopup(): void {
 
+        this.register("alert-window", AtomAlertWindow);
+
         if (window) {
             window.addEventListener("click", (e) => {
                 this.currentTarget = e.target as HTMLElement;
@@ -101,6 +155,10 @@ export class WindowService {
                 popup.viewModel = vm;
             }
             const e = popup.element;
+
+            if (popup instanceof AtomWindow) {
+                isPopup = false;
+            }
 
             const theme = ServiceProvider.global.get(AtomTheme).popup;
 

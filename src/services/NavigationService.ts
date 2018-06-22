@@ -1,5 +1,4 @@
-import { RegisterSingleton } from "../di/RegisterSingleton";
-import { WindowService } from "./WindowService";
+import { AtomViewModel } from "../view-model/AtomViewModel";
 
 export interface ILocation {
     href?: string;
@@ -10,57 +9,17 @@ export interface ILocation {
     protocol?: string;
 }
 
-@RegisterSingleton
-export class NavigationService extends WindowService {
+export abstract class NavigationService {
+    public abstract alert(message: string, title?: string): Promise<any>;
+    public abstract confirm(message: string, title?: string): Promise<boolean>;
+    public abstract openPage<T>(pageName: string, vm: AtomViewModel): Promise<T>;
 
-    /**
-     * Get current window title
-     *
-     * @type {string}
-     * @memberof BrowserService
-     */
-    get title(): string {
-        return window.document.title;
-    }
+    public abstract get title(): string;
+    public abstract set title(v: string);
 
-    /**
-     * Set current window title
-     * @memberof BrowserService
-     */
-    set title(v: string) {
-        window.document.title = v;
-    }
+    public abstract get location(): ILocation;
 
-    /**
-     * Gets current location of browser, this does not return
-     * actual location but it returns values of browser location.
-     * This is done to provide mocking behaviour for unit testing.
-     *
-     * @readonly
-     * @type {AtomLocation}
-     * @memberof BrowserService
-     */
-    public get location(): ILocation {
-        return {
-            href: location.href,
-            hash: location.hash,
-            host: location.host,
-            hostName: location.hostname,
-            port: location.port,
-            protocol: location.protocol
-        };
-    }
+    public abstract navigate(url: string): void;
 
-    /**
-     * Navigate current browser to given url.
-     * @param {string} url
-     * @memberof BrowserService
-     */
-    public navigate(url: string): void {
-        location.href = url;
-    }
-
-    public back(): void {
-        window.history.back();
-    }
+    public abstract back(): void;
 }
