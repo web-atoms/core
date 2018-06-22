@@ -3,6 +3,7 @@ import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceCollection } from "../di/ServiceCollection";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
+import { NavigationService } from "./NavigationService";
 import { WindowService } from "./WindowService";
 
 export interface IWindowRegistration {
@@ -24,7 +25,7 @@ export class MockConfirmViewModel extends AtomWindowViewModel {
  * @class MockWindowService
  * @extends {WindowService}
  */
-export class MockWindowService extends WindowService {
+export class MockWindowService extends NavigationService {
 
     private windowStack: IWindowRegistration[] = [];
 
@@ -78,6 +79,8 @@ export class MockWindowService extends WindowService {
      */
     public openWindow<T>(c: string, vm: AtomViewModel): Promise<T> {
         return new Promise((resolve, reject) => {
+            // tslint:disable-next-line:no-debugger
+            debugger;
             const w: any = this.windowStack.find((x) => x.windowType === c);
             if (!w) {
                 const ex: Error = new Error(`No window registered for ${c}`);
