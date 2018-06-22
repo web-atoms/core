@@ -147,24 +147,15 @@ export class TestMethod {
 
 }
 
-export class TestItem implements IServiceProvider {
+export class TestItem {
 
     public logText: string = "";
-
-    private sp: ServiceProvider = null;
-
-    constructor() {
-        this.sp = ServiceProvider.global.newScope();
-    }
 
     public async init(): Promise<any> {
         return 0;
     }
 
     public async dispose(): Promise<any> {
-        if (this.sp) {
-            this.sp.dispose();
-        }
         return 0;
     }
 
@@ -172,10 +163,6 @@ export class TestItem implements IServiceProvider {
         if (text) {
             this.logText += text;
         }
-    }
-
-    public resolve<T>(c: IClassOf<T>, create: boolean = false): T {
-        return this.sp.resolve(c, create);
     }
 
     public delay(n: number): Promise<any> {
