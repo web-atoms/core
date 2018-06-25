@@ -1,3 +1,4 @@
+import { App } from "../App";
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 import { Inject } from "./Inject";
 import { ServiceCollection } from "./ServiceCollection";
@@ -30,18 +31,20 @@ export class TestCase extends TestItem {
     @Test()
     public singleton(): void {
 
+        const app = new App();
+
         ServiceCollection.instance.registerSingleton(GlobalClass);
         ServiceCollection.instance.registerSingleton(DependentService);
 
-        const g1 =  ServiceProvider.global.get(GlobalClass);
-        const g2 =  ServiceProvider.global.get(GlobalClass);
+        const g1 =  app.get(GlobalClass);
+        const g2 =  app.get(GlobalClass);
 
         Assert.equals(g1, g2);
 
-        const ds = ServiceProvider.global.get(DependentService);
+        const ds = app.get(DependentService);
         Assert.equals(ds.g, g1);
 
-        Assert.equals(ds.sp, ServiceProvider.global);
+        Assert.equals(ds.sp, app);
     }
 
 }

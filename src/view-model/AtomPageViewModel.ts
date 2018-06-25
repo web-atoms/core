@@ -1,4 +1,4 @@
-import { AtomDevice } from "../core/AtomDevice";
+import { App } from "../App";
 import { Inject } from "../di/Inject";
 import { WindowService } from "../services/WindowService";
 import { AtomViewModel } from "./AtomViewModel";
@@ -10,10 +10,10 @@ export class AtomPageViewModel extends AtomViewModel {
     public closeWarning: string;
 
     constructor(
-        @Inject protected windowService: WindowService,
-        @Inject private device1: AtomDevice
+        @Inject app: App,
+        @Inject protected windowService: WindowService
     ) {
-        super(device1);
+        super(app);
     }
 
     public async cancel(): Promise<any> {

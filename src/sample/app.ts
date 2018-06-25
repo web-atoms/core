@@ -1,13 +1,13 @@
-import { App } from "../App";
-import { ServiceProvider } from "../di/ServiceProvider";
+import { WebApp } from "../WebApp";
 import { MovieList } from "./views/MovieList";
 import { MovieListViewModel } from "./views/MovieListViewModel";
 
-export class SampleApp extends App {
+export class SampleApp extends WebApp {
 
     public main(): void {
         const ml = new MovieList();
-        ml.viewModel = ServiceProvider.global.get(MovieListViewModel);
+        ml.serviceProvider = this;
+        ml.viewModel = this.get(MovieListViewModel);
         document.body.appendChild(ml.element);
     }
 

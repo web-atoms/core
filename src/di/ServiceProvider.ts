@@ -5,13 +5,13 @@ import { TypeKey } from "./TypeKey";
 
 export class ServiceProvider implements IDisposable {
 
-    public static global: ServiceProvider = new ServiceProvider(null);
-
-    private static providers: { [key: string]: any } = {};
-
     private instances: { [key: string]: any } = {};
 
-    private constructor(public parent: ServiceProvider) {
+    public get global(): ServiceProvider {
+        return this.parent === null ? this : this.parent.global;
+    }
+
+    protected constructor(public parent: ServiceProvider) {
         if (parent === null) {
             ServiceCollection.instance.registerScoped(ServiceProvider);
         }
@@ -24,7 +24,10 @@ export class ServiceProvider implements IDisposable {
     }
 
     public put(key: any, value: any): void {
-        const sd = ServiceCollection.instance.get(key);
+        let sd = ServiceCollection.instance.get(key);
+        if (!sd) {
+            sd = ServiceCollection.instance.register(key, () => value, Scope.Transient);
+        }
         this.instances[sd.id] = value;
     }
 
@@ -39,13 +42,15 @@ export class ServiceProvider implements IDisposable {
             return this.create(key);
         }
 
-        if (sd.scope === Scope.Global) {
-            return ServiceProvider.global.getValue(sd);
+        if (sd.type === ServiceProvider) {
+            return this;
         }
+
+        if (sd.scope === Scope.Global) {
+            return this.global.getValue(sd);
+        }
+
         if (sd.scope === Scope.Scoped) {
-            if (sd.type === ServiceProvider) {
-                return this;
-            }
             if (this.parent === null) {
                 throw new Error("Scoped dependency cannot be created on global");
             }
@@ -87,7 +92,22 @@ export class ServiceProvider implements IDisposable {
 
     private create(key: any): any {
 
-        const plist = InjectedTypes.paramList[TypeKey.get(key)];
+        let plist = InjectedTypes.paramList[TypeKey.get(key)];
+
+        // We need to find @Inject for base types if
+        // current type does not define any constructor
+        let type = key;
+        while (plist === undefined) {
+            type = Object.getPrototypeOf(type);
+            if (!type) {
+                break;
+            }
+            const typeKey = TypeKey.get(type);
+            plist = InjectedTypes.paramList[typeKey];
+            if (!plist) {
+                InjectedTypes.paramList[typeKey] = plist;
+            }
+        }
 
         if (plist) {
             const pv = plist.map( (x) => this.resolve(x) );

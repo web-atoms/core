@@ -1,6 +1,7 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
 import "test-dom";
+import { App } from "../App";
 import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
 import { AtomViewModel } from "../view-model/AtomViewModel";
@@ -51,13 +52,16 @@ export class TestCase extends TestItem {
 
     @Test("items")
     public async items(): Promise<any> {
+
+        const app = new App();
+
         const root = document.createElement("div");
 
         const ic = new AtomItemsControl(root);
 
         ic.itemTemplate = TestItemTemplate;
 
-        const vm = new TestViewModel();
+        const vm = new TestViewModel(app);
 
         ic.viewModel = vm;
 
@@ -76,13 +80,15 @@ export class TestCase extends TestItem {
     @Test("selectedItem")
     public async selectedItem(): Promise<any> {
 
+        const app = new App();
+
         const root = document.createElement("div");
 
         const ic = new AtomItemsControl(root);
 
         ic.itemTemplate = TestItemTemplate;
         ic.valuePath = "value";
-        const vm = new TestViewModel();
+        const vm = new TestViewModel(app);
 
         await vm.waitForReady();
 
@@ -104,13 +110,15 @@ export class TestCase extends TestItem {
     @Test("selectedItems")
     public async selectedItems(): Promise<any> {
 
+        const app = new App();
+
         const root = document.createElement("div");
 
         const ic = new AtomItemsControl(root);
 
         ic.itemTemplate = TestItemTemplate;
         ic.valuePath = "value";
-        const vm = new TestViewModel();
+        const vm = new TestViewModel(app);
 
         await vm.waitForReady();
 

@@ -1,7 +1,8 @@
+import { App, AtomAction } from "../App";
 import { Atom } from "../Atom";
 import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
-import { AtomAction, AtomDevice } from "../core/AtomDevice";
 import { ArrayHelper, IClassOf } from "../core/types";
+import { Inject } from "../di/Inject";
 import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IVMSubscription {
@@ -89,13 +90,13 @@ export class AtomViewModel {
         return this.mServiceProvider;
     }
 
-    constructor(private device: AtomDevice = ServiceProvider.global.get(AtomDevice)) {
+    constructor(@Inject public readonly app: App = new App()) {
 
-        this.mServiceProvider = ServiceProvider.global.newScope();
+        this.mServiceProvider = app.newScope();
 
         this.registerDisposable(this.mServiceProvider);
 
-        this.device.runAsync(() => this.privateInit());
+        this.app.runAsync(() => this.privateInit());
 
     }
 
@@ -182,7 +183,7 @@ export class AtomViewModel {
      * @memberof AtomViewModel
      */
     public broadcast(msg: string, data: any): void {
-        this.device.broadcast(this.channelPrefix + msg, data);
+        this.app.broadcast(this.channelPrefix + msg, data);
     }
 
     // tslint:disable-next-line:no-empty
@@ -246,12 +247,12 @@ export class AtomViewModel {
         const action: AtomAction = (m, d) => {
             a(d as T);
         };
-        const sub: IDisposable = this.device.subscribe( this.channelPrefix + msg, action);
+        const sub: IDisposable = this.app.subscribe( this.channelPrefix + msg, action);
         this.registerDisposable(sub);
     }
 
     private subscribe(channel: string, c: (ch: string, data: any) => void): void {
-        const sub: IDisposable = this.device.subscribe( this.channelPrefix + channel, c);
+        const sub: IDisposable = this.app.subscribe( this.channelPrefix + channel, c);
         this.subscriptions = this.subscriptions || [];
         this.subscriptions.push({
             channel,

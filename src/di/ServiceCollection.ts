@@ -32,7 +32,11 @@ export class ServiceCollection {
 
     private ids: number = 1;
 
-    public register(type: any, factory: ServiceFactory, scope: Scope = Scope.Transient, id?: string): void {
+    public register(
+        type: any,
+        factory: ServiceFactory,
+        scope: Scope = Scope.Transient,
+        id?: string): ServiceDescription {
         ArrayHelper.remove(this.registrations, (r) => id ? r.id === id : r.type === type);
         if (!id) {
             id = type.toString() + this.ids;
@@ -40,14 +44,15 @@ export class ServiceCollection {
         }
         const sd = new ServiceDescription(id, scope, type, factory);
         this.registrations.push(sd);
+        return sd;
     }
 
-    public registerScoped(type: any, factory?: ServiceFactory, id?: string): void {
-        this.register(type, factory, Scope.Scoped, id);
+    public registerScoped(type: any, factory?: ServiceFactory, id?: string): ServiceDescription {
+        return this.register(type, factory, Scope.Scoped, id);
     }
 
-    public registerSingleton(type: any, factory?: ServiceFactory, id?: string): void {
-        this.register(type, factory, Scope.Global, id);
+    public registerSingleton(type: any, factory?: ServiceFactory, id?: string): ServiceDescription {
+        return this.register(type, factory, Scope.Global, id);
     }
 
     public get(type: any): ServiceDescription {

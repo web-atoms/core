@@ -39,7 +39,6 @@ export class AtomPageView
     constructor(e?: HTMLElement) {
         super(e || document.createElement("section"));
         AtomUI.assignID(this.element);
-        this.windowService = ServiceProvider.global.get(WindowService);
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";
@@ -160,11 +159,11 @@ export class AtomPageView
         //     }
         // }
 
-        const ct = ServiceProvider.global.resolve(uri.path);
+        const ct = this.serviceProvider.resolve(uri.path, true);
 
         const q: any = uri.query;
 
-        const ctrl: AtomControl = this.createControl(ct, q);
+        const ctrl: AtomControl = this.createControl(ct as AtomControl, q);
 
         Atom.postAsync(async () => {
             const vm = ctrl.viewModel;

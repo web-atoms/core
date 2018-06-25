@@ -1,6 +1,4 @@
 import { Atom } from "../Atom";
-import { AtomUI } from "../core/atom-ui";
-import { AtomBinder } from "../core/AtomBinder";
 import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
@@ -8,7 +6,7 @@ import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
 import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
-import { ServiceProvider } from "../di/ServiceProvider";
+import { IServiceProvider } from "../di/IServiceProvider";
 
 interface IEventObject<T> {
 
@@ -29,6 +27,7 @@ export interface IAtomComponent<T> {
     data: any;
     viewModel: any;
     localViewModel: any;
+    serviceProvider: IServiceProvider;
     setLocalValue(e: T, name: string, value: any): void;
     hasProperty(name: string);
     runAfterInit(f: () => void ): void;
@@ -41,6 +40,14 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     public element: T;
 
     protected pendingInits: Array<() => void>;
+
+    private mServiceProvider: IServiceProvider;
+    public get serviceProvider(): IServiceProvider {
+        return this.mServiceProvider || (this.parent ? this.parent.serviceProvider : null);
+    }
+    public set serviceProvider(v: IServiceProvider) {
+        this.mServiceProvider = v;
+    }
 
     private mInvalidated: number = 0;
 
@@ -245,7 +252,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public dispose(e?: T): void {
 
-        AtomBridge.instance.visitDescendents(e || this.element, (ec, ac) => {
+        AtomBridge.instance.visitDescendents(e || this.element, (ex, ac) => {
             if (ac) {
                 ac.dispose();
                 return false;
@@ -339,12 +346,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     }
 
-    protected getValue(path: string) {
-        return Atom.get(this, path);
+    protected resolve<TService>(c: IClassOf<TService> ): TService {
+        return this.serviceProvider.resolve(c, true);
     }
 
-    protected resolve<TService>(c: IClassOf<TService> ): TService {
-        return ServiceProvider.global.get(c);
+    protected getValue(path: string) {
+        return Atom.get(this, path);
     }
 
     // protected postInit(): void {

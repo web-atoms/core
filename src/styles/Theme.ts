@@ -57,5 +57,3 @@ export class AtomTheme extends AtomStyleSheet
     // }
 
 }
-
-ServiceProvider.global.get(AtomTheme);

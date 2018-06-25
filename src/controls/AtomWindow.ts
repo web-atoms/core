@@ -1,8 +1,7 @@
+import { App } from "../App";
 import { AtomUI } from "../core/atom-ui";
-import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf, IDisposable, IRect } from "../core/types";
-import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomTheme } from "../styles/Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
@@ -118,7 +117,6 @@ export class AtomWindow extends AtomControl {
     constructor(e?: HTMLElement) {
         super(e);
         this.element.classList.add("atom-window");
-        this.style = this.resolve(AtomTheme).window;
     }
 
     public onPropertyChanged(name: string): void {
@@ -133,7 +131,7 @@ export class AtomWindow extends AtomControl {
 
     public close(): void {
         const message = `atom-window-cancel:${this.element.id}`;
-        const device = ServiceProvider.global.get(AtomDevice);
+        const device = this.serviceProvider.resolve(App);
         device.broadcast(message, "cancelled");
     }
 
@@ -141,6 +139,8 @@ export class AtomWindow extends AtomControl {
         if (!(this.windowTemplate && this.frameTemplate)) {
             return;
         }
+
+        this.style = this.style || this.serviceProvider.resolve(AtomTheme).window;
 
         this.bind(this.element, "title", [["viewModel", "title"]]);
 

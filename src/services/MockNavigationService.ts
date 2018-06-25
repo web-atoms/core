@@ -80,7 +80,7 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public alert(msg: string, title?: string): Promise<any> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel();
+        const mvm: MockConfirmViewModel = new MockConfirmViewModel(null);
         mvm.message = msg;
         mvm.title = title;
         return this.openWindow(`__AlertWindow_${msg}`, mvm);
@@ -94,7 +94,7 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public confirm(msg: string, title?: string): Promise<boolean> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel();
+        const mvm: MockConfirmViewModel = new MockConfirmViewModel(null);
         mvm.message = msg;
         mvm.title = title;
         return this.openWindow(`__ConfirmWindow_${msg}`, mvm);

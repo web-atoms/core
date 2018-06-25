@@ -27,7 +27,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public get theme(): AtomTheme {
         return this.mTheme ||
             this.mCachedTheme ||
-            (this.mCachedTheme = (this.parent ? this.parent.theme : ServiceProvider.global.get(AtomTheme) ));
+            (this.mCachedTheme = (this.parent ? this.parent.theme : this.serviceProvider.resolve(AtomTheme) ));
     }
     public set theme(v: AtomTheme) {
         this.mTheme = v;
