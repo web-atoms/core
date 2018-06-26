@@ -85,19 +85,8 @@ export class AtomViewModel {
         return valid;
     }
 
-    private mServiceProvider: ServiceProvider = null;
-    public get services(): ServiceProvider {
-        return this.mServiceProvider;
-    }
-
     constructor(@Inject public readonly app: App) {
-
-        this.mServiceProvider = app.newScope();
-
-        this.registerDisposable(this.mServiceProvider);
-
         this.app.runAsync(() => this.privateInit());
-
     }
 
     public runAfterInit(f: () => void): void {
@@ -110,7 +99,7 @@ export class AtomViewModel {
 
     public resolve<T>(c: IClassOf<T>, onlyRegistered?: boolean): T {
         const create = !onlyRegistered;
-        return this.services.resolve(c, create);
+        return this.app.resolve(c, create);
     }
 
     public refresh(name: string): void {
