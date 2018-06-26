@@ -67,6 +67,7 @@ export class AtomComboBox extends AtomItemsControl {
                 this.isChanging = false;
             }
         });
+        this.invalidate();
     }
 }
 
