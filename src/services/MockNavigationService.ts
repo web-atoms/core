@@ -1,4 +1,6 @@
+import { App } from "../App";
 import { AtomDisposable, IDisposable } from "../core/types";
+import { Inject } from "../di/Inject";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceCollection } from "../di/ServiceCollection";
 import { AtomViewModel } from "../view-model/AtomViewModel";
@@ -53,6 +55,10 @@ export class MockNavigationService extends NavigationService {
         this.mLocation = v;
     }
 
+    constructor(@Inject private app: App) {
+        super();
+    }
+
     /**
      * Navigate current browser to given url.
      * @param {string} url
@@ -80,7 +86,7 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public alert(msg: string, title?: string): Promise<any> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel(null);
+        const mvm: MockConfirmViewModel = new MockConfirmViewModel(this.app);
         mvm.message = msg;
         mvm.title = title;
         return this.openWindow(`__AlertWindow_${msg}`, mvm);
@@ -94,7 +100,7 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public confirm(msg: string, title?: string): Promise<boolean> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel(null);
+        const mvm: MockConfirmViewModel = new MockConfirmViewModel(this.app);
         mvm.message = msg;
         mvm.title = title;
         return this.openWindow(`__ConfirmWindow_${msg}`, mvm);
