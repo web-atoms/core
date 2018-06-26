@@ -246,6 +246,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public dispose(e?: T): void {
 
+        if (this.mInvalidated) {
+            clearTimeout(this.mInvalidated);
+            this.mInvalidated = 0;
+        }
+
         AtomBridge.instance.visitDescendents(e || this.element, (ex, ac) => {
             if (ac) {
                 ac.dispose();
