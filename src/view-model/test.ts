@@ -1,6 +1,7 @@
 import { bindableProperty } from "../core/bindable-properties";
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 import { AtomViewModel, watch } from "./AtomViewModel";
+import { App } from "../App";
 
 interface ICustomer {
     firstName: string;
@@ -38,7 +39,10 @@ export class ViewModelTestCase extends TestItem {
 
     @Test()
     public async watchTest(): Promise<any> {
-        const tvm = new TestViewModel();
+
+        const app = new App();
+
+        const tvm = new TestViewModel(app);
         await tvm.waitForReady();
 
         tvm.customer = { firstName: "", lastName: "Tss"};

@@ -1,7 +1,11 @@
+import { App } from "../App";
 import { AtomDisposable, IDisposable } from "../core/types";
+import { Inject } from "../di/Inject";
+import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceCollection } from "../di/ServiceCollection";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
+import { ILocation, NavigationService } from "./NavigationService";
 import { WindowService } from "./WindowService";
 
 export interface IWindowRegistration {
@@ -22,9 +26,57 @@ export class MockConfirmViewModel extends AtomWindowViewModel {
  * @class MockWindowService
  * @extends {WindowService}
  */
-export class MockWindowService extends WindowService {
+export class MockNavigationService extends NavigationService {
+
+    public title: string;
 
     private windowStack: IWindowRegistration[] = [];
+    private history: ILocation[] = [];
+    private mLocation: ILocation = {};
+
+    /**
+     * Gets current location of browser, this does not return
+     * actual location but it returns values of browser location.
+     * This is done to provide mocking behaviour for unit testing.
+     *
+     * @readonly
+     * @type {AtomLocation}
+     * @memberof BrowserService
+     */
+    public get location(): ILocation {
+        return this.mLocation;
+    }
+
+    public set location(v: ILocation) {
+        if (JSON.stringify(this.location) === JSON.stringify(v)) {
+            return;
+        }
+        this.history.push(this.mLocation);
+        this.mLocation = v;
+    }
+
+    constructor(@Inject private app: App) {
+        super();
+    }
+
+    /**
+     * Navigate current browser to given url.
+     * @param {string} url
+     * @memberof BrowserService
+     */
+    public navigate(url: string): void {
+        const l = JSON.parse(JSON.stringify(this.location)) as ILocation;
+        l.href = url;
+        this.location = l;
+    }
+
+    public back(): void {
+        if (this.history.length) {
+            const top = this.history.pop();
+            this.location = top;
+            this.history.pop();
+        }
+    }
 
     /**
      * Internal usage
@@ -34,7 +86,7 @@ export class MockWindowService extends WindowService {
      * @memberof MockWindowService
      */
     public alert(msg: string, title?: string): Promise<any> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel();
+        const mvm: MockConfirmViewModel = new MockConfirmViewModel(this.app);
         mvm.message = msg;
         mvm.title = title;
         return this.openWindow(`__AlertWindow_${msg}`, mvm);
@@ -48,10 +100,14 @@ export class MockWindowService extends WindowService {
      * @memberof MockWindowService
      */
     public confirm(msg: string, title?: string): Promise<boolean> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel();
+        const mvm: MockConfirmViewModel = new MockConfirmViewModel(this.app);
         mvm.message = msg;
         mvm.title = title;
         return this.openWindow(`__ConfirmWindow_${msg}`, mvm);
+    }
+
+    public openPage<T>(pageName: string, vm: AtomViewModel): Promise<T> {
+        return this.openWindow(pageName, vm);
     }
 
     /**
@@ -175,6 +231,8 @@ export class MockWindowService extends WindowService {
         throw new Error(`Expected windows did not open ${this.windowStack.map((x) => x.windowType).join(",")}`);
     }
 
-}
+    protected registerForPopup(): void {
+        // nothing
+    }
 
-ServiceCollection.instance.registerSingleton(WindowService, (sp) => new MockWindowService());
+}

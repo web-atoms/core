@@ -5,13 +5,13 @@ import { TypeKey } from "./TypeKey";
 
 export class ServiceProvider implements IDisposable {
 
-    public static global: ServiceProvider = new ServiceProvider(null);
-
-    private static providers: { [key: string]: any } = {};
-
     private instances: { [key: string]: any } = {};
 
-    private constructor(public parent: ServiceProvider) {
+    public get global(): ServiceProvider {
+        return this.parent === null ? this : this.parent.global;
+    }
+
+    protected constructor(public parent: ServiceProvider) {
         if (parent === null) {
             ServiceCollection.instance.registerScoped(ServiceProvider);
         }
@@ -21,6 +21,14 @@ export class ServiceProvider implements IDisposable {
 
     public get<T>(key: IClassOf<T>): T {
         return this.resolve(key, true);
+    }
+
+    public put(key: any, value: any): void {
+        let sd = ServiceCollection.instance.get(key);
+        if (!sd) {
+            sd = ServiceCollection.instance.register(key, () => value, Scope.Global);
+        }
+        this.instances[sd.id] = value;
     }
 
     public resolve(key: any, create: boolean = false): any {
@@ -34,13 +42,15 @@ export class ServiceProvider implements IDisposable {
             return this.create(key);
         }
 
-        if (sd.scope === Scope.Global) {
-            return ServiceProvider.global.getValue(sd);
+        if (sd.type === ServiceProvider) {
+            return this;
         }
+
+        if (sd.scope === Scope.Global) {
+            return this.global.getValue(sd);
+        }
+
         if (sd.scope === Scope.Scoped) {
-            if (sd.type === ServiceProvider) {
-                return this;
-            }
             if (this.parent === null) {
                 throw new Error("Scoped dependency cannot be created on global");
             }
@@ -69,6 +79,9 @@ export class ServiceProvider implements IDisposable {
         for (const key in this.instances) {
             if (this.instances.hasOwnProperty(key)) {
                 const element = this.instances[key];
+                if (element === this) {
+                    continue;
+                }
                 const d = element as IDisposable;
                 if (d.dispose) {
                     d.dispose();
@@ -79,10 +92,25 @@ export class ServiceProvider implements IDisposable {
 
     private create(key: any): any {
 
-        const plist = InjectedTypes.paramList[TypeKey.get(key)];
+        let plist = InjectedTypes.paramList[TypeKey.get(key)];
+
+        // We need to find @Inject for base types if
+        // current type does not define any constructor
+        let type = key;
+        while (plist === undefined) {
+            type = Object.getPrototypeOf(type);
+            if (!type) {
+                break;
+            }
+            const typeKey = TypeKey.get(type);
+            plist = InjectedTypes.paramList[typeKey];
+            if (!plist) {
+                InjectedTypes.paramList[typeKey] = plist;
+            }
+        }
 
         if (plist) {
-            const pv = plist.map( (x) => this.resolve(x) );
+            const pv = plist.map( (x) => x ? this.resolve(x) : (void 0) );
             pv.unshift(null);
             return new (key.bind.apply(key, pv))();
         }

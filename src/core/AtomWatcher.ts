@@ -159,7 +159,7 @@ export class AtomWatcher<T> implements IDisposable {
         path: PathList[] | (() => any) ,
         runAfterSetup: boolean,
         forValidation?: boolean,
-        proxy?: () => any
+        proxy?: (...v: any[]) => any
     ) {
         this.target = target;
         let e: boolean = false;

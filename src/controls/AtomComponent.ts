@@ -1,6 +1,5 @@
+import { App } from "../App";
 import { Atom } from "../Atom";
-import { AtomUI } from "../core/atom-ui";
-import { AtomBinder } from "../core/AtomBinder";
 import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
@@ -8,7 +7,7 @@ import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
 import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
-import { ServiceProvider } from "../di/ServiceProvider";
+import { Inject } from "../di/Inject";
 
 interface IEventObject<T> {
 
@@ -29,6 +28,7 @@ export interface IAtomComponent<T> {
     data: any;
     viewModel: any;
     localViewModel: any;
+    app: App;
     setLocalValue(e: T, name: string, value: any): void;
     hasProperty(name: string);
     runAfterInit(f: () => void ): void;
@@ -74,6 +74,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public set viewModel(v: any) {
+        const old = this.mViewModel;
+        if (old && old.dispose) {
+            old.dispose();
+        }
         this.mViewModel = v;
         this.refreshInherited("viewModel", (a) => a.mViewModel === undefined);
     }
@@ -91,6 +95,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public set localViewModel(v: any) {
+        const old = this.mLocalViewModel;
+        if (old && old.dispose) {
+            old.dispose();
+        }
         this.mLocalViewModel = v;
         this.refreshInherited("localViewModel", (a) => a.mLocalViewModel === undefined);
     }
@@ -106,9 +114,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     private bindings: Array<PropertyBinding<T>> = [];
 
-    constructor(e?: T) {
+    constructor(@Inject public readonly app: App, e?: T) {
         this.element = e;
         const a = this.beginEdit();
+        this.preCreate();
         this.create();
         this.attachControl();
         AtomDispatcher.instance.callLater(() => a.dispose());
@@ -237,7 +246,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public dispose(e?: T): void {
 
-        AtomBridge.instance.visitDescendents(e || this.element, (ec, ac) => {
+        if (this.mInvalidated) {
+            clearTimeout(this.mInvalidated);
+            this.mInvalidated = 0;
+        }
+
+        AtomBridge.instance.visitDescendents(e || this.element, (ex, ac) => {
             if (ac) {
                 ac.dispose();
                 return false;
@@ -254,6 +268,18 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             this.bindings = null;
             AtomBridge.instance.dispose(this.element);
             this.element = null;
+
+            const lvm = this.mLocalViewModel;
+            if (lvm && lvm.dispose) {
+                lvm.dispose();
+                this.mLocalViewModel = null;
+            }
+
+            const vm = this.mViewModel;
+            if (vm && vm.dispose) {
+                vm.dispose();
+                this.mViewModel = null;
+            }
         }
     }
 
@@ -331,12 +357,17 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     }
 
-    protected getValue(path: string) {
-        return Atom.get(this, path);
+    // tslint:disable-next-line:no-empty
+    protected preCreate(): void {
+
     }
 
     protected resolve<TService>(c: IClassOf<TService> ): TService {
-        return ServiceProvider.global.get(c);
+        return this.app.resolve(c, true);
+    }
+
+    protected getValue(path: string) {
+        return Atom.get(this, path);
     }
 
     // protected postInit(): void {

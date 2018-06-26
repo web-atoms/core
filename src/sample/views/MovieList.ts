@@ -16,7 +16,7 @@ export class MovieList extends AtomGridView {
         this.setPrimitiveValue(header, "cell", "0:3,0");
         this.append(header);
 
-        const ul = new AtomItemsControl(document.createElement("ul"));
+        const ul = new AtomItemsControl(this.app, document.createElement("ul"));
         this.append(ul);
         ul.itemTemplate = MovieListItemTemplate;
         ul.bind(ul.element, "items", [["viewModel", "movies"]], false);
@@ -35,7 +35,7 @@ export class MovieList extends AtomGridView {
         this.setPrimitiveValue(right, "cell", "2,1");
         this.append(right);
 
-        const splitter = new AtomGridSplitter();
+        const splitter = new AtomGridSplitter(this.app);
         this.append(splitter);
         splitter.setPrimitiveValue(splitter.element, "cell", "1,1");
     }

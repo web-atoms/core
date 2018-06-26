@@ -1,8 +1,7 @@
+import { App } from "../App";
 import { AtomUI } from "../core/atom-ui";
-import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf, IDisposable, IRect } from "../core/types";
-import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomTheme } from "../styles/Theme";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
@@ -115,12 +114,6 @@ export class AtomWindow extends AtomControl {
     @bindableProperty
     public style: AtomWindowStyle;
 
-    constructor(e?: HTMLElement) {
-        super(e);
-        this.element.classList.add("atom-window");
-        this.style = this.resolve(AtomTheme).window;
-    }
-
     public onPropertyChanged(name: string): void {
         switch (name) {
             case "windowTemplate":
@@ -133,7 +126,7 @@ export class AtomWindow extends AtomControl {
 
     public close(): void {
         const message = `atom-window-cancel:${this.element.id}`;
-        const device = ServiceProvider.global.get(AtomDevice);
+        const device = this.app.resolve(App);
         device.broadcast(message, "cancelled");
     }
 
@@ -142,14 +135,16 @@ export class AtomWindow extends AtomControl {
             return;
         }
 
+        this.style = this.style || this.app.resolve(AtomTheme).window;
+
         this.bind(this.element, "title", [["viewModel", "title"]]);
 
         // let us create frame first...
-        const frame = new (this.frameTemplate)();
+        const frame = new (this.frameTemplate)(this.app);
         const fe = frame.element as IAtomControlElement;
 
         // setup drag and drop for the frame...
-        const titleContent = new (this.titleTemplate)();
+        const titleContent = new (this.titleTemplate)(this.app);
         (titleContent.element as IAtomControlElement)._templateParent = this;
         frame.titlePresenter.appendChild(titleContent.element);
 
@@ -164,7 +159,7 @@ export class AtomWindow extends AtomControl {
             throw new Error("ContentPresenter must be set inside frameTemplate before creating window");
         }
 
-        const content = new (this.windowTemplate)();
+        const content = new (this.windowTemplate)(this.app);
         (content.element as IAtomControlElement)._templateParent = this;
         frame.contentPresenter.appendChild(content.element);
 

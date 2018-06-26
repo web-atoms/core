@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { AtomBinder } from "../../core/AtomBinder";
 import { bindableProperty } from "../../core/bindable-properties";
 import { Inject } from "../../di/Inject";
@@ -26,8 +27,9 @@ export class MovieListViewModel extends AtomViewModel {
     public selectedMovie: IMovie;
 
     constructor(
+        @Inject app: App,
         @Inject private windowService: WindowService) {
-        super();
+        super(app);
     }
 
     @validate

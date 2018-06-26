@@ -1,5 +1,5 @@
 import "test-dom";
-import { ServiceProvider } from "../di/ServiceProvider";
+import { App } from "../App";
 import { AtomTheme } from "../styles/Theme";
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
@@ -9,7 +9,9 @@ export class TestCase extends TestItem {
     @Test()
     public async atomTheme(): Promise<any> {
 
-        const theme = ServiceProvider.global.get(AtomTheme);
+        const app = new App();
+
+        const theme = app.get(AtomTheme);
 
         await this.delay(200);
 

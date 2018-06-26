@@ -1,17 +1,15 @@
+import { App } from "../App";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 import { AtomListBox } from "./AtomListBox";
 
 export class AtomToggleButtonBar extends AtomListBox {
 
-    constructor(e?: HTMLElement) {
-        super(e);
-
+    protected preCreate(): void {
         this.allowMultipleSelection = false;
         this.allowSelectFirst = true;
         this.itemTemplate = AtomToggleButtonBarItemTemplate;
     }
-
 }
 
 class AtomToggleButtonBarItemTemplate extends AtomControl {

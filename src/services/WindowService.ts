@@ -1,19 +1,23 @@
+import { App } from "../App";
 import { Atom } from "../Atom";
 import { AtomAlertWindow } from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
+import { AtomWindow } from "../controls/AtomWindow";
 import { AtomUI } from "../core/atom-ui";
-import { AtomDevice } from "../core/AtomDevice";
 import { bindableProperty } from "../core/bindable-properties";
 import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
+import { Inject } from "../di/Inject";
+import { Register } from "../di/Register";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../di/ServiceCollection";
 import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomTheme } from "../styles/Theme";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
+import { ILocation, NavigationService } from "./NavigationService";
 
 @RegisterSingleton
-export class WindowService {
+export class WindowService extends NavigationService {
 
     private popups: AtomControl[] = [];
 
@@ -21,7 +25,46 @@ export class WindowService {
 
     private currentTarget: HTMLElement = null;
 
-    constructor() {
+    /**
+     * Get current window title
+     *
+     * @type {string}
+     * @memberof BrowserService
+     */
+    get title(): string {
+        return window.document.title;
+    }
+
+    /**
+     * Set current window title
+     * @memberof BrowserService
+     */
+    set title(v: string) {
+        window.document.title = v;
+    }
+
+    /**
+     * Gets current location of browser, this does not return
+     * actual location but it returns values of browser location.
+     * This is done to provide mocking behaviour for unit testing.
+     *
+     * @readonly
+     * @type {AtomLocation}
+     * @memberof BrowserService
+     */
+    public get location(): ILocation {
+        return {
+            href: location.href,
+            hash: location.hash,
+            host: location.host,
+            hostName: location.hostname,
+            port: location.port,
+            protocol: location.protocol
+        };
+    }
+
+    constructor(@Inject private app: App) {
+        super();
 
         this.register("alert-window", AtomAlertWindow);
 
@@ -33,12 +76,25 @@ export class WindowService {
         }
     }
 
+    /**
+     * Navigate current browser to given url.
+     * @param {string} url
+     * @memberof BrowserService
+     */
+    public navigate(url: string): void {
+        location.href = url;
+    }
+
+    public back(): void {
+        window.history.back();
+    }
+
     public register(id: string, type: IClassOf<AtomControl>): void {
         ServiceCollection.instance.register(type, null, Scope.Transient, id);
     }
 
     public confirm(message: string, title: string): Promise<any> {
-        const vm = new AtomAlertViewModel();
+        const vm = this.app.resolve(AtomAlertViewModel, true);
         vm.okTitle = "Yes";
         vm.cancelTitle = "No";
         vm.title = title;
@@ -47,12 +103,16 @@ export class WindowService {
     }
 
     public alert(message: string, title?: string): Promise<any> {
-        const vm = new AtomAlertViewModel();
+        const vm = this.app.resolve(AtomAlertViewModel, true);
         vm.okTitle = "Ok";
         vm.cancelTitle = "";
         vm.title = title;
         vm.message = message;
         return this.openWindow("alert-window", vm);
+    }
+
+    public openPage<T>(pageName: string, vm: AtomViewModel): Promise<T> {
+        return this.openPopupAsync(pageName, vm, true);
     }
 
     public async openPopup<T>(windowId: string, vm: AtomViewModel): Promise<T> {
@@ -72,7 +132,7 @@ export class WindowService {
         const element = peek.element;
         let target = this.currentTarget;
 
-        const theme = ServiceProvider.global.get(AtomTheme).popup;
+        const theme = this.app.get(AtomTheme).popup;
 
         while (target) {
 
@@ -87,19 +147,40 @@ export class WindowService {
         }
 
         const message = `atom-window-cancel:${peek.element.id}`;
-        const device = ServiceProvider.global.get(AtomDevice);
+        const device = this.app.get(App);
         device.broadcast(message, "cancelled");
     }
 
-    private openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {
-        return new Promise((resolve, reject) => {
-            const popup = ServiceProvider.global.resolve(windowId) as AtomControl;
-            if (vm) {
-                popup.viewModel = vm;
-            }
-            const e = popup.element;
+    protected registerForPopup(): void {
 
-            const theme = ServiceProvider.global.get(AtomTheme).popup;
+        this.register("alert-window", AtomAlertWindow);
+
+        if (window) {
+            window.addEventListener("click", (e) => {
+                this.currentTarget = e.target as HTMLElement;
+                this.closePopup();
+            });
+        }
+    }
+
+    private async openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {
+        const popup = this.app.resolve(windowId, true) as AtomControl;
+        if (vm) {
+            popup.viewModel = vm;
+        }
+        const e = popup.element;
+
+        if (popup instanceof AtomWindow) {
+            isPopup = false;
+        }
+
+        if (isPopup) {
+            await Atom.delay(10);
+        }
+
+        return await new Promise<T>((resolve, reject) => {
+
+            const theme = this.app.get(AtomTheme).popup;
 
             e.id = `atom_popup_${this.lastPopupID++}`;
             e.style.zIndex = 10000 + this.lastPopupID + "";
@@ -133,7 +214,7 @@ export class WindowService {
                 ArrayHelper.remove(this.popups, (a) => a === popup);
             };
 
-            const device = ServiceProvider.global.get(AtomDevice);
+            const device = this.app.get(App);
 
             disposables.push(device.subscribe(`atom-window-close:${e.id}`, (g, i) => {
                 closeFunction();

@@ -1,10 +1,11 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.127",
+  "version": "1.0.164",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "preversion": "git add . && git commit -m \"patch\"",
     "postversion": "npm publish"
   },
   "repository": {
@@ -23,7 +24,7 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "amd-loader": "0.0.8",
+    "jsdom": "^11.11.0",
     "remap-istanbul": "^0.11.1",
     "test-dom": "^1.0.0"
   },

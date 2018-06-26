@@ -1,7 +1,6 @@
 import { bindableProperty } from "../core/bindable-properties";
 import { IRect } from "../core/types";
-import { AtomControl } from "./AtomControl";
-import { AtomGridSplitter } from "./AtomGridSplitter";
+import { AtomControl, IAtomControlElement } from "./AtomControl";
 
 interface IOffsetSize {
     offset: number;
@@ -35,19 +34,9 @@ export class AtomGridView extends AtomControl {
 
     private availableRect: IRect = null;
 
-    constructor(e?: HTMLElement) {
-        super(e || document.createElement("section"));
-
-        window.addEventListener("resize", (evt) => {
-            this.updateSize();
-        });
-
-        const style = this.element.style;
-        style.position = "absolute";
-        style.left = style.right = style.top = style.bottom = "0";
-    }
-
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
+        const ee = e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement;
+        ((ee as any) as IAtomControlElement)._logicalParent = this.element as IAtomControlElement;
         this.children = this.children || [];
         this.children.push(e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement);
         return this;
@@ -114,6 +103,19 @@ export class AtomGridView extends AtomControl {
         for (const iterator of this.children) {
             this.updateStyle(iterator);
         }
+    }
+
+    protected preCreate(): void {
+        if (!this.element) {
+            this.element = document.createElement("section");
+        }
+        window.addEventListener("resize", (evt) => {
+            this.updateSize();
+        });
+
+        const style = this.element.style;
+        style.position = "absolute";
+        style.left = style.right = style.top = style.bottom = "0";
     }
 
     private updateStyle(e: HTMLElement): void {

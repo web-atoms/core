@@ -1,3 +1,7 @@
+import { IClassOf } from "../core/types";
+import { IServiceProvider } from "../di/IServiceProvider";
+import { ServiceProvider } from "../di/ServiceProvider";
+
                 // tslint:disable-next-line:no-console
 // tslint:disable:no-console
 export class Assert {

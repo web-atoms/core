@@ -1,5 +1,7 @@
+import { App } from "../App";
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomBridge } from "../core/bridge";
+import { Inject } from "../di";
 import { ServiceProvider } from "../di/ServiceProvider";
 import { AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomTheme } from "../styles/Theme";
@@ -27,15 +29,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public get theme(): AtomTheme {
         return this.mTheme ||
             this.mCachedTheme ||
-            (this.mCachedTheme = (this.parent ? this.parent.theme : ServiceProvider.global.get(AtomTheme) ));
+            (this.mCachedTheme = (this.parent ? this.parent.theme : this.app.resolve(AtomTheme) ));
     }
     public set theme(v: AtomTheme) {
         this.mTheme = v;
         this.refreshInherited("theme", (ac) => ac.mTheme === undefined);
-    }
-
-    constructor(e?: HTMLElement) {
-        super(e || document.createElement("div"));
     }
 
     /**
@@ -161,6 +159,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             }
             return true;
         });
+    }
+
+    protected preCreate(): void {
+        if (!this.element) {
+            this.element = document.createElement("div");
+        }
     }
 
     protected setElementValue(element: HTMLElement, name: string, value: any): void {

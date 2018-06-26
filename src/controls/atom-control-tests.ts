@@ -1,11 +1,13 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 
 import "test-dom";
+import { App } from "../App";
 import { AtomBinder, IWatchableObject } from "../core/AtomBinder";
 import { bindableProperty } from "../core/bindable-properties";
+import { AtomTest } from "../unit/AtomTest";
+import { AtomComponent } from "./AtomComponent";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
-import { AtomComponent } from "./AtomComponent";
 
 class TestViewModel {
 
@@ -14,12 +16,13 @@ class TestViewModel {
 }
 
 @Category("Atom-Control")
-export class AtomControlTests extends TestItem {
+export class AtomControlTests extends AtomTest {
 
     @Test()
     public async test1(): Promise<any> {
+
         const root = document.createElement("div");
-        const control = new AtomControl(root);
+        const control = new AtomControl(this.app, root);
 
         const tv = new TestViewModel();
         tv.name = "a";
@@ -63,7 +66,7 @@ export class AtomControlTests extends TestItem {
     public async testElements(): Promise<void> {
         const root = document.createElement("div");
         const input = document.createElement("input");
-        const control = new AtomControl(root);
+        const control = new AtomControl(this.app, root);
 
         const tv = new TestViewModel();
         tv.name = "a";
@@ -87,11 +90,18 @@ export class AtomControlTests extends TestItem {
     @Test()
     public instanceOf(): void {
 
-        const a = new AtomItemsControl(document.createElement("UL"));
+        const a = new AtomItemsControl(this.app, document.createElement("UL"));
 
         Assert.isTrue(a instanceof AtomControl);
         Assert.isTrue(a instanceof AtomComponent);
         Assert.isTrue(a instanceof AtomItemsControl);
+    }
+
+    @Test()
+    public resolve(): void {
+        const a = this.app.get(AtomControl);
+
+        Assert.isTrue(a ? true : false);
     }
 
 }
