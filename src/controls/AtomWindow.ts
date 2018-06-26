@@ -140,11 +140,11 @@ export class AtomWindow extends AtomControl {
         this.bind(this.element, "title", [["viewModel", "title"]]);
 
         // let us create frame first...
-        const frame = new (this.frameTemplate)();
+        const frame = new (this.frameTemplate)(this.app);
         const fe = frame.element as IAtomControlElement;
 
         // setup drag and drop for the frame...
-        const titleContent = new (this.titleTemplate)();
+        const titleContent = new (this.titleTemplate)(this.app);
         (titleContent.element as IAtomControlElement)._templateParent = this;
         frame.titlePresenter.appendChild(titleContent.element);
 
@@ -159,7 +159,7 @@ export class AtomWindow extends AtomControl {
             throw new Error("ContentPresenter must be set inside frameTemplate before creating window");
         }
 
-        const content = new (this.windowTemplate)();
+        const content = new (this.windowTemplate)(this.app);
         (content.element as IAtomControlElement)._templateParent = this;
         frame.contentPresenter.appendChild(content.element);
 
