@@ -263,6 +263,18 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             this.bindings = null;
             AtomBridge.instance.dispose(this.element);
             this.element = null;
+
+            const lvm = this.mLocalViewModel;
+            if (lvm && lvm.dispose) {
+                lvm.dispose();
+                this.mLocalViewModel = null;
+            }
+
+            const vm = this.mViewModel;
+            if (vm && vm.dispose) {
+                vm.dispose();
+                this.mViewModel = null;
+            }
         }
     }
 

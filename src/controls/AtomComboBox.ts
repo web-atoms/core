@@ -1,10 +1,34 @@
 import { App } from "../App";
+import { Inject } from "../di/Inject";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomComboBox extends AtomItemsControl {
 
     private isChanging: boolean;
+
+    constructor(@Inject app: App, e?: HTMLElement) {
+        super(app, e);
+        this.allowMultipleSelection = false;
+        this.itemTemplate = AtomComboBoxItemTemplate;
+        this.bindEvent(this.element, "change", (s) => {
+            if (this.isChanging) {
+                return;
+            }
+            try {
+                this.isChanging = true;
+                const index = (this.element as HTMLSelectElement).selectedIndex;
+                if (index === -1) {
+                    this.selectedItems.clear();
+                    return;
+                }
+                this.selectedItem = this.items[index];
+                // this.selectedIndex = (this.element as HTMLSelectElement).selectedIndex;
+            } finally {
+                this.isChanging = false;
+            }
+        });
+    }
 
     // public onCollectionChanged(key: string, index: number, item: any): any {
     //     const element = this.element as HTMLSelectElement;
@@ -47,28 +71,6 @@ export class AtomComboBox extends AtomItemsControl {
         }
     }
 
-    protected preCreate(): void {
-        this.allowMultipleSelection = false;
-        this.itemTemplate = AtomComboBoxItemTemplate;
-        this.bindEvent(this.element, "change", (s) => {
-            if (this.isChanging) {
-                return;
-            }
-            try {
-                this.isChanging = true;
-                const index = (this.element as HTMLSelectElement).selectedIndex;
-                if (index === -1) {
-                    this.selectedItems.clear();
-                    return;
-                }
-                this.selectedItem = this.items[index];
-                // this.selectedIndex = (this.element as HTMLSelectElement).selectedIndex;
-            } finally {
-                this.isChanging = false;
-            }
-        });
-        this.invalidate();
-    }
 }
 
 class AtomComboBoxItemTemplate extends AtomControl {
