@@ -4,6 +4,7 @@ import "test-dom";
 import { App } from "../App";
 import "../core/AtomList";
 import { bindableProperty } from "../core/bindable-properties";
+import { AtomTest } from "../unit/AtomTest";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
@@ -48,20 +49,18 @@ class TestItemTemplate extends AtomControl {
 }
 
 @Category("AtomItemsControl")
-export class TestCase extends TestItem {
+export class TestCase extends AtomTest {
 
     @Test("items")
     public async items(): Promise<any> {
 
-        const app = new App();
-
         const root = document.createElement("div");
 
-        const ic = new AtomItemsControl(root);
+        const ic = new AtomItemsControl(this.app, root);
 
         ic.itemTemplate = TestItemTemplate;
 
-        const vm = new TestViewModel(app);
+        const vm = new TestViewModel(this.app);
 
         ic.viewModel = vm;
 
@@ -80,15 +79,13 @@ export class TestCase extends TestItem {
     @Test("selectedItem")
     public async selectedItem(): Promise<any> {
 
-        const app = new App();
-
         const root = document.createElement("div");
 
-        const ic = new AtomItemsControl(root);
+        const ic = new AtomItemsControl(this.app, root);
 
         ic.itemTemplate = TestItemTemplate;
         ic.valuePath = "value";
-        const vm = new TestViewModel(app);
+        const vm = new TestViewModel(this.app);
 
         await vm.waitForReady();
 
@@ -110,15 +107,13 @@ export class TestCase extends TestItem {
     @Test("selectedItems")
     public async selectedItems(): Promise<any> {
 
-        const app = new App();
-
         const root = document.createElement("div");
 
-        const ic = new AtomItemsControl(root);
+        const ic = new AtomItemsControl(this.app, root);
 
         ic.itemTemplate = TestItemTemplate;
         ic.valuePath = "value";
-        const vm = new TestViewModel(app);
+        const vm = new TestViewModel(this.app);
 
         await vm.waitForReady();
 

@@ -5,8 +5,7 @@ import { MovieListViewModel } from "./views/MovieListViewModel";
 export class SampleApp extends WebApp {
 
     public main(): void {
-        const ml = new MovieList();
-        ml.serviceProvider = this;
+        const ml = new MovieList(this);
         ml.viewModel = this.get(MovieListViewModel);
         document.body.appendChild(ml.element);
     }
