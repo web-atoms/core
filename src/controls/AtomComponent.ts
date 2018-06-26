@@ -7,6 +7,7 @@ import { PropertyMap } from "../core/PropertyMap";
 import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { IServiceProvider } from "../di/IServiceProvider";
+import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IEventObject<T> {
 
@@ -122,6 +123,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     private bindings: Array<PropertyBinding<T>> = [];
 
     constructor(e?: T) {
+        this.mServiceProvider = (ServiceProvider as any).current;
         this.element = e;
         const a = this.beginEdit();
         this.create();

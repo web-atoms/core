@@ -5,6 +5,8 @@ import { TypeKey } from "./TypeKey";
 
 export class ServiceProvider implements IDisposable {
 
+    private static current: ServiceProvider = null;
+
     private instances: { [key: string]: any } = {};
 
     public get global(): ServiceProvider {
@@ -114,7 +116,9 @@ export class ServiceProvider implements IDisposable {
             pv.unshift(null);
             return new (key.bind.apply(key, pv))();
         }
+        ServiceProvider.current = this;
         const v = new (key)();
+        ServiceProvider.current = null;
         return v;
     }
 
