@@ -28,7 +28,7 @@ export class ServiceProvider implements IDisposable {
     public put(key: any, value: any): void {
         let sd = ServiceCollection.instance.get(key);
         if (!sd) {
-            sd = ServiceCollection.instance.register(key, () => value, Scope.Transient);
+            sd = ServiceCollection.instance.register(key, () => value, Scope.Global);
         }
         this.instances[sd.id] = value;
     }
