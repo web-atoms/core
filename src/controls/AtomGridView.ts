@@ -1,4 +1,3 @@
-import { App } from "../App";
 import { bindableProperty } from "../core/bindable-properties";
 import { IRect } from "../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
@@ -34,18 +33,6 @@ export class AtomGridView extends AtomControl {
     private attempt: number = 0;
 
     private availableRect: IRect = null;
-
-    constructor(app: App, e?: HTMLElement) {
-        super(app, e || document.createElement("section"));
-
-        window.addEventListener("resize", (evt) => {
-            this.updateSize();
-        });
-
-        const style = this.element.style;
-        style.position = "absolute";
-        style.left = style.right = style.top = style.bottom = "0";
-    }
 
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
         const ee = e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement;
@@ -116,6 +103,19 @@ export class AtomGridView extends AtomControl {
         for (const iterator of this.children) {
             this.updateStyle(iterator);
         }
+    }
+
+    protected preCreate(): void {
+        if (!this.element) {
+            this.element = document.createElement("section");
+        }
+        window.addEventListener("resize", (evt) => {
+            this.updateSize();
+        });
+
+        const style = this.element.style;
+        style.position = "absolute";
+        style.left = style.right = style.top = style.bottom = "0";
     }
 
     private updateStyle(e: HTMLElement): void {

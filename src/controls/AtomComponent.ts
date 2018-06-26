@@ -7,8 +7,7 @@ import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
 import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
-import { IServiceProvider } from "../di/IServiceProvider";
-import { ServiceProvider } from "../di/ServiceProvider";
+import { Inject } from "../di/Inject";
 
 interface IEventObject<T> {
 
@@ -115,9 +114,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     private bindings: Array<PropertyBinding<T>> = [];
 
-    constructor(public readonly app: App, e?: T) {
+    constructor(@Inject public readonly app: App, e?: T) {
         this.element = e;
         const a = this.beginEdit();
+        this.preCreate();
         this.create();
         this.attachControl();
         AtomDispatcher.instance.callLater(() => a.dispose());
@@ -337,6 +337,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     // tslint:disable-next-line:no-empty
     protected create(): void {
+
+    }
+
+    // tslint:disable-next-line:no-empty
+    protected preCreate(): void {
 
     }
 

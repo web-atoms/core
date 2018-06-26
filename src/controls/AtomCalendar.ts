@@ -2,6 +2,7 @@
 import { App } from "../App";
 import { Atom } from "../atom";
 import { AtomBinder, bindableProperty } from "../core";
+import { Inject } from "../di/Inject";
 import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomCalendar extends AtomItemsControl {
@@ -35,21 +36,6 @@ export class AtomCalendar extends AtomItemsControl {
     private mCreated: any;
 
     private mVisibleDate: any;
-
-    /**
-     *
-     */
-    constructor(app: App) {
-        super(app);
-        const today = new Date();
-        this.mMonth = today.getMonth() + 1;
-        this.mYear = today.getFullYear();
-        this.mStartYear = -5;
-        this.mEndYear = 10;
-
-        this.mCurrentYear = (new Date()).getFullYear();
-       // this.mValue = null;
-    }
 
     public set Month(v) {
         this.mMonth = v;
@@ -163,6 +149,16 @@ export class AtomCalendar extends AtomItemsControl {
             m = 12;
         }
         AtomBinder.setValue(this, "month", m);
+    }
+
+    protected preCreate(): void {
+        const today = new Date();
+        this.mMonth = today.getMonth() + 1;
+        this.mYear = today.getFullYear();
+        this.mStartYear = -5;
+        this.mEndYear = 10;
+
+        this.mCurrentYear = (new Date()).getFullYear();
     }
 
     // public init() {

@@ -6,6 +6,7 @@ import { AtomUri } from "../core/atom-uri";
 import { AtomDispatcher } from "../core/AtomDispatcher";
 import { bindableProperty } from "../core/bindable-properties";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../core/types";
+import { Inject } from "../di/Inject";
 import { ServiceProvider } from "../di/ServiceProvider";
 import { WindowService } from "../services/WindowService";
 import { AtomPageViewModel } from "../view-model/AtomPageViewModel";
@@ -36,17 +37,6 @@ export class AtomPageView
     private windowService: WindowService;
 
     private lastUrl: string;
-
-    constructor(app: App, e?: HTMLElement) {
-        super(app, e || document.createElement("section"));
-        AtomUI.assignID(this.element);
-        const style = this.element.style;
-        style.position = "absolute";
-        style.left = style.right = style.top = style.bottom = "0";
-        this.backCommand = () => {
-            this.onBackCommand();
-        };
-    }
 
     public onBackCommand(): void {
         if (!this.stack.length) {
@@ -205,5 +195,18 @@ export class AtomPageView
                 this.invalidate();
                 break;
         }
+    }
+
+    protected preCreate(): void {
+        if (!this.element) {
+            this.element = document.createElement("section");
+        }
+        AtomUI.assignID(this.element);
+        const style = this.element.style;
+        style.position = "absolute";
+        style.left = style.right = style.top = style.bottom = "0";
+        this.backCommand = () => {
+            this.onBackCommand();
+        };
     }
 }

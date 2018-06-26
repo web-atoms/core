@@ -114,11 +114,6 @@ export class AtomWindow extends AtomControl {
     @bindableProperty
     public style: AtomWindowStyle;
 
-    constructor(app: App, e?: HTMLElement) {
-        super(app, e);
-        this.element.classList.add("atom-window");
-    }
-
     public onPropertyChanged(name: string): void {
         switch (name) {
             case "windowTemplate":
