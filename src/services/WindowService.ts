@@ -67,6 +67,13 @@ export class WindowService extends NavigationService {
         super();
 
         this.register("alert-window", AtomAlertWindow);
+
+        if (window) {
+            window.addEventListener("click", (e) => {
+                this.currentTarget = e.target as HTMLElement;
+                this.closePopup();
+            });
+        }
     }
 
     /**
