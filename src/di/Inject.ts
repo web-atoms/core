@@ -7,5 +7,8 @@ export class InjectedTypes {
 export function Inject(target: any, name: string, index: number): void {
     const key = TypeKey.get(target);
     const plist = (Reflect as any).getMetadata("design:paramtypes", target, name);
-    InjectedTypes.paramList[TypeKey.get(target)] = plist;
+
+    const pSavedList = InjectedTypes.paramList[key] || (InjectedTypes.paramList[key] = []);
+
+    pSavedList[index] = plist[index];
 }

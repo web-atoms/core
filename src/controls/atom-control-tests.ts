@@ -97,4 +97,11 @@ export class AtomControlTests extends AtomTest {
         Assert.isTrue(a instanceof AtomItemsControl);
     }
 
+    @Test()
+    public resolve(): void {
+        const a = this.app.get(AtomControl);
+
+        Assert.isTrue(a ? true : false);
+    }
+
 }

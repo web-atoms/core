@@ -112,7 +112,7 @@ export class ServiceProvider implements IDisposable {
         }
 
         if (plist) {
-            const pv = plist.map( (x) => this.resolve(x) );
+            const pv = plist.map( (x) => x ? this.resolve(x) : (void 0) );
             pv.unshift(null);
             return new (key.bind.apply(key, pv))();
         }
