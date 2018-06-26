@@ -1,3 +1,4 @@
+import { App } from "../App";
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomBridge } from "../core/bridge";
 import { ServiceProvider } from "../di/ServiceProvider";
@@ -27,15 +28,15 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public get theme(): AtomTheme {
         return this.mTheme ||
             this.mCachedTheme ||
-            (this.mCachedTheme = (this.parent ? this.parent.theme : this.serviceProvider.resolve(AtomTheme) ));
+            (this.mCachedTheme = (this.parent ? this.parent.theme : this.app.resolve(AtomTheme) ));
     }
     public set theme(v: AtomTheme) {
         this.mTheme = v;
         this.refreshInherited("theme", (ac) => ac.mTheme === undefined);
     }
 
-    constructor(e?: HTMLElement) {
-        super(e || document.createElement("div"));
+    constructor( app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("div"));
     }
 
     /**

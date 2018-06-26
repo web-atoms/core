@@ -1,3 +1,4 @@
+import { App } from "../App";
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 import { AtomGridView } from "./AtomGridView";
 
@@ -6,7 +7,10 @@ export class TestCase extends TestItem {
 
     @Test()
     public async test(): Promise<any> {
-        const gv = new AtomGridView(document.createElement("section"));
+
+        const app = new App();
+
+        const gv = new AtomGridView(app, document.createElement("section"));
         gv.columns = "20,*,50";
         gv.rows = "10,*,30%";
         gv.element.style.width = "1000px";

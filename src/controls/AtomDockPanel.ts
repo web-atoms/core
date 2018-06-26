@@ -10,7 +10,7 @@ export class AtomDockPanel extends AtomControl {
     // private attempt: number = 0;
 
     constructor(e?: HTMLElement) {
-        super(e || document.createElement("section"));
+        super(null, e || document.createElement("section"));
         // tslint:disable-next-line:no-console
         console.error("Use AtomGridView instead");
     }

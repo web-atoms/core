@@ -1,3 +1,4 @@
+import { App } from "../App";
 import { bindableProperty } from "../core/bindable-properties";
 import { IRect } from "../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
@@ -34,8 +35,8 @@ export class AtomGridView extends AtomControl {
 
     private availableRect: IRect = null;
 
-    constructor(e?: HTMLElement) {
-        super(e || document.createElement("section"));
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("section"));
 
         window.addEventListener("resize", (evt) => {
             this.updateSize();

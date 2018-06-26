@@ -1,3 +1,4 @@
+import { App } from "../App";
 import { Atom } from "../Atom";
 import { AtomDispatcher } from "../core/AtomDispatcher";
 import { AtomBridge } from "../core/bridge";
@@ -28,7 +29,7 @@ export interface IAtomComponent<T> {
     data: any;
     viewModel: any;
     localViewModel: any;
-    serviceProvider: IServiceProvider;
+    app: App;
     setLocalValue(e: T, name: string, value: any): void;
     hasProperty(name: string);
     runAfterInit(f: () => void ): void;
@@ -41,14 +42,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     public element: T;
 
     protected pendingInits: Array<() => void>;
-
-    private mServiceProvider: IServiceProvider;
-    public get serviceProvider(): IServiceProvider {
-        return this.mServiceProvider || (this.parent ? this.parent.serviceProvider : null);
-    }
-    public set serviceProvider(v: IServiceProvider) {
-        this.mServiceProvider = v;
-    }
 
     private mInvalidated: number = 0;
 
@@ -122,8 +115,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     private bindings: Array<PropertyBinding<T>> = [];
 
-    constructor(e?: T) {
-        this.mServiceProvider = (ServiceProvider as any).current;
+    constructor(public readonly app: App, e?: T) {
         this.element = e;
         const a = this.beginEdit();
         this.create();
@@ -349,7 +341,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     protected resolve<TService>(c: IClassOf<TService> ): TService {
-        return this.serviceProvider.resolve(c, true);
+        return this.app.resolve(c, true);
     }
 
     protected getValue(path: string) {

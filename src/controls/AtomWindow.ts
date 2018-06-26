@@ -114,8 +114,8 @@ export class AtomWindow extends AtomControl {
     @bindableProperty
     public style: AtomWindowStyle;
 
-    constructor(e?: HTMLElement) {
-        super(e);
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e);
         this.element.classList.add("atom-window");
     }
 
@@ -131,7 +131,7 @@ export class AtomWindow extends AtomControl {
 
     public close(): void {
         const message = `atom-window-cancel:${this.element.id}`;
-        const device = this.serviceProvider.resolve(App);
+        const device = this.app.resolve(App);
         device.broadcast(message, "cancelled");
     }
 
@@ -140,7 +140,7 @@ export class AtomWindow extends AtomControl {
             return;
         }
 
-        this.style = this.style || this.serviceProvider.resolve(AtomTheme).window;
+        this.style = this.style || this.app.resolve(AtomTheme).window;
 
         this.bind(this.element, "title", [["viewModel", "title"]]);
 

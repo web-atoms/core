@@ -271,11 +271,6 @@ export class AtomItemsControl extends AtomControl {
     //     return $(this.itemsPresenter).children();
     // }
 
-    constructor(e?: HTMLElement) {
-        super(e);
-        // this.selectedItems = [];
-    }
-
     public dispose(e?: HTMLElement): void {
         this.items = null;
         this.selectedItems = null;

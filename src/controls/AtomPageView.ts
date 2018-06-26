@@ -1,4 +1,5 @@
 // tslint:disable:ban-types no-console
+import { App } from "../App";
 import { Atom } from "../Atom";
 import { AtomUI } from "../core/atom-ui";
 import { AtomUri } from "../core/atom-uri";
@@ -36,8 +37,8 @@ export class AtomPageView
 
     private lastUrl: string;
 
-    constructor(e?: HTMLElement) {
-        super(e || document.createElement("section"));
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("section"));
         AtomUI.assignID(this.element);
         const style = this.element.style;
         style.position = "absolute";
@@ -159,7 +160,7 @@ export class AtomPageView
         //     }
         // }
 
-        const ct = this.serviceProvider.resolve(uri.path, true);
+        const ct = this.app.resolve(uri.path, true);
 
         const q: any = uri.query;
 
