@@ -8,4 +8,14 @@ export class WebApp extends App {
 
         this.put(NavigationService, this.resolve(WindowService));
     }
+
+    protected onReady(f: () => void): void {
+        if (document.readyState === "complete") {
+            f();
+            return;
+        }
+        document.addEventListener("readystatechange", (e) => {
+            f();
+        });
+    }
 }

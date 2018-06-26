@@ -116,14 +116,8 @@ export class App extends ServiceProvider {
         // load app here..
     }
 
+    // tslint:disable-next-line:no-empty
     protected onReady(f: () => void): void {
-        if (document.readyState === "complete") {
-            f();
-            return;
-        }
-        document.addEventListener("readystatechange", (e) => {
-            f();
-        });
     }
 
 }
