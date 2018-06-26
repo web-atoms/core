@@ -90,7 +90,7 @@ export class AtomViewModel {
         return this.mServiceProvider;
     }
 
-    constructor(@Inject public readonly app: App = new App()) {
+    constructor(@Inject public readonly app: App) {
 
         this.mServiceProvider = app.newScope();
 

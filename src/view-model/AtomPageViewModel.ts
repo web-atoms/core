@@ -1,6 +1,6 @@
 import { App } from "../App";
 import { Inject } from "../di/Inject";
-import { WindowService } from "../services/WindowService";
+import { NavigationService } from "../services/NavigationService";
 import { AtomViewModel } from "./AtomViewModel";
 
 export class AtomPageViewModel extends AtomViewModel {
@@ -11,7 +11,7 @@ export class AtomPageViewModel extends AtomViewModel {
 
     constructor(
         @Inject app: App,
-        @Inject protected windowService: WindowService
+        @Inject protected navigationService: NavigationService
     ) {
         super(app);
     }
@@ -21,7 +21,7 @@ export class AtomPageViewModel extends AtomViewModel {
             this.broadcast(`pop-page:${this.pageId}`, null);
             return;
         }
-        if ( await this.windowService.confirm(this.closeWarning, "Are you sure?")) {
+        if ( await this.navigationService.confirm(this.closeWarning, "Are you sure?")) {
             this.broadcast(`pop-page:${this.pageId}`, null);
         }
     }
