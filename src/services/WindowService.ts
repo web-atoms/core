@@ -165,7 +165,7 @@ export class WindowService extends NavigationService {
 
     private openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {
         return new Promise((resolve, reject) => {
-            const popup = this.app.get(windowId as any) as AtomControl;
+            const popup = this.app.resolve(windowId, true) as AtomControl;
             if (vm) {
                 popup.viewModel = vm;
             }
