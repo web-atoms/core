@@ -63,7 +63,7 @@ export class WindowService extends NavigationService {
         };
     }
 
-    constructor(@Inject private serviceProvider: ServiceProvider) {
+    constructor(@Inject private app: App) {
         super();
 
         this.register("alert-window", AtomAlertWindow);
@@ -94,7 +94,7 @@ export class WindowService extends NavigationService {
     }
 
     public confirm(message: string, title: string): Promise<any> {
-        const vm = this.serviceProvider.resolve(AtomAlertViewModel, true);
+        const vm = this.app.resolve(AtomAlertViewModel, true);
         vm.okTitle = "Yes";
         vm.cancelTitle = "No";
         vm.title = title;
@@ -103,7 +103,7 @@ export class WindowService extends NavigationService {
     }
 
     public alert(message: string, title?: string): Promise<any> {
-        const vm = this.serviceProvider.resolve(AtomAlertViewModel, true);
+        const vm = this.app.resolve(AtomAlertViewModel, true);
         vm.okTitle = "Ok";
         vm.cancelTitle = "";
         vm.title = title;
@@ -132,7 +132,7 @@ export class WindowService extends NavigationService {
         const element = peek.element;
         let target = this.currentTarget;
 
-        const theme = this.serviceProvider.get(AtomTheme).popup;
+        const theme = this.app.get(AtomTheme).popup;
 
         while (target) {
 
@@ -147,7 +147,7 @@ export class WindowService extends NavigationService {
         }
 
         const message = `atom-window-cancel:${peek.element.id}`;
-        const device = this.serviceProvider.get(App);
+        const device = this.app.get(App);
         device.broadcast(message, "cancelled");
     }
 
@@ -165,7 +165,7 @@ export class WindowService extends NavigationService {
 
     private openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {
         return new Promise((resolve, reject) => {
-            const popup = this.serviceProvider.get(windowId as any) as AtomControl;
+            const popup = this.app.get(windowId as any) as AtomControl;
             if (vm) {
                 popup.viewModel = vm;
             }
@@ -175,7 +175,7 @@ export class WindowService extends NavigationService {
                 isPopup = false;
             }
 
-            const theme = this.serviceProvider.get(AtomTheme).popup;
+            const theme = this.app.get(AtomTheme).popup;
 
             e.id = `atom_popup_${this.lastPopupID++}`;
             e.style.zIndex = 10000 + this.lastPopupID + "";
@@ -209,7 +209,7 @@ export class WindowService extends NavigationService {
                 ArrayHelper.remove(this.popups, (a) => a === popup);
             };
 
-            const device = this.serviceProvider.get(App);
+            const device = this.app.get(App);
 
             disposables.push(device.subscribe(`atom-window-close:${e.id}`, (g, i) => {
                 closeFunction();
