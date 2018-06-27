@@ -1,4 +1,4 @@
-import { bindableProperty } from "../core/bindable-properties";
+import { bindableProperty } from "../core/BindableProperty";
 import {AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomStyle } from "./AtomStyle";
 import { AtomTheme } from "./Theme";

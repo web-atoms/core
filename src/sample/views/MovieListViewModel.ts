@@ -1,9 +1,9 @@
 import { App } from "../../App";
 import { AtomBinder } from "../../core/AtomBinder";
-import { bindableProperty } from "../../core/bindable-properties";
+import { bindableProperty } from "../../core/BindableProperty";
 import { Inject } from "../../di/Inject";
-import { WindowService } from "../../services/WindowService";
 import { AtomViewModel, validate } from "../../view-model/AtomViewModel";
+import { WindowService } from "../../web/services/WindowService";
 
 export interface IMovie {
     label: string;

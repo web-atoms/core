@@ -6,7 +6,6 @@ import { ServiceCollection } from "../di/ServiceCollection";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
 import { ILocation, NavigationService } from "./NavigationService";
-import { WindowService } from "./WindowService";
 
 export interface IWindowRegistration {
     windowType: string;

@@ -4,7 +4,7 @@ import { AtomButtonStyle } from "./AtomButtonStyle";
 
 import { AtomPopupStyle } from "./AtomPopupStyle";
 
-import { bindableProperty } from "../core/bindable-properties";
+import { bindableProperty } from "../core/BindableProperty";
 import { IDisposable, INotifyPropertyChanging } from "../core/types";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceProvider } from "../di/ServiceProvider";

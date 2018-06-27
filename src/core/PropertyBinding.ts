@@ -1,7 +1,6 @@
-import { IAtomComponent } from "../controls/AtomComponent";
-import { AtomControl } from "../controls/AtomControl";
+import { AtomBridge } from "./AtomBridge";
+import { IAtomComponent } from "./AtomComponent";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
-import { AtomBridge } from "./bridge";
 import { AtomDisposable, IAtomElement, IDisposable, PathList } from "./types";
 
 export class PropertyBinding<T extends IAtomElement> implements IDisposable {

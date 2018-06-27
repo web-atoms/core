@@ -1,15 +1,18 @@
 // tslint:disable:no-console
-import { TestContext, TestRunner } from "./unit/base-test";
+// tslint:disable:ordered-imports
 
 // import unit test modules here
-import "./controls/atom-control-tests";
-import "./controls/atom-items-control-tests";
-import "./controls/AtomGridViewTests";
 import "./core/atom-ui-tests";
-import "./core/AtomBinderTests";
 import "./di/tests";
 import "./styles/tests";
+import { TestRunner } from "./unit/TestRunner";
 import "./view-model/test";
+import "./web/controls/atom-control-tests";
+import "./web/controls/atom-items-control-tests";
+import "./web/controls/AtomGridViewTests";
+import "./tests/AtomClassTest";
+import "./tests/AppTest";
+import "./tests/core/AtomBinderTest";
 
 const instance: TestRunner = TestRunner.instance;
 

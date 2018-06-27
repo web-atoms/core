@@ -1,5 +1,8 @@
 import { App } from "../App";
-import { Assert, Category, Test, TestItem } from "../unit/base-test";
+import { Assert } from "../unit/Assert";
+import { Category } from "../unit/Category";
+import { Test } from "../unit/Test";
+import { TestItem } from "../unit/TestItem";
 import { Inject } from "./Inject";
 import { ServiceCollection } from "./ServiceCollection";
 import { ServiceProvider } from "./ServiceProvider";
@@ -28,7 +31,7 @@ class DependentService {
 @Category("DI")
 export class TestCase extends TestItem {
 
-    @Test()
+    @Test
     public singleton(): void {
 
         const app = new App();
