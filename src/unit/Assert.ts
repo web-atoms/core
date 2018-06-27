@@ -58,6 +58,42 @@ export class Assert {
         }
     }
 
+    public static isNull(a: any, msg?: string): void {
+        if (a !== null) {
+            Assert.throw(msg || `Expected null found ${a}`);
+        }
+    }
+
+    public static isUndefined(a: any, msg?: string): void {
+        if (a !== undefined) {
+            Assert.throw(msg || `Expected undefined found ${a}`);
+        }
+    }
+
+    public static isEmpty(a: any, msg?: string): void {
+        if (a) {
+            Assert.throw(msg || `Expected empty found ${a}`);
+        }
+    }
+
+    public static isNotNull(a: any, msg?: string): void {
+        if (a === null) {
+            Assert.throw(msg || `Expected not null found ${a}`);
+        }
+    }
+
+    public static isNotUndefined(a: any, msg?: string): void {
+        if (a === undefined) {
+            Assert.throw(msg || `Expected not undefined found ${a}`);
+        }
+    }
+
+    public static isNotEmpty(a: any, msg?: string): void {
+        if (!a) {
+            Assert.throw(msg || `Expected not empty found ${a}`);
+        }
+    }
+
     public static throw(message: string) {
         throw new Error(`Assertion Failed, ${message}`);
     }

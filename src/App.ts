@@ -52,13 +52,15 @@ export class App extends ServiceProvider {
      * @memberof AtomDevice
      */
     public runAsync<T>(tf: () => Promise<T>): void {
-
-        const task: any = tf();
-        task.catch((error) => {
-            this.onError(error);
-        });
-        // tslint:disable-next-line
-        task.then(():void => {});
+        try {
+            tf().then((): void => {
+                // nothing
+            }).catch((error) => {
+                this.onError(error);
+            });
+        } catch (e) {
+            this.onError(e);
+        }
     }
 
     public onError: (m: any) => void = (error) => {

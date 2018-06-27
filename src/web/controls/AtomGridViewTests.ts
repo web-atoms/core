@@ -8,7 +8,7 @@ import { AtomGridView } from "./AtomGridView";
 @Category("Grid view")
 export class TestCase extends TestItem {
 
-    @Test()
+    @Test("Grid Test")
     public async test(): Promise<any> {
 
         const app = new App();

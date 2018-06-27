@@ -9,7 +9,7 @@ import { TestItem } from "../unit/TestItem";
 @Category("Styles")
 export class TestCase extends TestItem {
 
-    @Test()
+    @Test
     public async atomTheme(): Promise<any> {
 
         const app = new App();

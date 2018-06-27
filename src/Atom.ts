@@ -5,9 +5,9 @@ export class Atom {
 
      public static designMode: boolean = false;
 
-     public static set(arg0: any, arg1: any, arg2: any): any {
-    throw new Error("Method not implemented.");
-}
+//      public static set(arg0: any, arg1: any, arg2: any): any {
+//     throw new Error("Method not implemented.");
+// }
 
     public static get(target: any, path: string): any {
         const segments = path.split(".");
@@ -29,14 +29,16 @@ export class Atom {
         return new Promise((resolve, reject) => {
             const h: any = {};
             h.id = setTimeout(() => {
-                if (ct && ct.cancelled) {
-                    return;
-                }
+                // if (ct && ct.cancelled) {
+                //     reject(new Error("cancelled"));
+                //     return;
+                // }
                 resolve();
             }, n);
             if (ct) {
                 ct.registerForCancel(() => {
                     clearTimeout(h.id);
+                    reject(new Error("cancelled"));
                 });
             }
         });
@@ -95,8 +97,7 @@ export class Atom {
         return new Promise((resolve, reject) => {
             AtomDispatcher.instance.callLater( async () => {
                 try {
-                    await f();
-                    resolve();
+                    resolve(await f());
                 } catch (error) {
                     reject(error);
                 }

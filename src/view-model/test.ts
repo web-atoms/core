@@ -40,7 +40,7 @@ class TestViewModel extends AtomViewModel {
 @Category("ViewModel")
 export class ViewModelTestCase extends TestItem {
 
-    @Test()
+    @Test
     public async watchTest(): Promise<any> {
 
         const app = new App();

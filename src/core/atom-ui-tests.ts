@@ -8,7 +8,7 @@ import { INameValues } from "./types";
 @Category("atom-ui")
 export class TestUnit extends TestItem {
 
-    @Test()
+    @Test
      public run(): void {
         const a: INameValues = AtomUI.parseUrl("a=b&c=1");
         Assert.equals("b", a.a);

@@ -194,10 +194,7 @@ import { AtomDisposable, IDisposable } from "./types";
         }
 
         public watch(f: () => void): IDisposable {
-            AtomBinder.add_CollectionChanged(this, f);
-            return new AtomDisposable(() => {
-                AtomBinder.remove_CollectionChanged(this, f);
-            });
+            return AtomBinder.add_CollectionChanged(this, f);
         }
 
     }

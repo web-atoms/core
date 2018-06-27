@@ -31,7 +31,7 @@ class DependentService {
 @Category("DI")
 export class TestCase extends TestItem {
 
-    @Test()
+    @Test
     public singleton(): void {
 
         const app = new App();

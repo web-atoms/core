@@ -19,7 +19,7 @@ class TestViewModel {
 @Category("Atom-Control")
 export class AtomControlTests extends AtomTest {
 
-    @Test()
+    @Test
     public async test1(): Promise<any> {
 
         const root = document.createElement("div");
@@ -63,7 +63,7 @@ export class AtomControlTests extends AtomTest {
         Assert.equals((control as any).bindings, null);
     }
 
-    @Test()
+    @Test
     public async testElements(): Promise<void> {
         const root = document.createElement("div");
         const input = document.createElement("input");
@@ -88,7 +88,7 @@ export class AtomControlTests extends AtomTest {
         Assert.equals("b", input.value);
     }
 
-    @Test()
+    @Test
     public instanceOf(): void {
 
         const a = new AtomItemsControl(this.app, document.createElement("UL"));
@@ -98,7 +98,7 @@ export class AtomControlTests extends AtomTest {
         Assert.isTrue(a instanceof AtomItemsControl);
     }
 
-    @Test()
+    @Test
     public resolve(): void {
         const a = this.app.get(AtomControl);
 
