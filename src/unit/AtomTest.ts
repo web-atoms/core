@@ -1,5 +1,5 @@
 import { MockApp } from "../MockApp";
-import { TestItem } from "./base-test";
+import { TestItem } from "./TestItem";
 
 export class AtomTest extends TestItem {
 
