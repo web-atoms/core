@@ -1,7 +1,7 @@
 import { AtomBinder } from "../../core/AtomBinder";
-import { AtomBridge } from "../../core/bridge";
+import { AtomBridge } from "../../core/AtomBridge";
+import { AtomComponent } from "../../core/AtomComponent";
 import { IAtomElement } from "../../core/types";
-import { AtomComponent } from "../AtomComponent";
 
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 

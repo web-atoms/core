@@ -1,11 +1,10 @@
-import { Assert, Category, Test, TestItem } from "../unit/base-test";
+import { Assert, Category, Test, TestItem } from "../../unit/base-test";
 
 import "test-dom";
-import { App } from "../App";
+import { bindableProperty } from "../../core/BindableProperty";
+import { AtomTest } from "../../unit/AtomTest";
+import { AtomViewModel } from "../../view-model/AtomViewModel";
 import "../core/AtomList";
-import { bindableProperty } from "../core/bindable-properties";
-import { AtomTest } from "../unit/AtomTest";
-import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 

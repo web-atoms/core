@@ -1,11 +1,8 @@
-import { App } from "../App";
-import { AtomBinder } from "../core/AtomBinder";
-import { AtomBridge } from "../core/bridge";
-import { Inject } from "../di";
-import { ServiceProvider } from "../di/ServiceProvider";
-import { AtomStyleClass } from "../styles/AtomStyleClass";
-import { AtomTheme } from "../styles/Theme";
-import { AtomComponent } from "./AtomComponent";
+import { AtomBinder } from "../../core/AtomBinder";
+import { AtomBridge } from "../../core/AtomBridge";
+import { AtomComponent } from "../../core/AtomComponent";
+import { AtomStyleClass } from "../../styles/AtomStyleClass";
+import { AtomTheme } from "../../styles/Theme";
 
 // tslint:disable-next-line:interface-name
 export interface IAtomControlElement extends HTMLElement {

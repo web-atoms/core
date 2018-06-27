@@ -1,9 +1,9 @@
-import { App } from "../App";
-import { AtomUI } from "../core/atom-ui";
-import { bindableProperty } from "../core/bindable-properties";
-import { IClassOf, IDisposable, IRect } from "../core/types";
-import { AtomWindowStyle } from "../styles/AtomWindowStyle";
-import { AtomTheme } from "../styles/Theme";
+import { App } from "../../App";
+import { bindableProperty } from "../../core/BindableProperty";
+import { IClassOf, IDisposable, IRect } from "../../core/types";
+import { AtomWindowStyle } from "../../styles/AtomWindowStyle";
+import { AtomTheme } from "../../styles/Theme";
+import { AtomUI } from "../../web/core/AtomUI";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
 export class AtomWindowFrameTemplate extends AtomTemplate {

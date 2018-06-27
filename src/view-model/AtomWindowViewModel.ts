@@ -1,4 +1,4 @@
-import { AtomBinder } from "../core";
+import { AtomBinder } from "../core/AtomBinder";
 import { AtomViewModel } from "./AtomViewModel";
 
 /**

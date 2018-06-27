@@ -1,6 +1,6 @@
-import { AtomUI, ChildEnumerator } from "../core/atom-ui";
-import { bindableProperty } from "../core/bindable-properties";
-import { AtomListBoxStyle } from "../styles/AtomListBoxStyle";
+import { bindableProperty } from "../../core/BindableProperty";
+import { AtomListBoxStyle } from "../../styles/AtomListBoxStyle";
+import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 

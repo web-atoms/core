@@ -1,5 +1,5 @@
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
-import { AtomUI } from "./atom-ui";
+import { AtomUI } from "../web/core/AtomUI";
 import { INameValues } from "./types";
 
 @Category("atom-ui")

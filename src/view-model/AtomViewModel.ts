@@ -1,7 +1,9 @@
 import { App, AtomAction } from "../App";
 import { Atom } from "../Atom";
-import { AtomBinder, AtomDisposable, AtomWatcher, bindableProperty, IDisposable } from "../core";
-import { ArrayHelper, IClassOf } from "../core/types";
+import { AtomBinder } from "../core/AtomBinder";
+import { AtomWatcher } from "../core/AtomWatcher";
+import { bindableProperty } from "../core/BindableProperty";
+import { ArrayHelper, AtomDisposable, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 import { ServiceProvider } from "../di/ServiceProvider";
 

@@ -1,5 +1,4 @@
-import { AtomControl } from "../controls/AtomControl";
-import { INameValuePairs, INameValues, IRect } from "./types";
+import { INameValues, IRect } from "../../core/types";
 
 export class ChildEnumerator {
 

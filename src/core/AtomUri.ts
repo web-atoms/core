@@ -1,4 +1,4 @@
-import { AtomUI } from "./atom-ui";
+import { AtomUI } from "../web/core/AtomUI";
 import { INameValuePairs, INameValues } from "./types";
 
 export class AtomUri {

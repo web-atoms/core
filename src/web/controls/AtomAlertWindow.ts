@@ -1,6 +1,4 @@
-import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
 import { AtomControl } from "./AtomControl";
-import { AtomTemplate } from "./AtomTemplate";
 import { AtomWindow } from "./AtomWindow";
 
 export class AtomAlertWindow extends AtomWindow {

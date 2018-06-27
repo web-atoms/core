@@ -1,7 +1,7 @@
-import { bindableProperty } from "../core/bindable-properties";
+import { App } from "../App";
+import { bindableProperty } from "../core/BindableProperty";
 import { Assert, Category, Test, TestItem } from "../unit/base-test";
 import { AtomViewModel, watch } from "./AtomViewModel";
-import { App } from "../App";
 
 interface ICustomer {
     firstName: string;

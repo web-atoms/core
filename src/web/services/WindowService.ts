@@ -1,20 +1,18 @@
-import { App } from "../App";
-import { Atom } from "../Atom";
+import { App } from "../../App";
+import { Atom } from "../../Atom";
+import { bindableProperty } from "../../core/BindableProperty";
+import { ArrayHelper, IClassOf, IDisposable } from "../../core/types";
+import { Inject } from "../../di/Inject";
+import { RegisterSingleton } from "../../di/RegisterSingleton";
+import { Scope, ServiceCollection } from "../../di/ServiceCollection";
+import { ILocation, NavigationService } from "../../services/NavigationService";
+import { AtomTheme } from "../../styles/Theme";
+import { AtomViewModel } from "../../view-model/AtomViewModel";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
+import { AtomUI } from "../../web/core/AtomUI";
 import { AtomAlertWindow } from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
-import { AtomUI } from "../core/atom-ui";
-import { bindableProperty } from "../core/bindable-properties";
-import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
-import { Inject } from "../di/Inject";
-import { Register } from "../di/Register";
-import { RegisterSingleton } from "../di/RegisterSingleton";
-import { Scope, ServiceCollection } from "../di/ServiceCollection";
-import { ServiceProvider } from "../di/ServiceProvider";
-import { AtomTheme } from "../styles/Theme";
-import { AtomViewModel } from "../view-model/AtomViewModel";
-import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import { ILocation, NavigationService } from "./NavigationService";
 
 @RegisterSingleton
 export class WindowService extends NavigationService {

@@ -1,5 +1,5 @@
-import { bindableProperty } from "../core/bindable-properties";
-import { IRect } from "../core/types";
+import { bindableProperty } from "../../core/BindableProperty";
+import { IRect } from "../../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 
 interface IOffsetSize {

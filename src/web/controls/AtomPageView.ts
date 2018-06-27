@@ -1,16 +1,12 @@
 // tslint:disable:ban-types no-console
-import { App } from "../App";
-import { Atom } from "../Atom";
-import { AtomUI } from "../core/atom-ui";
-import { AtomUri } from "../core/atom-uri";
-import { AtomDispatcher } from "../core/AtomDispatcher";
-import { bindableProperty } from "../core/bindable-properties";
-import { IClassOf, IDisposable, INotifyPropertyChanged } from "../core/types";
-import { Inject } from "../di/Inject";
-import { ServiceProvider } from "../di/ServiceProvider";
-import { WindowService } from "../services/WindowService";
-import { AtomPageViewModel } from "../view-model/AtomPageViewModel";
-import { AtomViewModel } from "../view-model/AtomViewModel";
+import { Atom } from "../../Atom";
+import { AtomDispatcher } from "../../core/AtomDispatcher";
+import { AtomUri } from "../../core/AtomUri";
+import { bindableProperty } from "../../core/BindableProperty";
+import { IDisposable, INotifyPropertyChanged } from "../../core/types";
+import { NavigationService } from "../../services/NavigationService";
+import { AtomPageViewModel } from "../../view-model/AtomPageViewModel";
+import { AtomUI } from "../../web/core/AtomUI";
 import { AtomControl } from "./AtomControl";
 
 export class AtomPageView
@@ -34,7 +30,7 @@ export class AtomPageView
 
     private disposables: IDisposable[] = [];
 
-    private windowService: WindowService;
+    private navigationService: NavigationService;
 
     private lastUrl: string;
 
@@ -61,7 +57,7 @@ export class AtomPageView
         const ctrl: AtomControl = this.current;
         const vm: AtomPageViewModel = ctrl.viewModel;
         if (vm.closeWarning) {
-            if ( await this.windowService.confirm(vm.closeWarning, "Are you sure?")) {
+            if ( await this.navigationService.confirm(vm.closeWarning, "Are you sure?")) {
                 return true;
             }
             return false;

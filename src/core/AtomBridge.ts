@@ -1,6 +1,5 @@
-import { Atom } from "../Atom";
-import { AtomControl } from "../controls/AtomControl";
-import { AtomUI, ChildEnumerator } from "./atom-ui";
+import { AtomControl } from "../web/controls/AtomControl";
+import { AtomUI, ChildEnumerator } from "../web/core/AtomUI";
 import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {

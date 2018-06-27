@@ -1,4 +1,3 @@
-import { IRect } from "../core/types";
 import { AtomControl } from "./AtomControl";
 
 export class AtomDockPanel extends AtomControl {

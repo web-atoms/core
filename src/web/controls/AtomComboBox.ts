@@ -1,5 +1,5 @@
-import { App } from "../App";
-import { Inject } from "../di/Inject";
+import { App } from "../../App";
+import { Inject } from "../../di/Inject";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 

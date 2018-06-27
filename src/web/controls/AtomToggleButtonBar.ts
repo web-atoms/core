@@ -1,4 +1,3 @@
-import { App } from "../App";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 import { AtomListBox } from "./AtomListBox";

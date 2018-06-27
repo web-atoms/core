@@ -1,5 +1,5 @@
-import * as A from "./App";
-import { AtomPage } from "./controls/xf/AtomPage";
+import * as A from "../App";
+import { AtomPage } from "./controls/AtomPage";
 
 declare var App: any;
 

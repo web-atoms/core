@@ -1,7 +1,7 @@
 import { App } from "../App";
 import { Atom } from "../Atom";
+import { AtomBridge } from "../core/AtomBridge";
 import { AtomDispatcher } from "../core/AtomDispatcher";
-import { AtomBridge } from "../core/bridge";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing

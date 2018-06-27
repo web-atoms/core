@@ -1,4 +1,4 @@
-import { AtomBridge } from "../../core/bridge";
+import { AtomBridge } from "../../core/AtomBridge";
 import { AtomXFControl } from "./AtomXFControl";
 
 export class AtomPage extends AtomXFControl {

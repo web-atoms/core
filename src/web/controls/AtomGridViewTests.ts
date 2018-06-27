@@ -1,5 +1,5 @@
-import { App } from "../App";
-import { Assert, Category, Test, TestItem } from "../unit/base-test";
+import { App } from "../../App";
+import { Assert, Category, Test, TestItem } from "../../unit/base-test";
 import { AtomGridView } from "./AtomGridView";
 
 @Category("Grid view")

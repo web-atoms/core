@@ -1,7 +1,7 @@
-import { AtomControl } from "../../controls/AtomControl";
-import { AtomGridSplitter } from "../../controls/AtomGridSplitter";
-import { AtomGridView } from "../../controls/AtomGridView";
-import { AtomItemsControl } from "../../controls/AtomItemsControl";
+import { AtomControl } from "../../web/controls/AtomControl";
+import { AtomGridSplitter } from "../../web/controls/AtomGridSplitter";
+import { AtomGridView } from "../../web/controls/AtomGridView";
+import { AtomItemsControl } from "../../web/controls/AtomItemsControl";
 
 export class MovieList extends AtomGridView {
 

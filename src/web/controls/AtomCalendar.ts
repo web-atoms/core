@@ -1,8 +1,5 @@
-
-import { App } from "../App";
-import { Atom } from "../atom";
-import { AtomBinder, bindableProperty } from "../core";
-import { Inject } from "../di/Inject";
+import { AtomBinder } from "../../core/AtomBinder";
+import { bindableProperty } from "../../core/BindableProperty";
 import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomCalendar extends AtomItemsControl {

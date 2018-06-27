@@ -1,5 +1,5 @@
-import { bindableProperty } from "../core/bindable-properties";
-import { IDisposable, IRect } from "../core/types";
+import { bindableProperty } from "../../core/BindableProperty";
+import { IDisposable, IRect } from "../../core/types";
 import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
 
