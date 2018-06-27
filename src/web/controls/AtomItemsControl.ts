@@ -1,8 +1,8 @@
 import { AtomBinder } from "../../core/AtomBinder";
+import "../../core/AtomList";
 import { bindableProperty } from "../../core/BindableProperty";
 import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
 import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
-import "../core/AtomList";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
