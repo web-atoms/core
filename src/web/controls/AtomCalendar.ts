@@ -4,7 +4,7 @@ import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomCalendar extends AtomItemsControl {
 
-//    @bindableProperty
+//    @BindableProperty
 //     public mValue: any;
 
     @BindableProperty
