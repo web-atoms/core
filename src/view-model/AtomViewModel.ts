@@ -2,7 +2,7 @@ import { App, AtomAction } from "../App";
 import { Atom } from "../Atom";
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomWatcher } from "../core/AtomWatcher";
-import { bindableProperty } from "../core/BindableProperty";
+import { BindableProperty } from "../core/BindableProperty";
 import { ArrayHelper, AtomDisposable, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 import { ServiceProvider } from "../di/ServiceProvider";
@@ -396,9 +396,9 @@ export function receive(...channel: string[]): viewModelInitFunc {
     };
 }
 
-export function bindableReceive(...channel: string[]): viewModelInitFunc {
+export function BindableReceive(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | symbol): void => {
-        const bp: any = bindableProperty(target, key as string);
+        const bp: any = BindableProperty(target, key as string);
 
         registerInit(target, (vm) => {
             const fx: AtomAction = (cx: string, m: any) => {
@@ -414,9 +414,9 @@ export function bindableReceive(...channel: string[]): viewModelInitFunc {
     };
 }
 
-export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
+export function BindableBroadcast(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | string): void => {
-        const bp: any = bindableProperty(target, key as string);
+        const bp: any = BindableProperty(target, key as string);
 
         registerInit(target, (vm) => {
             const fx: (t: any) => any = (t: any): any => {

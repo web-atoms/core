@@ -1,6 +1,4 @@
-import { PropertyMap } from "../core/PropertyMap";
-import { ArrayHelper, IClassOf, INameValuePairs } from "../core/types";
-import { AtomViewModel } from "../view-model/AtomViewModel";
+import { ArrayHelper, IClassOf, INameValuePairs } from "../../core/types";
 import { AtomStyleClass } from "./AtomStyleClass";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 

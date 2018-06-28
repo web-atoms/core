@@ -1,8 +1,8 @@
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
-import { AtomStyleClass } from "../../styles/AtomStyleClass";
-import { AtomTheme } from "../../styles/Theme";
+import { AtomStyleClass } from "../styles/AtomStyleClass";
+import { AtomTheme } from "../styles/AtomTheme";
 
 // tslint:disable-next-line:interface-name
 export interface IAtomControlElement extends HTMLElement {

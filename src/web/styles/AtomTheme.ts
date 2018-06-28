@@ -4,10 +4,9 @@ import { AtomButtonStyle } from "./AtomButtonStyle";
 
 import { AtomPopupStyle } from "./AtomPopupStyle";
 
-import { bindableProperty } from "../core/BindableProperty";
-import { IDisposable, INotifyPropertyChanging } from "../core/types";
-import { RegisterSingleton } from "../di/RegisterSingleton";
-import { ServiceProvider } from "../di/ServiceProvider";
+import { BindableProperty } from "../../core/BindableProperty";
+import { IDisposable, INotifyPropertyChanging } from "../../core/types";
+import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomListBoxStyle } from "./AtomListBoxStyle";
 
@@ -17,19 +16,19 @@ export class AtomTheme extends AtomStyleSheet
         INotifyPropertyChanging,
         IDisposable {
 
-    @bindableProperty
+    @BindableProperty
     public bgColor: string = "white";
 
-    @bindableProperty
+    @BindableProperty
     public color: string = "gray";
 
-    @bindableProperty
+    @BindableProperty
     public activeColor: string = "lightblue";
 
-    @bindableProperty
+    @BindableProperty
     public selectedBgColor: string = "blue";
 
-    @bindableProperty
+    @BindableProperty
     public selectedColor: string = "white";
 
     public readonly window = this.createStyle(AtomWindowStyle, "window");

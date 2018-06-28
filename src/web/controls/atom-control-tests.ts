@@ -2,7 +2,7 @@
 import "test-dom";
 import { AtomBinder, IWatchableObject } from "../../core/AtomBinder";
 import { AtomComponent } from "../../core/AtomComponent";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { Assert } from "../../unit/Assert";
 import { AtomTest } from "../../unit/AtomTest";
 import { Category } from "../../unit/Category";
@@ -12,7 +12,7 @@ import { AtomItemsControl } from "./AtomItemsControl";
 
 class TestViewModel {
 
-    @bindableProperty
+    @BindableProperty
     public name: any = "";
 }
 

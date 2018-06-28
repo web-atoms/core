@@ -1,10 +1,10 @@
 import "test-dom";
-import { App } from "../App";
-import { AtomTheme } from "../styles/Theme";
-import { Assert } from "../unit/Assert";
-import { Category } from "../unit/Category";
-import { Test } from "../unit/Test";
-import { TestItem } from "../unit/TestItem";
+import { App } from "../../App";
+import { Assert } from "../../unit/Assert";
+import { Category } from "../../unit/Category";
+import { Test } from "../../unit/Test";
+import { TestItem } from "../../unit/TestItem";
+import { AtomTheme } from "../styles/AtomTheme";
 
 @Category("Styles")
 export class TestCase extends TestItem {

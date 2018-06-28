@@ -1,9 +1,9 @@
 import { App } from "../../App";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, IRect } from "../../core/types";
-import { AtomWindowStyle } from "../../styles/AtomWindowStyle";
-import { AtomTheme } from "../../styles/Theme";
 import { AtomUI } from "../../web/core/AtomUI";
+import { AtomTheme } from "../styles/AtomTheme";
+import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
 export class AtomWindowFrameTemplate extends AtomTemplate {
@@ -84,34 +84,34 @@ class AtomWindowTitleTemplate extends AtomControl {
 
 export class AtomWindow extends AtomControl {
 
-    @bindableProperty
+    @BindableProperty
     public title: string = "";
 
-    @bindableProperty
+    @BindableProperty
     public width: string = "300px";
 
-    @bindableProperty
+    @BindableProperty
     public height: string = "200px";
 
-    @bindableProperty
+    @BindableProperty
     public x: number = -1;
 
-    @bindableProperty
+    @BindableProperty
     public y: number = -1;
 
-    @bindableProperty
+    @BindableProperty
     public windowTemplate: IClassOf<AtomControl>;
 
-    @bindableProperty
+    @BindableProperty
     public commandTemplate: IClassOf<AtomControl>;
 
-    @bindableProperty
+    @BindableProperty
     public titleTemplate: IClassOf<AtomControl> = AtomWindowTitleTemplate;
 
-    @bindableProperty
+    @BindableProperty
     public frameTemplate: IClassOf<AtomWindowFrameTemplate> = AtomWindowFrameTemplate;
 
-    @bindableProperty
+    @BindableProperty
     public style: AtomWindowStyle;
 
     public onPropertyChanged(name: string): void {

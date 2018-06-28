@@ -1,4 +1,4 @@
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { IDisposable, IRect } from "../../core/types";
 import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
@@ -8,10 +8,10 @@ import { AtomGridView } from "./AtomGridView";
  */
 export class AtomGridSplitter extends AtomControl {
 
-    @bindableProperty
+    @BindableProperty
     public direction: "vertical" | "horizontal" = "vertical";
 
-    @bindableProperty
+    @BindableProperty
     public dragging: boolean = false;
 
     protected create(): void {

@@ -1,5 +1,4 @@
-import { INameValuePairs, INotifyPropertyChanged } from "../core/types";
-import { AtomViewModel } from "../view-model/AtomViewModel";
+import { INameValuePairs, INotifyPropertyChanged } from "../../core/types";
 import { AtomStyle, IAtomStyle } from "./AtomStyle";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 

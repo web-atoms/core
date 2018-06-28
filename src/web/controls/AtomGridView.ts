@@ -1,4 +1,4 @@
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { IRect } from "../../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 
@@ -18,10 +18,10 @@ interface IOffsetSize {
  */
 export class AtomGridView extends AtomControl {
 
-    @bindableProperty
+    @BindableProperty
     public columns: string = "*";
 
-    @bindableProperty
+    @BindableProperty
     public rows: string = "*";
 
     private columnSizes: IOffsetSize[];

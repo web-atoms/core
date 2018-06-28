@@ -1,11 +1,11 @@
-import { bindableProperty } from "../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import {AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomStyle } from "./AtomStyle";
-import { AtomTheme } from "./Theme";
+import { AtomTheme } from "./AtomTheme";
 
 export class AtomListBoxStyle extends AtomStyle {
 
-    @bindableProperty
+    @BindableProperty
     public padding: string = "5px";
 
     public get theme(): AtomTheme {

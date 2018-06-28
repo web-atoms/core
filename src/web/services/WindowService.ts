@@ -1,19 +1,17 @@
 import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomUri } from "../../core/AtomUri";
-import { bindableProperty } from "../../core/BindableProperty";
 import { ArrayHelper, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { ILocation, NavigationService } from "../../services/NavigationService";
-import { AtomTheme } from "../../styles/Theme";
-import { AtomViewModel } from "../../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import { AtomAlertWindow } from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
+import { AtomTheme } from "../styles/AtomTheme";
 
 @RegisterSingleton
 export class WindowService extends NavigationService {
@@ -238,28 +236,5 @@ export class WindowService extends NavigationService {
             }
 
         });
-    }
-}
-
-class AtomAlertViewModel extends AtomWindowViewModel {
-
-    @bindableProperty
-    public title: string;
-
-    @bindableProperty
-    public message: string;
-
-    @bindableProperty
-    public okTitle: string;
-
-    @bindableProperty
-    public cancelTitle: string;
-
-    public onOkClicked(): void {
-        this.close(true);
-    }
-
-    public onCancelClicked(): void {
-        this.cancel();
     }
 }

@@ -1,5 +1,5 @@
 import { App } from "../App";
-import { bindableProperty } from "../core/BindableProperty";
+import { BindableProperty } from "../core/BindableProperty";
 import { Assert } from "../unit/Assert";
 import { Category } from "../unit/Category";
 import { Test } from "../unit/Test";
@@ -15,7 +15,7 @@ class TestViewModel extends AtomViewModel {
 
     public errorText: string;
 
-    @bindableProperty
+    @BindableProperty
     public customer: ICustomer;
 
     @watch

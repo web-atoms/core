@@ -1,12 +1,12 @@
-import { bindableProperty } from "../../core/BindableProperty";
-import { AtomListBoxStyle } from "../../styles/AtomListBoxStyle";
+import { BindableProperty } from "../../core/BindableProperty";
 import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
+import { AtomListBoxStyle } from "../styles/AtomListBoxStyle";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomListBox extends AtomItemsControl {
 
-    @bindableProperty
+    @BindableProperty
     public style: AtomListBoxStyle;
 
     public selectItemOnClick: boolean = true;

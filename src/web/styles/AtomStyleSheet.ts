@@ -1,4 +1,4 @@
-import { INameValuePairs, INotifyPropertyChanging } from "../core/types";
+import { INameValuePairs, INotifyPropertyChanging } from "../../core/types";
 import { AtomStyle } from "./AtomStyle";
 import { AtomStyleClass } from "./AtomStyleClass";
 

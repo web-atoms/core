@@ -1,6 +1,6 @@
 import { App } from "../../App";
 import { AtomBinder } from "../../core/AtomBinder";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { Inject } from "../../di/Inject";
 import { AtomViewModel, validate } from "../../view-model/AtomViewModel";
 import { WindowService } from "../../web/services/WindowService";
@@ -13,7 +13,7 @@ export interface IMovie {
 
 export class MovieListViewModel extends AtomViewModel {
 
-    @bindableProperty
+    @BindableProperty
     public movies: IMovie[] = [
         { label: "First", category: "None" },
         { label: "True Lies", category: "Action" },
@@ -23,7 +23,7 @@ export class MovieListViewModel extends AtomViewModel {
         { label: "Last", category: "None" },
     ];
 
-    @bindableProperty
+    @BindableProperty
     public selectedMovie: IMovie;
 
     constructor(
