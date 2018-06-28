@@ -7,6 +7,8 @@ export class AtomStyleSheet extends AtomStyle
     public styleElement: HTMLElement;
     private lastUpdateId: number = 0;
 
+    [key: string]: any;
+
     constructor(prefix: string) {
         super(null, null, prefix);
         this.styleSheet = this;

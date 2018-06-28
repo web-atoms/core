@@ -145,7 +145,7 @@ export class AtomWindow extends AtomControl {
 
         this.setupDragging(frame.titlePresenter);
 
-        this.element.classList.add((this.controlStyle as AtomWindowStyle).frameHost.className);
+        this.element.classList.add(this.controlStyle.frameHost.className);
 
         fe._logicalParent = this.element as IAtomControlElement;
         fe._templateParent = this;

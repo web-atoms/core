@@ -18,6 +18,8 @@ export class AtomStyle
 
     private defaults: { [key: string]: AtomStyle} = {};
 
+    [key: string]: any;
+
     constructor(
         public styleSheet: AtomStyleSheet,
         public readonly parent: AtomStyle,
