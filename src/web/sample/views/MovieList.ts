@@ -1,12 +1,16 @@
-import { AtomControl } from "../../web/controls/AtomControl";
-import { AtomGridSplitter } from "../../web/controls/AtomGridSplitter";
-import { AtomGridView } from "../../web/controls/AtomGridView";
-import { AtomItemsControl } from "../../web/controls/AtomItemsControl";
+import { AtomControl } from "../../controls/AtomControl";
+import { AtomGridSplitter } from "../../controls/AtomGridSplitter";
+import { AtomGridView } from "../../controls/AtomGridView";
+import { AtomItemsControl } from "../../controls/AtomItemsControl";
 
 export class MovieList extends AtomGridView {
 
     protected create(): void {
         this.element = document.createElement("div");
+
+        const style = this.element.style;
+        style.position = "absolute";
+        style.left = style.right = style.top = style.bottom = "0";
 
         this.setPrimitiveValue(this.element, "columns", "30%,5,*");
         this.setPrimitiveValue(this.element, "rows", "30,*");

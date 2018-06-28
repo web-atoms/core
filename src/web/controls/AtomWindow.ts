@@ -21,8 +21,8 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.bind(this.element, "styleClass", [["templateParent", "style", "frame"]]);
         this.bind(this.element, "styleWidth", [["templateParent", "width"]]);
         this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
-        this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v : undefined);
-        this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v : undefined);
+        this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v + "px" : undefined);
+        this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v + "px" : undefined);
         this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         this.bind(this.element, "styleMarginLeft", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         this.bind(this.element, "styleMarginRight", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
@@ -180,13 +180,13 @@ export class AtomWindow extends AtomControl {
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
             const offset = AtomUI.screenOffset(tp);
-            const rect: IRect = { x: startEvent.screenX, y: startEvent.screenY };
+            const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
             tp.style.cursor = "move";
             disposables.push(this.bindEvent(document.body, "mousemove", (moveEvent: MouseEvent) => {
-                const { screenX, screenY } = moveEvent;
-                const dx = screenX - rect.x;
-                const dy = screenY - rect.y;
+                const { clientX, clientY } = moveEvent;
+                const dx = clientX - rect.x;
+                const dy = clientY - rect.y;
 
                 offset.x += dx;
                 offset.y += dy;
@@ -194,8 +194,8 @@ export class AtomWindow extends AtomControl {
                 this.x = offset.x;
                 this.y = offset.y;
 
-                rect.x = screenX;
-                rect.y = screenY;
+                rect.x = clientX;
+                rect.y = clientY;
             }));
             disposables.push(this.bindEvent(document.body, "mouseup", (endEvent: MouseEvent) => {
                 tp.style.cursor = cursor;

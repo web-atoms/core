@@ -380,7 +380,7 @@ function registerInit(target: AtomViewModel, fx: viewModelInit ): void {
  * @param {(string | RegExp)} channel
  * @returns {Function}
  */
-export function receive(...channel: string[]): viewModelInitFunc {
+export function Receive(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | symbol): void => {
         registerInit(target, (vm) => {
             // tslint:disable-next-line:ban-types
@@ -440,7 +440,7 @@ export function BindableBroadcast(...channel: string[]): viewModelInitFunc {
 
 }
 
-export function watch(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+export function Watch(target: AtomViewModel, key: string | symbol, descriptor: any): void {
 
     registerInit(target, (vm) => {
 
@@ -456,7 +456,7 @@ export function watch(target: AtomViewModel, key: string | symbol, descriptor: a
     });
 }
 
-export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+export function Validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
 
     // tslint:disable-next-line:ban-types
     const getMethod = descriptor.get as (() => any);

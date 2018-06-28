@@ -192,7 +192,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     element.classList.add(value);
                 }
             }
-
             element.style[name] = value;
             return;
         }
