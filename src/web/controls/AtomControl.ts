@@ -1,8 +1,11 @@
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
+import { AtomDispatcher } from "../../core/AtomDispatcher";
+import { BindableProperty } from "../../core/BindableProperty";
+import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleClass } from "../styles/AtomStyleClass";
-import { AtomTheme } from "../styles/AtomTheme";
+import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 
 // tslint:disable-next-line:interface-name
 export interface IAtomControlElement extends HTMLElement {
@@ -16,19 +19,44 @@ export interface IAtomControlElement extends HTMLElement {
  */
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
-    private mTheme: AtomTheme;
-    private mCachedTheme: AtomTheme;
+    private mControlStyle: AtomStyle = undefined;
+    public get controlStyle(): AtomStyle {
+        if (this.mControlStyle === undefined) {
+            // let c = Object.getPrototypeOf(this);
+            const t = this.theme;
+            let c = this.constructor;
+            while (c) {
+                const style = t.getDefaultStyle(c);
+                if (style) {
+                    this.mControlStyle = style;
+                    break;
+                }
+                c = Object.getPrototypeOf(c);
+            }
+            this.mControlStyle = this.mControlStyle || null;
+        }
+        return this.mControlStyle;
+    }
+
+    public set controlStyle(v: AtomStyle) {
+        this.mControlStyle = v;
+        AtomBinder.refreshValue(this, "controlStyle");
+        this.updateSize();
+    }
+
+    private mTheme: AtomStyleSheet;
+    private mCachedTheme: AtomStyleSheet;
 
     /**
-     * Represents associated AtomTheme with this visual hierarchy. AtomTheme is
+     * Represents associated AtomStyleSheet with this visual hierarchy. AtomStyleSheet is
      * inherited by default.
      */
-    public get theme(): AtomTheme {
+    public get theme(): AtomStyleSheet {
         return this.mTheme ||
             this.mCachedTheme ||
-            (this.mCachedTheme = (this.parent ? this.parent.theme : this.app.resolve(AtomTheme) ));
+            (this.mCachedTheme = (this.parent ? this.parent.theme : this.app.resolve(AtomStyleSheet) ));
     }
-    public set theme(v: AtomTheme) {
+    public set theme(v: AtomStyleSheet) {
         this.mTheme = v;
         this.refreshInherited("theme", (ac) => ac.mTheme === undefined);
     }
@@ -162,6 +190,25 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (!this.element) {
             this.element = document.createElement("div");
         }
+
+        // resolve default style from theme... if available...
+        const t = this.theme;
+        if (!t) {
+            return;
+        }
+
+        // AtomDispatcher.instance.callLater(() => {
+        //     // let c = Object.getPrototypeOf(this);
+        //     let c = this.constructor;
+        //     while (c) {
+        //         const style = t.getDefaultStyle(c);
+        //         if (style) {
+        //             this.controlStyle = style;
+        //             break;
+        //         }
+        //         c = Object.getPrototypeOf(c);
+        //     }
+        // });
     }
 
     protected setElementValue(element: HTMLElement, name: string, value: any): void {
@@ -188,8 +235,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 const s = value as AtomStyleClass;
                 if (s.className) {
                     element.classList.add(s.className);
+                    (element as any)._lastClass = s.className;
                 } else {
                     element.classList.add(value);
+                    (element as any)._lastClass = value;
                 }
             }
             element.style[name] = value;

@@ -4,7 +4,7 @@
 // import unit test modules here
 import "./core/atom-ui-tests";
 import "./di/tests";
-import "./styles/tests";
+import "./web/styles/tests";
 import { TestRunner } from "./unit/TestRunner";
 import "./view-model/test";
 import "./web/controls/atom-control-tests";
@@ -13,6 +13,7 @@ import "./web/controls/AtomGridViewTests";
 import "./tests/AtomClassTest";
 import "./tests/AppTest";
 import "./tests/core/AtomBinderTest";
+import "./tests/core/StringHelperTests";
 
 const instance: TestRunner = TestRunner.instance;
 
@@ -20,9 +21,8 @@ const instance: TestRunner = TestRunner.instance;
 declare var process: any;
 
 instance.run().then(() => {
-    console.log("Tests ran successfully.");
     process.exit();
 }).catch( (e) => {
-    console.error(e);
+    console.error(e.message);
     process.abort();
 });

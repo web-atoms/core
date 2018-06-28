@@ -6,15 +6,12 @@ import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomListBox extends AtomItemsControl {
 
-    @BindableProperty
-    public style: AtomListBoxStyle;
-
     public selectItemOnClick: boolean = true;
 
     public updateSelectionBindings(): void {
         super.updateSelectionBindings();
 
-        const style = this.style || this.theme.listBox;
+        const style = this.controlStyle as AtomListBoxStyle;
 
         const selectedClass = style.selectedItem.className;
 
@@ -34,7 +31,7 @@ export class AtomListBox extends AtomItemsControl {
     }
 
     protected createChild(df: DocumentFragment, data: any): AtomControl {
-        const style = this.style || this.theme.listBox;
+        const style = this.controlStyle as AtomListBoxStyle;
         const item = style.item;
         const child = super.createChild(df, data);
         child.element.classList.add(item.className);

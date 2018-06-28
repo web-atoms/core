@@ -1041,7 +1041,7 @@ export class AtomItemsControl extends AtomControl {
 
     protected createChild(df: DocumentFragment, data: any): AtomControl {
         const t = this.itemTemplate;
-        const ac = new t();
+        const ac = this.app.resolve(t, true);
         const e = ac.element as IAtomControlElement;
         e._logicalParent = this.element as IAtomControlElement;
         e._templateParent = this;

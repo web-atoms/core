@@ -1,6 +1,9 @@
 import { ArrayHelper, IClassOf, INameValuePairs } from "../../core/types";
+import { TypeKey } from "../../di/TypeKey";
+import { AtomControl } from "../controls/AtomControl";
 import { AtomStyleClass } from "./AtomStyleClass";
 import { AtomStyleSheet } from "./AtomStyleSheet";
+import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export type StyleItem = AtomStyle | AtomStyleClass;
 
@@ -13,6 +16,8 @@ export class AtomStyle
 
     private children: StyleItem[] = [];
 
+    private defaults: { [key: string]: AtomStyle} = {};
+
     constructor(
         public styleSheet: AtomStyleSheet,
         public readonly parent: AtomStyle,
@@ -20,12 +25,26 @@ export class AtomStyle
     ) {
     }
 
-    public createClass(name: string, props: INameValuePairs): AtomStyleClass {
+    public createClass(name: string, props: IStyleDeclaration): AtomStyleClass {
         return this.replace(new AtomStyleClass(this.styleSheet, this, `${this.name}-${name}`, props));
     }
 
-    public createStyle<T extends AtomStyle>(c: IClassOf<T>, name: string): T {
+    public createNamedStyle<T extends AtomStyle>(c: IClassOf<T>, name: string): T {
         return this.replace(new (c)(this.styleSheet, this, `${this.name}-${name}`));
+    }
+
+    public createStyle<TC extends AtomControl, T extends AtomStyle>(tc: IClassOf<TC>, c: IClassOf<T>, name: string): T {
+
+        this.defaults = this.defaults || {};
+
+        const newStyle = new (c)(this.styleSheet, this, `${this.name}-${name}`);
+        const key = TypeKey.get(tc);
+        this.defaults[key] = newStyle;
+        return this.replace(newStyle);
+    }
+
+    public getDefaultStyle(forKey: any): AtomStyle {
+        return this.defaults[TypeKey.get(forKey)];
     }
 
     public replace<T extends IAtomStyle>(item: T): T {
