@@ -1,5 +1,7 @@
 import { App } from "../App";
-import { AtomDisposable, IDisposable } from "../core/types";
+import { Atom } from "../Atom";
+import { AtomUri } from "../core/AtomUri";
+import { AtomDisposable, IDisposable, INameValuePairs, INameValues } from "../core/types";
 import { Inject } from "../di/Inject";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceCollection } from "../di/ServiceCollection";
@@ -85,10 +87,7 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public alert(msg: string, title?: string): Promise<any> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel(this.app);
-        mvm.message = msg;
-        mvm.title = title;
-        return this.openWindow(`__AlertWindow_${msg}`, mvm);
+        return this.openWindow(`__AlertWindow_${msg}`, { message: msg, title });
     }
 
     /**
@@ -99,14 +98,11 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public confirm(msg: string, title?: string): Promise<boolean> {
-        const mvm: MockConfirmViewModel = new MockConfirmViewModel(this.app);
-        mvm.message = msg;
-        mvm.title = title;
-        return this.openWindow(`__ConfirmWindow_${msg}`, mvm);
+        return this.openWindow(`__ConfirmWindow_${msg}`, { message: msg, title });
     }
 
-    public openPage<T>(pageName: string, vm: AtomViewModel): Promise<T> {
-        return this.openWindow(pageName, vm);
+    public openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
+        return this.openWindow(pageName, p);
     }
 
     /**
@@ -117,21 +113,21 @@ export class MockNavigationService extends NavigationService {
      * @returns {Promise<T>}
      * @memberof MockWindowService
      */
-    public openPopup<T>(c: string, vm: AtomViewModel): Promise<T> {
-        return this.openWindow(c, vm);
-    }
+    public openWindow<T>(c: string, p?: INameValues): Promise<T> {
 
-    /**
-     * Internal usage
-     * @template T
-     * @param {string} c
-     * @param {AtomViewModel} vm
-     * @returns {Promise<T>}
-     * @memberof MockWindowService
-     */
-    public openWindow<T>(c: string, vm: AtomViewModel): Promise<T> {
+        const url = new AtomUri(c);
+
+        if (p) {
+            for (const key in p) {
+                if (p.hasOwnProperty(key)) {
+                    const element = p[key];
+                    url.query[key] = element;
+                }
+            }
+        }
+
         return new Promise((resolve, reject) => {
-            const w: any = this.windowStack.find((x) => x.windowType === c);
+            const w: any = this.windowStack.find((x) => x.windowType === url.path);
             if (!w) {
                 const ex: Error = new Error(`No window registered for ${c}`);
                 reject(ex);
@@ -139,6 +135,13 @@ export class MockNavigationService extends NavigationService {
             }
             setTimeout(() => {
                 try {
+                    const vm = new AtomWindowViewModel(this.app) as any;
+                    for (const key in url.query) {
+                        if (url.query.hasOwnProperty(key)) {
+                            const element = url.query[key];
+                            vm[key] = element;
+                        }
+                    }
                     resolve(w.action(vm));
                 } catch (e) {
                     reject(e);

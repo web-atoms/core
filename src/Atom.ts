@@ -57,7 +57,14 @@ export class Atom {
         for (const key in p) {
             if (p.hasOwnProperty(key)) {
                 const element: any = p[key];
-                s += `&${key}=${encodeURIComponent(element)}`;
+                let v = element;
+                if (typeof element === "object") {
+                    v = JSON.stringify(element);
+                }
+                if (s) {
+                    s += "&";
+                }
+                s += `${key}=${encodeURIComponent(v)}`;
             }
         }
         return s;
@@ -71,6 +78,8 @@ export class Atom {
         if (p) {
             if (url.indexOf("?") === -1) {
                 url += "?";
+            } else {
+                url += "&";
             }
             url += p;
         }
@@ -78,6 +87,8 @@ export class Atom {
         if (p) {
             if (url.indexOf("#") === -1) {
                 url += "#";
+            } else {
+                url += "&";
             }
             url += p;
         }

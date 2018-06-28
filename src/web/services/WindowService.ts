@@ -1,7 +1,8 @@
 import { App } from "../../App";
 import { Atom } from "../../Atom";
+import { AtomUri } from "../../core/AtomUri";
 import { bindableProperty } from "../../core/BindableProperty";
-import { ArrayHelper, IClassOf, IDisposable } from "../../core/types";
+import { ArrayHelper, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
@@ -92,34 +93,25 @@ export class WindowService extends NavigationService {
     }
 
     public confirm(message: string, title: string): Promise<any> {
-        const vm = this.app.resolve(AtomAlertViewModel, true);
-        vm.okTitle = "Yes";
-        vm.cancelTitle = "No";
-        vm.title = title;
-        vm.message = message;
-        return this.openWindow("alert-window", vm);
+        return this.openPage("alert-window", {
+            okTitle: "Yes",
+            cancelTitle: "No",
+            title,
+            message
+        });
     }
 
     public alert(message: string, title?: string): Promise<any> {
-        const vm = this.app.resolve(AtomAlertViewModel, true);
-        vm.okTitle = "Ok";
-        vm.cancelTitle = "";
-        vm.title = title;
-        vm.message = message;
-        return this.openWindow("alert-window", vm);
+        return this.openPage("alert-window", {
+            message,
+            title,
+            okTitle: "Ok",
+            cancelTitle: ""
+        });
     }
 
-    public openPage<T>(pageName: string, vm: AtomViewModel): Promise<T> {
-        return this.openPopupAsync(pageName, vm, true);
-    }
-
-    public async openPopup<T>(windowId: string, vm: AtomViewModel): Promise<T> {
-        await Atom.delay(5);
-        return await this.openPopupAsync<T>(windowId, vm, true);
-    }
-
-    public openWindow<T>(windowId: string, vm: AtomViewModel): Promise<T> {
-        return this.openPopupAsync<T>(windowId, vm, false);
+    public openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
+        return this.openPopupAsync(pageName, p, true);
     }
 
     public closePopup(): void {
@@ -161,11 +153,20 @@ export class WindowService extends NavigationService {
         }
     }
 
-    private async openPopupAsync<T>(windowId: string, vm: AtomViewModel, isPopup: boolean): Promise<T> {
-        const popup = this.app.resolve(windowId, true) as AtomControl;
-        if (vm) {
-            popup.viewModel = vm;
+    private async openPopupAsync<T>(windowId: string, p: INameValuePairs, isPopup: boolean): Promise<T> {
+
+        const  url = new AtomUri(windowId);
+
+        if (p) {
+            for (const key in p) {
+                if (p.hasOwnProperty(key)) {
+                    const element = p[key];
+                    url.query[key] = element;
+                }
+            }
         }
+
+        const popup = this.app.resolve(windowId, true) as AtomControl;
         const e = popup.element;
 
         if (popup instanceof AtomWindow) {
@@ -224,9 +225,16 @@ export class WindowService extends NavigationService {
                 reject(i);
             }));
 
-            const wvm = vm as AtomWindowViewModel;
+            const wvm = popup.viewModel as AtomWindowViewModel;
             if (wvm) {
                 wvm.windowName = e.id;
+
+                for (const key in url.query) {
+                    if (url.query.hasOwnProperty(key)) {
+                        const element = url.query[key];
+                        wvm[key] = element;
+                    }
+                }
             }
 
         });
