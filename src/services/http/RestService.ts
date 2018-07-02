@@ -1,5 +1,7 @@
 import { Atom } from "../../Atom";
 import { CancelToken, INameValuePairs, INameValues } from "../../core/types";
+import { Inject } from "../../di/Inject";
+import { JsonService } from "../JsonService";
 
 // tslint:disable-next-line
 function methodBuilder(method: string) {
@@ -350,42 +352,6 @@ export class AjaxOptions {
  */
 export class BaseService {
 
-    public static cloneObject(dupeObj: any): any {
-        if (typeof (dupeObj) === "object") {
-            if (typeof (dupeObj.length) !== "undefined") {
-                const ra = new Array();
-                for (const iterator of dupeObj) {
-                    (ra as any[]).push(BaseService.cloneObject(iterator));
-                }
-                return ra;
-            }
-            const retObj: any = {};
-            for (const objInd in dupeObj) {
-                if (!objInd || /^\_\$\_/gi.test(objInd)) {
-                    continue;
-                }
-                const val: any = dupeObj[objInd];
-                if (val === undefined || val === null) {
-                    continue;
-                }
-                const type: string = typeof (val);
-                if (type === "object") {
-                    if (val.constructor === Date) {
-                        retObj[objInd] = (val as Date).toJSON();
-                    } else {
-                        retObj[objInd] = BaseService.cloneObject(val);
-                    }
-                } else if (type === "date") {
-                    retObj[objInd] = (val as Date).toJSON();
-                } else {
-                    retObj[objInd] = val;
-                }
-            }
-            return retObj;
-        }
-        return dupeObj;
-    }
-
     public testMode: boolean = false;
 
     public showProgress: boolean = true;
@@ -398,9 +364,13 @@ export class BaseService {
 
     public methodReturns: any = {};
 
+    constructor(@Inject public readonly jsonService: JsonService) {
+
+    }
+
     public encodeData(o: AjaxOptions): AjaxOptions {
         o.dataType = "application/json";
-        o.data = JSON.stringify(BaseService.cloneObject(o.data));
+        o.data = this.jsonService.stringify(o.data);
         o.contentType = "application/json";
         return o;
     }
@@ -471,15 +441,7 @@ export class BaseService {
         }
 
         if (options.dataType && /json/i.test(options.dataType)) {
-            const r = JSON.parse(xhr.responseText, (key, value) => {
-                // trannsform date...
-                if (typeof value === "string") {
-                    if (/\/date\(/.test(value)) {
-                        value = new Date(parseInt(value, 10));
-                    }
-                }
-                return value;
-            } );
+            return this.jsonService.parse(xhr.responseText);
         }
 
         return xhr.responseText;

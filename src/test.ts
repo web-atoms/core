@@ -15,6 +15,8 @@ import "./tests/AppTest";
 import "./tests/core/AtomBinderTest";
 import "./tests/core/StringHelperTests";
 
+import "./tests/services/JsonServiceTest";
+
 const instance: TestRunner = TestRunner.instance;
 
 // export Atom;
