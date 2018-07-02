@@ -44,6 +44,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     private mInvalidated: number = 0;
 
+    private mPendingPromises: { [key: string]: Promise<any> } = {};
+
     private mData: any = undefined;
     public get data(): any {
         if (this.mData !== undefined) {
@@ -236,11 +238,76 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return map.map[name];
     }
 
+    /**
+     * Use this method if you want to set attribute on HTMLElement immediately but
+     * defer atom control property
+     * @param element HTMLElement
+     * @param name string
+     * @param value any
+     */
+    public setPrimitiveValue(element: T, name: string, value: any): void {
+        const p = value as Promise<any>;
+        if (p && p.then && p.catch) {
+            this.mPendingPromises[name] = p;
+            p.then( (r) => {
+                if (this.mPendingPromises [name] !== p) {
+                    return;
+                }
+                this.mPendingPromises [name] = null;
+                this.setPrimitiveValue(element, name, r);
+            }).catch((e) => {
+                if (this.mPendingPromises [name] !== p) {
+                    return;
+                }
+                this.mPendingPromises [name] = null;
+                // tslint:disable-next-line:no-console
+                console.error(e);
+            });
+            return;
+        }
+
+        if (/^(viewModel|localViewModel)$/.test(name)) {
+            this[name] = value;
+            return;
+        }
+
+        if ((!element || element === this.element) &&  this.hasProperty(name)) {
+            this.runAfterInit(() => {
+                this[name] = value;
+            });
+        } else {
+            this.setElementValue(element, name, value);
+        }
+    }
+
     public setLocalValue(element: T, name: string, value: any): void {
+
+        // if value is a promise
+        const p = value as Promise<any>;
+        if (p && p.then && p.catch) {
+            this.mPendingPromises[name] = p;
+            p.then( (r) => {
+                if (this.mPendingPromises [name] !== p) {
+                    return;
+                }
+                this.mPendingPromises [name] = null;
+                this.setLocalValue(element, name, r);
+            }).catch((e) => {
+                if (this.mPendingPromises [name] !== p) {
+                    return;
+                }
+                this.mPendingPromises [name] = null;
+                // tslint:disable-next-line:no-console
+                console.error(e);
+            });
+            return;
+        }
+
         if ((!element || element === this.element) &&  this.hasProperty(name)) {
             this[name] = value;
         } else {
-            AtomBridge.instance.setValue(element, name, value);
+            // AtomBridge.instance.setValue(element, name, value);
+            this.setElementValue(element, name, value);
         }
     }
 
@@ -360,6 +427,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     // tslint:disable-next-line:no-empty
     protected preCreate(): void {
 
+    }
+
+    protected setElementValue(element: T, name: string, value: any): void {
+        AtomBridge.instance.setValue(element, name, value);
     }
 
     protected resolve<TService>(c: IClassOf<TService> ): TService {
