@@ -31,11 +31,14 @@ export class ServiceProvider implements IDisposable {
         this.instances[sd.id] = value;
     }
 
-    public resolve(key: any, create: boolean = false): any {
+    public resolve(key: any, create: boolean = false, defValue?: any): any {
         const sd = ServiceCollection.instance.get(key);
 
         if (!sd) {
             if (!create) {
+                if (defValue !== undefined) {
+                    return defValue;
+                }
                 throw new Error(`No service registered for type ${key}`);
             }
 

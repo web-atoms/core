@@ -1,9 +1,9 @@
 import { App } from "../../App";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, IRect } from "../../core/types";
-import { AtomWindowStyle } from "../../styles/AtomWindowStyle";
-import { AtomTheme } from "../../styles/Theme";
 import { AtomUI } from "../../web/core/AtomUI";
+import { AtomTheme } from "../styles/AtomTheme";
+import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
 export class AtomWindowFrameTemplate extends AtomTemplate {
@@ -18,25 +18,25 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
         // remember, if you do not wish to use dynamic themes
         // then use one time binding
-        this.bind(this.element, "styleClass", [["templateParent", "style", "frame"]]);
+        this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
         this.bind(this.element, "styleWidth", [["templateParent", "width"]]);
         this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
-        this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v : undefined);
-        this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v : undefined);
+        this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v + "px" : undefined);
+        this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v + "px" : undefined);
         this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         this.bind(this.element, "styleMarginLeft", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         this.bind(this.element, "styleMarginRight", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         this.bind(this.element, "styleMarginBottom", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         // add title host
         const titlePresenter = document.createElement("div");
-        this.bind(titlePresenter, "styleClass", [["templateParent", "style", "titlePresenter"]]);
+        this.bind(titlePresenter, "styleClass", [["templateParent", "controlStyle", "titlePresenter"]]);
         // titleHost.classList.add(style.titleHost.className);
         this.titlePresenter = titlePresenter;
         this.element.appendChild(titlePresenter);
 
         // add content presneter
         const cp = document.createElement("div");
-        this.bind(cp, "styleClass", [["templateParent", "style", "content"]]);
+        this.bind(cp, "styleClass", [["templateParent", "controlStyle", "content"]]);
         // cp.classList.add(style.content.className);
         this.contentPresenter = cp;
         this.element.appendChild(cp);
@@ -44,7 +44,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         // create command presenter
         const cdp = document.createElement("div");
         // cdp.classList.add(style.commandBar.className);
-        this.bind(cdp, "styleClass", [["templateParent", "style", "commandBar"]]);
+        this.bind(cdp, "styleClass", [["templateParent", "controlStyle", "commandBar"]]);
         this.commandPresenter = cdp;
         this.element.appendChild(cdp);
 
@@ -56,18 +56,18 @@ class AtomWindowTitleTemplate extends AtomControl {
     protected create(): void {
 
         this.element = document.createElement("div");
-        this.bind(this.element, "styleClass", [["templateParent", "style", "titleHost"]]);
+        this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "titleHost"]]);
 
         // add title
 
         const title = document.createElement("span");
-        this.bind(title, "styleClass", [["templateParent", "style", "title"]]);
+        this.bind(title, "styleClass", [["templateParent", "controlStyle", "title"]]);
         // title.classList.add(style.title.className);
         this.bind(title, "text", [["templateParent", "title"]], false);
 
         // add close button
         const closeButton = document.createElement("button");
-        this.bind(closeButton, "styleClass", [["templateParent", "style", "closeButton"]]);
+        this.bind(closeButton, "styleClass", [["templateParent", "controlStyle", "closeButton"]]);
         closeButton.textContent = "x";
 
         this.bindEvent(closeButton, "click", (e) => {
@@ -84,35 +84,32 @@ class AtomWindowTitleTemplate extends AtomControl {
 
 export class AtomWindow extends AtomControl {
 
-    @bindableProperty
+    @BindableProperty
     public title: string = "";
 
-    @bindableProperty
+    @BindableProperty
     public width: string = "300px";
 
-    @bindableProperty
+    @BindableProperty
     public height: string = "200px";
 
-    @bindableProperty
+    @BindableProperty
     public x: number = -1;
 
-    @bindableProperty
+    @BindableProperty
     public y: number = -1;
 
-    @bindableProperty
+    @BindableProperty
     public windowTemplate: IClassOf<AtomControl>;
 
-    @bindableProperty
+    @BindableProperty
     public commandTemplate: IClassOf<AtomControl>;
 
-    @bindableProperty
+    @BindableProperty
     public titleTemplate: IClassOf<AtomControl> = AtomWindowTitleTemplate;
 
-    @bindableProperty
+    @BindableProperty
     public frameTemplate: IClassOf<AtomWindowFrameTemplate> = AtomWindowFrameTemplate;
-
-    @bindableProperty
-    public style: AtomWindowStyle;
 
     public onPropertyChanged(name: string): void {
         switch (name) {
@@ -135,8 +132,6 @@ export class AtomWindow extends AtomControl {
             return;
         }
 
-        this.style = this.style || this.app.resolve(AtomTheme).window;
-
         this.bind(this.element, "title", [["viewModel", "title"]]);
 
         // let us create frame first...
@@ -150,7 +145,7 @@ export class AtomWindow extends AtomControl {
 
         this.setupDragging(frame.titlePresenter);
 
-        this.element.classList.add(this.style.frameHost.className);
+        this.element.classList.add(this.controlStyle.frameHost.className);
 
         fe._logicalParent = this.element as IAtomControlElement;
         fe._templateParent = this;
@@ -168,7 +163,7 @@ export class AtomWindow extends AtomControl {
                 throw new Error("CommandPresenter must be set inside frameTemplate" +
                     "before creating window if command template is present");
             }
-            const command = new (this.commandTemplate)();
+            const command = new (this.commandTemplate)(this.app);
             (command.element as IAtomControlElement)._templateParent = this;
             frame.commandPresenter.appendChild(command.element);
         }
@@ -180,13 +175,13 @@ export class AtomWindow extends AtomControl {
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
             const offset = AtomUI.screenOffset(tp);
-            const rect: IRect = { x: startEvent.screenX, y: startEvent.screenY };
+            const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
             tp.style.cursor = "move";
             disposables.push(this.bindEvent(document.body, "mousemove", (moveEvent: MouseEvent) => {
-                const { screenX, screenY } = moveEvent;
-                const dx = screenX - rect.x;
-                const dy = screenY - rect.y;
+                const { clientX, clientY } = moveEvent;
+                const dx = clientX - rect.x;
+                const dy = clientY - rect.y;
 
                 offset.x += dx;
                 offset.y += dy;
@@ -194,8 +189,8 @@ export class AtomWindow extends AtomControl {
                 this.x = offset.x;
                 this.y = offset.y;
 
-                rect.x = screenX;
-                rect.y = screenY;
+                rect.x = clientX;
+                rect.y = clientY;
             }));
             disposables.push(this.bindEvent(document.body, "mouseup", (endEvent: MouseEvent) => {
                 tp.style.cursor = cursor;

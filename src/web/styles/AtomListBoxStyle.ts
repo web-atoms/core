@@ -1,11 +1,11 @@
-import { bindableProperty } from "../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import {AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomStyle } from "./AtomStyle";
-import { AtomTheme } from "./Theme";
+import { AtomTheme } from "./AtomTheme";
 
 export class AtomListBoxStyle extends AtomStyle {
 
-    @bindableProperty
+    @BindableProperty
     public padding: string = "5px";
 
     public get theme(): AtomTheme {
@@ -13,15 +13,15 @@ export class AtomListBoxStyle extends AtomStyle {
     }
 
     public readonly item: AtomStyleClass = this.createClass("item", {
-        "background-color": this.theme.bgColor,
-        "color": this.theme.color,
-        "padding": this.padding,
-        "border-radius": this.padding
+        backgroundColor: this.theme.bgColor,
+        color: this.theme.color,
+        padding: this.padding,
+        borderRadius: this.padding
     });
 
     public readonly selectedItem: AtomStyleClass = this.item.clone("selected-item", {
-            "background-color": this.theme.selectedBgColor,
-            "color": this.theme.selectedColor
+            backgroundColor: this.theme.selectedBgColor,
+            color: this.theme.selectedColor
         });
 
 }

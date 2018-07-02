@@ -1,3 +1,5 @@
+import { BindableProperty } from "../../core/BindableProperty";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomControl } from "./AtomControl";
 import { AtomWindow } from "./AtomWindow";
 
@@ -5,6 +7,8 @@ export class AtomAlertWindow extends AtomWindow {
 
     protected create(): void {
         this.element = document.createElement("div");
+
+        this.viewModel = this.resolve(AtomAlertViewModel);
 
         this.windowTemplate = AtomAlertWindowTemplate;
         this.commandTemplate =  AtomAlertWindowCommandBar;
@@ -52,5 +56,27 @@ class AtomAlertWindowCommandBar extends AtomControl {
 
             this.viewModel.onCancelClicked();
         });
+    }
+}
+class AtomAlertViewModel extends AtomWindowViewModel {
+
+    @BindableProperty
+    public title: string;
+
+    @BindableProperty
+    public message: string;
+
+    @BindableProperty
+    public okTitle: string;
+
+    @BindableProperty
+    public cancelTitle: string;
+
+    public onOkClicked(): void {
+        this.close(true);
+    }
+
+    public onCancelClicked(): void {
+        this.cancel();
     }
 }

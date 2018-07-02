@@ -1,7 +1,7 @@
 import { AtomBinder } from "./AtomBinder";
 import { INotifyPropertyChanging } from "./types";
 
-export function bindableProperty(target: any, key: string): any {
+export function BindableProperty(target: any, key: string): any {
     // property value
     const iVal: any = target[key];
 

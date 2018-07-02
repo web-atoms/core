@@ -1,5 +1,5 @@
-import { INameValuePairs, INotifyPropertyChanged } from "../core/types";
-import { AtomViewModel } from "../view-model/AtomViewModel";
+import { StringHelper } from "../../core/StringHelper";
+import { INameValuePairs, INotifyPropertyChanged } from "../../core/types";
 import { AtomStyle, IAtomStyle } from "./AtomStyle";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 
@@ -52,7 +52,11 @@ export class AtomStyleClass
         for (const key in this.styles) {
             if (this.styles.hasOwnProperty(key)) {
                 const element = this.styles[key];
-                sslist.push(`${key}: ${element}`);
+                if (element === undefined || element === null) {
+                    continue;
+                }
+                const keyName = StringHelper.fromCamelToHyphen(key);
+                sslist.push(`${keyName}: ${element}`);
             }
         }
 

@@ -1,5 +1,7 @@
-import { Atom } from "../Atom";
-import { CancelToken } from "../core/types";
+import { Atom } from "../../Atom";
+import { CancelToken, INameValuePairs, INameValues } from "../../core/types";
+import { Inject } from "../../di/Inject";
+import { JsonService } from "../JsonService";
 
 // tslint:disable-next-line
 function methodBuilder(method: string) {
@@ -301,52 +303,46 @@ export class AjaxOptions {
     public data: any;
     public type: string;
     public cancel: CancelToken;
-    public headers: any;
-    public inputProcessed: boolean;
-    // tslint:disable-next-line:ban-types
-    public success: Function;
-    public error: any;
+    public headers: INameValues;
     public cache: any;
     public attachments: any[];
-    public xhr: any;
-    public processData: boolean;
 }
 
-/**
- *
- *
- * @export
- * @class CancellablePromise
- * @implements {Promise<T>}
- * @template T
- */
-export class CancellablePromise<T> implements Promise<T> {
+// /**
+//  *
+//  *
+//  * @export
+//  * @class CancellablePromise
+//  * @implements {Promise<T>}
+//  * @template T
+//  */
+// export class CancellablePromise<T> implements Promise<T> {
 
-    public [Symbol.toStringTag]: "Promise";
+//     public [Symbol.toStringTag]: "Promise";
 
-    public onCancel: () => void;
-    public p: Promise<T>;
-    constructor(p: Promise<T>, onCancel: () => void) {
-        this.p = p;
-        this.onCancel = onCancel;
-    }
+//     public onCancel: () => void;
+//     public p: Promise<T>;
+//     constructor(p: Promise<T>, onCancel: () => void) {
+//         this.p = p;
+//         this.onCancel = onCancel;
+//     }
 
-    public abort(): void {
-        this.onCancel();
-    }
+//     public abort(): void {
+//         this.onCancel();
+//     }
 
-    public then<TResult1 = T, TResult2 = never>(
-        onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null):
-        Promise<TResult1 | TResult2> {
-        return this.p.then(onfulfilled, onrejected);
-    }
+//     public then<TResult1 = T, TResult2 = never>(
+//         onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+//         onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null):
+//         Promise<TResult1 | TResult2> {
+//         return this.p.then(onfulfilled, onrejected);
+//     }
 
-    public catch<TResult = never>(onrejected?:
-        ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult> {
-        return this.p.catch(onrejected);
-    }
-}
+//     public catch<TResult = never>(onrejected?:
+//         ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult> {
+//         return this.p.catch(onrejected);
+//     }
+// }
 
 /**
  *
@@ -355,42 +351,6 @@ export class CancellablePromise<T> implements Promise<T> {
  * @class BaseService
  */
 export class BaseService {
-
-    public static cloneObject(dupeObj: any): any {
-        if (typeof (dupeObj) === "object") {
-            if (typeof (dupeObj.length) !== "undefined") {
-                const ra = new Array();
-                for (const iterator of dupeObj) {
-                    (ra as any[]).push(BaseService.cloneObject(iterator));
-                }
-                return ra;
-            }
-            const retObj: any = {};
-            for (const objInd in dupeObj) {
-                if (!objInd || /^\_\$\_/gi.test(objInd)) {
-                    continue;
-                }
-                const val: any = dupeObj[objInd];
-                if (val === undefined || val === null) {
-                    continue;
-                }
-                const type: string = typeof (val);
-                if (type === "object") {
-                    if (val.constructor === Date) {
-                        retObj[objInd] = (val as Date).toJSON();
-                    } else {
-                        retObj[objInd] = BaseService.cloneObject(val);
-                    }
-                } else if (type === "date") {
-                    retObj[objInd] = (val as Date).toJSON();
-                } else {
-                    retObj[objInd] = val;
-                }
-            }
-            return retObj;
-        }
-        return dupeObj;
-    }
 
     public testMode: boolean = false;
 
@@ -404,10 +364,13 @@ export class BaseService {
 
     public methodReturns: any = {};
 
+    constructor(@Inject public readonly jsonService: JsonService) {
+
+    }
+
     public encodeData(o: AjaxOptions): AjaxOptions {
-        o.inputProcessed = true;
-        o.dataType = "json";
-        o.data = JSON.stringify(BaseService.cloneObject(o.data));
+        o.dataType = "application/json";
+        o.data = this.jsonService.stringify(o.data);
         o.contentType = "application/json";
         return o;
     }
@@ -457,7 +420,6 @@ export class BaseService {
                         options = this.encodeData(options);
                         break;
                     case "bodyformmodel":
-                        options.inputProcessed = false;
                         options.data = v;
                         break;
                     case "cancel":
@@ -465,22 +427,24 @@ export class BaseService {
                         break;
                     case "header":
                         options.headers = options.headers = {};
-                        options.headers[p.key] = p;
+                        options.headers[p.key] = v;
                         break;
                 }
             }
         }
         options.url = url;
 
-        const pr = this.ajax(url, options);
+        const xhr = await this.ajax(url, options);
 
-        if (options.cancel) {
-            options.cancel.registerForCancel(() => {
-                pr.abort();
-            });
+        if (xhr.status >= 400) {
+            throw new Error(xhr.responseText);
         }
 
-        return pr;
+        if (options.dataType && /json/i.test(options.dataType)) {
+            return this.jsonService.parse(xhr.responseText);
+        }
+
+        return xhr.responseText;
 
         // const rp: Promise<any> = new Promise(
         //     (resolve, reject) => {
@@ -515,8 +479,67 @@ export class BaseService {
         // });
     }
 
-    public ajax(url: string, options: AjaxOptions): CancellablePromise<any> {
-        throw new Error("Not implemented");
+    public async ajax(url: string, options: AjaxOptions): Promise<XMLHttpRequest> {
+
+        // return new CancellablePromise();
+
+        await Atom.delay(100, options.cancel);
+
+        const xhr = new XMLHttpRequest();
+
+        return await new Promise<XMLHttpRequest>((resolve, reject) => {
+
+            if (options.cancel && options.cancel.cancelled) {
+                reject("cancelled");
+                return;
+            }
+
+            if (options.cancel) {
+                options.cancel.registerForCancel(() => {
+                    xhr.abort();
+                    reject("cancelled");
+                    return;
+                });
+            }
+
+            const h = options.headers;
+            if (h) {
+                for (const key in h) {
+                    if (h.hasOwnProperty(key)) {
+                        const element = h[key];
+                        xhr.setRequestHeader(key, element.toString());
+                    }
+                }
+            }
+
+            if (options.contentType) {
+                xhr.setRequestHeader("content-type", options.contentType);
+            }
+
+            if (options.dataType) {
+                xhr.setRequestHeader("accept", options.dataType);
+            }
+
+            xhr.onreadystatechange = (e) => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    // if (options.dataType && /json/i.test(options.dataType)) {
+                    //     resolve(JSON.parse(xhr.responseText));
+                    // } else {
+                    //     resolve(xhr.responseText);
+                    // }
+                    resolve(xhr);
+                }
+            };
+
+            xhr.open(options.method, options.url, true);
+
+            if (options.data) {
+                xhr.send(options.data);
+            }
+
+        });
+
+        // throw new Error("Not implemented");
         // return new CancellablePromise()
         // let p: AtomPromise = new AtomPromise();
 

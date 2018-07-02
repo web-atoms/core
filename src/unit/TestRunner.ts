@@ -27,16 +27,26 @@ export class TestRunner {
         // var results = results.sort((a,b)=>{
         //     return a.description.localeCompare(b.description);
         // });
+
+        let errors = 0;
+
         for (const result of this.executed) {
             if (result.error) {
                 console.error(`${result.category} > ${result.description} failed ${result.error.message}.`);
                 console.error(result.error);
+                errors ++;
             } else {
                 console.log(`${result.category} > ${result.description} succeeded.`);
             }
             if (result.logText) {
                 console.log(`\t\t${result.logText}`);
             }
+        }
+
+        if (errors) {
+            throw new Error(`${errors} of ${this.executed.length} tests have failed.`);
+        } else {
+            console.log(`${this.executed.length} tests ran successfully.`);
         }
     }
 

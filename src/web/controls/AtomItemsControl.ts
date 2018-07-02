@@ -1,24 +1,24 @@
 import { AtomBinder } from "../../core/AtomBinder";
 import "../../core/AtomList";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
 import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
-    @bindableProperty
+    @BindableProperty
     public mAllowSelectFirst: boolean = false;
 
-    @bindableProperty
+    @BindableProperty
     public allowMultipleSelection: boolean = false;
 
-    @bindableProperty
+    @BindableProperty
     public valuePath: string = "value";
 
-    @bindableProperty
+    @BindableProperty
     public labelPath: string = "label";
 
-    @bindableProperty
+    @BindableProperty
     public itemTemplate: IClassOf<AtomControl> = AtomItemsControlItemTemplate;
 
     public valueSeparator: string = ", ";
@@ -1041,7 +1041,7 @@ export class AtomItemsControl extends AtomControl {
 
     protected createChild(df: DocumentFragment, data: any): AtomControl {
         const t = this.itemTemplate;
-        const ac = new t();
+        const ac = this.app.resolve(t, true);
         const e = ac.element as IAtomControlElement;
         e._logicalParent = this.element as IAtomControlElement;
         e._templateParent = this;

@@ -1,10 +1,10 @@
 import { App } from "../App";
-import { bindableProperty } from "../core/BindableProperty";
+import { BindableProperty } from "../core/BindableProperty";
 import { Assert } from "../unit/Assert";
 import { Category } from "../unit/Category";
 import { Test } from "../unit/Test";
 import { TestItem } from "../unit/TestItem";
-import { AtomViewModel, watch } from "./AtomViewModel";
+import { AtomViewModel, Watch } from "./AtomViewModel";
 
 interface ICustomer {
     firstName: string;
@@ -15,10 +15,10 @@ class TestViewModel extends AtomViewModel {
 
     public errorText: string;
 
-    @bindableProperty
+    @BindableProperty
     public customer: ICustomer;
 
-    @watch
+    @Watch
     public get error(): string {
         if (this.customer) {
             if (!this.customer.firstName) {
@@ -31,7 +31,7 @@ class TestViewModel extends AtomViewModel {
         return "Data missing";
     }
 
-    @watch
+    @Watch
     public setError(): void {
         this.errorText = this.error;
     }

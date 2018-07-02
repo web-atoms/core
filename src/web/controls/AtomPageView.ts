@@ -2,7 +2,7 @@
 import { Atom } from "../../Atom";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { AtomUri } from "../../core/AtomUri";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { IDisposable, INotifyPropertyChanged } from "../../core/types";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomPageViewModel } from "../../view-model/AtomPageViewModel";
@@ -15,13 +15,13 @@ export class AtomPageView
 
     public stack: AtomControl[] = [];
 
-    @bindableProperty
+    @BindableProperty
     public url: string;
 
-    @bindableProperty
+    @BindableProperty
     public keepStack: boolean = true;
 
-    @bindableProperty
+    @BindableProperty
     public current: AtomControl = null;
 
     public currentDisposable: IDisposable = null;

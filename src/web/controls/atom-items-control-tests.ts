@@ -1,6 +1,6 @@
 import "test-dom";
 import "../../core/AtomList";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { Assert } from "../../unit/Assert";
 import { AtomTest } from "../../unit/AtomTest";
 import { Category } from "../../unit/Category";
@@ -16,10 +16,10 @@ interface IMovie {
 
 class TestViewModel extends AtomViewModel {
 
-    @bindableProperty
+    @BindableProperty
     public movies: IMovie[];
 
-    @bindableProperty
+    @BindableProperty
     public selectedMovie: IMovie;
 
     public async init(): Promise<any> {

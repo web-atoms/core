@@ -1,4 +1,4 @@
-import { WebApp } from "../web/WebApp";
+import { WebApp } from "../../web/WebApp";
 import { MovieList } from "./views/MovieList";
 import { MovieListViewModel } from "./views/MovieListViewModel";
 

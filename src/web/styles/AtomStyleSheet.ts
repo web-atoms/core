@@ -1,4 +1,4 @@
-import { INameValuePairs, INotifyPropertyChanging } from "../core/types";
+import { INameValuePairs, INotifyPropertyChanging } from "../../core/types";
 import { AtomStyle } from "./AtomStyle";
 import { AtomStyleClass } from "./AtomStyleClass";
 
@@ -6,6 +6,8 @@ export class AtomStyleSheet extends AtomStyle
         implements INotifyPropertyChanging {
     public styleElement: HTMLElement;
     private lastUpdateId: number = 0;
+
+    [key: string]: any;
 
     constructor(prefix: string) {
         super(null, null, prefix);

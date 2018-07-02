@@ -1,3 +1,4 @@
+import { INameValues } from "../core/types";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 
 export interface ILocation {
@@ -12,7 +13,7 @@ export interface ILocation {
 export abstract class NavigationService {
     public abstract alert(message: string, title?: string): Promise<any>;
     public abstract confirm(message: string, title?: string): Promise<boolean>;
-    public abstract openPage<T>(pageName: string, vm: AtomViewModel): Promise<T>;
+    public abstract openPage<T>(pageName: string, p?: INameValues): Promise<T>;
 
     public abstract get title(): string;
     public abstract set title(v: string);

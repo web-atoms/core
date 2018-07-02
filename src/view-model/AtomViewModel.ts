@@ -2,7 +2,7 @@ import { App, AtomAction } from "../App";
 import { Atom } from "../Atom";
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomWatcher } from "../core/AtomWatcher";
-import { bindableProperty } from "../core/BindableProperty";
+import { BindableProperty } from "../core/BindableProperty";
 import { ArrayHelper, AtomDisposable, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 import { ServiceProvider } from "../di/ServiceProvider";
@@ -380,7 +380,7 @@ function registerInit(target: AtomViewModel, fx: viewModelInit ): void {
  * @param {(string | RegExp)} channel
  * @returns {Function}
  */
-export function receive(...channel: string[]): viewModelInitFunc {
+export function Receive(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | symbol): void => {
         registerInit(target, (vm) => {
             // tslint:disable-next-line:ban-types
@@ -396,9 +396,9 @@ export function receive(...channel: string[]): viewModelInitFunc {
     };
 }
 
-export function bindableReceive(...channel: string[]): viewModelInitFunc {
+export function BindableReceive(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | symbol): void => {
-        const bp: any = bindableProperty(target, key as string);
+        const bp: any = BindableProperty(target, key as string);
 
         registerInit(target, (vm) => {
             const fx: AtomAction = (cx: string, m: any) => {
@@ -414,9 +414,9 @@ export function bindableReceive(...channel: string[]): viewModelInitFunc {
     };
 }
 
-export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
+export function BindableBroadcast(...channel: string[]): viewModelInitFunc {
     return (target: AtomViewModel, key: string | string): void => {
-        const bp: any = bindableProperty(target, key as string);
+        const bp: any = BindableProperty(target, key as string);
 
         registerInit(target, (vm) => {
             const fx: (t: any) => any = (t: any): any => {
@@ -440,7 +440,7 @@ export function bindableBroadcast(...channel: string[]): viewModelInitFunc {
 
 }
 
-export function watch(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+export function Watch(target: AtomViewModel, key: string | symbol, descriptor: any): void {
 
     registerInit(target, (vm) => {
 
@@ -456,7 +456,7 @@ export function watch(target: AtomViewModel, key: string | symbol, descriptor: a
     });
 }
 
-export function validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
+export function Validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
 
     // tslint:disable-next-line:ban-types
     const getMethod = descriptor.get as (() => any);

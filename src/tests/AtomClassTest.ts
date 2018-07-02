@@ -32,13 +32,13 @@ export class AtomClassTest extends AtomTest {
         Assert.isNull(url);
 
         url = Atom.url("a", { b: "c" });
-        Assert.equals("a?&b=c", url);
+        Assert.equals("a?b=c", url);
 
         url = Atom.url("a?b=c", { d: "e" });
         Assert.equals("a?b=c&d=e", url);
 
         url = Atom.url("a", null,  { d: "e" });
-        Assert.equals("a#&d=e", url);
+        Assert.equals("a#d=e", url);
 
         url = Atom.url("a#b=c", null,  { d: "e" });
         Assert.equals("a#b=c&d=e", url);

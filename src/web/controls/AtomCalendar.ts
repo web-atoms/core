@@ -1,25 +1,25 @@
 import { AtomBinder } from "../../core/AtomBinder";
-import { bindableProperty } from "../../core/BindableProperty";
+import { BindableProperty } from "../../core/BindableProperty";
 import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomCalendar extends AtomItemsControl {
 
-//    @bindableProperty
+//    @BindableProperty
 //     public mValue: any;
 
-    @bindableProperty
+    @BindableProperty
     public month: number;
 
-    @bindableProperty
+    @BindableProperty
     public year: number = 0;
 
-    @bindableProperty
+    @BindableProperty
     public startYear: number = -5;
 
-    @bindableProperty
+    @BindableProperty
     public endYear: number = 0;
 
-    @bindableProperty
+    @BindableProperty
     public currentYear: number = 0;
 
     public  visibleDate: undefined = undefined;
