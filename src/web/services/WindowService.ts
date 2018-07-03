@@ -5,6 +5,7 @@ import { ArrayHelper, IClassOf, IDisposable, INameValuePairs } from "../../core/
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
+import { JsonService } from "../../services/JsonService";
 import { ILocation, NavigationService } from "../../services/NavigationService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
@@ -60,7 +61,7 @@ export class WindowService extends NavigationService {
         };
     }
 
-    constructor(@Inject private app: App) {
+    constructor(@Inject private app: App, @Inject private jsonService: JsonService) {
         super();
 
         this.register("alert-window", AtomAlertWindow);
@@ -230,7 +231,11 @@ export class WindowService extends NavigationService {
                 for (const key in url.query) {
                     if (url.query.hasOwnProperty(key)) {
                         const element = url.query[key];
-                        wvm[key] = element;
+                        if (typeof element === "object") {
+                            wvm[key] = this.jsonService.parse(this.jsonService.stringify(element));
+                        } else {
+                            wvm[key] = element;
+                        }
                     }
                 }
             }
