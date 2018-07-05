@@ -26,10 +26,10 @@ export class PropertyMap {
                 if (/hasOwnProperty|constructor|toString|isValid|errors/i.test(name)) {
                     continue;
                 }
-                // map[name] = Object.getOwnPropertyDescriptor(c, name) ? true : false;
-                const pd = Object.getOwnPropertyDescriptor(c, name);
-                // tslint:disable-next-line:no-console
-                console.log(`${name} = ${c.enumerable}`);
+                // // map[name] = Object.getOwnPropertyDescriptor(c, name) ? true : false;
+                // const pd = Object.getOwnPropertyDescriptor(c, name);
+                // // tslint:disable-next-line:no-console
+                // console.log(`${name} = ${c.enumerable}`);
                 map[name] = true;
                 nameList.push(name);
             }
