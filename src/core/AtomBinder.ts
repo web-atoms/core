@@ -113,6 +113,7 @@ export class AtomBinder {
                     delete pv.value;
                     delete pv.writable;
 
+                    delete target[key];
                     Object.defineProperty(target, key, pv);
 
                     if (curentValue) {
