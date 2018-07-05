@@ -213,6 +213,9 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public get selectedIndex() {
+        if (!this.mItems) {
+            return -1;
+        }
         const item: any = this.selectedItem;
         return this.mItems.indexOf(item);
     }

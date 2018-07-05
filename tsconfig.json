@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es5",
         "watch": true,
-        "module":"commonjs",
+        "module":"umd",
         "sourceMap": true,
         "declaration": true,
         "moduleResolution": "node",

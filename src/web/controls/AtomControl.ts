@@ -120,61 +120,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         return this;
     }
 
-    /**
-     * Use this method if you want to set attribute on HTMLElement immediately but
-     * defer atom control property
-     * @param element HTMLElement
-     * @param name string
-     * @param value any
-     */
-    public setPrimitiveValue(element: HTMLElement, name: string, value: any): void {
-        const p = value as Promise<any>;
-        if (p && p.then && p.catch) {
-            p.then( (r) => {
-                this.setPrimitiveValue(element, name, r);
-            }).catch((e) => {
-                // tslint:disable-next-line:no-console
-                console.error(e);
-            });
-            return;
-        }
-
-        if (/^(viewModel|localViewModel)$/.test(name)) {
-            this[name] = value;
-            return;
-        }
-
-        if ((!element || element === this.element) &&  this.hasProperty(name)) {
-            this.runAfterInit(() => {
-                this[name] = value;
-            });
-        } else {
-            this.setElementValue(element, name, value);
-        }
-    }
-
-    public setLocalValue(element: HTMLElement, name: string, value: any): void {
-
-        // if value is a promise
-        const p = value as Promise<any>;
-        if (p && p.then && p.catch) {
-            p.then( (r) => {
-                this.setLocalValue(element, name, r);
-            }).catch((e) => {
-                // tslint:disable-next-line:no-console
-                console.error(e);
-            });
-            return;
-        }
-
-        if ((!element || element === this.element) &&  this.hasProperty(name)) {
-            this[name] = value;
-        } else {
-            // AtomBridge.instance.setValue(element, name, value);
-            this.setElementValue(element, name, value);
-        }
-    }
-
     public updateSize(): void {
         this.onUpdateSize();
         AtomBridge.instance.visitDescendents(this.element, (e, ac) => {

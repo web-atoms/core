@@ -11,7 +11,7 @@ export class PropertyMap {
         const c = Object.getPrototypeOf(o);
         const key = TypeKey.get(c);
         const map = PropertyMap.map;
-        const m = map[key] || (map[key] = PropertyMap.createMap(c));
+        const m = map[key] || (map[key] = PropertyMap.createMap(o));
         return m;
     }
 
@@ -26,7 +26,10 @@ export class PropertyMap {
                 if (/hasOwnProperty|constructor|toString|isValid|errors/i.test(name)) {
                     continue;
                 }
-                // map[name] = Object.getOwnPropertyDescriptor(c, name) ? true : false;
+                // // map[name] = Object.getOwnPropertyDescriptor(c, name) ? true : false;
+                // const pd = Object.getOwnPropertyDescriptor(c, name);
+                // // tslint:disable-next-line:no-console
+                // console.log(`${name} = ${c.enumerable}`);
                 map[name] = true;
                 nameList.push(name);
             }
