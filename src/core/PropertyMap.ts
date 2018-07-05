@@ -27,6 +27,9 @@ export class PropertyMap {
                     continue;
                 }
                 // map[name] = Object.getOwnPropertyDescriptor(c, name) ? true : false;
+                const pd = Object.getOwnPropertyDescriptor(c, name);
+                // tslint:disable-next-line:no-console
+                console.log(`${name} = ${c.enumerable}`);
                 map[name] = true;
                 nameList.push(name);
             }
