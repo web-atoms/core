@@ -87,6 +87,8 @@ export class AtomBinder {
 
             const keyName = `_$_${key}`;
 
+            const curentValue = target[key];
+
             const set = function(v: any) {
                 // tslint:disable-next-line:triple-equals
                 if (this[keyName] == v) {
@@ -112,6 +114,10 @@ export class AtomBinder {
                     delete pv.writable;
 
                     Object.defineProperty(target, key, pv);
+
+                    if (curentValue) {
+                        target[key] = curentValue;
+                    }
                 }
             } else {
                 Object.defineProperty(target, key, {
