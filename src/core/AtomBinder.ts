@@ -90,8 +90,6 @@ export class AtomBinder {
             const curentValue = target[key];
 
             const set = function(v: any) {
-                // tslint:disable-next-line:no-debugger
-                debugger;
                 // tslint:disable-next-line:triple-equals
                 if (this[keyName] == v) {
                     return;

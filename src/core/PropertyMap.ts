@@ -11,7 +11,7 @@ export class PropertyMap {
         const c = Object.getPrototypeOf(o);
         const key = TypeKey.get(c);
         const map = PropertyMap.map;
-        const m = map[key] || (map[key] = PropertyMap.createMap(c));
+        const m = map[key] || (map[key] = PropertyMap.createMap(o));
         return m;
     }
 
