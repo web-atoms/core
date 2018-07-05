@@ -106,19 +106,13 @@ export class AtomBinder {
             const pv = AtomBinder.getPropertyDescriptor(target, key);
             if (pv) {
                 if (!pv.get) {
-                    const v = pv.value;
-                    target[keyName] = v;
-                    pv.get = get;
-                    pv.set = set;
-                    delete pv.value;
-                    delete pv.writable;
-
-                    delete target[key];
-                    Object.defineProperty(target, key, pv);
-
-                    if (curentValue) {
-                        target[key] = curentValue;
-                    }
+                    target[keyName] = target[key];
+                    Object.defineProperty(target, key, {
+                        get,
+                        set,
+                        configurable: true,
+                        enumerable: true
+                    });
                 }
             } else {
                 Object.defineProperty(target, key, {
