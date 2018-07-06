@@ -114,7 +114,7 @@ export class AtomWatcher<T> implements IDisposable {
      *
      * @memberof AtomWatcher
      */
-    public func: (t: T, values: any[]) => any;
+    public func: (values: any[]) => any;
 
     public funcText: string;
 
@@ -159,7 +159,8 @@ export class AtomWatcher<T> implements IDisposable {
         path: PathList[] | (() => any) ,
         runAfterSetup: boolean,
         forValidation?: boolean,
-        proxy?: (...v: any[]) => any
+        proxy?: (...v: any[]) => any,
+        private source?: any
     ) {
         this.target = target;
         let e: boolean = false;
@@ -247,7 +248,7 @@ export class AtomWatcher<T> implements IDisposable {
             }
 
             try {
-                this.func.call(this.target, this.target, values);
+                this.func.call(this.target, values);
             } catch (e) {
                 // tslint:disable-next-line:no-console
                 console.warn(e);
@@ -291,6 +292,12 @@ export class AtomWatcher<T> implements IDisposable {
 
         let newTarget: any = null;
         for (const p of path) {
+
+            if (this.source && p.name === "this") {
+                target = this.source;
+                continue;
+            }
+
             newTarget = target[p.name];
             if (!p.target) {
                 p.watcher = AtomBinder.watch(target, p.name, this.runEvaluate);

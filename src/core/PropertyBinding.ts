@@ -8,7 +8,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
     public element: T;
     public path: ObjectProperty[][];
     public target: IAtomComponent<T>;
-    public twoWays: boolean;
+    public twoWays: boolean | string[];
     public name: string;
 
     private watcher: AtomWatcher<any>;
@@ -21,24 +21,37 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         element: T,
         name: string,
         path: PathList[],
-        twoWays: boolean,
-        valueFunc: (...v: any[]) => any) {
+        twoWays: boolean | string[],
+        valueFunc: (v: any[]) => any,
+        source: any) {
         this.name = name;
         this.twoWays = twoWays;
         this.target = target;
         this.element = element;
-        this.watcher = new AtomWatcher(target, path, true, false);
-        this.valueFunc = valueFunc;
-        this.watcher.func = (t: any, values: any[]) => {
-            // don't send undefined value , ignore if any is undefined
-            for (const iterator of values) {
-                if (iterator === undefined) {
-                    return;
+        this.watcher = new AtomWatcher(target, path, true, false,
+            (v: any[]) => {
+                // set value
+                for (const iterator of v) {
+                    if (iterator === undefined) {
+                        return;
+                    }
                 }
-            }
-            const cv = this.valueFunc ? this.valueFunc.apply(this, values) : values[0];
-            this.target.setLocalValue(this.element, this.name, cv);
-        };
+                const cv = this.valueFunc ? this.valueFunc.call(this, v) : v[0];
+                this.target.setLocalValue(this.element, this.name, cv);
+            },
+            source
+        );
+        this.valueFunc = valueFunc;
+        // this.watcher.func = (t: any, values: any[]) => {
+        //     // don't send undefined value , ignore if any is undefined
+        //     for (const iterator of values) {
+        //         if (iterator === undefined) {
+        //             return;
+        //         }
+        //     }
+        //     const cv = this.valueFunc ? this.valueFunc.apply(this, values) : values[0];
+        //     this.target.setLocalValue(this.element, this.name, cv);
+        // };
         this.path = this.watcher.path;
         this.target.runAfterInit(() => {
             this.watcher.evaluate();
@@ -52,9 +65,15 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
 
         if (!this.target.hasProperty(this.name)) {
             // most likely it has change event..
+            let events: string[] = [];
+            if (typeof this.twoWays !== "boolean") {
+                events = this.twoWays;
+            }
+
             this.twoWaysDisposable = AtomBridge.instance.watchProperty(
                 this.element,
                 this.name,
+                events,
                 (v) => {
                     this.setInverseValue(v);
                 }
@@ -63,7 +82,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         }
 
         const watcher = new AtomWatcher(this.target, [[this.name]], false, false);
-        watcher.func = (t: any, values: any[]) => {
+        watcher.func = (values: any[]) => {
             if (this.isTwoWaySetup) {
                 this.setInverseValue(values[0]);
             }

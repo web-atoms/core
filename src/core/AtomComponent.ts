@@ -145,8 +145,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         element: T,
         name: string,
         path: PathList[],
-        twoWays?: boolean,
-        valueFunc?: (...v: any[]) => any): IDisposable {
+        twoWays?: boolean | string[],
+        valueFunc?: (...v: any[]) => any,
+        source?: any): IDisposable {
 
         // remove exisiting binding if any
         let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
@@ -154,7 +155,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             binding.dispose();
             ArrayHelper.remove(this.bindings, (x) => x === binding);
         }
-        binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc);
+        binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc, source);
         this.bindings.push(binding);
 
         return new AtomDisposable(() => {

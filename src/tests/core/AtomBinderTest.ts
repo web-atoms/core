@@ -56,7 +56,7 @@ export class AtomBinderTest extends AtomTest {
 
         Assert.isTrue(!ba);
 
-        const w = new AtomWatcher(c, [["firstName"], ["lastName"]], true, false, (target, values) => {
+        const w = new AtomWatcher(c, [["firstName"], ["lastName"]], true, false, (values) => {
             c.name = `${values[0]} ${values[1]}`;
         });
 

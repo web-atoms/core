@@ -30,7 +30,7 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
 
     public abstract setValue(element: T, name: string, value: any): void;
 
-    public abstract watchProperty(element: T, name: string, f: (v: any) => void): IDisposable;
+    public abstract watchProperty(element: T, name: string, events: string[], f: (v: any) => void): IDisposable;
 
     public abstract loadContent(element: T, text: string): void;
 
@@ -121,14 +121,23 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         return element[name];
     }
 
-    public watchProperty(element: HTMLElement, name: string, f: (v: any) => void): IDisposable {
+    public watchProperty(element: HTMLElement, name: string, events: string[], f: (v: any) => void): IDisposable {
+
+        if (events.indexOf("change") === -1) {
+            events.push("change");
+        }
+
         const l = (e) => {
             f((element as HTMLInputElement).value);
         };
-        element.addEventListener("change", l , false);
+        for (const iterator of events) {
+            element.addEventListener(iterator, l , false);
+        }
 
         return new AtomDisposable(() => {
-            element.removeEventListener("change", l, false);
+            for (const iterator of events) {
+                element.removeEventListener(iterator, l, false);
+            }
         });
     }
 
