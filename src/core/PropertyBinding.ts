@@ -36,7 +36,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
                         return;
                     }
                 }
-                const cv = this.valueFunc ? this.valueFunc.call(this, v) : v[0];
+                const cv = this.valueFunc ? this.valueFunc.apply(this, v) : v[0];
                 this.target.setLocalValue(this.element, this.name, cv);
             },
             source
@@ -81,12 +81,12 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             return;
         }
 
-        const watcher = new AtomWatcher(this.target, [[this.name]], false, false);
-        watcher.func = (values: any[]) => {
-            if (this.isTwoWaySetup) {
-                this.setInverseValue(values[0]);
+        const watcher = new AtomWatcher(this.target, [[this.name]], false, false,
+            (values: any[]) => {
+                if (this.isTwoWaySetup) {
+                    this.setInverseValue(values[0]);
             }
-        };
+        });
         watcher.evaluate();
         this.isTwoWaySetup = true;
         this.twoWaysDisposable = new AtomDisposable(() => {
