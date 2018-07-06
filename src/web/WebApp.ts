@@ -1,4 +1,5 @@
 import { App } from "../App";
+import { ServiceCollection } from "../di/ServiceCollection";
 import { NavigationService } from "../services/NavigationService";
 import { AtomControl } from "./controls/AtomControl";
 import { ChildEnumerator } from "./core/AtomUI";
@@ -50,7 +51,7 @@ export class WebApp extends App {
         super();
 
         this.put(NavigationService, this.resolve(WindowService));
-        this.theme = this.resolve(AtomTheme);
+        ServiceCollection.instance.registerSingleton(AtomStyleSheet, (sp) => sp.resolve(AtomTheme));
     }
 
     protected onReady(f: () => void): void {
