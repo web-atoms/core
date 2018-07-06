@@ -79,7 +79,7 @@ class AtomComboBoxItemTemplate extends AtomControl {
         this.bind(this.element, "text", [["data"]], false ,
         (v) => {
             const ip = this.templateParent as AtomItemsControl;
-            return v[ip.valuePath];
+            return v[ip.labelPath];
         });
     }
 }
