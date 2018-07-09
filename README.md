@@ -12,6 +12,31 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 8. Full featured MVVM Framework with powerful validation
 9. Single code base for Business Logic (View Model + Services) for Web as well as Mobile (through Xamarin.Forms)
 
+## Folder structure
+1. All views for web must be placed under "web" folder inside "src" folder.
+2. All views for Xamarin Forms must be placed under "xf" folder inside "src" folder.
+
+### Example folder structure
+```
+src
++--images
+|  +--AddButton.svg
+|
++--view-Models
+|  +--TaskListViewModel.ts
+|  +--TaskEditorViewModel.ts
+|
++--web
+|  +--tasks
+|     +--TaskListView.html
+|     +--TaskEditorView.html
+|
++--xf
+   +--tasks
+      +--TaskListView.xaml
+      +--TaskEditorView.xaml 
+```
+
 ### Example View Model
 
 ```typescript
