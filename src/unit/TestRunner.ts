@@ -1,6 +1,14 @@
 // tslint:disable:no-console
 import { TestMethod } from "./TestMethod";
 
+declare var global: any;
+
+global.UMD = {
+    resolvePath(v) {
+        return v;
+    }
+};
+
 export class TestRunner {
 
     // tslint:disable-next-line:variable-name

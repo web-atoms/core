@@ -1,10 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <title>App</title>
-    <meta charset="utf-8" />
-    <script src="./dist/bundle.js?1"></script>
-</head>
-<body>
-</body>
+<html>
+    <head>
+        <title>Sample MVVM Task List</title>
+        <script type="text/javascript" src="./node_modules/systemjs/dist/system.src.js"></script>
+        <script type="text/javascript" src="./umd.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            UMD.map("reflect-metadata", "./node_modules/reflect-metadata/Reflect.js");
+            UMD.map("web-atoms-core", "./");
+            UMD.load("web-atoms-core/bin/web/sample/app.js");
+        </script>
+    </body>
 </html>

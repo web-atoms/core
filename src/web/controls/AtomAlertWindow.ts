@@ -3,7 +3,7 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomControl } from "./AtomControl";
 import { AtomWindow } from "./AtomWindow";
 
-export class AtomAlertWindow extends AtomWindow {
+export default class AtomAlertWindow extends AtomWindow {
 
     protected create(): void {
         this.element = document.createElement("div");
