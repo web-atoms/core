@@ -10,15 +10,28 @@ var UMD = {
 
     map: function(config, configValue) {
         if (typeof config === "object") {
-            for (const key in config) {
+            for (var key in config) {
                 if (config.hasOwnProperty(key)) {
-                    const element = config[key];
+                    var element = config[key];
+                    if (element.endsWith("/")){
+                        element = element.substr(0, element.length - 1);
+                    }
                     this.mapConfig[key] = element;
                 }
             }
             return;
         }
+        if (configValue.endsWith("/")){
+            configValue = configValue.substr(0, configValue.length - 1);
+        }
         this.mapConfig[config] = configValue;
+    },
+
+    resolvePath: function (path) {
+        var tokens = path.split("/");
+        var package = tokens[0];
+        tokens[0] = this.mapConfig[package];
+        return tokens.join("/");
     },
 
     resolveViewPath: function(path) {
@@ -52,9 +65,9 @@ var UMD = {
             }
         };
 
-        for (const key in this.mapConfig) {
+        for (var key in this.mapConfig) {
             if (this.mapConfig.hasOwnProperty(key)) {
-                const element = this.mapConfig[key];
+                var element = this.mapConfig[key];
                 config.map[key] = element;
             }
         }
