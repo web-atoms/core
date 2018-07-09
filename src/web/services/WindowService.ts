@@ -7,12 +7,14 @@ import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
 import { ILocation, NavigationService } from "../../services/NavigationService";
-import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
-import { AtomAlertWindow } from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomTheme } from "../styles/AtomTheme";
+
+declare class UMD {
+    public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
+}
 
 @RegisterSingleton
 export class WindowService extends NavigationService {
@@ -64,8 +66,6 @@ export class WindowService extends NavigationService {
     constructor(@Inject private app: App, @Inject private jsonService: JsonService) {
         super();
 
-        this.register("alert-window", AtomAlertWindow);
-
         if (window) {
             window.addEventListener("click", (e) => {
                 this.currentTarget = e.target as HTMLElement;
@@ -92,7 +92,7 @@ export class WindowService extends NavigationService {
     }
 
     public confirm(message: string, title: string): Promise<any> {
-        return this.openPage("alert-window", {
+        return this.openPage("web-atoms-core/bin/{platform}/controls/AtomAlertWindow", {
             okTitle: "Yes",
             cancelTitle: "No",
             title,
@@ -101,7 +101,7 @@ export class WindowService extends NavigationService {
     }
 
     public alert(message: string, title?: string): Promise<any> {
-        return this.openPage("alert-window", {
+        return this.openPage("web-atoms-core/bin/{platform}/controls/AtomAlertWindow", {
             message,
             title,
             okTitle: "Ok",
@@ -142,8 +142,6 @@ export class WindowService extends NavigationService {
 
     protected registerForPopup(): void {
 
-        this.register("alert-window", AtomAlertWindow);
-
         if (window) {
             window.addEventListener("click", (e) => {
                 this.currentTarget = e.target as HTMLElement;
@@ -165,7 +163,9 @@ export class WindowService extends NavigationService {
             }
         }
 
-        const popup = this.app.resolve(windowId, true) as AtomControl;
+        // const popup = this.app.resolve(windowId, true) as AtomControl;
+        const popupType = await UMD.resolveViewClassAsync(url.path);
+        const popup = new popupType(this.app);
         const e = popup.element;
 
         if (popup instanceof AtomWindow) {
@@ -224,7 +224,7 @@ export class WindowService extends NavigationService {
                 reject(i);
             }));
 
-            const wvm = popup.viewModel as AtomWindowViewModel;
+            const wvm = popup.viewModel;
             if (wvm) {
                 wvm.windowName = e.id;
 

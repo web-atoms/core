@@ -3,11 +3,15 @@ import { Atom } from "../../Atom";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
-import { IDisposable, INotifyPropertyChanged } from "../../core/types";
+import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomPageViewModel } from "../../view-model/AtomPageViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import { AtomControl } from "./AtomControl";
+
+declare class UMD {
+    public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
+}
 
 export class AtomPageView
     extends AtomControl
@@ -146,7 +150,9 @@ export class AtomPageView
         //     }
         // }
 
-        const ct = this.app.resolve(uri.path, true);
+        const ctClass = await UMD.resolveViewClassAsync(uri.path);
+
+        const ct = new ctClass(this.app);
 
         const q: any = uri.query;
 
