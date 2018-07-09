@@ -65,6 +65,16 @@ var UMD = {
         };
 
         SystemJS.config(config);
+
+        this._initialized = true;
+    },
+
+    load: function(path) {
+        if (!this._initialized) {
+            this.setup();
+        }
+
+        SystemJS.import(path);
     }
 };
 
