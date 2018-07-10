@@ -1,4 +1,4 @@
-import { AtomBinder, IWatchableObject, IWatchFunctionCollection } from "./AtomBinder";
+import { AtomBinder, IWatchableObject, IWatchFunctionCollection, WatchFunction } from "./AtomBinder";
 import { AtomDisposable, IDisposable } from "./types";
 
     /**
@@ -193,7 +193,7 @@ import { AtomDisposable, IDisposable } from "./types";
             AtomBinder.refreshValue(this, "length");
         }
 
-        public watch(f: () => void): IDisposable {
+        public watch(f: (target: any, key: string, index?: number, item?: any) => void): IDisposable {
             return AtomBinder.add_CollectionChanged(this, f);
         }
 

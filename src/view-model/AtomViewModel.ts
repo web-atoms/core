@@ -162,9 +162,12 @@ export class AtomViewModel {
      * @param {IDisposable} d
      * @memberof AtomViewModel
      */
-    public registerDisposable(d: IDisposable): void {
+    public registerDisposable(d: IDisposable): IDisposable {
         this.disposables = this.disposables || [];
         this.disposables.push(d);
+        return new AtomDisposable(() => {
+            ArrayHelper.remove(this.disposables, (f) => f === d);
+        });
     }
     /**
      * Broadcast given data to channel (msg)

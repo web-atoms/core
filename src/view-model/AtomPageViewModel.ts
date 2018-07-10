@@ -1,4 +1,5 @@
 import { App } from "../App";
+import { BindableProperty } from "../core/BindableProperty";
 import { Inject } from "../di/Inject";
 import { NavigationService } from "../services/NavigationService";
 import { AtomViewModel } from "./AtomViewModel";
@@ -8,6 +9,9 @@ export class AtomPageViewModel extends AtomViewModel {
     public pageId: string;
 
     public closeWarning: string;
+
+    @BindableProperty
+    public title: string;
 
     constructor(
         @Inject app: App,

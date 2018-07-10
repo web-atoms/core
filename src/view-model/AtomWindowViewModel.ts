@@ -1,4 +1,5 @@
 import { AtomBinder } from "../core/AtomBinder";
+import { BindableProperty } from "../core/BindableProperty";
 import { AtomViewModel } from "./AtomViewModel";
 
 /**
@@ -36,6 +37,9 @@ import { AtomViewModel } from "./AtomViewModel";
  * @extends {AtomViewModel}
  */
 export class AtomWindowViewModel extends AtomViewModel {
+
+    @BindableProperty
+    public title: string;
 
     /**
      * windowName will be set to generated html tag id, you can use this

@@ -44,6 +44,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     private mInvalidated: number = 0;
 
+    private disposables: IDisposable[];
+
     private mPendingPromises: { [key: string]: Promise<any> } = {};
 
     private mData: any = undefined;
@@ -117,6 +119,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     private bindings: Array<PropertyBinding<T>> = [];
 
     constructor(@Inject public readonly app: App, e?: T) {
+        this.disposables = [];
         this.element = e;
         const a = this.beginEdit();
         this.preCreate();
@@ -348,6 +351,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 vm.dispose();
                 this.mViewModel = null;
             }
+
+            for (const iterator of this.disposables) {
+                iterator.dispose();
+            }
         }
     }
 
@@ -423,6 +430,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     // tslint:disable-next-line:no-empty
     protected create(): void {
 
+    }
+
+    protected registerDisposable(d: IDisposable): IDisposable {
+        this.disposables.add(d);
+        return new AtomDisposable(() => {
+            ArrayHelper.remove(this.disposables, (f) => f === d);
+        });
     }
 
     // tslint:disable-next-line:no-empty
