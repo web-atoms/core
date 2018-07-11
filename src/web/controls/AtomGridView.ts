@@ -64,6 +64,10 @@ export class AtomGridView extends AtomControl {
             return;
         }
 
+        if (!this.children) {
+            return;
+        }
+
         this.attempt = 0;
 
         this.availableRect = { width, height, x: 0, y: 0 };

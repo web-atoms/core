@@ -1,84 +1,98 @@
 import { AtomBridge } from "./AtomBridge";
-import { IAtomComponent } from "./AtomComponent";
+import { AtomComponent, IAtomComponent } from "./AtomComponent";
+import { AtomOnce } from "./AtomOnce";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
+import { IValueConverter } from "./IValueConverter";
 import { AtomDisposable, IAtomElement, IDisposable, PathList } from "./types";
 
 export class PropertyBinding<T extends IAtomElement> implements IDisposable {
 
-    public element: T;
     public path: ObjectProperty[][];
-    public target: IAtomComponent<T>;
-    public twoWays: boolean | string[];
-    public name: string;
 
     private watcher: AtomWatcher<any>;
     private twoWaysDisposable: IDisposable;
     private isTwoWaySetup: boolean = false;
-    private valueFunc: (...v: any[]) => any;
+    private updaterOnce: AtomOnce;
+
+    private fromSourceToTarget: (v: any[]) => any;
+    private fromTargetToSource: (v: any) => any;
 
     constructor(
-        target: IAtomComponent<T>,
-        element: T,
-        name: string,
+        private target: IAtomComponent<T> | any,
+        public readonly element: T,
+        public readonly name: string,
         path: PathList[],
-        twoWays: boolean | string[],
-        valueFunc: (v: any[]) => any,
-        source: any) {
+        private twoWays: boolean | string[],
+        valueFunc: ((v: any[]) => any) | IValueConverter,
+        private source: any) {
         this.name = name;
         this.twoWays = twoWays;
         this.target = target;
         this.element = element;
+        this.updaterOnce = new AtomOnce();
+        if (valueFunc) {
+            if (typeof valueFunc !== "function") {
+                this.fromSourceToTarget = valueFunc.fromSource;
+                this.fromTargetToSource = valueFunc.fromTarget;
+            } else {
+                this.fromSourceToTarget = valueFunc;
+            }
+        }
         this.watcher = new AtomWatcher(target, path, true, false,
             (v: any[]) => {
-                // set value
-                for (const iterator of v) {
-                    if (iterator === undefined) {
-                        return;
+                this.updaterOnce.run(() => {
+                    // set value
+                    for (const iterator of v) {
+                        if (iterator === undefined) {
+                            return;
+                        }
                     }
-                }
-                const cv = this.valueFunc ? this.valueFunc.apply(this, v) : v[0];
-                this.target.setLocalValue(this.element, this.name, cv);
+                    const cv = this.fromSourceToTarget ? this.fromSourceToTarget.apply(this, v) : v[0];
+                    if (this.target instanceof AtomComponent) {
+                        this.target.setLocalValue(this.element, this.name, cv);
+                    } else {
+                        this.target[name] = cv;
+                    }
+                });
             },
             source
         );
-        this.valueFunc = valueFunc;
-        // this.watcher.func = (t: any, values: any[]) => {
-        //     // don't send undefined value , ignore if any is undefined
-        //     for (const iterator of values) {
-        //         if (iterator === undefined) {
-        //             return;
-        //         }
-        //     }
-        //     const cv = this.valueFunc ? this.valueFunc.apply(this, values) : values[0];
-        //     this.target.setLocalValue(this.element, this.name, cv);
-        // };
         this.path = this.watcher.path;
-        this.target.runAfterInit(() => {
+        if (this.target instanceof AtomComponent) {
+            this.target.runAfterInit(() => {
+                this.watcher.evaluate();
+                if (twoWays) {
+                    this.setupTwoWayBinding();
+                }
+            });
+        } else {
             this.watcher.evaluate();
             if (twoWays) {
                 this.setupTwoWayBinding();
             }
-        });
+        }
     }
 
     public setupTwoWayBinding(): void {
 
-        if (!(this.target.hasProperty(this.name) && this.element === this.target.element )) {
-            // most likely it has change event..
-            let events: string[] = [];
-            if (typeof this.twoWays !== "boolean") {
-                events = this.twoWays;
-            }
-
-            this.twoWaysDisposable = AtomBridge.instance.watchProperty(
-                this.element,
-                this.name,
-                events,
-                (v) => {
-                    this.setInverseValue(v);
+        if (this.target instanceof AtomComponent) {
+            if (!(this.target.hasProperty(this.name) && !this.element || this.element === this.target.element )) {
+                // most likely it has change event..
+                let events: string[] = [];
+                if (typeof this.twoWays !== "boolean") {
+                    events = this.twoWays;
                 }
-            );
-            return;
+
+                this.twoWaysDisposable = AtomBridge.instance.watchProperty(
+                    this.element,
+                    this.name,
+                    events,
+                    (v) => {
+                        this.setInverseValue(v);
+                    }
+                );
+                return;
+            }
         }
 
         const watcher = new AtomWatcher(this.target, [[this.name]], false, false,
@@ -89,9 +103,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         });
         watcher.evaluate();
         this.isTwoWaySetup = true;
-        this.twoWaysDisposable = new AtomDisposable(() => {
-            watcher.dispose();
-        });
+        this.twoWaysDisposable = watcher;
     }
 
     public setInverseValue(value: any): void {
@@ -100,17 +112,25 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             throw new Error("This Binding is not two ways.");
         }
 
-        const first = this.path[0];
-        const length = first.length;
-        let v: any = this.target;
-        let i = 0;
-        for (i = 0; i < length - 1; i ++) {
-            v = v[first[i].name];
-            if (!v) {
-                return;
+        this.updaterOnce.run(() => {
+            const first = this.path[0];
+            const length = first.length;
+            let v: any = this.target;
+            let i = 0;
+            for (i = 0; i < length - 1; i ++) {
+                const name = first[i].name;
+                if (name === "this") {
+                    v = this.source || this.target;
+                } else {
+                    v = v[first[i].name];
+                }
+                if (!v) {
+                    return;
+                }
             }
-        }
-        v[first[i].name] = value;
+            v[first[i].name] = this.fromTargetToSource ? this.fromTargetToSource.call(this, value) : value;
+        });
+
     }
 
     public dispose(): void {

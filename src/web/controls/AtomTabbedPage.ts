@@ -1,6 +1,7 @@
 import { App } from "../../App";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { AtomList } from "../../core/AtomList";
+import { AtomOnce } from "../../core/AtomOnce";
 import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
@@ -25,9 +26,11 @@ export class AtomTabbedPage extends AtomGridView
     @BindableProperty
     public selectedPage: AtomPage;
 
-    protected create(): void {
-        super.create();
-
+    protected preCreate(): void {
+        this.element = document.createElement("section");
+        const style = this.element.style;
+        style.position = "absolute";
+        style.left = style.top = style.right = style.bottom = "0";
         this.localViewModel = new AtomTabViewModel(this.app, this);
 
         this.columns = "*";
@@ -38,17 +41,22 @@ export class AtomTabbedPage extends AtomGridView
         ul.setPrimitiveValue(ul.element, "cell", "0,0");
         ul.allowMultipleSelection = false;
         ul.allowSelectFirst = true;
-        ul.bind(ul.element, "items", [["viewModel", "pages"]]);
-        ul.bind(ul.element, "selectedItem", [["viewModel", "selectedPage"]], true);
+        ul.bind(ul.element, "items", [["localViewModel", "pages"]]);
+        ul.bind(ul.element, "selectedItem", [["localViewModel", "selectedPage"]], true);
 
         const presenter = new AtomContentControl(this.app, document.createElement("section"));
         this.append(presenter);
-
-        presenter.bind(presenter.element, "content", [["viewModel", "selectedPage"]]);
+        presenter.setPrimitiveValue(presenter.element, "cell", "0,1");
+        presenter.bind(presenter.element, "content", [["localViewModel", "selectedPage"]]);
     }
 }
 
 declare var SystemJS: any;
+
+interface ITabState {
+    urls: string[];
+    selectedUrl: string;
+}
 
 class AtomTabViewModel extends AtomViewModel {
 
@@ -58,10 +66,55 @@ class AtomTabViewModel extends AtomViewModel {
     @BindableProperty
     public selectedPage: AtomPage;
 
+    @BindableProperty
+    public selectedUrl: string;
+
+    public channel: string;
+
+    public storageKey: string;
+
+    @BindableProperty
+    public tabState: ITabState;
+
     private oldDisposable: IDisposable;
+
+    private pageUpdater = new AtomOnce();
 
     constructor(@Inject app: App, private owner: AtomTabbedPage) {
         super(app);
+
+        this.bind("selectedUrl", this, [["selectedPage"]], {
+            fromSource: (v: any[]): any => {
+                return v[0].tag;
+            },
+            fromTarget: (v: any): any => {
+                return this.pages.find((p) => p.tag === v);
+            }
+        });
+
+        this.watchTabChannel();
+        // this.watchSelectedPage();
+    }
+
+    public async init(): Promise<any> {
+
+        const ch = this.owner.tabChannelName;
+        this.storageKey = `${this.app.contextId}_${ch}`;
+
+        const urls = sessionStorage.getItem(this.storageKey) || "null";
+        const urlState: ITabState = JSON.parse(urls) || {
+            name,
+            urls: [],
+            selectedUrl: null
+        };
+        for (const iterator of urlState.urls) {
+            const page = await this.loadPage(iterator);
+            if (page.tag === urlState.selectedUrl) {
+                this.pageUpdater.run(() => {
+                    this.selectedPage = page;
+                });
+            }
+        }
     }
 
     @Watch
@@ -69,7 +122,21 @@ class AtomTabViewModel extends AtomViewModel {
         this.watchName(this.owner.tabChannelName);
     }
 
+    @Watch
+    public watchSelectedPage(): void {
+        this.saveState(this.selectedPage);
+    }
+
+    protected saveState(v): void {
+        const state: ITabState = {
+            urls: this.pages.map((p) => p.tag),
+            selectedUrl: this.selectedUrl,
+        };
+        sessionStorage.setItem(this.storageKey, JSON.stringify(state));
+    }
+
     protected watchName(name: string): void {
+        this.bindUrlParameter("selectedUrl", name);
         if (this.oldDisposable) {
             this.oldDisposable.dispose();
             this.oldDisposable = null;
@@ -84,14 +151,14 @@ class AtomTabViewModel extends AtomViewModel {
         }));
     }
 
-    protected async loadPage(message: string): Promise<any> {
+    protected async loadPage(message: string): Promise<AtomPage> {
 
         const url = new AtomUri(message);
 
         const pageType = await SystemJS.import(url.path);
 
         const page: AtomPage = new (pageType.default)(this.app);
-
+        page.tag = message;
         const vm = page.viewModel;
         if (vm) {
             for (const key in url.query) {
@@ -121,6 +188,9 @@ class AtomTabViewModel extends AtomViewModel {
         disposables.add(() => {
             this.pages.remove(page);
         });
+
+        this.saveState(null);
+        return page;
     }
 
 }

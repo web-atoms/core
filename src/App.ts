@@ -43,6 +43,10 @@ export class App extends ServiceProvider {
         AtomBinder.refreshValue(this, "url");
     }
 
+    public get contextId(): string {
+        return "none";
+    }
+
     constructor() {
         super(null);
         this.bag = {};
@@ -52,6 +56,10 @@ export class App extends ServiceProvider {
         }, 5);
 
         this.put(App, this);
+    }
+
+    public syncUrl(): void {
+        // must be implemented by platform specific app
     }
 
     /**

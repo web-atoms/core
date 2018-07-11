@@ -14,7 +14,7 @@ import "./tests/AtomClassTest";
 import "./tests/AppTest";
 import "./tests/core/AtomBinderTest";
 import "./tests/core/StringHelperTests";
-
+import "./tests/core/PropertyBinderTest";
 import "./tests/services/JsonServiceTest";
 
 const instance: TestRunner = TestRunner.instance;

@@ -2,9 +2,12 @@ import { App, AtomAction } from "../App";
 import { Atom } from "../Atom";
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomDisposableList } from "../core/AtomDisposableList";
+import { AtomOnce } from "../core/AtomOnce";
 import { AtomUri } from "../core/AtomUri";
 import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
+import { IValueConverter } from "../core/IValueConverter";
+import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, AtomDisposable, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 
@@ -105,6 +108,11 @@ export class AtomViewModel {
         return this.app.resolve(c, create);
     }
 
+    public bind(propertyName: string, target: any, path: string[][], vc: IValueConverter ): IDisposable {
+        const pb = new PropertyBinding(this, null, propertyName, path, true, vc, target);
+        return this.registerDisposable(pb);
+    }
+
     public refresh(name: string): void {
         AtomBinder.refreshValue(this, name);
     }
@@ -181,33 +189,36 @@ export class AtomViewModel {
         this.app.broadcast(this.channelPrefix + msg, data);
     }
 
-    // public bindUrlParameter(name: string, urlParameter: string): IDisposable {
-    //     return (() => {
-    //         const disposables = new AtomDisposableList();
-    //         let isChanging: boolean = false;
-    //         disposables.add(this.setupWatch(() => {
-    //             if (isChanging) {
-    //                 return;
-    //             }
-    //             const value = this.app.url.hash || this.app.url.query;
-    //             isChanging = true;
-    //             this[name] = value;
-    //             isChanging = false;
-    //         }));
-    //         this.disposables.add(this.registerDisposable(
-    //             new AtomWatcher(this, [[name]], false, false, (v: AtomUri) => {
-    //                 if (isChanging) {
-    //                     return;
-    //                 }
-    //                 isChanging = true;
-    //                 const url = this.app.url || (this.app.url = new AtomUri(""));
-    //                 url.hash[urlParameter] = this[name];
-    //                 AtomBinder.refreshValue(url.hash, urlParameter);
-    //                 isChanging = false;
-    //         })));
-    //         return disposables;
-    //     })();
-    // }
+    public bindUrlParameter(name: string, urlParameter: string): IDisposable {
+        const a = this as any;
+        const paramDisposables = (a.mUrlParameters || (a.mUrlParameters = {}));
+        const old = paramDisposables[name];
+        if (old) {
+            old.dispose();
+            paramDisposables[name] = null;
+        }
+        const disposables = new AtomDisposableList();
+        const updater = new AtomOnce();
+        disposables.add(this.setupWatch(
+            [
+                ["app", "url", "hash", name],
+                ["app", "url", "query", name]
+            ], (hash, query) => {
+            updater.run(() => {
+                const value = hash || query;
+                this[name] = value;
+            });
+        }));
+        disposables.add(this.setupWatch([[name]], (value) => {
+            updater.run(() => {
+                const url = this.app.url || (this.app.url = new AtomUri(""));
+                url.hash[urlParameter] = value;
+                this.app.syncUrl();
+            });
+        }));
+        paramDisposables[name] = disposables;
+        return disposables;
+    }
 
     // tslint:disable-next-line:no-empty
     protected onReady(): void {}
@@ -229,7 +240,11 @@ export class AtomViewModel {
      * @returns {IDisposable}
      * @memberof AtomViewModel
      */
-    protected setupWatch(ft: () => any, proxy?: () => void, forValidation?: boolean, name?: string): IDisposable {
+    protected setupWatch(
+        ft: string[][] | (() => any),
+        proxy?: (...v: any[]) => void,
+        forValidation?: boolean,
+        name?: string): IDisposable {
 
         const d: AtomWatcher<any> = new AtomWatcher<any>(
             this, ft, !forValidation && this.isReady, forValidation, proxy );
@@ -252,26 +267,26 @@ export class AtomViewModel {
     // tslint:disable-next-line:no-empty
     protected onPropertyChanged(name: string): void {}
 
-    /**
-     * Register listener for given message.
-     *
-     * @protected
-     * @template T
-     * @param {string} msg
-     * @param {(data: T) => void} a
-     * @memberof AtomViewModel
-     */
-    protected onMessage<T>(msg: string, a: (data: T) => void): void {
+    // /**
+    //  * Register listener for given message.
+    //  *
+    //  * @protected
+    //  * @template T
+    //  * @param {string} msg
+    //  * @param {(data: T) => void} a
+    //  * @memberof AtomViewModel
+    //  */
+    // protected onMessage<T>(msg: string, a: (data: T) => void): void {
 
-        // tslint:disable-next-line:no-console
-        console.warn("Do not use onMessage, instead use @receive decorator...");
+    //     // tslint:disable-next-line:no-console
+    //     console.warn("Do not use onMessage, instead use @receive decorator...");
 
-        const action: AtomAction = (m, d) => {
-            a(d as T);
-        };
-        const sub: IDisposable = this.app.subscribe( this.channelPrefix + msg, action);
-        this.registerDisposable(sub);
-    }
+    //     const action: AtomAction = (m, d) => {
+    //         a(d as T);
+    //     };
+    //     const sub: IDisposable = this.app.subscribe( this.channelPrefix + msg, action);
+    //     this.registerDisposable(sub);
+    // }
 
     private subscribe(channel: string, c: (ch: string, data: any) => void): void {
         const sub: IDisposable = this.app.subscribe( this.channelPrefix + channel, c);
@@ -323,73 +338,6 @@ export class AtomViewModel {
     }
 
 }
-
-// /**
-//  * AtomErrors class holds all validation errors registered in view model.
-//  *
-//  * hasErrors() method will return true if there are any validation errors in this AtomErrors object.
-//  *
-//  * @export
-//  * @class AtomErrors
-//  */
-// export class AtomErrors {
-
-//     private static isInternal = /^\_(\_target|\$\_)/;
-
-//     private mTarget: AtomViewModel;
-
-//     /**
-//      * Creates an instance of AtomErrors.
-//      * @param {AtomViewModel} target
-//      * @memberof AtomErrors
-//      */
-//     constructor(target: AtomViewModel) {
-//         this.mTarget = target;
-//     }
-
-//     /**
-//      *
-//      *
-//      * @returns {boolean}
-//      * @memberof AtomErrors
-//      */
-//     public hasErrors(): boolean {
-
-//         if (this.mTarget) {
-//             this.mTarget.runValidation();
-//         }
-
-//         for (const k in this) {
-//             if (AtomErrors.isInternal.test(k)) {
-//                 continue;
-//             }
-//             if (this.hasOwnProperty(k)) {
-//                 if (this[k]) {
-//                     return true;
-//                 }
-//             }
-//         }
-//         return false;
-//     }
-
-//     /**
-//      *
-//      *
-//      * @memberof AtomErrors
-//      */
-//     public clear(): void {
-//         for (const k in this) {
-//             if (AtomErrors.isInternal.test(k)) {
-//                 continue;
-//             }
-//             if (this.hasOwnProperty(k)) {
-//                 this[k] = null;
-//                 AtomBinder.refreshValue(this, k);
-//             }
-//         }
-//     }
-
-// }
 
 interface IAtomViewModel {
     setupWatch(ft: () => any, proxy?: () => any, forValidation?: boolean, name?: string): IDisposable ;
@@ -527,11 +475,11 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
 
 }
 
-// export function BindableUrlParameter(name: string): any {
-//     return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
-//         registerInit(target, (vm) => {
-//             vm.bindUrlParameter(name, name);
-//         } );
-//         return BindableProperty(target, key);
-//     };
-// }
+export function BindableUrlParameter(name: string): any {
+    return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
+        registerInit(target, (vm) => {
+            vm.bindUrlParameter(name, name);
+        } );
+        return BindableProperty(target, key);
+    };
+}

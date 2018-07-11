@@ -154,11 +154,6 @@ export class WindowService extends NavigationService {
 
         const  url = new AtomUri(windowId);
 
-        if (url.scheme && /^tab$/i.test(url.scheme)) {
-            this.app.broadcast(url.host, url.path + "?" + url.query);
-            return;
-        }
-
         if (p) {
             for (const key in p) {
                 if (p.hasOwnProperty(key)) {
@@ -166,6 +161,11 @@ export class WindowService extends NavigationService {
                     url.query[key] = element;
                 }
             }
+        }
+
+        if (url.protocol && /^tab\:$/i.test(url.protocol)) {
+            this.app.broadcast(url.host, url.path + "?" + url.query);
+            return;
         }
 
         // const popup = this.app.resolve(windowId, true) as AtomControl;

@@ -92,7 +92,7 @@ export class TestCase extends AtomTest {
         ic.viewModel = vm;
 
         ic.bind(ic.element, "items", [["viewModel", "movies"]]);
-        ic.bind(ic.element, "selectedItem", [["viewModel", "selectedMovie"]], true);
+        ic.bind(null, "selectedItem", [["viewModel", "selectedMovie"]], true);
 
         ic.selectedItem = vm.movies[0];
 

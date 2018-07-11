@@ -1,9 +1,9 @@
-import { App } from "../../../App";
-import { AtomBinder } from "../../../core/AtomBinder";
-import { BindableProperty } from "../../../core/BindableProperty";
-import { Inject } from "../../../di/Inject";
-import { AtomViewModel, Validate } from "../../../view-model/AtomViewModel";
-import { WindowService } from "../../../web/services/WindowService";
+import { App } from "../../../../App";
+import { AtomBinder } from "../../../../core/AtomBinder";
+import { BindableProperty } from "../../../../core/BindableProperty";
+import { Inject } from "../../../../di/Inject";
+import { AtomViewModel, Validate } from "../../../../view-model/AtomViewModel";
+import { WindowService } from "../../../../web/services/WindowService";
 
 export interface IMovie {
     label: string;

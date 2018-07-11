@@ -6,7 +6,7 @@ export class AtomUri {
     public path: string;
     public query: INameValues;
     public hash: INameValues;
-    public scheme: string;
+    // public scheme: string;
     public host: string;
     public port: string;
 

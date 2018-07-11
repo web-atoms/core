@@ -87,7 +87,22 @@ var UMD = {
             this.setup();
         }
 
-        SystemJS.import(path);
+        return SystemJS.import(path);
+    },
+
+    loadView: function(path, designMode) {
+        this.load("web-atoms-core/bin/web/WebApp").then(function(m) {
+            SystemJS.import("web-atoms-core/bin/Atom").then(function (a) {
+                a.Atom.designMode = designMode;
+                var app = new (m.default)();
+                app.onReady(function(){
+                    SystemJS.import(path).then(function(c) {
+                        var ctrl = new (c.default)(app);
+                        app.root = ctrl;
+                    });
+                });
+            });
+        });
     }
 };
 
