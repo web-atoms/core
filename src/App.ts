@@ -1,3 +1,5 @@
+import { AtomBinder } from "./core/AtomBinder";
+import { AtomUri } from "./core/AtomUri";
 import { AtomDisposable, IDisposable } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
@@ -30,6 +32,16 @@ export class AtomMessageAction {
 export class App extends ServiceProvider {
 
     private bag: any;
+
+    private mUrl: AtomUri;
+    public get url(): AtomUri {
+        return this.mUrl;
+    }
+
+    public set url(v: AtomUri) {
+        this.mUrl = v;
+        AtomBinder.refreshValue(this, "url");
+    }
 
     constructor() {
         super(null);

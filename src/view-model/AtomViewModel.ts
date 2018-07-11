@@ -1,11 +1,12 @@
 import { App, AtomAction } from "../App";
 import { Atom } from "../Atom";
 import { AtomBinder } from "../core/AtomBinder";
+import { AtomDisposableList } from "../core/AtomDisposableList";
+import { AtomUri } from "../core/AtomUri";
 import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
 import { ArrayHelper, AtomDisposable, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
-import { ServiceProvider } from "../di/ServiceProvider";
 
 interface IVMSubscription {
     channel: string;
@@ -180,9 +181,36 @@ export class AtomViewModel {
         this.app.broadcast(this.channelPrefix + msg, data);
     }
 
+    public bindUrlParameter(name: string, urlParameter: string): IDisposable {
+        return (() => {
+            const disposables = new AtomDisposableList();
+            let isChanging: boolean = false;
+            disposables.add(this.setupWatch(() => {
+                if (isChanging) {
+                    return;
+                }
+                const value = this.hash || query;
+                isChanging = true;
+                this[name] = value;
+                isChanging = false;
+            })));
+            this.disposables.add(this.registerDisposable(
+                new AtomWatcher(this, [[name]], false, false, (v: AtomUri) => {
+                    if (isChanging) {
+                        return;
+                    }
+                    isChanging = true;
+                    const url = this.app.url || (this.app.url = new AtomUri(""));
+                    url.hash[urlParameter] = this[name];
+                    AtomBinder.refreshValue(url.hash, urlParameter);
+                    isChanging = false;
+            })));
+            return disposables;
+        })();
+    }
+
     // tslint:disable-next-line:no-empty
     protected onReady(): void {}
-
     /**
      * Execute given expression whenever any bindable expression changes
      * in the expression.
@@ -497,4 +525,13 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
         return;
     });
 
+}
+
+export function BindableUrlParameter(name: string): any {
+    return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
+        registerInit(target, (vm) => {
+            vm.bindUrlParameter(name, name);
+        } );
+        return BindableProperty(target, key);
+    };
 }

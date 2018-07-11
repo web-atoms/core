@@ -7,6 +7,7 @@ import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types"
 import { Inject } from "../../di/Inject";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
 import { AtomUI } from "../core/AtomUI";
+import { AtomContentControl } from "./AtomContentControl";
 import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
@@ -24,8 +25,6 @@ export class AtomTabbedPage extends AtomGridView
     @BindableProperty
     public selectedPage: AtomPage;
 
-    public pagePresenter: HTMLElement;
-
     protected create(): void {
         super.create();
 
@@ -40,12 +39,12 @@ export class AtomTabbedPage extends AtomGridView
         ul.allowMultipleSelection = false;
         ul.allowSelectFirst = true;
         ul.bind(ul.element, "items", [["viewModel", "pages"]]);
+        ul.bind(ul.element, "selectedItem", [["viewModel", "selectedPage"]], true);
 
-        const presenter = document.createElement("section");
+        const presenter = new AtomContentControl(this.app, document.createElement("section"));
         this.append(presenter);
-        this.setPrimitiveValue(presenter, "cell", "0,1");
-        this.pagePresenter = presenter;
 
+        presenter.bind(presenter.element, "content", [["viewModel", "selectedPage"]]);
     }
 }
 
@@ -55,6 +54,9 @@ class AtomTabViewModel extends AtomViewModel {
 
     @BindableProperty
     public pages: AtomList<AtomPage>;
+
+    @BindableProperty
+    public selectedPage: AtomPage;
 
     private oldDisposable: IDisposable;
 
@@ -102,6 +104,11 @@ class AtomTabViewModel extends AtomViewModel {
 
         AtomUI.assignID(page.element);
         this.pages.add(page);
+
+        if (!this.selectedPage) {
+            this.selectedPage = page;
+        }
+
         const disposables = new AtomDisposableList();
 
         disposables.add( this.app.subscribe(`atom-window-close:${page.element.id}`, () => {
