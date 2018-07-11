@@ -181,33 +181,33 @@ export class AtomViewModel {
         this.app.broadcast(this.channelPrefix + msg, data);
     }
 
-    public bindUrlParameter(name: string, urlParameter: string): IDisposable {
-        return (() => {
-            const disposables = new AtomDisposableList();
-            let isChanging: boolean = false;
-            disposables.add(this.setupWatch(() => {
-                if (isChanging) {
-                    return;
-                }
-                const value = this.hash || query;
-                isChanging = true;
-                this[name] = value;
-                isChanging = false;
-            })));
-            this.disposables.add(this.registerDisposable(
-                new AtomWatcher(this, [[name]], false, false, (v: AtomUri) => {
-                    if (isChanging) {
-                        return;
-                    }
-                    isChanging = true;
-                    const url = this.app.url || (this.app.url = new AtomUri(""));
-                    url.hash[urlParameter] = this[name];
-                    AtomBinder.refreshValue(url.hash, urlParameter);
-                    isChanging = false;
-            })));
-            return disposables;
-        })();
-    }
+    // public bindUrlParameter(name: string, urlParameter: string): IDisposable {
+    //     return (() => {
+    //         const disposables = new AtomDisposableList();
+    //         let isChanging: boolean = false;
+    //         disposables.add(this.setupWatch(() => {
+    //             if (isChanging) {
+    //                 return;
+    //             }
+    //             const value = this.app.url.hash || this.app.url.query;
+    //             isChanging = true;
+    //             this[name] = value;
+    //             isChanging = false;
+    //         }));
+    //         this.disposables.add(this.registerDisposable(
+    //             new AtomWatcher(this, [[name]], false, false, (v: AtomUri) => {
+    //                 if (isChanging) {
+    //                     return;
+    //                 }
+    //                 isChanging = true;
+    //                 const url = this.app.url || (this.app.url = new AtomUri(""));
+    //                 url.hash[urlParameter] = this[name];
+    //                 AtomBinder.refreshValue(url.hash, urlParameter);
+    //                 isChanging = false;
+    //         })));
+    //         return disposables;
+    //     })();
+    // }
 
     // tslint:disable-next-line:no-empty
     protected onReady(): void {}
@@ -527,11 +527,11 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
 
 }
 
-export function BindableUrlParameter(name: string): any {
-    return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
-        registerInit(target, (vm) => {
-            vm.bindUrlParameter(name, name);
-        } );
-        return BindableProperty(target, key);
-    };
-}
+// export function BindableUrlParameter(name: string): any {
+//     return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
+//         registerInit(target, (vm) => {
+//             vm.bindUrlParameter(name, name);
+//         } );
+//         return BindableProperty(target, key);
+//     };
+// }
