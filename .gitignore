@@ -2,4 +2,3 @@ bin
 node_modules
 coverage
 html-report
-package-lock.json
