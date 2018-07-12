@@ -144,6 +144,9 @@ export class AtomGridView extends AtomControl {
         const rowSpan = tokens[1][1] || 1;
 
         const host = e.parentElement as HTMLElement;
+        if (!host) {
+            return;
+        }
         host.style.position = "absolute";
         host.style.overflow = "hidden";
         host.style.padding = "0";
