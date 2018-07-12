@@ -96,7 +96,9 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
     };
 }
 
-declare var SystemJS: any;
+declare class UMD {
+    public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
+}
 
 interface ITabState {
     urls: string[];
@@ -216,9 +218,8 @@ class AtomTabViewModel extends AtomViewModel {
 
         const url = new AtomUri(message);
 
-        const pageType = await SystemJS.import(url.path);
-
-        const page: AtomPage = new (pageType.default)(this.app);
+        const popupType = await UMD.resolveViewClassAsync(url.path);
+        const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         AtomUI.assignID(page.element);
         page.title = "Title";
         page.bind(page.element, "title", [["viewModel", "title"]]);
