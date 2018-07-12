@@ -14,7 +14,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
     private isTwoWaySetup: boolean = false;
     private updaterOnce: AtomOnce;
 
-    private fromSourceToTarget: (v: any[]) => any;
+    private fromSourceToTarget: (...v: any[]) => any;
     private fromTargetToSource: (v: any) => any;
 
     constructor(

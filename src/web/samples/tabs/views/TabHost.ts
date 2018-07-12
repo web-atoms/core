@@ -22,10 +22,12 @@ class TabHostViewModel extends AtomViewModel {
 
     public async init(): Promise<any> {
         await this.nav.openPage("tab://app/web-atoms-core/bin/web/samples/tabs/views/Page1", {
-            message: "Page 1"
+            message: "Page 1",
+            title: "Page 1"
         });
         await this.nav.openPage("tab://app/web-atoms-core/bin/web/samples/tabs/views/Page1", {
-            message: "Page 2"
+            message: "Page 2",
+            title: "Page 2"
         });
 
     }

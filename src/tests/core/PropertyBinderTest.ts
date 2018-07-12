@@ -26,8 +26,8 @@ export class PropertyBinderTest extends AtomTest {
             "destination",
             [["this", "source"]],
             true, {
-                fromSource(v: any[]): any {
-                    return parseInt(v[0], 10);
+                fromSource(v): any {
+                    return parseInt(v, 10);
                 },
                 fromTarget(v: any): any {
                     return v + "";

@@ -206,7 +206,9 @@ export class AtomViewModel {
             ], (hash, query) => {
             updater.run(() => {
                 const value = hash || query;
-                this[name] = value;
+                if (value) {
+                    this[name] = value;
+                }
             });
         }));
         disposables.add(this.setupWatch([[name]], (value) => {

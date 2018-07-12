@@ -164,7 +164,7 @@ export class WindowService extends NavigationService {
         }
 
         if (url.protocol && /^tab\:$/i.test(url.protocol)) {
-            this.app.broadcast(url.host, url.path + "?" + url.query);
+            this.app.broadcast(url.host, url.toString());
             return;
         }
 

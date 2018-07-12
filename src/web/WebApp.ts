@@ -116,9 +116,6 @@ export default class WebApp extends App {
             if (!modified) {
                 return;
             }
-
-            // tslint:disable-next-line:no-debugger
-            debugger;
             const hash = keyValues.map((s) => `${s.key}=${encodeURIComponent(s.value)}`).join("&");
             location.hash = hash;
         });
