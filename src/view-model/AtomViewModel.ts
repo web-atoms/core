@@ -35,25 +35,25 @@ export class AtomViewModel {
 
     private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
-    private mChannelPrefix: string = "";
-    public get channelPrefix(): string {
-        return this.mChannelPrefix;
-    }
-    public set channelPrefix(v: string) {
-        this.mChannelPrefix = v;
+    // private mChannelPrefix: string = "";
+    // public get channelPrefix(): string {
+    //     return this.mChannelPrefix;
+    // }
+    // public set channelPrefix(v: string) {
+    //     this.mChannelPrefix = v;
 
-        const temp: IVMSubscription[] = this.subscriptions;
-        if (temp) {
-            this.subscriptions = [];
-            for (const s of temp) {
-                s.disposable.dispose();
-            }
-            for (const s1 of temp) {
-                this.subscribe(s1.channel, s1.action);
-            }
-        }
-        this.refresh("channelPrefix");
-    }
+    //     const temp: IVMSubscription[] = this.subscriptions;
+    //     if (temp) {
+    //         this.subscriptions = [];
+    //         for (const s of temp) {
+    //             s.disposable.dispose();
+    //         }
+    //         for (const s1 of temp) {
+    //             this.subscribe(s1.channel, s1.action);
+    //         }
+    //     }
+    //     this.refresh("channelPrefix");
+    // }
 
     private pendingInits: Array<() => void> = [];
 
@@ -186,10 +186,16 @@ export class AtomViewModel {
      * @memberof AtomViewModel
      */
     public broadcast(msg: string, data: any): void {
-        this.app.broadcast(this.channelPrefix + msg, data);
+        this.app.broadcast(msg, data);
     }
 
     public bindUrlParameter(name: string, urlParameter: string): IDisposable {
+        if (!name) {
+            return;
+        }
+        if (!urlParameter) {
+            return;
+        }
         const a = this as any;
         const paramDisposables = (a.mUrlParameters || (a.mUrlParameters = {}));
         const old = paramDisposables[name];
@@ -291,7 +297,7 @@ export class AtomViewModel {
     // }
 
     private subscribe(channel: string, c: (ch: string, data: any) => void): void {
-        const sub: IDisposable = this.app.subscribe( this.channelPrefix + channel, c);
+        const sub: IDisposable = this.app.subscribe(channel, c);
         this.subscriptions = this.subscriptions || [];
         this.subscriptions.push({
             channel,

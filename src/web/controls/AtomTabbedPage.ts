@@ -7,11 +7,14 @@ import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
+import { AtomTabbedPageStyle } from "../styles/AtomTabbedPageStyle";
 import { AtomContentControl } from "./AtomContentControl";
 import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
+import { AtomListBox } from "./AtomListBox";
 import { AtomPage } from "./AtomPage";
 
 export class AtomTabbedPage extends AtomGridView
@@ -27,12 +30,16 @@ export class AtomTabbedPage extends AtomGridView
     public selectedPage: AtomPage;
 
     protected preCreate(): void {
+
+        this.runAfterInit(() => {
+            this.controlStyle = this.theme.createStyle(AtomTabbedPage, AtomTabbedPageStyle, "tabbedpage");
+        });
         this.element = document.createElement("section");
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.top = style.right = style.bottom = "0";
         this.localViewModel = new AtomTabViewModel(this.app, this);
-        this.titleTemplate = TitleItemTemplate;
+        this.titleTemplate = TitleItemTemplateCreator(this);
         this.columns = "*";
         this.rows = "30,*";
 
@@ -52,16 +59,41 @@ export class AtomTabbedPage extends AtomGridView
     }
 }
 
-class TitleItemTemplate extends AtomControl {
+// tslint:disable-next-line:variable-name
+function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
+    return class TitleItemTemplate extends AtomControl {
 
-    protected create(): void {
-        this.element = document.createElement("span");
-        this.bind(this.element, "text", [["data", "title"]]);
+        protected create(): void {
 
-        this.bindEvent(this.element, "click" , (e) => {
-            this.localViewModel.selectedPage = this.data;
-        });
-    }
+            this.element = document.createElement("div");
+            // this.bind(this.element, "text", [["data", "title"]]);
+            this.bind(this.element, "styleClass", [
+                    ["data"],
+                    ["localViewModel", "selectedPage"],
+                    ["this", "controlStyle", "tabItem"],
+                    ["this", "controlStyle", "selectedTabItem"]
+                ],
+                false,
+                (data, selectedPage, tabItem, selectedTabItem) => data === selectedPage ? selectedTabItem : tabItem,
+                __creator);
+
+            const divTitle = document.createElement("div");
+            this.append(divTitle);
+
+            this.bind(divTitle, "text", [["data", "title"]]);
+
+            const closeButton = document.createElement("img");
+            this.bind(closeButton, "styleClass", [["this", "controlStyle", "closeButton"]], false, null, __creator);
+            closeButton.textContent = "x";
+            this.append(closeButton);
+
+            this.bindEvent(closeButton, "click", (e) => __creator.localViewModel.closePage(this.data));
+
+            this.bindEvent(divTitle, "click" , (e) => {
+                this.localViewModel.selectedPage = this.data;
+            });
+        }
+    };
 }
 
 declare var SystemJS: any;
@@ -149,6 +181,13 @@ class AtomTabViewModel extends AtomViewModel {
         this.saveState(this.selectedPage);
     }
 
+    public closePage(page: AtomPage): void {
+        this.app.runAsync(async () => {
+            const vm = page.viewModel as AtomWindowViewModel;
+            await vm.cancel();
+        });
+    }
+
     protected saveState(v): void {
         const state: ITabState = {
             urls: this.pages.map((p) => p.tag),
@@ -180,6 +219,7 @@ class AtomTabViewModel extends AtomViewModel {
         const pageType = await SystemJS.import(url.path);
 
         const page: AtomPage = new (pageType.default)(this.app);
+        AtomUI.assignID(page.element);
         page.title = "Title";
         page.bind(page.element, "title", [["viewModel", "title"]]);
         page.tag = message;
@@ -191,9 +231,9 @@ class AtomTabViewModel extends AtomViewModel {
                     vm[key] = element;
                 }
             }
+            vm.windowName = page.element.id;
         }
 
-        AtomUI.assignID(page.element);
         this.pages.add(page);
 
         if (!doNotSetSelected) {
@@ -210,7 +250,14 @@ class AtomTabViewModel extends AtomViewModel {
         }));
 
         disposables.add(() => {
+            const index = this.pages.indexOf(page);
+            if (index <= 0) {
+                return;
+            }
             this.pages.remove(page);
+            if (this.selectedPage === page) {
+                this.selectedPage = this.pages[index - 1];
+            }
         });
 
         this.saveState(null);

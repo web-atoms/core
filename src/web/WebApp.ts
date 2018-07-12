@@ -71,7 +71,7 @@ export default class WebApp extends App {
             for (let index = 0; index < 100; index++) {
                 const cid = `contextId${index}`;
                 const cidData = sessionStorage.getItem(`contextId${index}`);
-                if (!cid) {
+                if (!cidData) {
                     this.mContextId = index;
                     sessionStorage.setItem(cid, cid);
                     this.url.hash.contextId = index;

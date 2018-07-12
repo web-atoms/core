@@ -142,7 +142,7 @@ export interface IStyleDeclaration {
     backgroundBlendMode?: BackgroundBlendType;
     backgroundClip?: BackgroundClipType;
     backgroundColor?: string | null;
-    backgroundImage?: BackgroundImageType;
+    backgroundImage?: string | null;
     backgroundOrigin?: BackgroundOriginType;
     backgroundPosition?: BackgroundPositionType;
     backgroundPositionX?: string | null;

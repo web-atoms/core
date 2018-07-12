@@ -5,7 +5,7 @@ import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
 import { NavigationService } from "../../services/NavigationService";
-import { AtomPageViewModel } from "../../view-model/AtomPageViewModel";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
 import { AtomControl } from "./AtomControl";
 
@@ -57,7 +57,7 @@ export class AtomFrame
             return true;
         }
         const ctrl: AtomControl = this.current;
-        const vm: AtomPageViewModel = ctrl.viewModel;
+        const vm: AtomWindowViewModel = ctrl.viewModel;
         if (vm.closeWarning) {
             if ( await this.navigationService.confirm(vm.closeWarning, "Are you sure?")) {
                 return true;
@@ -149,9 +149,9 @@ export class AtomFrame
         Atom.postAsync(async () => {
             const vm = ctrl.viewModel;
             if (vm) {
-                if (vm instanceof AtomPageViewModel) {
-                    const pvm: AtomPageViewModel = vm as AtomPageViewModel;
-                    pvm.pageId = (ctrl.element as HTMLElement).id;
+                if (vm instanceof AtomWindowViewModel) {
+                    const pvm: AtomWindowViewModel = vm as AtomWindowViewModel;
+                    pvm.windowName = (ctrl.element as HTMLElement).id;
                 }
             }
         });

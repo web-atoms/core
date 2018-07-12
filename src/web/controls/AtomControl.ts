@@ -41,7 +41,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public set controlStyle(v: AtomStyle) {
         this.mControlStyle = v;
         AtomBinder.refreshValue(this, "controlStyle");
-        this.updateSize();
+        this.invalidate();
     }
 
     private mTheme: AtomStyleSheet;

@@ -23,7 +23,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         public readonly name: string,
         path: PathList[],
         private twoWays: boolean | string[],
-        valueFunc: ((v: any[]) => any) | IValueConverter,
+        valueFunc: ((...v: any[]) => any) | IValueConverter,
         private source: any) {
         this.name = name;
         this.twoWays = twoWays;
@@ -39,7 +39,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             }
         }
         this.watcher = new AtomWatcher(target, path, true, false,
-            (v: any[]) => {
+            (...v: any[]) => {
                 this.updaterOnce.run(() => {
                     // set value
                     for (const iterator of v) {
@@ -96,7 +96,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         }
 
         const watcher = new AtomWatcher(this.target, [[this.name]], false, false,
-            (values: any[]) => {
+            (...values: any[]) => {
                 if (this.isTwoWaySetup) {
                     this.setInverseValue(values[0]);
             }
@@ -117,18 +117,20 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             const length = first.length;
             let v: any = this.target;
             let i = 0;
+            let name: string;
             for (i = 0; i < length - 1; i ++) {
-                const name = first[i].name;
+                name = first[i].name;
                 if (name === "this") {
                     v = this.source || this.target;
                 } else {
-                    v = v[first[i].name];
+                    v = v[name];
                 }
                 if (!v) {
                     return;
                 }
             }
-            v[first[i].name] = this.fromTargetToSource ? this.fromTargetToSource.call(this, value) : value;
+            name = first[i].name;
+            v[name] = this.fromTargetToSource ? this.fromTargetToSource.call(this, value) : value;
         });
 
     }

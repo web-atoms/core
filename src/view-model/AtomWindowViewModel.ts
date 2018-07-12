@@ -1,5 +1,6 @@
 import { AtomBinder } from "../core/AtomBinder";
 import { BindableProperty } from "../core/BindableProperty";
+import { NavigationService } from "../services/NavigationService";
 import { AtomViewModel } from "./AtomViewModel";
 
 /**
@@ -41,6 +42,8 @@ export class AtomWindowViewModel extends AtomViewModel {
     @BindableProperty
     public title: string;
 
+    public closeWarning: string;
+
     /**
      * windowName will be set to generated html tag id, you can use this
      * to mock AtomWindowViewModel in testing.
@@ -72,8 +75,6 @@ export class AtomWindowViewModel extends AtomViewModel {
      * @memberof AtomWindowViewModel
      */
     public close(result?: any): void {
-        // tslint:disable-next-line:no-string-literal
-        this["_channelPrefix"] = "";
         this.broadcast(`atom-window-close:${this.windowName}`, result);
     }
 
@@ -86,10 +87,16 @@ export class AtomWindowViewModel extends AtomViewModel {
      *
      * @memberof AtomWindowViewModel
      */
-    public cancel(): void {
-        // tslint:disable-next-line:no-string-literal
-        this["_channelPrefix"] = "";
-        this.broadcast(`atom-window-cancel:${this.windowName}`, null);
+    public async cancel(): Promise<any> {
+        if (!this.closeWarning) {
+            this.broadcast(`atom-window-cancel:${this.windowName}`, null);
+            return;
+        }
+
+        const navigationService = this.app.resolve(NavigationService);
+        if ( await navigationService.confirm(this.closeWarning, "Are you sure?")) {
+            this.broadcast(`atom-window-cancel:${this.windowName}`, null);
+        }
     }
 
 }

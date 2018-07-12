@@ -1,5 +1,5 @@
 import { BindableProperty } from "../../../../core/BindableProperty";
-import { AtomPageViewModel } from "../../../../view-model/AtomPageViewModel";
+import { AtomWindowViewModel } from "../../../../view-model/AtomWindowViewModel";
 import { AtomGridView } from "../../../controls/AtomGridView";
 
 export default class Page1 extends AtomGridView {
@@ -18,8 +18,12 @@ export default class Page1 extends AtomGridView {
     }
 }
 
-class Page1ViewModel extends AtomPageViewModel {
+class Page1ViewModel extends AtomWindowViewModel {
 
     @BindableProperty
     public message: string;
+
+    public async init(): Promise<any> {
+        this.closeWarning = "Are you sure you want to close this?";
+    }
 }
