@@ -12,11 +12,16 @@ import { AtomViewModel } from "./AtomViewModel";
  *
  * @example
  *
- *      var windowService = DI.resolve(WindowService);
+ *      @Inject windowService: NavigationService
  *      var result = await
- *          windowService.openWindow(
- *              "Namespace.WindowName",
- *              new WindowNameViewModel());
+ *          windowService.openPage(
+ *              ModuleFiles.views.NewWindow,
+ *              {
+ *                  title: "Edit Object",
+ *                  data: {
+ *                      id: 4
+ *                  }
+ *              });
  *
  *
  *
@@ -55,14 +60,8 @@ export class AtomWindowViewModel extends AtomViewModel {
      * @type {string}
      * @memberof AtomWindowViewModel
      */
-    private mWindowName: string;
-    public get windowName(): string {
-        return this.mWindowName;
-    }
-    public set windowName(v: string) {
-        this.mWindowName = v;
-        AtomBinder.refreshValue(this, "windowName");
-    }
+    @BindableProperty
+    public windowName: string;
 
     /**
      * This will broadcast `atom-window-close:windowName`.
@@ -88,15 +87,13 @@ export class AtomWindowViewModel extends AtomViewModel {
      * @memberof AtomWindowViewModel
      */
     public async cancel(): Promise<any> {
-        if (!this.closeWarning) {
-            this.broadcast(`atom-window-cancel:${this.windowName}`, null);
-            return;
+        if (this.closeWarning) {
+            const navigationService = this.app.resolve(NavigationService);
+            if (! await navigationService.confirm(this.closeWarning, "Are you sure?")) {
+                return;
+            }
         }
-
-        const navigationService = this.app.resolve(NavigationService);
-        if ( await navigationService.confirm(this.closeWarning, "Are you sure?")) {
-            this.broadcast(`atom-window-cancel:${this.windowName}`, null);
-        }
+        this.broadcast(`atom-window-cancel:${this.windowName}`, null);
     }
 
 }

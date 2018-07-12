@@ -11,12 +11,6 @@ import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, AtomDisposable, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 
-interface IVMSubscription {
-    channel: string;
-    action: AtomAction;
-    disposable: IDisposable;
-}
-
 /**
  *
  *
@@ -30,8 +24,6 @@ export class AtomViewModel {
     public postInit: Function[];
 
     private disposables: IDisposable[];
-
-    private subscriptions: IVMSubscription[];
 
     private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
@@ -145,12 +137,6 @@ export class AtomViewModel {
                 d.dispose();
             }
         }
-        if (this.subscriptions) {
-            for (const d of this.subscriptions) {
-                d.disposable.dispose();
-            }
-            this.subscriptions = null;
-        }
     }
 
     // /**
@@ -230,13 +216,19 @@ export class AtomViewModel {
 
     // tslint:disable-next-line:no-empty
     protected onReady(): void {}
+
+    protected subscribe(channel: string, c: (ch: string, data: any) => void): IDisposable {
+        const sub: IDisposable = this.app.subscribe(channel, c);
+        return this.registerDisposable(sub);
+    }
+
     /**
      * Execute given expression whenever any bindable expression changes
      * in the expression.
      *
      * For correct generic type resolution, target must always be `this`.
      *
-     *      this.watch(() => {
+     *      this.setupWatch(() => {
      *          if(!this.data.fullName){
      *              this.data.fullName = `${this.data.firstName} ${this.data.lastName}`;
      *          }
@@ -257,8 +249,6 @@ export class AtomViewModel {
         const d: AtomWatcher<any> = new AtomWatcher<any>(
             this, ft, !forValidation && this.isReady, forValidation, proxy );
 
-        this.registerDisposable(d);
-
         if (!forValidation) {
             this.runAfterInit(() => {
                 d.runEvaluate();
@@ -267,44 +257,11 @@ export class AtomViewModel {
             this.validations = this.validations || [];
             this.validations.push({ name, watcher: d, initialized: false});
         }
-        return new AtomDisposable(() => {
-            ArrayHelper.remove(this.disposables, (f) => f === d);
-        });
+        return this.registerDisposable(d);
     }
 
     // tslint:disable-next-line:no-empty
     protected onPropertyChanged(name: string): void {}
-
-    // /**
-    //  * Register listener for given message.
-    //  *
-    //  * @protected
-    //  * @template T
-    //  * @param {string} msg
-    //  * @param {(data: T) => void} a
-    //  * @memberof AtomViewModel
-    //  */
-    // protected onMessage<T>(msg: string, a: (data: T) => void): void {
-
-    //     // tslint:disable-next-line:no-console
-    //     console.warn("Do not use onMessage, instead use @receive decorator...");
-
-    //     const action: AtomAction = (m, d) => {
-    //         a(d as T);
-    //     };
-    //     const sub: IDisposable = this.app.subscribe( this.channelPrefix + msg, action);
-    //     this.registerDisposable(sub);
-    // }
-
-    private subscribe(channel: string, c: (ch: string, data: any) => void): void {
-        const sub: IDisposable = this.app.subscribe(channel, c);
-        this.subscriptions = this.subscriptions || [];
-        this.subscriptions.push({
-            channel,
-            action: c,
-            disposable: sub
-        });
-    }
 
     private async privateInit(): Promise<any> {
         try {
