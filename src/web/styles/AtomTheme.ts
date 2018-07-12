@@ -23,6 +23,9 @@ export class AtomTheme extends AtomStyleSheet
     public color: string = "gray";
 
     @BindableProperty
+    public hoverColor: string = "lightyellow";
+
+    @BindableProperty
     public activeColor: string = "lightblue";
 
     @BindableProperty
@@ -30,6 +33,9 @@ export class AtomTheme extends AtomStyleSheet
 
     @BindableProperty
     public selectedColor: string = "white";
+
+    @BindableProperty
+    public padding: number = 5;
 
     public readonly window = this.createStyle(AtomWindow, AtomWindowStyle, "window");
 

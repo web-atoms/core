@@ -114,7 +114,7 @@ export class AtomWatcher<T> implements IDisposable {
      *
      * @memberof AtomWatcher
      */
-    public func: (values: any[]) => any;
+    public func: (...values: any[]) => any;
 
     public funcText: string;
 
@@ -248,7 +248,7 @@ export class AtomWatcher<T> implements IDisposable {
             }
 
             try {
-                this.func.call(this.target, values);
+                this.func.apply(this.target, values);
             } catch (e) {
                 // tslint:disable-next-line:no-console
                 console.warn(e);

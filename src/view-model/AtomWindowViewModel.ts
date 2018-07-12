@@ -1,4 +1,6 @@
 import { AtomBinder } from "../core/AtomBinder";
+import { BindableProperty } from "../core/BindableProperty";
+import { NavigationService } from "../services/NavigationService";
 import { AtomViewModel } from "./AtomViewModel";
 
 /**
@@ -10,11 +12,16 @@ import { AtomViewModel } from "./AtomViewModel";
  *
  * @example
  *
- *      var windowService = DI.resolve(WindowService);
+ *      @Inject windowService: NavigationService
  *      var result = await
- *          windowService.openWindow(
- *              "Namespace.WindowName",
- *              new WindowNameViewModel());
+ *          windowService.openPage(
+ *              ModuleFiles.views.NewWindow,
+ *              {
+ *                  title: "Edit Object",
+ *                  data: {
+ *                      id: 4
+ *                  }
+ *              });
  *
  *
  *
@@ -37,6 +44,11 @@ import { AtomViewModel } from "./AtomViewModel";
  */
 export class AtomWindowViewModel extends AtomViewModel {
 
+    @BindableProperty
+    public title: string;
+
+    public closeWarning: string;
+
     /**
      * windowName will be set to generated html tag id, you can use this
      * to mock AtomWindowViewModel in testing.
@@ -48,14 +60,8 @@ export class AtomWindowViewModel extends AtomViewModel {
      * @type {string}
      * @memberof AtomWindowViewModel
      */
-    private mWindowName: string;
-    public get windowName(): string {
-        return this.mWindowName;
-    }
-    public set windowName(v: string) {
-        this.mWindowName = v;
-        AtomBinder.refreshValue(this, "windowName");
-    }
+    @BindableProperty
+    public windowName: string;
 
     /**
      * This will broadcast `atom-window-close:windowName`.
@@ -68,8 +74,6 @@ export class AtomWindowViewModel extends AtomViewModel {
      * @memberof AtomWindowViewModel
      */
     public close(result?: any): void {
-        // tslint:disable-next-line:no-string-literal
-        this["_channelPrefix"] = "";
         this.broadcast(`atom-window-close:${this.windowName}`, result);
     }
 
@@ -82,9 +86,13 @@ export class AtomWindowViewModel extends AtomViewModel {
      *
      * @memberof AtomWindowViewModel
      */
-    public cancel(): void {
-        // tslint:disable-next-line:no-string-literal
-        this["_channelPrefix"] = "";
+    public async cancel(): Promise<any> {
+        if (this.closeWarning) {
+            const navigationService = this.app.resolve(NavigationService);
+            if (! await navigationService.confirm(this.closeWarning, "Are you sure?")) {
+                return;
+            }
+        }
         this.broadcast(`atom-window-cancel:${this.windowName}`, null);
     }
 

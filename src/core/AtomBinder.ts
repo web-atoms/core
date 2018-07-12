@@ -107,6 +107,7 @@ export class AtomBinder {
             if (pv) {
                 if (!pv.get) {
                     target[keyName] = target[key];
+                    delete target[key];
                     Object.defineProperty(target, key, {
                         get,
                         set,

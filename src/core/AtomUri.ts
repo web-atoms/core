@@ -6,7 +6,7 @@ export class AtomUri {
     public path: string;
     public query: INameValues;
     public hash: INameValues;
-    public scheme: string;
+    // public scheme: string;
     public host: string;
     public port: string;
 
@@ -58,5 +58,31 @@ export class AtomUri {
         this.path = path;
         this.query = AtomUI.parseUrl(query);
         this.hash = AtomUI.parseUrl(hash);
+    }
+
+    public toString(): string {
+        const q: string[] = [];
+        const h: string[] = [];
+        for (const key in this.query) {
+            if (this.query.hasOwnProperty(key)) {
+                const element = this.query[key];
+                if (element === undefined || element === null) {
+                    continue;
+                }
+                q.push(`${key}=${encodeURIComponent(element.toString())}`);
+            }
+        }
+        for (const key in this.hash) {
+            if (this.hash.hasOwnProperty(key)) {
+                const element = this.hash[key];
+                if (element === undefined || element === null) {
+                    continue;
+                }
+                h.push(`${key}=${encodeURIComponent(element.toString())}`);
+            }
+        }
+        const qstr = q.length ? "?" + q.join("&")  : "";
+        const hash = h.length ? "#" + h.join("&") : "";
+        return `${this.protocol}//${this.host}/${this.path}${qstr}${hash}`;
     }
 }

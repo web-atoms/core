@@ -6,7 +6,7 @@ import { AtomTheme } from "./AtomTheme";
 export class AtomListBoxStyle extends AtomStyle {
 
     @BindableProperty
-    public padding: string = "5px";
+    public padding: number;
 
     public get theme(): AtomTheme {
         return this.styleSheet as AtomTheme;
@@ -15,8 +15,8 @@ export class AtomListBoxStyle extends AtomStyle {
     public readonly item: AtomStyleClass = this.createClass("item", {
         backgroundColor: this.theme.bgColor,
         color: this.theme.color,
-        padding: this.padding,
-        borderRadius: this.padding
+        padding: (this.padding || this.theme.padding) + "px",
+        borderRadius: (this.padding || this.theme.padding) + "px"
     });
 
     public readonly selectedItem: AtomStyleClass = this.item.clone("selected-item", {

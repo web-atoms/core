@@ -163,6 +163,11 @@ export class WindowService extends NavigationService {
             }
         }
 
+        if (url.protocol && /^tab\:$/i.test(url.protocol)) {
+            this.app.broadcast(url.host, url.toString());
+            return;
+        }
+
         // const popup = this.app.resolve(windowId, true) as AtomControl;
         const popupType = await UMD.resolveViewClassAsync(url.path);
         const popup = new popupType(this.app);

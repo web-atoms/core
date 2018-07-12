@@ -1,3 +1,4 @@
+import { AtomBridge } from "../../core/AtomBridge";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IRect } from "../../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
@@ -19,10 +20,10 @@ interface IOffsetSize {
 export class AtomGridView extends AtomControl {
 
     @BindableProperty
-    public columns: string = "*";
+    public columns: string;
 
     @BindableProperty
-    public rows: string = "*";
+    public rows: string;
 
     private columnSizes: IOffsetSize[];
 
@@ -48,8 +49,14 @@ export class AtomGridView extends AtomControl {
 
         this.removeAllChildren(this.element);
 
-        const width =  this.element.offsetWidth || this.element.clientWidth || parseFloat(this.element.style.width);
-        const height = this.element.offsetHeight || this.element.clientHeight || parseFloat(this.element.style.height);
+        const width =  this.element.offsetWidth ||
+            this.element.clientWidth ||
+            parseFloat(this.element.style.width) ||
+            1;
+        const height = this.element.offsetHeight ||
+            this.element.clientHeight ||
+            parseFloat(this.element.style.height) ||
+            1;
 
         if (!(width && height)) {
             if (this.attempt > 100) {
@@ -64,12 +71,18 @@ export class AtomGridView extends AtomControl {
             return;
         }
 
+        if (!this.children) {
+            return;
+        }
+
         this.attempt = 0;
 
         this.availableRect = { width, height, x: 0, y: 0 };
 
-        this.columnSizes = this.columns.split(",").map( (s) => this.toSize(s.trim(), this.availableRect.width));
-        this.rowSizes = this.rows.split(",").map( (s) => this.toSize(s.trim(), this.availableRect.height));
+        this.columnSizes = (this.columns || "*").split(",")
+            .map( (s) => this.toSize(s.trim(), this.availableRect.width));
+        this.rowSizes = (this.rows || "*").split(",")
+            .map( (s) => this.toSize(s.trim(), this.availableRect.height));
 
         this.assignOffsets(this.columnSizes, this.availableRect.width);
         this.assignOffsets(this.rowSizes, this.availableRect.height);
@@ -131,6 +144,9 @@ export class AtomGridView extends AtomControl {
         const rowSpan = tokens[1][1] || 1;
 
         const host = e.parentElement as HTMLElement;
+        if (!host) {
+            return;
+        }
         host.style.position = "absolute";
         host.style.overflow = "hidden";
         host.style.padding = "0";
@@ -153,6 +169,14 @@ export class AtomGridView extends AtomControl {
 
         host.style.left = `${colStart}px`;
         host.style.width = `${colSize}px`;
+
+        AtomBridge.instance.visitDescendents(host, (el, ac) => {
+            if (ac) {
+                ac.invalidate();
+                return false;
+            }
+            return true;
+        });
 
     }
 

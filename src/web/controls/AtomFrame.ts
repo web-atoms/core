@@ -5,15 +5,15 @@ import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
 import { NavigationService } from "../../services/NavigationService";
-import { AtomPageViewModel } from "../../view-model/AtomPageViewModel";
-import { AtomUI } from "../../web/core/AtomUI";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
+import { AtomUI } from "../core/AtomUI";
 import { AtomControl } from "./AtomControl";
 
 declare class UMD {
     public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
 }
 
-export class AtomPageView
+export class AtomFrame
     extends AtomControl
     implements INotifyPropertyChanged {
 
@@ -31,8 +31,6 @@ export class AtomPageView
     public currentDisposable: IDisposable = null;
 
     public backCommand: Function;
-
-    private disposables: IDisposable[] = [];
 
     private navigationService: NavigationService;
 
@@ -59,7 +57,7 @@ export class AtomPageView
             return true;
         }
         const ctrl: AtomControl = this.current;
-        const vm: AtomPageViewModel = ctrl.viewModel;
+        const vm: AtomWindowViewModel = ctrl.viewModel;
         if (vm.closeWarning) {
             if ( await this.navigationService.confirm(vm.closeWarning, "Are you sure?")) {
                 return true;
@@ -93,16 +91,6 @@ export class AtomPageView
         (this.element as HTMLElement).appendChild(element);
 
         this.current = ctrl;
-    }
-
-    public dispose(e?: HTMLElement): void {
-        super.dispose(e);
-        if (!e) {
-            for (const d of this.disposables) {
-                d.dispose();
-            }
-            this.disposables = [];
-        }
     }
 
     public createControl(ctrl: AtomControl, q?: any): AtomControl {
@@ -161,9 +149,9 @@ export class AtomPageView
         Atom.postAsync(async () => {
             const vm = ctrl.viewModel;
             if (vm) {
-                if (vm instanceof AtomPageViewModel) {
-                    const pvm: AtomPageViewModel = vm as AtomPageViewModel;
-                    pvm.pageId = (ctrl.element as HTMLElement).id;
+                if (vm instanceof AtomWindowViewModel) {
+                    const pvm: AtomWindowViewModel = vm as AtomWindowViewModel;
+                    pvm.windowName = (ctrl.element as HTMLElement).id;
                 }
             }
         });

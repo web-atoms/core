@@ -1,6 +1,7 @@
 import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, IRect } from "../../core/types";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import { AtomTheme } from "../styles/AtomTheme";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
@@ -122,6 +123,13 @@ export class AtomWindow extends AtomControl {
     }
 
     public close(): void {
+
+        const vm = this.viewModel as AtomWindowViewModel;
+        if (vm.cancel) {
+            this.app.runAsync(() => vm.cancel());
+            return;
+        }
+
         const message = `atom-window-cancel:${this.element.id}`;
         const device = this.app.resolve(App);
         device.broadcast(message, "cancelled");

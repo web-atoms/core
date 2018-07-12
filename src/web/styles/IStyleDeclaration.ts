@@ -1,73 +1,196 @@
 export type StylePosition = "" | "default" | "initial" | "static" | "relative" | "absolute" | null;
 export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "center" | "justify" | null;
+export type FloatPosition = "" | "default" | "none" | "left" | "right" | "initial" | "inherit" | null;
+export type OverFlowType = "" | "default" | "visible" | "hidden" | "scroll" | "auto" | null;
+export type ItemAlignType =  "" | "default" | "stretch" | "center" |"flex-start" | "flex-end" | "baseline" |
+"initial" | "inherit" | null;
+export type SelfAlignType =  "" | "default" | "auto" | "stretch" | "center" |"flex-start" | "flex-end" | "baseline" |
+"initial" | "inherit" | null;
+export type ContentAlignType =  "" | "default" | "stretch" | "center" |"flex-start" | "flex-end" | "space-between" |
+"space-around" | "initial" | "inherit" | null;
+export type JustifyType = "" | "default" | "auto" | "inter-word" | "inter-character" | "none" | "initial" |
+"inherit" | null;
+export type TextSize = "" | "default" | "medium" | "xx-small" | "x-small" | "small" | "large" |
+"x-large" | "xx-large" | "smaller" | "larger" | "initial" | "inherit" | null;
+export type AnimationType = "" | "animation-name" | "animation-duration" | "animation-timing-function" |
+"animation-delay" | "animation-iteration-count" | "animation-direction" |"animation-fill-mode" |
+"animation-play-state" | "initial" | "inherit" | null;
+export type AnimationNameType = "" | "keyframename" | "none" | "initial" | "inherit" | null;
+export type AnimationDirection = "" | "default" | "reverse" | "alternate" | "alternate-reverse" | "initial" |
+"inherit" | null;
+export type AnimationTimeType = "" | "initial" | "inherit" | null;
+export type AnimationModeType = "" | "default" | "none" | "forwards" | "backwards" | "both" | "initial" |
+"inherit" | null;
+export type IterationCount = "" | "default" | "infinite" | "initial" |"inherit" | null;
+export type PlayState = "" | "default" | "paused" | "running" | "initial" | "inherit" | null;
+export type TimingFunction = "" | "default" | "linear" | "ease" | "ease-in" | "ease-out" | "ease-in-out" |
+"step-start" | "step-end" | "steps()" | "cubic-bezier()" | "initial" | "inherit" | null;
+export type Visibility = "" | "default" | "visible" | "hidden" | "initial" | "inherit" | null;
+export type BackgroundType = "" | "background-color" | "background-image" | "background-position" |
+"background-size" | "background-repeat" | "background-origin" |"background-clip" | "background-attachment" |
+"initial" | "inherit" | null | string;
+export type BackgroundAttachmentType = "" | "default" | "scroll" | "fixed" | "local" |"initial" | "inherit" | null;
+export type BackgroundBlendType = "" | "default" | "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten" |
+"color-dodge" | "saturation" | "color" | "luminosity" |"initial" | "inherit" | null;
+export type BackgroundClipType = "" | "default" | "border-box" | "padding-box" | "content-box" |"initial" |
+"inherit" | null;
+export type BackgroundImageType = "" | "default" | "url()" | "none" | "linear-gradient()" |"radial-gradient()" |
+"repeating-linear-gradient()" | "repeating-radial-gradient()" | "initial" | "inherit" | null;
+export type BackgroundOriginType = "" | "default" | "padding-box" | "border-box" | "content-box" |"initial" |
+"inherit" | null;
+export type BackgroundPositionType = "" | "default" | "left top" | "left center" | "left bottom" |"right top" |
+"right center" | "right bottom" | "center top" | "center center" | "center bottom" | "0% 0%" | "0px 0px" |
+"initial" | "inherit" | null;
+export type BackgroundRepeatType = "" | "default" | "repeat" | "repeat-x" | "repeat-y" | "no-repeat" | "space" |
+"round" |"initial" | "inherit" | null;
+export type BackgroundSizeType = "" | "default" | "auto" | "0px" | "0px 0px" | "0%" | "50% 50%" | "cover" |
+"contain" |"initial" | "inherit" | null | string;
+export type BorderBottomRadiusType = "" | "default" | "0px" | "0px 0px" | "0%" | "initial" | "inherit" | null;
+export type CommanStyleType = "" | "default" | "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" |
+"groove" | "ridge" | "inset" | "outset" | "initial" | "inherit" | null;
+export type CommamWidthType = "" | "default" | "medium" | "thin" | "thick" | "initial" | "inherit" | null | string;
+export type BorderCollapseType = "" | "default" | "separate" | "collapse" | "initial" | "inherit" | null;
+export type BorderImageRepeatType = "" | "default" | "stretch" | "repeat" | "round" | "space" | "initial" |
+"inherit" | null;
+export type BorderRadiusType = "" | "default" | "0px" | "0px 0px" | "0px 0px 0px" | "0px 0px 0px" | "0%" |
+ "initial" | "inherit" | string | null;
+export type BorderSpacingType = "" | "default" | "0px" | "0px 0px" | "initial" | "inherit" | null | string;
+export type PositionType = "" | "default" | "auto" | "50px" | "-50px" | "50%" | "-50%" |"initial" | "inherit"
+| null | string | number;
+export type BoxSizingType = "" | "default" | "border-box" | "content-box" |"initial" | "inherit" | null;
+export type CaptionSideType = "" | "default" | "top" | "bottom" | "initial" | "inherit" | null;
+export type ClearType = "" | "default" | "none" | "left" |"right" | "both" | "initial" | "inherit" | null;
+export type ColumnCountType = "" | "default" | "auto" | "initial" | "inherit" | null | number;
+export type ColumnGapType = "" | "default" | "normal" | "initial" | "inherit" | null;
+export type ContentType = "" | "default" | "none" | "normal" | "counter" | "attr()" | "open-quote" | "close-quote" |
+"no-open-quote" | "no-close-quote" | "url()" | "initial" | "inherit" | null;
+export type CursorType = "" | "alias" | "all-scroll" | "auto" | "cell" |"context-menu" |"col-resize" | "copy" |
+"crosshair" | "default" | "e-resize" | "ew-resize" | "grab" | "grabbing" |"help" |"move" | "n-resize" | "ne-resize" |
+"nesw-resize" | "ns-resize" | "nw-resize" | "nwse-resize" | "no-drop" | "none" | "not-allowed" | "pointer" |
+"progress" | "row-resize" | "s-resize" | "se-resize" | "sw-resize" | "text" | "url()" | "vertical-text" | "w-resize" |
+"wait" | "zoom-in" | "zoom-out" |"initial" | "inherit" | null;
+export type DirectionType = "" | "default" | "ltr" | "rtl" | "initial" | "inherit" | null;
+export type DisplayType = "" | "default" | "inline" | "block" | "contents" |"flex" | "grid" | "inline-block" |
+"inline-flex" | "inline-grid" | "inline-table" | "list-item" | "run-in" | "table" | "table-caption" |
+"table-column-group" | "table-header-group" | "table-footer-group" | "table-row-group" | "table-cell" |
+"table-column" | "table-row" | "none" | "none" | "initial" | "inherit" | null;
+export type EmptyCellType = "" | "default" | "show" | "hide" | "initial" | "inherit" | null;
+export type FilterType = "" | "none" | "blur()" | "brightness()" | "contrast()" | "drop-shadow()" | "grayscale()" |
+"hue-rotate()" | "invert()" | "opacity()" | "saturate()" | "sepia()" | "url()" | "initial" | "inherit" | null;
+export type FlexDirectionType = "" | "default" | "row" | "row-reverse" | "column" | "column-reverse" |
+"initial" | "inherit" | null;
+export type FlexFlowDirectionType = "" | "default" | "column" | "column-reverse" | "nowrap" | "row" | "row-reverse" |
+"unset" | "wrap" | "wrap-reverse" |"initial" | "inherit" | null;
+export type FlexWrapType = "" | "default" | "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit" | null;
+export type FloatType = "" | "default" | "none" | "left" | "right" | "initial" | "inherit" | null;
+export type FontStretchType = "" | "default" | "ultra-condensed" | "extra-condensed" | "condensed" | "semi-condensed" |
+"normal" | "semi-expanded" | "expanded" | "extra-expanded" | "ultra-expanded" | "initial" | "inherit" | null;
+export type FontStyleType = "" | "default" | "normal" | "italic" | "oblique" | "initial" | "inherit" | null;
+export type FontVariantType = "" | "default" | "normal" | "small-caps" | "initial" | "inherit" | null;
+export type FontWeightType = "" | "default" | "normal" | "bold" | "bolder" | "lighter" | "initial" | "inherit" | null;
+export type GridAutoColumnsType = "" | "default" | "auto" | "max-content" | "min-content" | null;
+export type GridAutoFlowType = "" | "default" | "row" | "column" | "row dense" | "column dense" | null;
+export type GridAutoRowsType = "" | "default" | "auto" | "max-content" | "min-content" | null;
+export type JustifyContentType = "" | "default" | "flex-start" | "flex-end" | "center" | "space-between" |
+"space-around" | "initial" | "inherit" | null;
+export type ListStylePositionType = "" | "default" | "inside" | "max-content" | "outside" | "initial" |
+"inherit" | null;
+export type ListStyleType = "" | "default" | "disc" | "circle" | "none" | "square" | null;
+export type ObjectFitType = "" | "default" | "fill" | "contain" | "cover" | "none" | "scale-down" |
+"initial" | "inherit" | null;
+export type ObjectPositionType = "" | "default" | "fill" | "contain" | "cover" | "none" | "scale-down" |
+"initial" | "inherit" | null;
+export type PageBreakCommanType = "" | "default" | "auto" | "always" | "avoid" | "left" | "right" |
+"initial" | "inherit" | null;
+export type PageBreakInsideType = "" | "default" | "auto"| "avoid" | "initial" | "inherit" | null;
+export type ResizeType = "" | "default" | "none" | "both" | "horizontal" | "vertical" | "initial" | "inherit" | null;
+export type TableLayoutType = "" | "default" | "auto" | "fixed" | "initial" | "inherit" | null;
+export type TextAlignLastType = "" | "default" | "auto" | "left" | "right" | "center" | "justify" |
+"start" | "end" | "initial" | "inherit" | null;
+export type TextDecorationType = "" | "none" | "underline" | "overline" | "line-through" |
+"initial" | "inherit" | null;
+export type TextTransformType = "" | "none" | "capitalize" | "uppercase" | "lowercase" | "initial" | "inherit" | null;
+export type TransformType = "" | "default" | "none" | "matrix()" | "matrix3d()" | "translate()" | "translate3d()" |
+"translateX()" | "translateY()" | "translateZ()" | "scale()" | "scale3d()" | "scaleX()" | "scaleY()" | "scaleZ()" |
+"rotate()" | "rotate3d()" | "rotateX()" | "rotateY()" | "rotateZ()" | "skew()" | "skewX()" | "skewY()" |
+"perspective()" | "initial" | "inherit" | null;
+export type TransformStyleType = "" | "default" | "flat" | "preserve-3d" | "initial" | "inherit" | null;
+export type VisibilityType = "" | "default" | "visible" | "hidden" | "collapse" | "initial" | "inherit" | null;
+export type WhiteSpaceType = "" | "default" | "normal" | "nowrap" | "pre" | "pre-line" | "pre-wrap" |
+"initial" | "inherit" | null;
+export type WordBreakType = "" | "default" | "normal" | "break-all" | "keep-all" | "break-word" |
+"initial" | "inherit" | null;
+export type WordSpacingType = "" | "default" | "normal" | "initial" | "inherit" | null;
+export type WordWrapType = "" | "default" | "normal" | "break-word" | "initial" | "inherit" | null;
 export interface IStyleDeclaration {
-    alignContent?: string | null;
-    alignItems?: string | null;
-    alignSelf?: string | null;
+    alignContent?: ContentAlignType;
+    alignItems?: ItemAlignType;
+    alignSelf?: SelfAlignType;
     alignmentBaseline?: string | null;
-    animation?: string | null;
-    animationDelay?: string | null;
-    animationDirection?: string | null;
-    animationDuration?: string | null;
-    animationFillMode?: string | null;
-    animationIterationCount?: string | null;
-    animationName?: string | null;
-    animationPlayState?: string | null;
-    animationTimingFunction?: string | null;
-    backfaceVisibility?: string | null;
-    background?: string | null;
-    backgroundAttachment?: string | null;
-    backgroundClip?: string | null;
+    animation?: AnimationType;
+    animationDelay?: AnimationTimeType;
+    animationDirection?: AnimationDirection;
+    animationDuration?: AnimationTimeType;
+    animationFillMode?: AnimationModeType;
+    animationIterationCount?: IterationCount;
+    animationName?: AnimationNameType;
+    animationPlayState?: PlayState;
+    animationTimingFunction?: TimingFunction;
+    backfaceVisibility?: Visibility;
+    background?: BackgroundType;
+    backgroundAttachment?: BackgroundAttachmentType;
+    backgroundBlendMode?: BackgroundBlendType;
+    backgroundClip?: BackgroundClipType;
     backgroundColor?: string | null;
     backgroundImage?: string | null;
-    backgroundOrigin?: string | null;
-    backgroundPosition?: string | null;
+    backgroundOrigin?: BackgroundOriginType;
+    backgroundPosition?: BackgroundPositionType;
     backgroundPositionX?: string | null;
     backgroundPositionY?: string | null;
-    backgroundRepeat?: string | null;
-    backgroundSize?: string | null;
+    backgroundRepeat?: BackgroundRepeatType;
+    backgroundSize?: BackgroundSizeType;
     baselineShift?: string | null;
     border?: string | null;
     borderBottom?: string | null;
     borderBottomColor?: string | null;
-    borderBottomLeftRadius?: string | null;
-    borderBottomRightRadius?: string | null;
-    borderBottomStyle?: string | null;
-    borderBottomWidth?: string | null;
-    borderCollapse?: string | null;
+    borderBottomLeftRadius?: BorderBottomRadiusType;
+    borderBottomRightRadius?: BorderBottomRadiusType;
+    borderBottomStyle?: CommanStyleType;
+    borderBottomWidth?: CommamWidthType;
+    borderCollapse?: BorderCollapseType;
     borderColor?: string | null;
     borderImage?: string | null;
     borderImageOutset?: string | null;
-    borderImageRepeat?: string | null;
+    borderImageRepeat?: BorderImageRepeatType;
     borderImageSlice?: string | null;
     borderImageSource?: string | null;
     borderImageWidth?: string | null;
     borderLeft?: string | null;
     borderLeftColor?: string | null;
-    borderLeftStyle?: string | null;
-    borderLeftWidth?: string | null;
-    borderRadius?: string | null;
+    borderLeftStyle?: CommanStyleType;
+    borderLeftWidth?: CommamWidthType;
+    borderRadius?: BorderRadiusType;
     borderRight?: string | null;
     borderRightColor?: string | null;
-    borderRightStyle?: string | null;
-    borderRightWidth?: string | null;
-    borderSpacing?: string | null;
-    borderStyle?: string | null;
+    borderRightStyle?: CommanStyleType;
+    borderRightWidth?: CommamWidthType;
+    borderSpacing?: BorderSpacingType;
+    borderStyle?: CommanStyleType;
     borderTop?: string | null;
     borderTopColor?: string | null;
     borderTopLeftRadius?: string | null;
     borderTopRightRadius?: string | null;
-    borderTopStyle?: string | null;
-    borderTopWidth?: string | null;
-    borderWidth?: string | null;
-    bottom?: number | string | null;
+    borderTopStyle?: CommanStyleType;
+    borderTopWidth?: CommamWidthType;
+    borderWidth?: CommamWidthType;
+    bottom?: PositionType;
     boxShadow?: string | null;
-    boxSizing?: string | null;
+    boxSizing?: BoxSizingType;
     breakAfter?: string | null;
     breakBefore?: string | null;
     breakInside?: string | null;
-    captionSide?: string | null;
-    clear?: string | null;
+    captionSide?: CaptionSideType;
+    clear?: ClearType;
     clip?: string | null;
     clipPath?: string | null;
     clipRule?: string | null;
@@ -75,55 +198,55 @@ export interface IStyleDeclaration {
     colorInterpolationFilters?: string | null;
     columnCount?: any;
     columnFill?: string | null;
-    columnGap?: any;
+    columnGap?: ColumnGapType;
     columnRule?: string | null;
     columnRuleColor?: any;
-    columnRuleStyle?: string | null;
-    columnRuleWidth?: any;
+    columnRuleStyle?: CommanStyleType;
+    columnRuleWidth?: CommamWidthType;
     columnSpan?: string | null;
     columnWidth?: any;
     columns?: string | null;
-    content?: string | null;
+    content?: ContentType;
     counterIncrement?: string | null;
     counterReset?: string | null;
-    cssFloat?: string | null;
+    cssFloat?: FloatPosition;
     cssText?: string;
-    cursor?: string | null;
-    direction?: string | null;
-    display?: string | null;
+    cursor?: CursorType;
+    direction?: DirectionType;
+    display?: DisplayType;
     dominantBaseline?: string | null;
-    emptyCells?: string | null;
+    emptyCells?: EmptyCellType;
     enableBackground?: string | null;
     fill?: string | null;
     fillOpacity?: string | null;
     fillRule?: string | null;
-    filter?: string | null;
+    filter?: FilterType;
     flex?: string | null;
     flexBasis?: string | null;
-    flexDirection?: string | null;
-    flexFlow?: string | null;
+    flexDirection?: FlexDirectionType;
+    flexFlow?: FlexFlowDirectionType;
     flexGrow?: string | null;
     flexShrink?: string | null;
-    flexWrap?: string | null;
+    flexWrap?: FlexWrapType;
     floodColor?: string | null;
     floodOpacity?: string | null;
     font?: string | null;
     fontFamily?: string | null;
     fontFeatureSettings?: string | null;
-    fontSize?: string | null;
+    fontSize?: TextSize;
     fontSizeAdjust?: string | null;
-    fontStretch?: string | null;
-    fontStyle?: string | null;
-    fontVariant?: string | null;
-    fontWeight?: string | null;
+    fontStretch?: FontStretchType;
+    fontStyle?: FontStyleType;
+    fontVariant?: FontVariantType;
+    fontWeight?: FontWeightType;
     gap?: string | null;
     glyphOrientationHorizontal?: string | null;
     glyphOrientationVertical?: string | null;
     grid?: string | null;
     gridArea?: string | null;
-    gridAutoColumns?: string | null;
-    gridAutoFlow?: string | null;
-    gridAutoRows?: string | null;
+    gridAutoColumns?: GridAutoColumnsType;
+    gridAutoFlow?: GridAutoFlowType;
+    gridAutoRows?: GridAutoRowsType;
     gridColumn?: string | null;
     gridColumnEnd?: string | null;
     gridColumnGap?: string | null;
@@ -139,7 +262,7 @@ export interface IStyleDeclaration {
     gridTemplateRows?: string | null;
     height?: string | null;
     imeMode?: string | null;
-    justifyContent?: string | null;
+    justifyContent?: JustifyContentType;
     justifyItems?: string | null;
     justifySelf?: string | null;
     kerning?: string | null;
@@ -148,7 +271,7 @@ export interface IStyleDeclaration {
     layoutGridLine?: string | null;
     layoutGridMode?: string | null;
     layoutGridType?: string | null;
-    left?: number | string | null;
+    left?: PositionType;
     readonly length?: number;
     letterSpacing?: string | null;
     lightingColor?: string | null;
@@ -156,8 +279,8 @@ export interface IStyleDeclaration {
     lineHeight?: string | null;
     listStyle?: string | null;
     listStyleImage?: string | null;
-    listStylePosition?: string | null;
-    listStyleType?: string | null;
+    listStylePosition?: ListStylePositionType;
+    listStyleType?: ListStyleType;
     margin?: number | string | null;
     marginBottom?: string | null;
     marginLeft?: string | null;
@@ -220,27 +343,27 @@ export interface IStyleDeclaration {
     msWrapFlow?: string;
     msWrapMargin?: any;
     msWrapThrough?: string;
-    objectFit?: string | null;
-    objectPosition?: string | null;
+    objectFit?: ObjectFitType;
+    objectPosition?: ObjectPositionType;
     opacity?: string | null;
     order?: string | null;
     orphans?: string | null;
     outline?: string | null;
     outlineColor?: string | null;
     outlineOffset?: string | null;
-    outlineStyle?: string | null;
-    outlineWidth?: string | null;
-    overflow?: string | null;
-    overflowX?: string | null;
-    overflowY?: string | null;
+    outlineStyle?: CommanStyleType;
+    outlineWidth?: CommamWidthType;
+    overflow?: OverFlowType;
+    overflowX?: OverFlowType;
+    overflowY?: OverFlowType;
     padding?: number | string | null;
     paddingBottom?: string | null;
     paddingLeft?: string | null;
     paddingRight?: string | null;
     paddingTop?: string | null;
-    pageBreakAfter?: string | null;
-    pageBreakBefore?: string | null;
-    pageBreakInside?: string | null;
+    pageBreakAfter?: PageBreakCommanType;
+    pageBreakBefore?: PageBreakCommanType;
+    pageBreakInside?: PageBreakInsideType;
     readonly parentRule?: CSSRule;
     penAction?: string | null;
     perspective?: string | null;
@@ -248,8 +371,8 @@ export interface IStyleDeclaration {
     pointerEvents?: string | null;
     position?: StylePosition;
     quotes?: string | null;
-    resize?: string | null;
-    right?: number | string | null;
+    resize?: ResizeType;
+    right?: PositionType;
     rotate?: string | null;
     rowGap?: string | null;
     rubyAlign?: string | null;
@@ -266,25 +389,25 @@ export interface IStyleDeclaration {
     strokeMiterlimit?: string | null;
     strokeOpacity?: string | null;
     strokeWidth?: string | null;
-    tableLayout?: string | null;
+    tableLayout?: TableLayoutType;
     textAlign?: TextAlignType;
-    textAlignLast?: string | null;
+    textAlignLast?: TextAlignLastType;
     textAnchor?: string | null;
     textCombineUpright?: string | null;
-    textDecoration?: string | null;
+    textDecoration?: TextDecorationType;
     textIndent?: string | null;
-    textJustify?: string | null;
+    textJustify?: JustifyType;
     textKashida?: string | null;
     textKashidaSpace?: string | null;
     textOverflow?: string | null;
     textShadow?: string | null;
-    textTransform?: string | null;
+    textTransform?: TextTransformType;
     textUnderlinePosition?: string | null;
-    top?: number | string | null;
+    top?: PositionType;
     touchAction?: string | null;
-    transform?: string | null;
+    transform?: TransformType;
     transformOrigin?: string | null;
-    transformStyle?: string | null;
+    transformStyle?: TransformStyleType;
     transition?: string | null;
     transitionDelay?: string | null;
     transitionDuration?: string | null;
@@ -294,7 +417,7 @@ export interface IStyleDeclaration {
     unicodeBidi?: string | null;
     userSelect?: string | null;
     verticalAlign?: string | null;
-    visibility?: string | null;
+    visibility?: VisibilityType;
     webkitAlignContent?: string | null;
     webkitAlignItems?: string | null;
     webkitAlignSelf?: string | null;
@@ -366,12 +489,12 @@ export interface IStyleDeclaration {
     webkitUserModify?: string | null;
     webkitUserSelect?: string | null;
     webkitWritingMode?: string | null;
-    whiteSpace?: string | null;
+    whiteSpace?: WhiteSpaceType;
     widows?: string | null;
     width?: string | null;
-    wordBreak?: string | null;
-    wordSpacing?: string | null;
-    wordWrap?: string | null;
+    wordBreak?: WordBreakType;
+    wordSpacing?: WordSpacingType;
+    wordWrap?: WordWrapType;
     writingMode?: string | null;
     zIndex?: string | null;
     zoom?: string | null;

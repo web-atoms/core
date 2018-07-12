@@ -112,6 +112,9 @@ export class AtomUI {
         for (const item of plist) {
             const p: string[] = item.split("=");
             const key: string = p[0];
+            if (!key) {
+                continue;
+            }
             let val: string = p[1];
             if (val) {
                 val = decodeURIComponent(val);

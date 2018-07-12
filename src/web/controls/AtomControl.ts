@@ -41,7 +41,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public set controlStyle(v: AtomStyle) {
         this.mControlStyle = v;
         AtomBinder.refreshValue(this, "controlStyle");
-        this.updateSize();
+        this.invalidate();
     }
 
     private mTheme: AtomStyleSheet;
@@ -163,6 +163,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
 
         if (/^style/.test(name)) {
+
+            if (name.length === 5) {
+                element[name] = value;
+                return;
+            }
+
             name = name.substr(5);
             name = name.charAt(0).toLowerCase() + name.substr(1);
 

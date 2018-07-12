@@ -71,7 +71,9 @@ export class AtomStyle
             // if it is class
             const c = element as AtomStyleClass;
             if (c  && c.className) {
-                pairs[c.className] = c.createStyle();
+                for (const iterator of c.createStyle()) {
+                    pairs[iterator.key] = iterator.value;
+                }
                 continue;
             }
         }
