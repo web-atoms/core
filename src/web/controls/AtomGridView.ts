@@ -1,6 +1,7 @@
 import { BindableProperty } from "../../core/BindableProperty";
 import { IRect } from "../../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
+import { AtomBridge } from "../../core/AtomBridge";
 
 interface IOffsetSize {
     offset: number;
@@ -165,6 +166,14 @@ export class AtomGridView extends AtomControl {
 
         host.style.left = `${colStart}px`;
         host.style.width = `${colSize}px`;
+
+        AtomBridge.instance.visitDescendents(host, (el, ac) => {
+            if (ac) {
+                ac.invalidate();
+                return false;
+            }
+            return true;
+        });
 
     }
 
