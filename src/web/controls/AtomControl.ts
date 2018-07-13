@@ -19,10 +19,16 @@ export interface IAtomControlElement extends HTMLElement {
  */
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
+    public defaultControlStyle: any;
+
     private mControlStyle: AtomStyle = undefined;
     public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
             // let c = Object.getPrototypeOf(this);
+            if (this.defaultControlStyle) {
+                this.mControlStyle = this.defaultControlStyle;
+                return this.mControlStyle;
+            }
             const t = this.theme;
             let c = this.constructor;
             while (c) {
