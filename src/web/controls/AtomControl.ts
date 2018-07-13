@@ -3,6 +3,7 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
+import { TypeKey } from "../../di/TypeKey";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
@@ -14,6 +15,8 @@ export interface IAtomControlElement extends HTMLElement {
     _templateParent: AtomControl;
 }
 
+const defaultStyleSheets: { [key: string]: AtomStyle } = {};
+
 /**
  * AtomControl class represents UI Component for a web browser.
  */
@@ -24,6 +27,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     private mControlStyle: AtomStyle = undefined;
     public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
+            const key = TypeKey.get(this.defaultControlStyle);
+
+            this.mControlStyle = defaultStyleSheets[key];
+            if (this.mControlStyle) {
+                return this.mControlStyle;
+            }
+
             // let c = Object.getPrototypeOf(this);
             const t = this.theme;
             let c = this.constructor;
@@ -35,10 +45,21 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 }
                 c = Object.getPrototypeOf(c);
             }
-            this.mControlStyle = this.mControlStyle || null;
-            if (!this.mControlStyle && this.defaultControlStyle) {
-                this.mControlStyle = this.defaultControlStyle;
+            if (this.mControlStyle) {
+                defaultStyleSheets[key] = this.mControlStyle;
+                return this.mControlStyle;
             }
+            if (this.defaultControlStyle) {
+                // since we don't want to refresh existing style sheet
+                // we will create and attach new stylesheet
+                this.mControlStyle = defaultStyleSheets[key];
+                if (!this.mControlStyle) {
+                    const pt = Object.getPrototypeOf(this.theme).constructor;
+                    const ss = new (pt)(key);
+                    this.mControlStyle = defaultStyleSheets[key] = ss.createNamedStyle(this.defaultControlStyle, key);
+                }
+            }
+            this.mControlStyle = this.mControlStyle || null;
         }
         return this.mControlStyle;
     }

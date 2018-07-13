@@ -31,9 +31,7 @@ export class AtomTabbedPage extends AtomGridView
 
     protected preCreate(): void {
 
-        this.runAfterInit(() => {
-            this.controlStyle = this.theme.createStyle(AtomTabbedPage, AtomTabbedPageStyle, "tabbedpage");
-        });
+        this.defaultControlStyle = AtomTabbedPageStyle;
         this.element = document.createElement("section");
         const style = this.element.style;
         style.position = "absolute";
