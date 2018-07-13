@@ -133,16 +133,30 @@ export class AtomGridView extends AtomControl {
 
     private updateStyle(e: HTMLElement): void {
 
+        let column: number = 0;
+        let row: number = 0;
+        let colSpan: number = 1;
+        let rowSpan: number = 1;
         const cell = (e as any).cell as string;
-        const tokens = cell.split(",")
-            .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
+        if (cell) {
+            const tokens = cell.split(",")
+                .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
 
-        const column = tokens[0][0];
-        const row = tokens[1][0];
+            column = tokens[0][0];
+            row = tokens[1][0];
 
-        const colSpan = tokens[0][1] || 1;
-        const rowSpan = tokens[1][1] || 1;
-
+            colSpan = tokens[0][1] || 1;
+            rowSpan = tokens[1][1] || 1;
+        } else {
+            let c: string = (e as any).row as string;
+            let tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
+            row = tokens[0];
+            rowSpan = tokens[1] || 1;
+            c = (e as any).column as string;
+            tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
+            column = tokens[0];
+            colSpan = tokens[1] || 1;
+        }
         const host = e.parentElement as HTMLElement;
         if (!host) {
             return;
