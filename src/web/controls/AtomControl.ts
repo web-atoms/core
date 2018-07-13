@@ -25,10 +25,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
             // let c = Object.getPrototypeOf(this);
-            if (this.defaultControlStyle) {
-                this.mControlStyle = this.defaultControlStyle;
-                return this.mControlStyle;
-            }
             const t = this.theme;
             let c = this.constructor;
             while (c) {
@@ -40,6 +36,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 c = Object.getPrototypeOf(c);
             }
             this.mControlStyle = this.mControlStyle || null;
+            if (!this.mControlStyle && this.defaultControlStyle) {
+                this.mControlStyle = this.defaultControlStyle;
+            }
         }
         return this.mControlStyle;
     }
