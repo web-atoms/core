@@ -8,7 +8,7 @@ export class AtomComboBox extends AtomItemsControl {
     private isChanging: boolean;
 
     constructor(@Inject app: App, e?: HTMLElement) {
-        super(app, e);
+        super(app, e || document.createElement("select"));
         this.allowMultipleSelection = false;
         this.itemTemplate = AtomComboBoxItemTemplate;
         this.bindEvent(this.element, "change", (s) => {

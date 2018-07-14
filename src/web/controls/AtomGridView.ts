@@ -16,6 +16,26 @@ interface IOffsetSize {
  * and rest of the space is for middle = "20%, *, 200"
  *
  * You can have only one star specification.
+ * @example
+ *  <AtomGridView
+ *     rows="50,*"
+ *     columns="20%, 5, *, 200">
+ *
+ *      <!-- Header spans for three columns in first row -->
+ *      <header row="0" column="0:3"></header>
+ *
+ *      <!-- menu is on first column -->
+ *      <menu row="1" column="0"></menu>
+ *
+ *      <!-- Grid splitter splits 1st and 3rd column and itself lies in 2nd column -->
+ *      <AtomGridSplitter row="1" column="1" direction="vertical" />
+ *
+ *      <!-- Section fills remaining area -->
+ *      <section row="1" column="2"></section>
+ *
+ *      <!-- Help sits on last column -->
+ *      <Help row="1" column="3"></Help>
+ *  </AtomGridView>
  */
 export class AtomGridView extends AtomControl {
 
@@ -139,6 +159,8 @@ export class AtomGridView extends AtomControl {
         let rowSpan: number = 1;
         const cell = (e as any).cell as string;
         if (cell) {
+            // tslint:disable-next-line:no-console
+            console.warn("Attribute `cell` is obsolete, please use row and column attributes separately");
             const tokens = cell.split(",")
                 .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
 
