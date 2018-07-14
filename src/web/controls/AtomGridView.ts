@@ -16,6 +16,26 @@ interface IOffsetSize {
  * and rest of the space is for middle = "20%, *, 200"
  *
  * You can have only one star specification.
+ * @example
+ *  <AtomGridView
+ *     rows="50,*"
+ *     columns="20%, 5, *, 200">
+ *
+ *      <!-- Header spans for three columns in first row -->
+ *      <header row="0" column="0:3"></header>
+ *
+ *      <!-- menu is on first column -->
+ *      <menu row="1" column="0"></menu>
+ *
+ *      <!-- Grid splitter splits 1st and 3rd column and itself lies in 2nd column -->
+ *      <AtomGridSplitter row="1" column="1" direction="vertical" />
+ *
+ *      <!-- Section fills remaining area -->
+ *      <section row="1" column="2"></section>
+ *
+ *      <!-- Help sits on last column -->
+ *      <Help row="1" column="3"></Help>
+ *  </AtomGridView>
  */
 export class AtomGridView extends AtomControl {
 
@@ -133,16 +153,32 @@ export class AtomGridView extends AtomControl {
 
     private updateStyle(e: HTMLElement): void {
 
+        let column: number = 0;
+        let row: number = 0;
+        let colSpan: number = 1;
+        let rowSpan: number = 1;
         const cell = (e as any).cell as string;
-        const tokens = cell.split(",")
-            .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
+        if (cell) {
+            // tslint:disable-next-line:no-console
+            console.warn("Attribute `cell` is obsolete, please use row and column attributes separately");
+            const tokens = cell.split(",")
+                .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
 
-        const column = tokens[0][0];
-        const row = tokens[1][0];
+            column = tokens[0][0];
+            row = tokens[1][0];
 
-        const colSpan = tokens[0][1] || 1;
-        const rowSpan = tokens[1][1] || 1;
-
+            colSpan = tokens[0][1] || 1;
+            rowSpan = tokens[1][1] || 1;
+        } else {
+            let c: string = (e as any).row as string;
+            let tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
+            row = tokens[0];
+            rowSpan = tokens[1] || 1;
+            c = (e as any).column as string;
+            tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
+            column = tokens[0];
+            colSpan = tokens[1] || 1;
+        }
         const host = e.parentElement as HTMLElement;
         if (!host) {
             return;
