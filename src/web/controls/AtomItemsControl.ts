@@ -1060,7 +1060,9 @@ export class AtomItemsControl extends AtomControl {
         while (en.next()) {
             const iterator = en.current;
             const ac = (iterator as any).atomControl as AtomControl;
-            ac.dispose();
+            if (ac) {
+                ac.dispose();
+            }
         }
         e.innerHTML = "";
     }
