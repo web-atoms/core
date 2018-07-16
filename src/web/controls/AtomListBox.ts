@@ -8,38 +8,29 @@ export class AtomListBox extends AtomItemsControl {
 
     public selectItemOnClick: boolean = true;
 
-    public updateSelectionBindings(): void {
-        super.updateSelectionBindings();
-
-        const style = this.controlStyle as AtomListBoxStyle;
-
-        const selectedClass = style.selectedItem.className;
-
-        const ip = this.itemsPresenter || this.element;
-        const en = new ChildEnumerator(ip);
-        while (en.next()) {
-            const i = en.current;
-            const child = (i as IAtomControlElement).atomControl;
-            if (child) {
-                if (this.selectedItems.find( (x) => x === child.data)) {
-                    child.element.classList.add(selectedClass);
-                } else {
-                    child.element.classList.remove(selectedClass);
-                }
-            }
-        }
-    }
-
     protected createChild(df: DocumentFragment, data: any): AtomControl {
-        const style = this.controlStyle as AtomListBoxStyle;
-        const item = style.item;
         const child = super.createChild(df, data);
-        child.element.classList.add(item.className);
         child.bindEvent(child.element, "click", (e) => {
             if (this.selectItemOnClick) {
                 this.toggleSelection(data);
             }
         });
+        child.bind(child.element, "styleClass",
+            [
+                ["this", "version"],
+                ["data"],
+                ["this", "selectedItems"],
+                ["this", "controlStyle", "item"],
+                ["this", "controlStyle", "selectedItem"]
+            ],
+            false,
+            (version, itemData, selectedItems: any[], item, selectedItem) => {
+                return selectedItems ?
+                    (selectedItems.indexOf(itemData) === -1) ? selectedItem : item
+                :
+                    item;
+            },
+            this);
         return child;
     }
 
