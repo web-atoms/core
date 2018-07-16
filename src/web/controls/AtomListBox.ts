@@ -26,7 +26,7 @@ export class AtomListBox extends AtomItemsControl {
             false,
             (version, itemData, selectedItems: any[], item, selectedItem) => {
                 return selectedItems ?
-                    (selectedItems.indexOf(itemData) === -1) ? selectedItem : item
+                    (selectedItems.indexOf(itemData) === -1) ? item : selectedItem
                 :
                     item;
             },
