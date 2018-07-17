@@ -1,127 +1,131 @@
-export type StylePosition = "" | "default" | "initial" | "static" | "relative" | "absolute" | null;
-export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "center" | "justify" | null;
-export type FloatPosition = "" | "default" | "none" | "left" | "right" | "initial" | "inherit" | null;
-export type OverFlowType = "" | "default" | "visible" | "hidden" | "scroll" | "auto" | null;
+export type StylePosition = "" | "default" | "initial" | "static" | "relative" | "absolute" | string | null;
+export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "center" | "justify" | string | null;
+export type FloatPosition = "" | "default" | "none" | "left" | "right" | "initial" | "inherit" | string | null;
+export type OverFlowType = "" | "default" | "visible" | "hidden" | "scroll" | "auto" | string | null;
 export type ItemAlignType =  "" | "default" | "stretch" | "center" |"flex-start" | "flex-end" | "baseline" |
-"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
 export type SelfAlignType =  "" | "default" | "auto" | "stretch" | "center" |"flex-start" | "flex-end" | "baseline" |
-"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
 export type ContentAlignType =  "" | "default" | "stretch" | "center" |"flex-start" | "flex-end" | "space-between" |
-"space-around" | "initial" | "inherit" | null;
+"space-around" | "initial" | "inherit" | string | null;
 export type JustifyType = "" | "default" | "auto" | "inter-word" | "inter-character" | "none" | "initial" |
-"inherit" | null;
+"inherit" | string | null;
 export type TextSize = "" | "default" | "medium" | "xx-small" | "x-small" | "small" | "large" |
-"x-large" | "xx-large" | "smaller" | "larger" | "initial" | "inherit" | null;
+"x-large" | "xx-large" | "smaller" | "larger" | "initial" | "inherit" | string | null;
 export type AnimationType = "" | "animation-name" | "animation-duration" | "animation-timing-function" |
 "animation-delay" | "animation-iteration-count" | "animation-direction" |"animation-fill-mode" |
-"animation-play-state" | "initial" | "inherit" | null;
-export type AnimationNameType = "" | "keyframename" | "none" | "initial" | "inherit" | null;
+"animation-play-state" | "initial" | "inherit" | string | null;
+export type AnimationNameType = "" | "keyframename" | "none" | "initial" | "inherit" | string | null;
 export type AnimationDirection = "" | "default" | "reverse" | "alternate" | "alternate-reverse" | "initial" |
-"inherit" | null;
-export type AnimationTimeType = "" | "initial" | "inherit" | null;
+"inherit" | string | null;
+export type AnimationTimeType = "" | "initial" | "inherit" | string | null;
 export type AnimationModeType = "" | "default" | "none" | "forwards" | "backwards" | "both" | "initial" |
-"inherit" | null;
-export type IterationCount = "" | "default" | "infinite" | "initial" |"inherit" | null;
-export type PlayState = "" | "default" | "paused" | "running" | "initial" | "inherit" | null;
+"inherit" | string | null;
+export type IterationCount = "" | "default" | "infinite" | "initial" |"inherit" | string | null;
+export type PlayState = "" | "default" | "paused" | "running" | "initial" | "inherit" | string | null;
 export type TimingFunction = "" | "default" | "linear" | "ease" | "ease-in" | "ease-out" | "ease-in-out" |
-"step-start" | "step-end" | "steps()" | "cubic-bezier()" | "initial" | "inherit" | null;
-export type Visibility = "" | "default" | "visible" | "hidden" | "initial" | "inherit" | null;
+"step-start" | "step-end" | "steps()" | "cubic-bezier()" | "initial" | "inherit" | string | null;
+export type Visibility = "" | "default" | "visible" | "hidden" | "initial" | "inherit" | string | null;
 export type BackgroundType = "" | "background-color" | "background-image" | "background-position" |
 "background-size" | "background-repeat" | "background-origin" |"background-clip" | "background-attachment" |
-"initial" | "inherit" | null | string;
-export type BackgroundAttachmentType = "" | "default" | "scroll" | "fixed" | "local" |"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
+export type BackgroundAttachmentType = "" | "default" | "scroll" | "fixed" | "local" |"initial" | "inherit" |
+string | null;
 export type BackgroundBlendType = "" | "default" | "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten" |
-"color-dodge" | "saturation" | "color" | "luminosity" |"initial" | "inherit" | null;
+"color-dodge" | "saturation" | "color" | "luminosity" |"initial" | "inherit" | string | null;
 export type BackgroundClipType = "" | "default" | "border-box" | "padding-box" | "content-box" |"initial" |
-"inherit" | null;
+"inherit" | string | null;
 export type BackgroundImageType = "" | "default" | "url()" | "none" | "linear-gradient()" |"radial-gradient()" |
-"repeating-linear-gradient()" | "repeating-radial-gradient()" | "initial" | "inherit" | null;
+"repeating-linear-gradient()" | "repeating-radial-gradient()" | "initial" | "inherit" | string | null;
 export type BackgroundOriginType = "" | "default" | "padding-box" | "border-box" | "content-box" |"initial" |
-"inherit" | null;
+"inherit" | string | null;
 export type BackgroundPositionType = "" | "default" | "left top" | "left center" | "left bottom" |"right top" |
 "right center" | "right bottom" | "center top" | "center center" | "center bottom" | "0% 0%" | "0px 0px" |
-"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
 export type BackgroundRepeatType = "" | "default" | "repeat" | "repeat-x" | "repeat-y" | "no-repeat" | "space" |
-"round" |"initial" | "inherit" | null;
+"round" |"initial" | "inherit" | string | null;
 export type BackgroundSizeType = "" | "default" | "auto" | "0px" | "0px 0px" | "0%" | "50% 50%" | "cover" |
-"contain" |"initial" | "inherit" | null | string;
-export type BorderBottomRadiusType = "" | "default" | "0px" | "0px 0px" | "0%" | "initial" | "inherit" | null;
+"contain" |"initial" | "inherit" | string | null;
+export type BorderBottomRadiusType = "" | "default" | "0px" | "0px 0px" | "0%" | "initial" | "inherit" | string | null;
 export type CommanStyleType = "" | "default" | "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" |
-"groove" | "ridge" | "inset" | "outset" | "initial" | "inherit" | null;
-export type CommamWidthType = "" | "default" | "medium" | "thin" | "thick" | "initial" | "inherit" | null | string;
-export type BorderCollapseType = "" | "default" | "separate" | "collapse" | "initial" | "inherit" | null;
+"groove" | "ridge" | "inset" | "outset" | "initial" | "inherit" | string | null;
+export type CommamWidthType = "" | "default" | "medium" | "thin" | "thick" | "initial" | "inherit" | string | null;
+export type BorderCollapseType = "" | "default" | "separate" | "collapse" | "initial" | "inherit" | string | null;
 export type BorderImageRepeatType = "" | "default" | "stretch" | "repeat" | "round" | "space" | "initial" |
-"inherit" | null;
+"inherit" | string | null;
 export type BorderRadiusType = "" | "default" | "0px" | "0px 0px" | "0px 0px 0px" | "0px 0px 0px" | "0%" |
  "initial" | "inherit" | string | null;
 export type BorderSpacingType = "" | "default" | "0px" | "0px 0px" | "initial" | "inherit" | null | string;
 export type PositionType = "" | "default" | "auto" | "50px" | "-50px" | "50%" | "-50%" |"initial" | "inherit"
 | null | string | number;
-export type BoxSizingType = "" | "default" | "border-box" | "content-box" |"initial" | "inherit" | null;
-export type CaptionSideType = "" | "default" | "top" | "bottom" | "initial" | "inherit" | null;
-export type ClearType = "" | "default" | "none" | "left" |"right" | "both" | "initial" | "inherit" | null;
-export type ColumnCountType = "" | "default" | "auto" | "initial" | "inherit" | null | number;
-export type ColumnGapType = "" | "default" | "normal" | "initial" | "inherit" | null;
+export type BoxSizingType = "" | "default" | "border-box" | "content-box" |"initial" | "inherit" | string | null;
+export type CaptionSideType = "" | "default" | "top" | "bottom" | "initial" | "inherit" | string | null;
+export type ClearType = "" | "default" | "none" | "left" |"right" | "both" | "initial" | "inherit" | string | null;
+export type ColumnCountType = "" | "default" | "auto" | "initial" | "inherit" | string | null | number;
+export type ColumnGapType = "" | "default" | "normal" | "initial" | "inherit" | string | null;
 export type ContentType = "" | "default" | "none" | "normal" | "counter" | "attr()" | "open-quote" | "close-quote" |
-"no-open-quote" | "no-close-quote" | "url()" | "initial" | "inherit" | null;
+"no-open-quote" | "no-close-quote" | "url()" | "initial" | "inherit" | string | null;
 export type CursorType = "" | "alias" | "all-scroll" | "auto" | "cell" |"context-menu" |"col-resize" | "copy" |
 "crosshair" | "default" | "e-resize" | "ew-resize" | "grab" | "grabbing" |"help" |"move" | "n-resize" | "ne-resize" |
 "nesw-resize" | "ns-resize" | "nw-resize" | "nwse-resize" | "no-drop" | "none" | "not-allowed" | "pointer" |
 "progress" | "row-resize" | "s-resize" | "se-resize" | "sw-resize" | "text" | "url()" | "vertical-text" | "w-resize" |
-"wait" | "zoom-in" | "zoom-out" |"initial" | "inherit" | null;
-export type DirectionType = "" | "default" | "ltr" | "rtl" | "initial" | "inherit" | null;
+"wait" | "zoom-in" | "zoom-out" |"initial" | "inherit" | string | null;
+export type DirectionType = "" | "default" | "ltr" | "rtl" | "initial" | "inherit" | string | null;
 export type DisplayType = "" | "default" | "inline" | "block" | "contents" |"flex" | "grid" | "inline-block" |
 "inline-flex" | "inline-grid" | "inline-table" | "list-item" | "run-in" | "table" | "table-caption" |
 "table-column-group" | "table-header-group" | "table-footer-group" | "table-row-group" | "table-cell" |
-"table-column" | "table-row" | "none" | "none" | "initial" | "inherit" | null;
-export type EmptyCellType = "" | "default" | "show" | "hide" | "initial" | "inherit" | null;
+"table-column" | "table-row" | "none" | "none" | "initial" | "inherit" | string | null;
+export type EmptyCellType = "" | "default" | "show" | "hide" | "initial" | "inherit" | string | null;
 export type FilterType = "" | "none" | "blur()" | "brightness()" | "contrast()" | "drop-shadow()" | "grayscale()" |
-"hue-rotate()" | "invert()" | "opacity()" | "saturate()" | "sepia()" | "url()" | "initial" | "inherit" | null;
+"hue-rotate()" | "invert()" | "opacity()" | "saturate()" | "sepia()" | "url()" | "initial" | "inherit" | string | null;
 export type FlexDirectionType = "" | "default" | "row" | "row-reverse" | "column" | "column-reverse" |
-"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
 export type FlexFlowDirectionType = "" | "default" | "column" | "column-reverse" | "nowrap" | "row" | "row-reverse" |
-"unset" | "wrap" | "wrap-reverse" |"initial" | "inherit" | null;
-export type FlexWrapType = "" | "default" | "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit" | null;
-export type FloatType = "" | "default" | "none" | "left" | "right" | "initial" | "inherit" | null;
+"unset" | "wrap" | "wrap-reverse" |"initial" | "inherit" | string | null;
+export type FlexWrapType = "" | "default" | "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit" | string | null;
+export type FloatType = "" | "default" | "none" | "left" | "right" | "initial" | "inherit" | string | null;
 export type FontStretchType = "" | "default" | "ultra-condensed" | "extra-condensed" | "condensed" | "semi-condensed" |
-"normal" | "semi-expanded" | "expanded" | "extra-expanded" | "ultra-expanded" | "initial" | "inherit" | null;
-export type FontStyleType = "" | "default" | "normal" | "italic" | "oblique" | "initial" | "inherit" | null;
-export type FontVariantType = "" | "default" | "normal" | "small-caps" | "initial" | "inherit" | null;
-export type FontWeightType = "" | "default" | "normal" | "bold" | "bolder" | "lighter" | "initial" | "inherit" | null;
-export type GridAutoColumnsType = "" | "default" | "auto" | "max-content" | "min-content" | null;
-export type GridAutoFlowType = "" | "default" | "row" | "column" | "row dense" | "column dense" | null;
-export type GridAutoRowsType = "" | "default" | "auto" | "max-content" | "min-content" | null;
+"normal" | "semi-expanded" | "expanded" | "extra-expanded" | "ultra-expanded" | "initial" | "inherit" | string | null;
+export type FontStyleType = "" | "default" | "normal" | "italic" | "oblique" | "initial" | "inherit" | string | null;
+export type FontVariantType = "" | "default" | "normal" | "small-caps" | "initial" | "inherit" | string | null;
+export type FontWeightType = "" | "default" | "normal" | "bold" | "bolder" | "lighter" | "initial" | "inherit" |
+string | null;
+export type GridAutoColumnsType = "" | "default" | "auto" | "max-content" | "min-content" | string | null;
+export type GridAutoFlowType = "" | "default" | "row" | "column" | "row dense" | "column dense" | string | null;
+export type GridAutoRowsType = "" | "default" | "auto" | "max-content" | "min-content" | string | null;
 export type JustifyContentType = "" | "default" | "flex-start" | "flex-end" | "center" | "space-between" |
-"space-around" | "initial" | "inherit" | null;
+"space-around" | "initial" | "inherit" | string | null;
 export type ListStylePositionType = "" | "default" | "inside" | "max-content" | "outside" | "initial" |
-"inherit" | null;
-export type ListStyleType = "" | "default" | "disc" | "circle" | "none" | "square" | null;
+"inherit" | string | null;
+export type ListStyleType = "" | "default" | "disc" | "circle" | "none" | "square" | string | null;
 export type ObjectFitType = "" | "default" | "fill" | "contain" | "cover" | "none" | "scale-down" |
-"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
 export type ObjectPositionType = "" | "default" | "fill" | "contain" | "cover" | "none" | "scale-down" |
-"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
 export type PageBreakCommanType = "" | "default" | "auto" | "always" | "avoid" | "left" | "right" |
-"initial" | "inherit" | null;
-export type PageBreakInsideType = "" | "default" | "auto"| "avoid" | "initial" | "inherit" | null;
-export type ResizeType = "" | "default" | "none" | "both" | "horizontal" | "vertical" | "initial" | "inherit" | null;
-export type TableLayoutType = "" | "default" | "auto" | "fixed" | "initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
+export type PageBreakInsideType = "" | "default" | "auto"| "avoid" | "initial" | "inherit" | string | null;
+export type ResizeType = "" | "default" | "none" | "both" | "horizontal" | "vertical" | "initial" |
+"inherit" | string | null;
+export type TableLayoutType = "" | "default" | "auto" | "fixed" | "initial" | "inherit" | string | null;
 export type TextAlignLastType = "" | "default" | "auto" | "left" | "right" | "center" | "justify" |
-"start" | "end" | "initial" | "inherit" | null;
+"start" | "end" | "initial" | "inherit"| string | null;
 export type TextDecorationType = "" | "none" | "underline" | "overline" | "line-through" |
-"initial" | "inherit" | null;
-export type TextTransformType = "" | "none" | "capitalize" | "uppercase" | "lowercase" | "initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
+export type TextTransformType = "" | "none" | "capitalize" | "uppercase" | "lowercase" | "initial" |
+"inherit" | string | null;
 export type TransformType = "" | "default" | "none" | "matrix()" | "matrix3d()" | "translate()" | "translate3d()" |
 "translateX()" | "translateY()" | "translateZ()" | "scale()" | "scale3d()" | "scaleX()" | "scaleY()" | "scaleZ()" |
 "rotate()" | "rotate3d()" | "rotateX()" | "rotateY()" | "rotateZ()" | "skew()" | "skewX()" | "skewY()" |
-"perspective()" | "initial" | "inherit" | null;
-export type TransformStyleType = "" | "default" | "flat" | "preserve-3d" | "initial" | "inherit" | null;
-export type VisibilityType = "" | "default" | "visible" | "hidden" | "collapse" | "initial" | "inherit" | null;
+"perspective()" | "initial" | "inherit" | string | null;
+export type TransformStyleType = "" | "default" | "flat" | "preserve-3d" | "initial" | "inherit" | string | null;
+export type VisibilityType = "" | "default" | "visible" | "hidden" | "collapse" | "initial" | "inherit" | string | null;
 export type WhiteSpaceType = "" | "default" | "normal" | "nowrap" | "pre" | "pre-line" | "pre-wrap" |
-"initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
 export type WordBreakType = "" | "default" | "normal" | "break-all" | "keep-all" | "break-word" |
-"initial" | "inherit" | null;
-export type WordSpacingType = "" | "default" | "normal" | "initial" | "inherit" | null;
-export type WordWrapType = "" | "default" | "normal" | "break-word" | "initial" | "inherit" | null;
+"initial" | "inherit" | string | null;
+export type WordSpacingType = "" | "default" | "normal" | "initial" | "inherit" | string | null;
+export type WordWrapType = "" | "default" | "normal" | "break-word" | "initial" | "inherit" | string | null;
 export interface IStyleDeclaration {
     alignContent?: ContentAlignType;
     alignItems?: ItemAlignType;
