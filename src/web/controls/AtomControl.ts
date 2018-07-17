@@ -27,7 +27,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     private mControlStyle: AtomStyle = undefined;
     public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
-            const key = TypeKey.get(this.defaultControlStyle);
+            const key = TypeKey.get(this.defaultControlStyle || this.constructor);
 
             this.mControlStyle = defaultStyleSheets[key];
             if (this.mControlStyle) {

@@ -21,6 +21,9 @@ export class AtomItemsControl extends AtomControl {
     @BindableProperty
     public itemTemplate: IClassOf<AtomControl> = AtomItemsControlItemTemplate;
 
+    @BindableProperty
+    public version: number = 1;
+
     public valueSeparator: string = ", ";
 
     private mValue: any = undefined;
@@ -639,6 +642,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public updateSelectionBindings(): void {
+        this.version = this.version + 1;
         AtomBinder.refreshValue(this, "value");
         AtomBinder.refreshValue(this, "selectedItem");
         AtomBinder.refreshValue(this, "selectedItems");
@@ -735,6 +739,8 @@ export class AtomItemsControl extends AtomControl {
         if (!this.itemsPresenter) {
             this.itemsPresenter = this.element as HTMLElement;
         }
+
+        this.version = this.version + 1;
 
         if (/reset|refresh/i.test(key)) {
             this.resetVirtulContainer();
@@ -1060,7 +1066,9 @@ export class AtomItemsControl extends AtomControl {
         while (en.next()) {
             const iterator = en.current;
             const ac = (iterator as any).atomControl as AtomControl;
-            ac.dispose();
+            if (ac) {
+                ac.dispose();
+            }
         }
         e.innerHTML = "";
     }
