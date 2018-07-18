@@ -19,7 +19,7 @@ export class AtomItemsControl extends AtomControl {
     public labelPath: string = "label";
 
     @BindableProperty
-    public itemTemplate: IClassOf<AtomControl> = AtomItemsControlItemTemplate;
+    public itemTemplate: IClassOf<AtomControl>;
 
     @BindableProperty
     public version: number = 1;
@@ -886,6 +886,11 @@ export class AtomItemsControl extends AtomControl {
        // WebAtoms.dispatcher.start();
 
         // AtomBinder.refreshValue(this, "childAtomControls");
+    }
+
+    protected preCreate(): void {
+        super.preCreate();
+        this.itemTemplate = AtomItemsControlItemTemplate;
     }
 
     protected onCollectionChangedInternal(key: string, index: number, item: any): void {
