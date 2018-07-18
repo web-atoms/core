@@ -43,7 +43,6 @@ export class AtomTabbedPage extends AtomGridView
 
         const ul = new AtomItemsControl(this.app, document.createElement("div"));
         this.append(ul);
-        ul.setPrimitiveValue(ul.element, "cell", "0,0");
         ul.allowMultipleSelection = false;
         ul.allowSelectFirst = true;
         ul.bind(ul.element, "itemTemplate", [["this", "titleTemplate"]], false, null, this);
@@ -52,7 +51,7 @@ export class AtomTabbedPage extends AtomGridView
 
         const presenter = new AtomContentControl(this.app, document.createElement("section"));
         this.append(presenter);
-        presenter.setPrimitiveValue(presenter.element, "cell", "0,1");
+        presenter.setPrimitiveValue(presenter.element, "row", "1");
         presenter.bind(presenter.element, "content", [["localViewModel", "selectedPage"]]);
     }
 }

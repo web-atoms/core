@@ -59,11 +59,11 @@ export class AtomGridView extends AtomControl {
             colSpan = tokens[0][1] || 1;
             rowSpan = tokens[1][1] || 1;
         } else {
-            let c: string = (e as any).row as string;
+            let c: string = (((e as any).row) || "0") as string;
             let tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
             row = tokens[0];
             rowSpan = tokens[1] || 1;
-            c = (e as any).column as string;
+            c = (((e as any).column) || "0") as string;
             tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
             column = tokens[0];
             colSpan = tokens[1] || 1;
