@@ -26,6 +26,7 @@ export class AtomViewStack extends AtomControl {
 
         this.bind(ee, "styleVisibility", [["selectedIndex"]], false, (v) => v === index ? "visibile" : "hidden" );
 
+        this.element.appendChild(ee);
         return this;
     }
 
