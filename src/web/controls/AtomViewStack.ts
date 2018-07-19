@@ -21,10 +21,11 @@ export class AtomViewStack extends AtomControl {
         }
 
         const style = ee.style;
-        style.position = "absolulte";
+        style.position = "absolute";
         style.top = style.left = style.right = style.bottom = "0";
 
-        this.bind(ee, "styleVisibility", [["selectedIndex"]], false, (v) => v === index ? "visibile" : "hidden" );
+        this.bind(ee, "styleVisibility", [["selectedIndex"]], false,
+            (v) => v === index ? "visible" : "hidden" );
 
         this.element.appendChild(ee);
         return this;
