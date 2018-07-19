@@ -27,6 +27,10 @@ export class AtomViewPager extends AtomItemsControl {
     protected create(): void {
         super.create();
 
+        const estyle = this.element.style;
+        estyle.position = "absolute";
+        estyle.left = estyle.right = estyle.bottom = estyle.top = "0";
+
         const cc = new AtomContentControl(this.app);
         this.append(cc);
         const style = cc.element.style;
