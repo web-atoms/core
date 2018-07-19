@@ -157,7 +157,8 @@ export class AtomItemsControl extends AtomControl {
                 sitems.push(dataItem);
             }
         }
-        this.updateSelectionBindings();
+        // this.updateSelectionBindings();
+        AtomBinder.refreshItems(sitems);
     }
 
     public get items(): any[] {
