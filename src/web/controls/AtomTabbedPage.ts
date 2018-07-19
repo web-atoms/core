@@ -253,7 +253,7 @@ class AtomTabViewModel extends AtomViewModel {
 
         disposables.add(() => {
             const index = this.pages.indexOf(page);
-            if (index <= 0) {
+            if (this.pages.length <= 1 && index <= 0) {
                 return;
             }
             this.pages.remove(page);
