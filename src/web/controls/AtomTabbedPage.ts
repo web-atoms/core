@@ -77,7 +77,7 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
             const divTitle = document.createElement("div");
             this.append(divTitle);
 
-            this.bind(divTitle, "text", [["data", "title"]]);
+            this.bind(divTitle, "text", [["data", "viewModel", "title"]]);
 
             const closeButton = document.createElement("img");
             this.bind(closeButton, "styleClass", [["this", "controlStyle", "closeButton"]], false, null, __creator);
