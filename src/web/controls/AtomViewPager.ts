@@ -37,7 +37,7 @@ export class AtomViewPager extends AtomItemsControl {
         style.position = "absolute";
         style.top = style.left = style.right = style.bottom = "0";
 
-        cc.bind(cc.element, "content", [["selectedItem"]], false, (si) => {
+        cc.bind(cc.element, "content", [["this", "selectedItem"]], false, (si) => {
             if (si.view) {
                 return si.view;
             }
@@ -47,6 +47,6 @@ export class AtomViewPager extends AtomItemsControl {
                 AtomBinder.refreshValue(this, "selectedItem");
             });
             return null;
-        });
+        }, this);
     }
 }
