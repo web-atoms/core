@@ -42,7 +42,7 @@ export class AtomViewPager extends AtomItemsControl {
                 return si.view;
             }
             this.app.runAsync( async () => {
-                const ctrl = AtomViewLoader.loadView(new AtomUri(si.value), this.app.get(JsonService), this.app);
+                const ctrl = AtomViewLoader.loadView(new AtomUri(si.value), this.app);
                 si.view = ctrl;
                 AtomBinder.refreshValue(this, "selectedItem");
             });

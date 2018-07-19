@@ -1,3 +1,4 @@
+import { App } from "../App";
 import { AtomUri } from "./AtomUri";
 import { IClassOf } from "./types";
 
@@ -7,10 +8,9 @@ declare class UMD {
 
 export class AtomLoader {
 
-    public static async load<T>(url: AtomUri, ... p: any[]): Promise<T> {
+    public static async load<T>(url: AtomUri, app: App): Promise<T> {
         const type = await UMD.resolveViewClassAsync<T>(url.path);
-        p.unshift(null);
-        const obj = new (type.bind.apply(type, p))();
+        const obj = app.resolve(type, true);
         return obj;
     }
 
