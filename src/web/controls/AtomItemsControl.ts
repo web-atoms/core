@@ -152,8 +152,9 @@ export class AtomItemsControl extends AtomControl {
         const vp = this.valuePath;
         for (const item of v) {
             // tslint:disable-next-line:triple-equals
-            if (dataItems.filter( (f) => f[vp] == item ).length) {
-                sitems.push(item);
+            const dataItem = dataItems.find( (i) => i[vp] == v);
+            if (dataItem) {
+                sitems.push(dataItem);
             }
         }
         AtomBinder.refreshItems(sitems);
