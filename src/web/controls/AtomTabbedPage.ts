@@ -223,7 +223,6 @@ class AtomTabViewModel extends AtomViewModel {
         const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         AtomUI.assignID(page.element);
         page.title = "Title";
-        page.bind(page.element, "title", [["viewModel", "title"]]);
         page.tag = message;
         const vm = page.viewModel;
         if (vm) {
@@ -238,6 +237,7 @@ class AtomTabViewModel extends AtomViewModel {
             }
             vm.windowName = page.element.id;
         }
+        page.bind(page.element, "title", [["viewModel", "title"]]);
 
         this.pages.add(page);
 
