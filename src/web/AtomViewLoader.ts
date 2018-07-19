@@ -9,7 +9,7 @@ export class AtomViewLoader {
         url: AtomUri,
         jsonService: JsonService,
         ...p: any[]): Promise<T> {
-        const view = await AtomLoader.load<T>(url);
+        const view = await AtomLoader.load<T>(url, p);
 
         const vm = view.viewModel;
         if (vm) {
