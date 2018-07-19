@@ -168,7 +168,7 @@ export class WindowService extends NavigationService {
 
         // const popup = this.app.resolve(windowId, true) as AtomControl;
         // const popupType = await UMD.resolveViewClassAsync(url.path);
-        const popup = await AtomViewLoader.loadView(url, this.jsonService, this.app);
+        const popup = await AtomViewLoader.loadView(url, this.app);
         const e = popup.element;
 
         if (popup instanceof AtomWindow) {
