@@ -190,7 +190,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public set selectedItem(value: any) {
-        if (value) {
+        if (value !== undefined && value !== null) {
             this.mSelectedItems.length = 1;
             this.mSelectedItems[0] = value;
         } else {
@@ -217,12 +217,23 @@ export class AtomItemsControl extends AtomControl {
         }
     }
 
-    public get selectedIndex() {
+    public get selectedIndex(): number {
         if (!this.mItems) {
             return -1;
         }
         const item: any = this.selectedItem;
         return this.mItems.indexOf(item);
+    }
+
+    public set selectedIndex(n: number) {
+        if (!this.mItems) {
+            return;
+        }
+        if (n <= -1 || n >= this.mItems.length) {
+            this.selectedItem = null;
+            return;
+        }
+        this.selectedItem = this.mItems[n];
     }
 
     // public getIndexOfDataItem(item: any) {
