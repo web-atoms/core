@@ -58,6 +58,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     // const ss = new (pt)(key);
                     const ss = this.theme;
                     this.mControlStyle = defaultStyleSheets[key] = ss.createNamedStyle(this.defaultControlStyle, key);
+                    defaultStyleSheets[key] = this.mControlStyle;
                 }
             }
             this.mControlStyle = this.mControlStyle || null;
