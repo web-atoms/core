@@ -225,7 +225,7 @@ export class WindowService extends NavigationService {
 
             disposables.push(device.subscribe(`atom-window-cancel:${e.id}`, (g, i) => {
                 closeFunction();
-                reject(i);
+                reject(i || "cancelled");
             }));
 
             const wvm = popup.viewModel;

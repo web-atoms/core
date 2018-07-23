@@ -93,7 +93,7 @@ export class AtomWindowViewModel extends AtomViewModel {
                 return;
             }
         }
-        this.broadcast(`atom-window-cancel:${this.windowName}`, null);
+        this.broadcast(`atom-window-cancel:${this.windowName}`, "cancelled");
     }
 
 }
