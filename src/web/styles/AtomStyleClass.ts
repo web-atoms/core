@@ -4,19 +4,22 @@ import { ArrayHelper, INameValuePairs, INotifyPropertyChanged } from "../../core
 import { AtomStyle, IAtomStyle } from "./AtomStyle";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { IStyleDeclaration } from "./IStyleDeclaration";
+import { IStyleDeclarationFunc } from "./IStyleDeclarationFunc";
 
-export interface IStyleSubClass {
-    name: string;
-    styles: INameValuePairs;
-}
+// export interface IStyleSubClass {
+//     name: string;
+//     styles: INameValuePairs;
+// }
 
 export class AtomStyleClass
     implements INotifyPropertyChanged,
     IAtomStyle {
 
-    private styles: INameValuePairs = {};
+    // private styles: INameValuePairs = {};
 
-    private subClasses: IStyleSubClass[] = [];
+    // private subClasses: IStyleSubClass[] = [];
+
+    private subClasses: AtomStyleClass[] = [];
 
     private mCached: string;
 
@@ -28,63 +31,72 @@ export class AtomStyleClass
         public readonly styleSheet: AtomStyleSheet,
         public readonly parent: AtomStyle,
         public readonly className: string,
-        props?: INameValuePairs ) {
-        if (props) {
-            this.updateStyle(props);
-        }
+        public props: IStyleDeclarationFunc ) {
     }
 
-    public subClass(name: string, styles: IStyleDeclaration): AtomStyleClass {
-        ArrayHelper.remove(this.subClasses, (s) => s.name === name);
-        this.subClasses.push({
-            name,
-            styles
-        });
+    public subClass(name: string, styles: IStyleDeclarationFunc): AtomStyleClass {
+        ArrayHelper.remove(this.subClasses, (s) => s.name === this.className + name);
+        this.subClasses.push(new AtomStyleClass(this.styleSheet, this.parent, this.className + name, styles));
         return this;
     }
 
-    public clone(name: string, pairs?: IStyleDeclaration): AtomStyleClass {
-        const clone = this.parent.createClass(name, this.styles).updateStyle(pairs);
-        for (const iterator of this.subClasses) {
-            // we need clone....
-            const sc = {};
-            for (const key in iterator.styles) {
-                if (iterator.styles.hasOwnProperty(key)) {
-                    const element = iterator.styles[key];
-                    sc[key] = element;
-                }
-            }
-            clone.subClass(iterator.name, sc);
-        }
+    public clone(name: string, pairs?: IStyleDeclarationFunc): AtomStyleClass {
+        const clone = this.parent.createClass(name, this.props).updateStyle(pairs);
+        // for (const iterator of this.subClasses) {
+        //     // we need clone....
+        //     const sc = {};
+        //     for (const key in iterator.styles) {
+        //         if (iterator.styles.hasOwnProperty(key)) {
+        //             const element = iterator.styles[key];
+        //             sc[key] = element;
+        //         }
+        //     }
+        //     clone.subClass(iterator.name, sc);
+        // }
         return clone;
     }
 
     public clear(): AtomStyleClass {
-        this.styles = {};
+        this.props = () => {
+            return {};
+        };
         this.subClasses.length = 0;
         this.styleSheet.pushUpdate();
         return this;
     }
 
-    public updateStyle(props?: IStyleDeclaration): AtomStyleClass {
-        for (const key in props) {
-            if (props.hasOwnProperty(key)) {
-                const element = props[key];
-                this.styles[key] = element;
+    public updateStyle(props?: IStyleDeclarationFunc): AtomStyleClass {
+        // for (const key in props) {
+        //     if (props.hasOwnProperty(key)) {
+        //         const element = props[key];
+        //         this.styles[key] = element;
+        //     }
+        // }
+        const old = this.props;
+        this.props = () => {
+            const oldv = old();
+            const n = props();
+            for (const key in oldv) {
+                if (oldv.hasOwnProperty(key)) {
+                    const element = oldv[key];
+                    n[key] = element;
+                }
             }
-        }
+            return n;
+        };
         this.styleSheet.pushUpdate();
         return this;
     }
 
-    public updateSubClass(name: string, props: IStyleDeclaration): AtomStyleClass {
+    public updateSubClass(name: string, props: IStyleDeclarationFunc): AtomStyleClass {
         const sc = this.subClasses.find( (s) => s.name === name);
-        for (const key in props) {
-            if (props.hasOwnProperty(key)) {
-                const element = props[key];
-                sc.styles[key] = element;
-            }
-        }
+        sc.updateStyle(props);
+        // for (const key in props) {
+        //     if (props.hasOwnProperty(key)) {
+        //         const element = props[key];
+        //         sc.styles[key] = element;
+        //     }
+        // }
         this.styleSheet.pushUpdate();
         return this;
     }
@@ -92,10 +104,10 @@ export class AtomStyleClass
     public createStyle(): KeyValuePairs {
 
         const result: KeyValuePairs = [];
-        result.push({ key: this.className, value: this.createStyleText(this.styles) });
+        result.push({ key: this.className, value: this.createStyleText(this.props) });
 
         for (const iterator of this.subClasses) {
-            result.push({ key: `${this.className}${iterator.name}`, value: this.createStyleText(iterator.styles) });
+            result.push({ key: `${this.className}${iterator.name}`, value: this.createStyleText(iterator.props) });
         }
         return result;
     }
@@ -104,8 +116,9 @@ export class AtomStyleClass
         this.styleSheet.pushUpdate();
     }
 
-    private createStyleText(styles: INameValuePairs): string {
+    private createStyleText(a: IStyleDeclarationFunc): string {
         const sslist: any[] = [];
+        const styles = a();
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
                 const element = styles[key];

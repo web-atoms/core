@@ -4,6 +4,7 @@ import { AtomControl } from "../controls/AtomControl";
 import { AtomStyleClass } from "./AtomStyleClass";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { IStyleDeclaration } from "./IStyleDeclaration";
+import { IStyleDeclarationFunc } from "./IStyleDeclarationFunc";
 
 export type StyleItem = AtomStyle | AtomStyleClass;
 
@@ -27,7 +28,7 @@ export class AtomStyle
     ) {
     }
 
-    public createClass(name: string, props: IStyleDeclaration): AtomStyleClass {
+    public createClass(name: string, props: IStyleDeclarationFunc): AtomStyleClass {
         return this.replace(new AtomStyleClass(this.styleSheet, this, `${this.name}-${name}`, props));
     }
 
