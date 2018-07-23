@@ -43,7 +43,6 @@ export class AtomTabbedPage extends AtomGridView
 
         const ul = new AtomItemsControl(this.app, document.createElement("div"));
         this.append(ul);
-        ul.setPrimitiveValue(ul.element, "cell", "0,0");
         ul.allowMultipleSelection = false;
         ul.allowSelectFirst = true;
         ul.bind(ul.element, "itemTemplate", [["this", "titleTemplate"]], false, null, this);
@@ -52,7 +51,7 @@ export class AtomTabbedPage extends AtomGridView
 
         const presenter = new AtomContentControl(this.app, document.createElement("section"));
         this.append(presenter);
-        presenter.setPrimitiveValue(presenter.element, "cell", "0,1");
+        presenter.setPrimitiveValue(presenter.element, "row", "1");
         presenter.bind(presenter.element, "content", [["localViewModel", "selectedPage"]]);
     }
 }
@@ -224,7 +223,6 @@ class AtomTabViewModel extends AtomViewModel {
         const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         AtomUI.assignID(page.element);
         page.title = "Title";
-        page.bind(page.element, "title", [["viewModel", "title"]]);
         page.tag = message;
         const vm = page.viewModel;
         if (vm) {
@@ -236,6 +234,12 @@ class AtomTabViewModel extends AtomViewModel {
             }
             vm.windowName = page.element.id;
         }
+
+        if (url.query && url.query.title) {
+            page.title = url.query.title.toString();
+        }
+
+        page.bind(page.element, "title", [["viewModel", "title"]]);
 
         this.pages.add(page);
 
@@ -254,7 +258,7 @@ class AtomTabViewModel extends AtomViewModel {
 
         disposables.add(() => {
             const index = this.pages.indexOf(page);
-            if (index <= 0) {
+            if (this.pages.length <= 1 && index <= 0) {
                 return;
             }
             this.pages.remove(page);

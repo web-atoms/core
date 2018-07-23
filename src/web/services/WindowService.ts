@@ -1,5 +1,6 @@
 import { App } from "../../App";
 import { Atom } from "../../Atom";
+import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
 import { ArrayHelper, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
@@ -8,13 +9,11 @@ import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
 import { ILocation, NavigationService } from "../../services/NavigationService";
 import { AtomUI } from "../../web/core/AtomUI";
+import { AtomViewLoader } from "../AtomViewLoader";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
+import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
-
-declare class UMD {
-    public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
-}
 
 @RegisterSingleton
 export class WindowService extends NavigationService {
@@ -169,8 +168,8 @@ export class WindowService extends NavigationService {
         }
 
         // const popup = this.app.resolve(windowId, true) as AtomControl;
-        const popupType = await UMD.resolveViewClassAsync(url.path);
-        const popup = new popupType(this.app);
+        // const popupType = await UMD.resolveViewClassAsync(url.path);
+        const popup = await AtomViewLoader.loadView(url, this.app);
         const e = popup.element;
 
         if (popup instanceof AtomWindow) {
@@ -183,7 +182,7 @@ export class WindowService extends NavigationService {
 
         return await new Promise<T>((resolve, reject) => {
 
-            const theme = this.app.get(AtomTheme).popup;
+            const theme = this.app.get(AtomStyleSheet).popup;
 
             e.id = `atom_popup_${this.lastPopupID++}`;
             e.style.zIndex = 10000 + this.lastPopupID + "";
@@ -226,23 +225,23 @@ export class WindowService extends NavigationService {
 
             disposables.push(device.subscribe(`atom-window-cancel:${e.id}`, (g, i) => {
                 closeFunction();
-                reject(i);
+                reject(i || "cancelled");
             }));
 
             const wvm = popup.viewModel;
             if (wvm) {
                 wvm.windowName = e.id;
 
-                for (const key in url.query) {
-                    if (url.query.hasOwnProperty(key)) {
-                        const element = url.query[key];
-                        if (typeof element === "object") {
-                            wvm[key] = this.jsonService.parse(this.jsonService.stringify(element));
-                        } else {
-                            wvm[key] = element;
-                        }
-                    }
-                }
+                // for (const key in url.query) {
+                //     if (url.query.hasOwnProperty(key)) {
+                //         const element = url.query[key];
+                //         if (typeof element === "object") {
+                //             wvm[key] = this.jsonService.parse(this.jsonService.stringify(element));
+                //         } else {
+                //             wvm[key] = element;
+                //         }
+                //     }
+                // }
             }
 
         });

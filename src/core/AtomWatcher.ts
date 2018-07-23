@@ -189,7 +189,7 @@ export class AtomWatcher<T> implements IDisposable {
             // tslint:disable-next-line:no-debugger
             debugger;
             // tslint:disable-next-line:no-console
-            console.warn("There is nothing to watch");
+            console.warn("There is nothing to watch, do not use one way binding without any binding expression");
         }
 
         if (e) {

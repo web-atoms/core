@@ -13,7 +13,7 @@ export class AtomTabbedPageStyle extends AtomStyle {
         return this.styleSheet as AtomTheme;
     }
 
-    public readonly tabItem: AtomStyleClass = this.createClass("tab-item", {
+    public readonly tabItem: AtomStyleClass = this.createClass("tab-item", () => ({
         display: "inline-block",
         borderTopLeftRadius: (this.padding || this.theme.padding) + "px",
         borderTopRightRadius: (this.padding || this.theme.padding) + "px",
@@ -27,30 +27,28 @@ export class AtomTabbedPageStyle extends AtomStyle {
         minHeight: "30px",
         cursor: "default",
         position: "relative"
-    })
-    .subClass(" > div", {
+    }))
+    .subClass(" > div", () => ({
         display: "inline-block",
-        position: "absolute",
-        left: (this.padding || this.theme.padding) + "px",
-        top: (this.padding || this.theme.padding) + "px",
-        bottom: (this.padding || this.theme.padding) + "px",
+        padding: (this.padding || this.theme.padding) + "px",
+        paddingRight: ((this.padding || this.theme.padding) + 23) + "px",
         right: "22px"
-    })
-    .subClass(":hover", {
+    }))
+    .subClass(":hover", () => ({
         backgroundColor: this.theme.hoverColor
-    });
+    }));
 
-    public readonly selectedTabItem = this.tabItem.clone("selected-tab-item", {
+    public readonly selectedTabItem = this.tabItem.clone("selected-tab-item", () => ({
         borderColor: this.theme.activeColor,
         backgroundColor: this.theme.selectedBgColor,
         color: this.theme.selectedColor
-    })
-    .subClass(":hover", {
+    }))
+    .subClass(":hover", () => ({
         backgroundColor: this.theme.selectedBgColor,
         color: this.theme.hoverColor
-    });
+    }));
 
-    public readonly closeButton = this.createClass("close-button", {
+    public readonly closeButton = this.createClass("close-button", () => ({
         position: "absolute",
         right: "5px",
         top: "5px",
@@ -58,9 +56,9 @@ export class AtomTabbedPageStyle extends AtomStyle {
         height: "0",
         padding: "8px",
         backgroundImage: `url(${ModuleFiles.src.web.images.closeButton_svg})`
-    })
-    .subClass(":hover", {
+    }))
+    .subClass(":hover", () => ({
         backgroundImage: `url(${ModuleFiles.src.web.images.closeButtonHover_svg})`
-    });
+    }));
 
 }

@@ -39,6 +39,44 @@ interface IOffsetSize {
  */
 export class AtomGridView extends AtomControl {
 
+    public static getCellInfo(e: HTMLElement): { row: number, rowSpan: number,  column: number, colSpan: number } {
+
+        let row = 0;
+        let column = 0;
+        let rowSpan = 1;
+        let colSpan = 1;
+
+        const cell = (e as any).cell as string;
+        if (cell) {
+            // tslint:disable-next-line:no-console
+            console.warn("Attribute `cell` is obsolete, please use row and column attributes separately");
+            const tokens = cell.split(",")
+                .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
+
+            column = tokens[0][0];
+            row = tokens[1][0];
+
+            colSpan = tokens[0][1] || 1;
+            rowSpan = tokens[1][1] || 1;
+        } else {
+            let c: string = (((e as any).row) || "0") as string;
+            let tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
+            row = tokens[0];
+            rowSpan = tokens[1] || 1;
+            c = (((e as any).column) || "0") as string;
+            tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
+            column = tokens[0];
+            colSpan = tokens[1] || 1;
+        }
+
+        return {
+            row,
+            rowSpan,
+            column,
+            colSpan,
+        };
+    }
+
     @BindableProperty
     public columns: string;
 
@@ -153,32 +191,7 @@ export class AtomGridView extends AtomControl {
 
     private updateStyle(e: HTMLElement): void {
 
-        let column: number = 0;
-        let row: number = 0;
-        let colSpan: number = 1;
-        let rowSpan: number = 1;
-        const cell = (e as any).cell as string;
-        if (cell) {
-            // tslint:disable-next-line:no-console
-            console.warn("Attribute `cell` is obsolete, please use row and column attributes separately");
-            const tokens = cell.split(",")
-                .map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
-
-            column = tokens[0][0];
-            row = tokens[1][0];
-
-            colSpan = tokens[0][1] || 1;
-            rowSpan = tokens[1][1] || 1;
-        } else {
-            let c: string = (e as any).row as string;
-            let tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
-            row = tokens[0];
-            rowSpan = tokens[1] || 1;
-            c = (e as any).column as string;
-            tokens = c.split(":").map( (st) => parseInt(st.trim(), 10));
-            column = tokens[0];
-            colSpan = tokens[1] || 1;
-        }
+        const { colSpan, column, row, rowSpan } = AtomGridView.getCellInfo(e);
         const host = e.parentElement as HTMLElement;
         if (!host) {
             return;

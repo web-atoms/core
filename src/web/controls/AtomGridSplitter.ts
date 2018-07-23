@@ -38,8 +38,7 @@ export class AtomGridSplitter extends AtomControl {
 
             const rect: IRect = { x: e.screenX, y: e.screenY };
 
-            const cell = ((this.element as any).cell as string)
-                .split(",").map( (s) => s.trim().split(":").map( (st) => parseInt(st.trim(), 10) ) );
+            const {column, row} = AtomGridView.getCellInfo(this.element);
 
             disposables.push(this.bindEvent(document.body, "mousemove", (me: MouseEvent) => {
                 // do drag....
@@ -49,9 +48,9 @@ export class AtomGridSplitter extends AtomControl {
                 const dy = screenY - rect.y;
 
                 if (isVertical) {
-                    parent.resize("column", cell[0][0], dx);
+                    parent.resize("column", column, dx);
                 } else {
-                    parent.resize("row", cell[1][0], dy);
+                    parent.resize("row", row, dy);
                 }
 
                 rect.x = screenX;

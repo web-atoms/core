@@ -27,7 +27,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     private mControlStyle: AtomStyle = undefined;
     public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
-            const key = TypeKey.get(this.defaultControlStyle);
+            const key = TypeKey.get(this.defaultControlStyle || this.constructor);
 
             this.mControlStyle = defaultStyleSheets[key];
             if (this.mControlStyle) {
@@ -43,6 +43,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     this.mControlStyle = style;
                     break;
                 }
+                if (this.defaultControlStyle) {
+                    break;
+                }
                 c = Object.getPrototypeOf(c);
             }
             if (this.mControlStyle) {
@@ -50,13 +53,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 return this.mControlStyle;
             }
             if (this.defaultControlStyle) {
-                // since we don't want to refresh existing style sheet
-                // we will create and attach new stylesheet
                 this.mControlStyle = defaultStyleSheets[key];
                 if (!this.mControlStyle) {
-                    const pt = Object.getPrototypeOf(this.theme).constructor;
-                    const ss = new (pt)(key);
+                    // const pt = Object.getPrototypeOf(this.theme).constructor;
+                    // const ss = new (pt)(key);
+                    const ss = this.theme;
                     this.mControlStyle = defaultStyleSheets[key] = ss.createNamedStyle(this.defaultControlStyle, key);
+                    defaultStyleSheets[key] = this.mControlStyle;
                 }
             }
             this.mControlStyle = this.mControlStyle || null;
@@ -161,25 +164,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (!this.element) {
             this.element = document.createElement("div");
         }
-
-        // resolve default style from theme... if available...
-        const t = this.theme;
-        if (!t) {
-            return;
-        }
-
-        // AtomDispatcher.instance.callLater(() => {
-        //     // let c = Object.getPrototypeOf(this);
-        //     let c = this.constructor;
-        //     while (c) {
-        //         const style = t.getDefaultStyle(c);
-        //         if (style) {
-        //             this.controlStyle = style;
-        //             break;
-        //         }
-        //         c = Object.getPrototypeOf(c);
-        //     }
-        // });
     }
 
     protected setElementValue(element: HTMLElement, name: string, value: any): void {

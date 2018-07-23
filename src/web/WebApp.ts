@@ -46,6 +46,7 @@ export default class WebApp extends App {
     }
 
     public set theme(v: AtomStyleSheet) {
+        this.put(AtomTheme, v);
         this.put(AtomStyleSheet, v);
     }
 

@@ -19,7 +19,10 @@ export class AtomItemsControl extends AtomControl {
     public labelPath: string = "label";
 
     @BindableProperty
-    public itemTemplate: IClassOf<AtomControl> = AtomItemsControlItemTemplate;
+    public itemTemplate: IClassOf<AtomControl>;
+
+    @BindableProperty
+    public version: number = 1;
 
     public valueSeparator: string = ", ";
 
@@ -149,10 +152,12 @@ export class AtomItemsControl extends AtomControl {
         const vp = this.valuePath;
         for (const item of v) {
             // tslint:disable-next-line:triple-equals
-            if (dataItems.filter( (f) => f[vp] == item ).length) {
-                sitems.push(item);
+            const dataItem = dataItems.find( (i) => i[vp] == v);
+            if (dataItem) {
+                sitems.push(dataItem);
             }
         }
+        // this.updateSelectionBindings();
         AtomBinder.refreshItems(sitems);
     }
 
@@ -185,7 +190,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public set selectedItem(value: any) {
-        if (value) {
+        if (value !== undefined && value !== null) {
             this.mSelectedItems.length = 1;
             this.mSelectedItems[0] = value;
         } else {
@@ -212,12 +217,23 @@ export class AtomItemsControl extends AtomControl {
         }
     }
 
-    public get selectedIndex() {
+    public get selectedIndex(): number {
         if (!this.mItems) {
             return -1;
         }
         const item: any = this.selectedItem;
         return this.mItems.indexOf(item);
+    }
+
+    public set selectedIndex(n: number) {
+        if (!this.mItems) {
+            return;
+        }
+        if (n <= -1 || n >= this.mItems.length) {
+            this.selectedItem = null;
+            return;
+        }
+        this.selectedItem = this.mItems[n];
     }
 
     // public getIndexOfDataItem(item: any) {
@@ -639,6 +655,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public updateSelectionBindings(): void {
+        this.version = this.version + 1;
         AtomBinder.refreshValue(this, "value");
         AtomBinder.refreshValue(this, "selectedItem");
         AtomBinder.refreshValue(this, "selectedItems");
@@ -735,6 +752,8 @@ export class AtomItemsControl extends AtomControl {
         if (!this.itemsPresenter) {
             this.itemsPresenter = this.element as HTMLElement;
         }
+
+        this.version = this.version + 1;
 
         if (/reset|refresh/i.test(key)) {
             this.resetVirtulContainer();
@@ -880,6 +899,11 @@ export class AtomItemsControl extends AtomControl {
        // WebAtoms.dispatcher.start();
 
         // AtomBinder.refreshValue(this, "childAtomControls");
+    }
+
+    protected preCreate(): void {
+        super.preCreate();
+        this.itemTemplate = AtomItemsControlItemTemplate;
     }
 
     protected onCollectionChangedInternal(key: string, index: number, item: any): void {
@@ -1060,7 +1084,9 @@ export class AtomItemsControl extends AtomControl {
         while (en.next()) {
             const iterator = en.current;
             const ac = (iterator as any).atomControl as AtomControl;
-            ac.dispose();
+            if (ac) {
+                ac.dispose();
+            }
         }
         e.innerHTML = "";
     }
