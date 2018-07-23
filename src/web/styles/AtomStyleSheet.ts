@@ -26,7 +26,7 @@ export class AtomStyleSheet extends AtomStyle
             clearTimeout(this.lastUpdateId);
         }
         this.lastUpdateId = setTimeout(() => {
-            this.attach(true);
+            this.attach();
         }, 1);
     }
 
@@ -36,12 +36,7 @@ export class AtomStyleSheet extends AtomStyle
         }
     }
 
-    public attach(recreate?: boolean): void {
-        if (this.styleElement) {
-            if (!recreate) {
-                return;
-            }
-        }
+    public attach(): void {
         const ss = document.createElement("style");
 
         const pairs = this.toStyle();
