@@ -163,25 +163,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (!this.element) {
             this.element = document.createElement("div");
         }
-
-        // resolve default style from theme... if available...
-        const t = this.theme;
-        if (!t) {
-            return;
-        }
-
-        // AtomDispatcher.instance.callLater(() => {
-        //     // let c = Object.getPrototypeOf(this);
-        //     let c = this.constructor;
-        //     while (c) {
-        //         const style = t.getDefaultStyle(c);
-        //         if (style) {
-        //             this.controlStyle = style;
-        //             break;
-        //         }
-        //         c = Object.getPrototypeOf(c);
-        //     }
-        // });
     }
 
     protected setElementValue(element: HTMLElement, name: string, value: any): void {

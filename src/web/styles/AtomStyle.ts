@@ -53,6 +53,14 @@ export class AtomStyle
     public replace<T extends IAtomStyle>(item: T): T {
         ArrayHelper.remove(this.children, (x) => x.name === item.name);
         this.children.push(item as any);
+        if (item instanceof AtomStyle) {
+            const s = item as AtomStyle;
+            if (!s.initialized) {
+                s.init();
+                s.initialized = true;
+            }
+        }
+        this.styleSheet.pushUpdate();
         return item;
     }
 
@@ -79,6 +87,10 @@ export class AtomStyle
             }
         }
         return pairs;
+    }
+
+    protected init(): void {
+        // empty...
     }
 
 }
