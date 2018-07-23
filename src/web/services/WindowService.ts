@@ -12,6 +12,7 @@ import { AtomUI } from "../../web/core/AtomUI";
 import { AtomViewLoader } from "../AtomViewLoader";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
+import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 
 @RegisterSingleton
@@ -181,7 +182,7 @@ export class WindowService extends NavigationService {
 
         return await new Promise<T>((resolve, reject) => {
 
-            const theme = this.app.get(AtomTheme).popup;
+            const theme = this.app.get(AtomStyleSheet).popup;
 
             e.id = `atom_popup_${this.lastPopupID++}`;
             e.style.zIndex = 10000 + this.lastPopupID + "";
