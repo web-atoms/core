@@ -22,7 +22,7 @@ class AtomToggleButtonBarItemTemplate extends AtomControl {
         this.element = document.createElement("li");
         this.bind(this.element, "text", [["data"]], false, (v) => {
             const p = this.parent as AtomItemsControl;
-            return v[p.valuePath];
+            return v[p.labelPath];
         });
     }
 
