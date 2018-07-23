@@ -30,10 +30,8 @@ export class AtomTabbedPageStyle extends AtomStyle {
     })
     .subClass(" > div", {
         display: "inline-block",
-        position: "absolute",
-        left: (this.padding || this.theme.padding) + "px",
-        top: (this.padding || this.theme.padding) + "px",
-        bottom: (this.padding || this.theme.padding) + "px",
+        padding: (this.padding || this.theme.padding) + "px",
+        paddingRight: ((this.padding || this.theme.padding) + 23) + "px",
         right: "22px"
     })
     .subClass(":hover", {
