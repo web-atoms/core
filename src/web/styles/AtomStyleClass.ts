@@ -57,9 +57,7 @@ export class AtomStyleClass
     }
 
     public clear(): AtomStyleClass {
-        this.props = () => {
-            return {};
-        };
+        this.props = () => ({});
         this.subClasses.length = 0;
         this.styleSheet.pushUpdate();
         return this;
@@ -74,15 +72,15 @@ export class AtomStyleClass
         // }
         const old = this.props;
         this.props = () => {
-            const oldv = old();
+            const v = old();
             const n = props();
-            for (const key in oldv) {
-                if (oldv.hasOwnProperty(key)) {
-                    const element = oldv[key];
-                    n[key] = element;
+            for (const key in n) {
+                if (n.hasOwnProperty(key)) {
+                    const element = n[key];
+                    v[key] = element;
                 }
             }
-            return n;
+            return v;
         };
         this.styleSheet.pushUpdate();
         return this;
