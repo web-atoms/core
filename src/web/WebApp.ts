@@ -41,12 +41,12 @@ export default class WebApp extends App {
         pe.appendChild(v.element);
     }
 
-    public get theme(): AtomStyleSheet {
-        return this.get(AtomStyleSheet);
+    public get theme(): AtomTheme {
+        return this.get(AtomTheme);
     }
 
-    public set theme(v: AtomStyleSheet) {
-        this.put(AtomStyleSheet, v);
+    public set theme(v: AtomTheme) {
+        this.put(AtomTheme, v);
     }
 
     private mContextId: number = 1;
@@ -62,7 +62,7 @@ export default class WebApp extends App {
         this.url = new AtomUri(location.href);
 
         this.put(NavigationService, this.resolve(WindowService));
-        ServiceCollection.instance.registerSingleton(AtomStyleSheet, (sp) => sp.resolve(AtomTheme));
+        ServiceCollection.instance.registerSingleton(AtomTheme, (sp) => sp.resolve(AtomTheme));
 
         // let us set contextId
         this.mContextId =  parseInt((this.url.hash.contextId || "0").toString(), 10);
