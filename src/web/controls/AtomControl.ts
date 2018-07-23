@@ -43,6 +43,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     this.mControlStyle = style;
                     break;
                 }
+                if (this.defaultControlStyle) {
+                    break;
+                }
                 c = Object.getPrototypeOf(c);
             }
             if (this.mControlStyle) {
@@ -50,8 +53,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 return this.mControlStyle;
             }
             if (this.defaultControlStyle) {
-                // since we don't want to refresh existing style sheet
-                // we will create and attach new stylesheet
                 this.mControlStyle = defaultStyleSheets[key];
                 if (!this.mControlStyle) {
                     // const pt = Object.getPrototypeOf(this.theme).constructor;
