@@ -226,9 +226,6 @@ class AtomTabViewModel extends AtomViewModel {
         page.tag = message;
         const vm = page.viewModel;
         if (vm) {
-            if (vm.title) {
-                page.title = vm.title;
-            }
             for (const key in url.query) {
                 if (url.query.hasOwnProperty(key)) {
                     const element = url.query[key];
@@ -237,6 +234,11 @@ class AtomTabViewModel extends AtomViewModel {
             }
             vm.windowName = page.element.id;
         }
+
+        if (url.query && url.query.title) {
+            page.title = url.query.title.toString();
+        }
+
         page.bind(page.element, "title", [["viewModel", "title"]]);
 
         this.pages.add(page);
