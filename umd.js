@@ -89,12 +89,15 @@ var UMD = {
         this._initialized = true;
     },
 
-    load: function(path) {
+    load: function(path, designMode) {
         if (!this._initialized) {
             this.setup();
         }
 
-        return SystemJS.import(path);
+        return SystemJS.import("web-atoms-core/dist/Atom").then(function (a) {
+            a.Atom.designMode = designMode;
+            return SystemJS.import(path);
+        });
     },
 
     loadView: function(path, designMode, appPath) {
