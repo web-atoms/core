@@ -43,6 +43,12 @@ export class AtomTabbedPageStyle extends AtomStyle {
         backgroundColor: this.theme.selectedBgColor,
         color: this.theme.selectedColor
     }))
+    .subClass(" > div", () => ({
+        display: "inline-block",
+        padding: (this.padding || this.theme.padding) + "px",
+        paddingRight: ((this.padding || this.theme.padding) + 23) + "px",
+        right: "22px"
+    }))
     .subClass(":hover", () => ({
         backgroundColor: this.theme.selectedBgColor,
         color: this.theme.hoverColor
