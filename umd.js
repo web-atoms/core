@@ -53,7 +53,8 @@ var UMD = {
 
     setup: function() {
         var config = {
-            defaultJSExtensions: true,
+            defaultExtensions: "js",
+            format: "amd",
             map: {},
             meta: {
 
@@ -62,7 +63,7 @@ var UMD = {
                 '.': {
                     defaultExtensions: "js",
                     format: "amd"
-                }
+                }, 
             }
         };
 
@@ -70,6 +71,11 @@ var UMD = {
             if (this.mapConfig.hasOwnProperty(key)) {
                 var element = this.mapConfig[key];
                 config.map[key] = element;
+
+                config.packages[config.map[key]] = {
+                    defaultExtensions: "js",
+                    format: "amd"
+                };
             }
         }
 
