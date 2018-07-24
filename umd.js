@@ -53,6 +53,7 @@ var UMD = {
 
     setup: function() {
         var config = {
+            defaultJSExtensions: true,
             map: {},
             meta: {
 
