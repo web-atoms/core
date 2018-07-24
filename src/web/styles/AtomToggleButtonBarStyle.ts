@@ -7,17 +7,24 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
     protected init(): void {
         this.item.updateStyle(() => ({
             borderRadius: 0,
-            display: "inline-block"
+            display: "inline-block",
+            border: "1px solid",
+            borderLeft: "none",
+            borderColor: this.theme.bgColor
         }));
         this.selectedItem.updateStyle(() => ({
             borderRadius: 0,
-            display: "inline-block"
+            display: "inline-block",
+            border: "1px solid",
+            borderLeft: "none",
+            borderColor: this.theme.bgColor
         }));
         this.item.subClass(":first-child", () => ({
             borderTopLeftRadius: `${this.padding || this.theme.padding}px`,
             borderBottomLeftRadius: `${this.padding || this.theme.padding}px`,
             borderTopRightRadius: 0,
-            borderBottomRightRadius: 0
+            borderBottomRightRadius: 0,
+            borderLeft: "1px solid"
         }));
         this.item.subClass(":last-child", () => ({
             borderTopLeftRadius: 0,
