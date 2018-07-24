@@ -1,23 +1,26 @@
+import { BindableProperty } from "../../core/BindableProperty";
 import { AtomListBoxStyle } from "./AtomListBoxStyle";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { AtomTheme } from "./AtomTheme";
 
 export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 
+    @BindableProperty
+    public toggleColor: string = "blue";
+
     protected init(): void {
         this.item.updateStyle(() => ({
-            borderRadius: 0,
             display: "inline-block",
             border: "1px solid",
             borderLeft: "none",
-            borderColor: this.theme.bgColor
+            color: this.toggleColor,
+            borderColor: this.toggleColor
         }));
         this.selectedItem.updateStyle(() => ({
-            borderRadius: 0,
             display: "inline-block",
             border: "1px solid",
             borderLeft: "none",
-            borderColor: this.theme.bgColor
+            borderColor: this.toggleColor
         }));
         this.item.subClass(":first-child", () => ({
             borderTopLeftRadius: `${this.padding || this.theme.padding}px`,
