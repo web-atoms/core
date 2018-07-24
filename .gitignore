@@ -1,4 +1,5 @@
 bin
+dist
 node_modules
 coverage
 html-report
