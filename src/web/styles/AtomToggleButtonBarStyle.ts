@@ -10,6 +10,7 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 
     protected init(): void {
         this.item.updateStyle(() => ({
+            borderRadius: 0,
             display: "inline-block",
             border: "1px solid",
             borderLeft: "none",
@@ -17,6 +18,7 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
             borderColor: this.toggleColor
         }));
         this.selectedItem.updateStyle(() => ({
+            borderRadius: 0,
             display: "inline-block",
             border: "1px solid",
             borderLeft: "none",
