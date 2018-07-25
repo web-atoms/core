@@ -1,17 +1,17 @@
 import * as A from "../App";
-import { AtomPage } from "./controls/AtomPage";
+import { AtomXFControl } from "./controls/AtomXFControl";
 
 declare var App: any;
 
-export class XFApp extends A.App {
+export default class XFApp extends A.App {
 
-    private mPage: AtomPage;
-    public get page(): AtomPage {
-        return this.mPage;
+    private mRoot: AtomXFControl;
+    public get root(): AtomXFControl {
+        return this.mRoot;
     }
 
-    public set page(v: AtomPage) {
-        this.mPage = v;
+    public set root(v: AtomXFControl) {
+        this.mRoot = v;
         App.CurrentPage = v.element;
     }
 

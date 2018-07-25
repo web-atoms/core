@@ -35,4 +35,16 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         });
     }
 
+    protected loadXaml(content: string): void {
+        const bridge = AtomBridge.instance;
+        bridge.loadContent(this.element, content);
+    }
+
+    protected find(name: string): any {
+        return AtomBridge.instance.findChild(this.element, name);
+    }
+
+    protected createControl(name: string): any {
+        return AtomBridge.instance.create(name);
+    }
 }
