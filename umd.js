@@ -28,6 +28,13 @@ var UMD = {
     },
 
     resolvePath: function (path) {
+        var firstChar = path[0];
+        if (firstChar === "/" || firstChar === ".") {
+            return path;
+        }
+        if (/(http|https)\:\/\//.test(path)) {
+            return path;
+        }
         var tokens = path.split("/");
         var package = tokens[0];
         tokens[0] = this.mapConfig[package];
