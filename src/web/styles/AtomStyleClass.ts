@@ -36,8 +36,58 @@ export class AtomStyleClass
 
     public subClass(name: string, styles: IStyleDeclarationFunc): AtomStyleClass {
         ArrayHelper.remove(this.subClasses, (s) => s.name === name);
-        this.subClasses.push(new AtomStyleClass(this.styleSheet, this.parent, name, styles));
+        const sc = new AtomStyleClass(this.styleSheet, this.parent, name, styles);
+        this.subClasses.push(sc);
         return this;
+    }
+
+    /**
+     * Creates hover class
+     * @param styles
+     */
+    public hover(styles: IStyleDeclarationFunc): AtomStyleClass;
+    /**
+     * Creates hover class for given class
+     * @param child
+     * @param styles
+     */
+    public hover(child: string, styles: IStyleDeclarationFunc): AtomStyleClass;
+    public hover(childOrStyle: string | IStyleDeclarationFunc, styles?: IStyleDeclarationFunc): AtomStyleClass {
+        return this.createSubClass(":hover", childOrStyle, styles);
+    }
+
+    public firstChild(styles: IStyleDeclarationFunc): AtomStyleClass;
+    public firstChild(child: string, styles: IStyleDeclarationFunc): AtomStyleClass;
+    public firstChild(childOrStyle: string | IStyleDeclarationFunc, styles?: IStyleDeclarationFunc): AtomStyleClass {
+        return this.createSubClass(":first-child", childOrStyle, styles);
+    }
+
+    public lastChild(styles: IStyleDeclarationFunc): AtomStyleClass;
+    public lastChild(child: string, styles: IStyleDeclarationFunc): AtomStyleClass;
+    public lastChild(childOrStyle: string | IStyleDeclarationFunc, styles?: IStyleDeclarationFunc): AtomStyleClass {
+        return this.createSubClass(":last-child", childOrStyle, styles);
+    }
+
+    public immediateChild(styles: IStyleDeclarationFunc): AtomStyleClass;
+    public immediateChild(name: string, styles: IStyleDeclarationFunc): AtomStyleClass;
+    public immediateChild(
+        nameOrStyles: string | IStyleDeclarationFunc,
+        styles?: IStyleDeclarationFunc): AtomStyleClass {
+        if (typeof nameOrStyles === "string") {
+            return this.subClass(` > ${nameOrStyles}`, styles);
+        }
+        return this.subClass(" > *", nameOrStyles);
+    }
+
+    public descendent(styles: IStyleDeclarationFunc): AtomStyleClass;
+    public descendent(name: string, styles: IStyleDeclarationFunc): AtomStyleClass;
+    public descendent(
+        nameOrStyles: string | IStyleDeclarationFunc,
+        styles?: IStyleDeclarationFunc): AtomStyleClass {
+        if (typeof nameOrStyles === "string") {
+            return this.subClass(` ${nameOrStyles}`, styles);
+        }
+        return this.subClass(" *", nameOrStyles);
     }
 
     public clone(name: string, pairs?: IStyleDeclarationFunc): AtomStyleClass {
@@ -128,5 +178,15 @@ export class AtomStyleClass
             }
         }
         return `{ ${sslist.join(";\r\n")} }`;
+    }
+
+    private createSubClass(
+        postFix: string,
+        childOrStyle: string | IStyleDeclarationFunc,
+        styles?: IStyleDeclarationFunc): AtomStyleClass {
+        if (typeof childOrStyle === "string") {
+            return this.subClass(`${childOrStyle}${postFix}`, styles);
+        }
+        return this.subClass(postFix, childOrStyle);
     }
 }

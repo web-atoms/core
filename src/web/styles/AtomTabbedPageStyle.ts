@@ -28,14 +28,14 @@ export class AtomTabbedPageStyle extends AtomStyle {
         cursor: "default",
         position: "relative"
     }))
-    .subClass(" > div", () => ({
+    .hover(() => ({
+        backgroundColor: this.theme.hoverColor
+    }))
+    .immediateChild("div", () => ({
         display: "inline-block",
         padding: (this.padding || this.theme.padding) + "px",
         paddingRight: ((this.padding || this.theme.padding) + 23) + "px",
         right: "22px"
-    }))
-    .subClass(":hover", () => ({
-        backgroundColor: this.theme.hoverColor
     }));
 
     public readonly selectedTabItem = this.tabItem.clone("selected-tab-item", () => ({
@@ -43,15 +43,15 @@ export class AtomTabbedPageStyle extends AtomStyle {
         backgroundColor: this.theme.selectedBgColor,
         color: this.theme.selectedColor
     }))
-    .subClass(" > div", () => ({
+    .hover(() => ({
+        backgroundColor: this.theme.selectedBgColor,
+        color: this.theme.hoverColor
+    }))
+    .immediateChild("div", () => ({
         display: "inline-block",
         padding: (this.padding || this.theme.padding) + "px",
         paddingRight: ((this.padding || this.theme.padding) + 23) + "px",
         right: "22px"
-    }))
-    .subClass(":hover", () => ({
-        backgroundColor: this.theme.selectedBgColor,
-        color: this.theme.hoverColor
     }));
 
     public readonly closeButton = this.createClass("close-button", () => ({
@@ -63,7 +63,7 @@ export class AtomTabbedPageStyle extends AtomStyle {
         padding: "8px",
         backgroundImage: `url(${ModuleFiles.src.web.images.closeButton_svg})`
     }))
-    .subClass(":hover", () => ({
+    .hover(() => ({
         backgroundImage: `url(${ModuleFiles.src.web.images.closeButtonHover_svg})`
     }));
 
