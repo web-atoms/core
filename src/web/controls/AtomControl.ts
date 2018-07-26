@@ -3,6 +3,7 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
+import { IClassOf } from "../../core/types";
 import { TypeKey } from "../../di/TypeKey";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleClass } from "../styles/AtomStyleClass";
@@ -25,7 +26,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public defaultControlStyle: any;
 
     private mControlStyle: AtomStyle = undefined;
-    public get controlStyle(): AtomStyle {
+    public get controlStyle(): AtomStyle | IClassOf<AtomStyle> {
         if (this.mControlStyle === undefined) {
             const key = TypeKey.get(this.defaultControlStyle || this.constructor);
 
@@ -53,22 +54,22 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 return this.mControlStyle;
             }
             if (this.defaultControlStyle) {
-                this.mControlStyle = defaultStyleSheets[key];
-                if (!this.mControlStyle) {
-                    // const pt = Object.getPrototypeOf(this.theme).constructor;
-                    // const ss = new (pt)(key);
-                    const ss = this.theme;
-                    this.mControlStyle = defaultStyleSheets[key] = ss.createNamedStyle(this.defaultControlStyle, key);
-                    defaultStyleSheets[key] = this.mControlStyle;
-                }
+                this.mControlStyle = defaultStyleSheets[key] ||
+                ( defaultStyleSheets[key] = this.theme.createNamedStyle(this.defaultControlStyle, key));
             }
             this.mControlStyle = this.mControlStyle || null;
         }
         return this.mControlStyle;
     }
 
-    public set controlStyle(v: AtomStyle) {
-        this.mControlStyle = v;
+    public set controlStyle(v: AtomStyle | IClassOf<AtomStyle>) {
+        if (v instanceof AtomStyle) {
+            this.mControlStyle = v;
+        } else {
+            const key = TypeKey.get(v);
+            this.mControlStyle = defaultStyleSheets[key] ||
+            ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key));
+        }
         AtomBinder.refreshValue(this, "controlStyle");
         this.invalidate();
     }
