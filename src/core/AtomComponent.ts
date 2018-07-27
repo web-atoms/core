@@ -119,6 +119,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     private bindings: Array<PropertyBinding<T>> = [];
 
     constructor(@Inject public readonly app: App, e?: T) {
+        // if (!app) {
+        //     // tslint:disable-next-line:no-console
+        //     console.error("app cannot be null while creating control");
+        // }
         this.disposables = [];
         this.element = e;
         const a = this.beginEdit();

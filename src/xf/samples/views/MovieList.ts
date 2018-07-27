@@ -2,7 +2,7 @@ import { AtomBridge } from "../../../core/AtomBridge";
 import { AtomXFControl } from "../../controls/AtomXFControl";
 import MovieListViewModel from "./MovieListViewModel";
 
-export class MovieList extends AtomXFControl {
+export default class MovieList extends AtomXFControl {
 
     protected create(): void {
         this.element = this.createControl("Xamarin.Forms.ContentPage");
