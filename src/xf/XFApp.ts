@@ -2,7 +2,6 @@ import * as A from "../App";
 import { AtomBridge } from "../core/AtomBridge";
 import { AtomXFControl } from "./controls/AtomXFControl";
 
-declare var App: any;
 declare var bridge: any;
 
 export default class XFApp extends A.App {
@@ -14,7 +13,7 @@ export default class XFApp extends A.App {
 
     public set root(v: AtomXFControl) {
         this.mRoot = v;
-        App.CurrentPage = v.element;
+        bridge.setRoot(v.element);
     }
 
     constructor() {
