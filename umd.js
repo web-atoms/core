@@ -28,6 +28,13 @@ var UMD = {
     },
 
     resolvePath: function (path) {
+        var firstChar = path[0];
+        if (firstChar === "/" || firstChar === ".") {
+            return path;
+        }
+        if (/(http|https)\:\/\//.test(path)) {
+            return path;
+        }
         var tokens = path.split("/");
         var package = tokens[0];
         tokens[0] = this.mapConfig[package];
@@ -53,6 +60,8 @@ var UMD = {
 
     setup: function() {
         var config = {
+            defaultExtensions: "js",
+            format: "amd",
             map: {},
             meta: {
 
@@ -61,7 +70,7 @@ var UMD = {
                 '.': {
                     defaultExtensions: "js",
                     format: "amd"
-                }
+                }, 
             }
         };
 
@@ -69,6 +78,11 @@ var UMD = {
             if (this.mapConfig.hasOwnProperty(key)) {
                 var element = this.mapConfig[key];
                 config.map[key] = element;
+
+                config.packages[config.map[key]] = {
+                    defaultExtensions: "js",
+                    format: "amd"
+                };
             }
         }
 
@@ -82,17 +96,20 @@ var UMD = {
         this._initialized = true;
     },
 
-    load: function(path) {
+    load: function(path, designMode) {
         if (!this._initialized) {
             this.setup();
         }
 
-        return SystemJS.import(path);
+        return SystemJS.import("web-atoms-core/dist/Atom").then(function (a) {
+            a.Atom.designMode = designMode;
+            return SystemJS.import(path);
+        });
     },
 
     loadView: function(path, designMode, appPath) {
-        this.load(appPath || "web-atoms-core/bin/web/WebApp").then(function(m) {
-            SystemJS.import("web-atoms-core/bin/Atom").then(function (a) {
+        this.load(appPath || "web-atoms-core/dist/web/WebApp").then(function(m) {
+            SystemJS.import("web-atoms-core/dist/Atom").then(function (a) {
                 a.Atom.designMode = designMode;
                 var app = new (m.default)();
                 app.onReady(function(){

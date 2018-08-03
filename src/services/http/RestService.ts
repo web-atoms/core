@@ -3,10 +3,12 @@ import { CancelToken, INameValuePairs, INameValues } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { JsonService } from "../JsonService";
 
+declare var UMD: any;
+
 // tslint:disable-next-line
 function methodBuilder(method: string) {
     // tslint:disable-next-line
-    return function (url: string) {
+    return function (url: string, responseType: string = "application/json") {
         // tslint:disable-next-line
         return function (target: BaseService, propertyKey: string, descriptor: any) {
 
@@ -30,11 +32,7 @@ function methodBuilder(method: string) {
                     }
                 }
 
-                let rn: any = null;
-                if (target.methodReturns) {
-                    rn = target.methodReturns[propertyKey];
-                }
-                const r: any = this.invoke(url, method, a, args, rn);
+                const r: any = this.invoke(url, method, a, args, responseType);
                 return r;
             };
 
@@ -393,11 +391,14 @@ export class BaseService {
         url: string,
         method: string,
         bag: ServiceParameter[],
-        values: any[], returns: { new() }): Promise<any> {
+        values: any[], responseType: string): Promise<any> {
+
+        url = UMD.resolvePath(url);
 
         let options: AjaxOptions = new AjaxOptions();
         options.method = method;
         options.type = method;
+        options.dataType = responseType;
         if (bag) {
             for (let i: number = 0; i < bag.length; i++) {
                 const p: ServiceParameter = bag[i];
@@ -512,14 +513,6 @@ export class BaseService {
                 }
             }
 
-            if (options.contentType) {
-                xhr.setRequestHeader("content-type", options.contentType);
-            }
-
-            if (options.dataType) {
-                xhr.setRequestHeader("accept", options.dataType);
-            }
-
             xhr.onreadystatechange = (e) => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     // if (options.dataType && /json/i.test(options.dataType)) {
@@ -533,9 +526,17 @@ export class BaseService {
 
             xhr.open(options.method, options.url, true);
 
-            if (options.data) {
-                xhr.send(options.data);
+            if (options.contentType) {
+                xhr.setRequestHeader("content-type", options.contentType);
             }
+
+            if (options.dataType) {
+                xhr.setRequestHeader("accept", options.dataType);
+            }
+
+//            if (options.data) {
+            xhr.send(options.data);
+//            }
 
         });
 

@@ -9,10 +9,10 @@ export class TabApp extends WebApp {
 
         setTimeout(async () => {
             const nav = this.resolve(NavigationService) as NavigationService;
-            await nav.openPage("web-atoms-core/bin/web/samples/tabs/views/Page1", {
+            await nav.openPage("web-atoms-core/dist/web/samples/tabs/views/Page1", {
                 message: "Page 1"
             });
-            await nav.openPage("web-atoms-core/bin/web/samples/tabs/views/Page1", {
+            await nav.openPage("web-atoms-core/dist/web/samples/tabs/views/Page1", {
                 message: "Page 2"
             });
         }, 1000);

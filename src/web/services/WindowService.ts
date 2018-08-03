@@ -91,7 +91,7 @@ export class WindowService extends NavigationService {
     }
 
     public confirm(message: string, title: string): Promise<any> {
-        return this.openPage("web-atoms-core/bin/{platform}/controls/AtomAlertWindow", {
+        return this.openPage("web-atoms-core/dist/{platform}/controls/AtomAlertWindow", {
             okTitle: "Yes",
             cancelTitle: "No",
             title,
@@ -100,7 +100,7 @@ export class WindowService extends NavigationService {
     }
 
     public alert(message: string, title?: string): Promise<any> {
-        return this.openPage("web-atoms-core/bin/{platform}/controls/AtomAlertWindow", {
+        return this.openPage("web-atoms-core/dist/{platform}/controls/AtomAlertWindow", {
             message,
             title,
             okTitle: "Ok",

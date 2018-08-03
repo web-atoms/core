@@ -101,6 +101,10 @@ function define(requires, factory){
     amdLoader.finish();
 }
 
+amdLoader.import = function(name) {
+
+};
+
 define.amd = true;
 
 Array.prototype.find = function(fx) {

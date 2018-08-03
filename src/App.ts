@@ -50,12 +50,20 @@ export class App extends ServiceProvider {
     constructor() {
         super(null);
         this.bag = {};
-
+        this.put(App, this);
         setTimeout(() => {
-            this.onReady(() => this.main());
+            this.onReady(() => {
+                try {
+                    this.main();
+                } catch (e) {
+                    // tslint:disable-next-line:no-console
+                    console.error("timeout for onReady");
+                    // tslint:disable-next-line:no-console
+                    console.error(e);
+                }
+            });
         }, 5);
 
-        this.put(App, this);
     }
 
     public syncUrl(): void {
@@ -76,9 +84,11 @@ export class App extends ServiceProvider {
             tf().then((): void => {
                 // nothing
             }).catch((error) => {
+                this.onError("runAsync");
                 this.onError(error);
             });
         } catch (e) {
+            this.onError("runAsync");
             this.onError(e);
         }
     }
@@ -139,7 +149,7 @@ export class App extends ServiceProvider {
     }
 
     // tslint:disable-next-line:no-empty
-    protected onReady(f: () => void): void {
+    protected onReady(f: () => any): void {
     }
 
 }
