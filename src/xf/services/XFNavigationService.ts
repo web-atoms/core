@@ -22,10 +22,12 @@ export default class XFNavigationService extends NavigationService {
     private stack: string[] = [];
 
     public get title(): string {
-        return bridge.getTitle();
+        // return bridge.getTitle();
+        throw new Error("Not supported");
     }
     public set title(v: string) {
-        bridge.setTitle(v);
+        // bridge.setTitle(v);
+        throw new Error("Not supported");
     }
 
     private mLocation: ILocation;
