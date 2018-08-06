@@ -495,6 +495,8 @@ export class BaseService {
 
         // return new CancellablePromise();
 
+        url = url || options.url;
+
         await Atom.delay(100, options.cancel);
 
         const xhr = new XMLHttpRequest();
@@ -525,7 +527,7 @@ export class BaseService {
                 }
             };
 
-            xhr.open(options.method, options.url, true);
+            xhr.open(options.method, url, true);
 
             if (options.dataType) {
                 xhr.setRequestHeader("accept", options.dataType);
