@@ -298,16 +298,16 @@ export class ServiceParameter {
 }
 
 export class AjaxOptions {
-    public dataType: string;
-    public contentType: string;
-    public method: string;
-    public url: string;
-    public data: any;
-    public type: string;
-    public cancel: CancelToken;
-    public headers: INameValues;
-    public cache: any;
-    public attachments: any[];
+    public dataType?: string;
+    public contentType?: string;
+    public method?: string;
+    public url?: string;
+    public data?: any;
+    public type?: string;
+    public cancel?: CancelToken;
+    public headers?: INameValues;
+    public cache?: any;
+    public attachments?: any[];
 }
 
 // /**
