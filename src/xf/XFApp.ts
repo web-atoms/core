@@ -29,7 +29,7 @@ export default class XFApp extends A.App {
             });
             a.catch((e) => {
                 // tslint:disable-next-line:no-console
-                console.error("XFApp.onReady");
+                // console.error("XFApp.onReady");
                 // tslint:disable-next-line:no-console
                 console.error(typeof e === "string" ? e : JSON.stringify(e));
             });

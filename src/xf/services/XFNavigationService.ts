@@ -8,13 +8,13 @@ import { ILocation, NavigationService } from "../../services/NavigationService";
 import { AtomViewLoader } from "../../web/AtomViewLoader";
 import { AtomUI } from "../../web/core/AtomUI";
 
-declare var bridge: any;
-
-declare var navigationService: {
+declare var bridge: {
     alert(message: string, title: string, success: () => void, failed: (r) => void);
     confirm(message: string, title: string, success: () => void, failed: (r) => void);
     getTitle(): string;
     setTitle(v: string): void;
+    setRoot(e: any): void;
+    pushPage(e: any, success: () => void, failed: (r) => void);
 };
 
 export default class XFNavigationService extends NavigationService {
@@ -22,10 +22,10 @@ export default class XFNavigationService extends NavigationService {
     private stack: string[] = [];
 
     public get title(): string {
-        return navigationService.getTitle();
+        return bridge.getTitle();
     }
     public set title(v: string) {
-        navigationService.setTitle(v);
+        bridge.setTitle(v);
     }
 
     private mLocation: ILocation;
@@ -41,7 +41,7 @@ export default class XFNavigationService extends NavigationService {
 
     public alert(message: string, title?: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            navigationService.alert(message, title, () => {
+            bridge.alert(message, title, () => {
                 resolve();
             }, (f) => {
                 reject(f);
@@ -50,7 +50,7 @@ export default class XFNavigationService extends NavigationService {
     }
     public confirm(message: string, title?: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            navigationService.confirm(message, title, () => {
+            bridge.confirm(message, title, () => {
                 resolve();
             }, (f) => {
                 reject(f);
@@ -121,7 +121,11 @@ export default class XFNavigationService extends NavigationService {
     public back(): void {
         if (this.stack.length) {
             const url = this.stack.pop();
-            this.navigate(url);
+            this.app.runAsync(async () => {
+                const uri = new AtomUri(url);
+                const popup = await AtomViewLoader.loadView(uri, this.app);
+                bridge.setRoot(popup.element);
+            });
         }
     }
 }
