@@ -157,6 +157,8 @@ export const Query: RestParamAttr = parameterBuilder("Query");
  */
 export const Body: RestAttr = parameterBuilder("Body")("");
 
+export const RawBody: RestAttr = parameterBuilder("RawBody")("");
+
 /**
  * This will register data fragment on ajax in old formModel way.
  *
@@ -173,6 +175,8 @@ export const Body: RestAttr = parameterBuilder("Body")("");
  * @function BodyFormModel
  */
 export const BodyFormModel: RestAttr = parameterBuilder("BodyFormModel")("");
+
+export const XmlBody: RestAttr = parameterBuilder("XmlBody")("");
 
 /**
  * Http Post method
@@ -294,16 +298,16 @@ export class ServiceParameter {
 }
 
 export class AjaxOptions {
-    public dataType: string;
-    public contentType: string;
-    public method: string;
-    public url: string;
-    public data: any;
-    public type: string;
-    public cancel: CancelToken;
-    public headers: INameValues;
-    public cache: any;
-    public attachments: any[];
+    public dataType?: string;
+    public contentType?: string;
+    public method?: string;
+    public url?: string;
+    public data?: any;
+    public type?: string;
+    public cancel?: CancelToken;
+    public headers?: INameValues;
+    public cache?: any;
+    public attachments?: any[];
 }
 
 // /**
@@ -423,6 +427,13 @@ export class BaseService {
                     case "bodyformmodel":
                         options.data = v;
                         break;
+                    case "rawbody":
+                        options.data = v;
+                        break;
+                    case "xmlbody":
+                        options.contentType = "text/xml";
+                        options.data = v;
+                        break;
                     case "cancel":
                         options.cancel = v as CancelToken;
                         break;
@@ -484,6 +495,8 @@ export class BaseService {
 
         // return new CancellablePromise();
 
+        url = url || options.url;
+
         await Atom.delay(100, options.cancel);
 
         const xhr = new XMLHttpRequest();
@@ -503,16 +516,6 @@ export class BaseService {
                 });
             }
 
-            const h = options.headers;
-            if (h) {
-                for (const key in h) {
-                    if (h.hasOwnProperty(key)) {
-                        const element = h[key];
-                        xhr.setRequestHeader(key, element.toString());
-                    }
-                }
-            }
-
             xhr.onreadystatechange = (e) => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     // if (options.dataType && /json/i.test(options.dataType)) {
@@ -524,14 +527,24 @@ export class BaseService {
                 }
             };
 
-            xhr.open(options.method, options.url, true);
+            xhr.open(options.method, url, true);
+
+            if (options.dataType) {
+                xhr.setRequestHeader("accept", options.dataType);
+            }
 
             if (options.contentType) {
                 xhr.setRequestHeader("content-type", options.contentType);
             }
 
-            if (options.dataType) {
-                xhr.setRequestHeader("accept", options.dataType);
+            const h = options.headers;
+            if (h) {
+                for (const key in h) {
+                    if (h.hasOwnProperty(key)) {
+                        const element = h[key];
+                        xhr.setRequestHeader(key, element.toString());
+                    }
+                }
             }
 
 //            if (options.data) {
