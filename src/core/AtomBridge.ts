@@ -12,6 +12,8 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
         failed: (r) => void,
         progress: (p) => void) => void;
 
+    public setTemplate: (element: any, name: string, templateFactory: () => any) => void;
+
     public abstract create(type: string): T;
 
     public abstract attachControl(element: T, control: AtomControl): void;

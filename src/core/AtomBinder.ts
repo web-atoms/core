@@ -191,7 +191,10 @@ export class AtomBinder {
 
     public static add_CollectionChanged(target: any[], handler: WatchFunction): IDisposable {
         if (target == null) {
-            return null;
+            throw new Error("Target Array to watch cannot be null");
+        }
+        if (target == null) {
+            throw new Error("Target handle to watch an Array cannot be null");
         }
         const handlers = AtomBinder.get_WatchHandler(target as IWatchableObject, "_items");
         handlers.push(handler);

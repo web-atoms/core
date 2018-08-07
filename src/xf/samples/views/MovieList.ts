@@ -13,15 +13,15 @@ export default class MovieList extends AtomXFControl {
     <Grid>
         <ListView x:Name="listView"></ListView>
     </Grid>
-</ContentPage>
-        `);
+</ContentPage>`);
 
         this.viewModel = this.resolve(MovieListViewModel);
 
         const label1 = this.find("listView");
 
         this.bind(label1, "ItemsSource", [["viewModel", "list"]]);
-        this.setPrimitiveValue(label1, "ItemTemplate", MovieListItemTemplate );
+
+        AtomBridge.instance.setTemplate(label1, "ItemTemplate", () => new MovieListItemTemplate(this.app) );
     }
 }
 

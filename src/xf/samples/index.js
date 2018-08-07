@@ -3,7 +3,7 @@
 
 
 UMD.map("reflect-metadata","https://cdn.jsdelivr.net/npm/reflect-metadata@0.1.12/Reflect.js");
-UMD.map("web-atoms-core","/");
+UMD.map("web-atoms-core","http://192.168.1.105:8080/");
 UMD.loadView(
     "web-atoms-core/dist/xf/samples/views/MovieList",
     true,
