@@ -198,7 +198,8 @@ import { AtomDisposable, IDisposable } from "./types";
             fx?: (t: any[]) => void
         ): IDisposable {
             if (!f && !fx) {
-                throw new Error("Handler cannot be null");
+                throw new Error(`Handler cannot be null with ${arguments.length}`
+                 + ` arguments ${JSON.stringify(arguments)}`);
             }
             f = f || (function() {
                 return fx.call(this, arguments);
