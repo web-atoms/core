@@ -193,7 +193,13 @@ import { AtomDisposable, IDisposable } from "./types";
             AtomBinder.refreshValue(this, "length");
         }
 
-        public watch(f: (target: any, key: string, index?: number, item?: any) => void): IDisposable {
+        public watch(
+            f: (target: any, key: string, index?: number, item?: any) => void,
+            fx?: (t: any[]) => void
+        ): IDisposable {
+            f = f || function() {
+                return fx.call(this, arguments);
+            };
             return AtomBinder.add_CollectionChanged(this, f);
         }
 
