@@ -21,7 +21,7 @@ export default class MovieList extends AtomXFControl {
 
         this.bind(label1, "ItemsSource", [["viewModel", "list"]]);
 
-        AtomBridge.instance.setTemplate(label1, "ItemTemplate", () => new MovieListItemTemplate(this.app) );
+        this.setTemplate(label1, "ItemTemplate", () => new MovieListItemTemplate(this.app) );
     }
 }
 
