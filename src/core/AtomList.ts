@@ -200,7 +200,13 @@ import { AtomDisposable, IDisposable } from "./types";
             if (wrap) {
                 const fx = f;
                 f = (function() {
-                    return fx.call(this, arguments);
+                    const p: any[] = [];
+                    // tslint:disable-next-line:prefer-for-of
+                    for (let i: number = 0; i < arguments.length ; i++) {
+                        const iterator = arguments[i];
+                        p.push(iterator);
+                    }
+                    return fx.call(this, p);
                 });
             }
             return AtomBinder.add_CollectionChanged(this, f);
