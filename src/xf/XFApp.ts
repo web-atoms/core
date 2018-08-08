@@ -1,6 +1,8 @@
 import * as A from "../App";
 import { AtomBridge } from "../core/AtomBridge";
+import { NavigationService } from "../services/NavigationService";
 import { AtomXFControl } from "./controls/AtomXFControl";
+import XFNavigationService from "./services/XFNavigationService";
 
 declare var bridge: any;
 
@@ -19,6 +21,7 @@ export default class XFApp extends A.App {
     constructor() {
         super();
         AtomBridge.instance = bridge;
+        this.put(NavigationService, this.resolve(XFNavigationService));
     }
 
     protected onReady(f: () => any): void {
