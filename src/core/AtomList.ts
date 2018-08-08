@@ -197,12 +197,12 @@ import { AtomDisposable, IDisposable } from "./types";
             f: (target: any, key: string, index?: number, item?: any) => void,
             fx?: (t: any[]) => void
         ): IDisposable {
+            if (!f && !fx) {
+                throw new Error("Handler cannot be null");
+            }
             f = f || (function() {
                 return fx.call(this, arguments);
             });
-            if (!f) {
-                throw new Error("Handler cannot be null");
-            }
             return AtomBinder.add_CollectionChanged(this, f);
         }
 
