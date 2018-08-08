@@ -52,4 +52,8 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         AtomBridge.instance.setTemplate(element, name, template);
     }
 
+    protected setImport(element: any, name: string, factory: () => AtomXFControl): void {
+        AtomBridge.instance.setImport(element, name, factory);
+    }
+
 }

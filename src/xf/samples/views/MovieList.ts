@@ -1,17 +1,28 @@
 import { AtomBridge } from "../../../core/AtomBridge";
 import { AtomXFControl } from "../../controls/AtomXFControl";
 import MovieListViewModel from "./MovieListViewModel";
+import TitlePage from "./TitlePage";
 
 export default class MovieList extends AtomXFControl {
 
     protected create(): void {
         this.element = this.createControl("Xamarin.Forms.ContentPage");
+        this.setImport(this.element, "TitlePage", () => new TitlePage(this.app));
 
         this.loadXaml(`<ContentPage
+        xmlns:atom="clr-namespace:WebAtoms;assembly=WebAtoms"
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         xmlns="http://xamarin.com/schemas/2014/forms">
     <Grid>
-        <ListView x:Name="listView"></ListView>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <atom:JSObjectCreator
+            Type="TitlePage"/>
+        <ListView
+            Grid.Row="1"
+            x:Name="listView"></ListView>
     </Grid>
 </ContentPage>`);
 
