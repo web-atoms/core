@@ -195,15 +195,14 @@ import { AtomDisposable, IDisposable } from "./types";
 
         public watch(
             f: (target: any, key: string, index?: number, item?: any) => void,
-            fx?: (t: any[]) => void
+            wrap?: boolean
         ): IDisposable {
-            if (!f && !fx) {
-                throw new Error(`Handler cannot be null with ${arguments.length}`
-                 + ` arguments ${JSON.stringify(arguments)}`);
+            if (wrap) {
+                const fx = f;
+                f = (function() {
+                    return fx.call(this, arguments);
+                });
             }
-            f = f || (function() {
-                return fx.call(this, arguments);
-            });
             return AtomBinder.add_CollectionChanged(this, f);
         }
 
