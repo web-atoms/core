@@ -3,6 +3,7 @@ import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { AtomUri } from "../../core/AtomUri";
 import { INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
+import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { JsonService } from "../../services/JsonService";
 import { ILocation, NavigationService } from "../../services/NavigationService";
 import { AtomViewLoader } from "../../web/AtomViewLoader";
@@ -17,6 +18,7 @@ declare var bridge: {
     pushPage(e: any, success: () => void, failed: (r) => void);
 };
 
+@RegisterSingleton
 export default class XFNavigationService extends NavigationService {
 
     private stack: string[] = [];
