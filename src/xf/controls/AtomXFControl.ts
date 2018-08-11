@@ -24,6 +24,12 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return this;
     }
 
+    public dispose(e?: IAtomElement): void {
+        AtomBridge.instance.dispose(this.element);
+
+        super.dispose(e);
+    }
+
     protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
         AtomBinder.refreshValue(this, name);
         AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
@@ -47,4 +53,13 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     protected createControl(name: string): any {
         return AtomBridge.instance.create(name);
     }
+
+    protected setTemplate(element: any, name: string, template: () => AtomXFControl): void {
+        AtomBridge.instance.setTemplate(element, name, template);
+    }
+
+    protected setImport(element: any, name: string, factory: () => AtomXFControl): void {
+        AtomBridge.instance.setImport(element, name, factory);
+    }
+
 }

@@ -1,8 +1,20 @@
+import { AjaxOptions } from "../services/http/AjaxOptions";
 import { AtomControl } from "../web/controls/AtomControl";
 import { AtomUI, ChildEnumerator } from "../web/core/AtomUI";
 import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
+
+    public ajax: (
+        url: string,
+        options: AjaxOptions,
+        success: (r) => void,
+        failed: (r) => void,
+        progress: (p) => void) => void;
+
+    public setTemplate: (element: any, name: string, templateFactory: () => any) => void;
+
+    public setImport: (element: any, name: string, templateFactory: () => any) => void;
 
     public abstract create(type: string): T;
 
@@ -35,6 +47,7 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
     public abstract loadContent(element: T, text: string): void;
 
     public abstract findChild(element: T, name: string): T;
+
 }
 
 export class AtomElementBridge extends BaseElementBridge<HTMLElement> {

@@ -1,5 +1,8 @@
+import { AjaxOptions } from "./AjaxOptions";
+
 import { Atom } from "../../Atom";
-import { CancelToken, INameValuePairs, INameValues } from "../../core/types";
+import { AtomBridge } from "../../core/AtomBridge";
+import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { JsonService } from "../JsonService";
 
@@ -297,19 +300,6 @@ export class ServiceParameter {
     }
 }
 
-export class AjaxOptions {
-    public dataType?: string;
-    public contentType?: string;
-    public method?: string;
-    public url?: string;
-    public data?: any;
-    public type?: string;
-    public cancel?: CancelToken;
-    public headers?: INameValues;
-    public cache?: any;
-    public attachments?: any[];
-}
-
 // /**
 //  *
 //  *
@@ -401,7 +391,6 @@ export class BaseService {
 
         let options: AjaxOptions = new AjaxOptions();
         options.method = method;
-        options.type = method;
         options.dataType = responseType;
         if (bag) {
             for (let i: number = 0; i < bag.length; i++) {
@@ -491,7 +480,7 @@ export class BaseService {
         // });
     }
 
-    public async ajax(url: string, options: AjaxOptions): Promise<XMLHttpRequest> {
+    public async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
 
         // return new CancellablePromise();
 
@@ -499,9 +488,23 @@ export class BaseService {
 
         await Atom.delay(100, options.cancel);
 
+        if (options.cancel && options.cancel.cancelled) {
+            throw new Error("cancelled");
+        }
+
+        if (AtomBridge.instance.ajax) {
+            return await new Promise<AjaxOptions>((resolve, reject) => {
+                AtomBridge.instance.ajax(url, options, (r) => {
+                    resolve(options);
+                }, (e) => {
+                    reject(e);
+                }, null);
+            });
+        }
+
         const xhr = new XMLHttpRequest();
 
-        return await new Promise<XMLHttpRequest>((resolve, reject) => {
+        return await new Promise<AjaxOptions>((resolve, reject) => {
 
             if (options.cancel && options.cancel.cancelled) {
                 reject("cancelled");
@@ -523,7 +526,10 @@ export class BaseService {
                     // } else {
                     //     resolve(xhr.responseText);
                     // }
-                    resolve(xhr);
+                    options.status = xhr.status;
+                    options.responseText = xhr.responseText;
+                    options.responseType = xhr.responseType;
+                    resolve(options);
                 }
             };
 

@@ -1,6 +1,6 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.287",
+  "version": "1.0.303",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,8 @@
     "istanbul": "^0.4.5",
     "jsdom": "^11.11.0",
     "remap-istanbul": "^0.11.1",
-    "test-dom": "^1.0.0"
+    "test-dom": "^1.0.0",
+    "web-atoms-amd-loader": "^1.0.20"
   },
   "dependencies": {
     "golden-layout": "^1.5.9",

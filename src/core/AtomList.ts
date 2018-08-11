@@ -193,7 +193,22 @@ import { AtomDisposable, IDisposable } from "./types";
             AtomBinder.refreshValue(this, "length");
         }
 
-        public watch(f: (target: any, key: string, index?: number, item?: any) => void): IDisposable {
+        public watch(
+            f: (target: any, key: string, index?: number, item?: any) => void,
+            wrap?: boolean
+        ): IDisposable {
+            if (wrap) {
+                const fx = f;
+                f = (function() {
+                    const p: any[] = [];
+                    // tslint:disable-next-line:prefer-for-of
+                    for (let i: number = 0; i < arguments.length ; i++) {
+                        const iterator = arguments[i];
+                        p.push(iterator);
+                    }
+                    return fx.call(this, p);
+                });
+            }
             return AtomBinder.add_CollectionChanged(this, f);
         }
 
