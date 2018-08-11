@@ -24,6 +24,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return this;
     }
 
+    public dispose(e?: IAtomElement): void {
+        AtomBridge.instance.dispose(e || this.element);
+    }
+
     protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
         AtomBinder.refreshValue(this, name);
         AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
