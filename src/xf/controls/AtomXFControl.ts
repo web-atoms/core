@@ -68,8 +68,9 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                 const p = value() as Promise<any>;
                 if (p) {
                     p.catch((e) => {
+                        const t = e.stack ? e.toString() + "\r\n" + e.stack : e.toString();
                         // tslint:disable-next-line:no-console
-                        console.log(e);
+                        console.log(t);
                     });
                 }
             });
