@@ -65,7 +65,13 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     protected setElementValue(element: any, name: string, value: any): void {
         if (/^event/.test(name)) {
             this.bindEvent(element, name.substr(5), () => {
-                value();
+                const p = value() as Promise<any>;
+                if (p) {
+                    p.catch((e) => {
+                        // tslint:disable-next-line:no-console
+                        console.log(e);
+                    });
+                }
             });
             return;
         }
