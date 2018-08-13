@@ -9,7 +9,7 @@ export class AjaxOptions {
     public headers?: INameValues;
     public cache?: any;
     public attachments?: any[];
-    public responseText: string;
-    public status: number;
+    public responseText?: string;
+    public status?: number;
     public responseType?: string;
 }
