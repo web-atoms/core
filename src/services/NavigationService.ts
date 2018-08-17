@@ -1,4 +1,4 @@
-import { INameValuePairs, Mock } from "../core/types";
+import { INameValuePairs } from "../core/types";
 
 export interface ILocation {
     href?: string;
