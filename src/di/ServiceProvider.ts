@@ -1,9 +1,11 @@
-import { IClassOf, IDisposable } from "../core/types";
+import { DI, IClassOf, IDisposable } from "../core/types";
 import { InjectedTypes } from "./Inject";
 import { Scope, ServiceCollection, ServiceDescription } from "./ServiceCollection";
 import { TypeKey } from "./TypeKey";
 
 export class ServiceProvider implements IDisposable {
+
+    private static mappedTypes: {[key: string]: any} = {};
 
     private instances: { [key: string]: any } = {};
 
@@ -95,7 +97,15 @@ export class ServiceProvider implements IDisposable {
 
     private create(key: any): any {
 
-        let plist = InjectedTypes.paramList[TypeKey.get(key)];
+        const typeKey1 = TypeKey.get(key);
+
+        const mappedType = ServiceProvider.mappedTypes[typeKey1] || (
+            ServiceProvider.mappedTypes[typeKey1] = DI.resolveType(key)
+        );
+
+        key = mappedType;
+
+        let plist = InjectedTypes.paramList[typeKey1];
 
         // We need to find @Inject for base types if
         // current type does not define any constructor

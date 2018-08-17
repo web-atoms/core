@@ -117,6 +117,7 @@ export declare class UMD {
     public static resolveViewClassAsync<T>(path: string): Promise<IClassOf<T>>;
     public static mockType(type: any, name: string): void;
     public static inject(type: any, name: string): void;
+    public static resolveType(type: any): any;
 }
 
 export const DI = UMD;
