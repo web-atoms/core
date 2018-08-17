@@ -1,4 +1,4 @@
-import { INameValuePairs } from "../core/types";
+import { INameValuePairs, Mock } from "../core/types";
 
 export interface ILocation {
     href?: string;
@@ -23,3 +23,6 @@ export abstract class NavigationService {
 
     public abstract back(): void;
 }
+
+// Do not mock Navigation unless you want it in design time..
+// Mock.mock(NavigationService, "MockNavigationService");

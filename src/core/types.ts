@@ -112,3 +112,11 @@ export class ArrayHelper {
         return false;
     }
 }
+
+export declare class UMD {
+    public static resolveViewClassAsync<T>(path: string): Promise<IClassOf<T>>;
+    public static mockType(type: any, name: string): void;
+}
+
+export const Mock = UMD;
+export const _UMD = UMD;
