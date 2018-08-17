@@ -119,5 +119,4 @@ export declare class UMD {
     public static inject(type: any, name: string): void;
 }
 
-export const Mock = UMD;
-export const _UMD = UMD;
+export const DI = UMD;
