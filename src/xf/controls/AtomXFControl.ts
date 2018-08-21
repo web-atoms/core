@@ -62,4 +62,21 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         AtomBridge.instance.setImport(element, name, factory);
     }
 
+    protected setElementValue(element: any, name: string, value: any): void {
+        if (/^event/.test(name)) {
+            this.bindEvent(element, name.substr(5), () => {
+                const p = value() as Promise<any>;
+                if (p) {
+                    p.catch((e) => {
+                        const t = e.stack ? e.toString() + "\r\n" + e.stack : e.toString();
+                        // tslint:disable-next-line:no-console
+                        console.log(t);
+                    });
+                }
+            });
+            return;
+        }
+        AtomBridge.instance.setValue(element, name, value);
+    }
+
 }

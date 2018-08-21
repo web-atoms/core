@@ -23,3 +23,6 @@ export abstract class NavigationService {
 
     public abstract back(): void;
 }
+
+// Do not mock Navigation unless you want it in design time..
+// Mock.mock(NavigationService, "MockNavigationService");

@@ -103,7 +103,7 @@ export default class XFNavigationService extends NavigationService {
                 reject(i || "cancelled");
             }));
 
-            bridge.pushPage(popup, () => {
+            bridge.pushPage(popup.element, () => {
                 resolve(null);
             }, (e) => {
                 disposables.dispose();
