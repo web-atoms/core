@@ -51,11 +51,11 @@ export class AtomWindowStyle extends AtomStyle {
     }));
     public readonly closeButton: AtomStyleClass = this.createClass("close-button", () => ({
         position: "absolute",
-        right: "5px",
-        top: "6px",
+        right: "6px",
+        top: "7px",
         width: "0",
         height: "0",
-        padding: "8px",
+        padding: "9px",
         border: "none",
         backgroundColor: "#00000000",
         backgroundImage: `url(${ModuleFiles.src.web.images.closeButtonHover_svg})`
