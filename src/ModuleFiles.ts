@@ -17,12 +17,5 @@
         }
       }
     }
-  },
-  "samples": {
-    "tabs": {
-      "views": {
-        "Page1": "web-atoms-core/bin/{platform}/samples/tabs/views/Page1"
-      }
-    }
   }
 }
