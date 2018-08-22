@@ -39,8 +39,11 @@ export class AtomWindowStyle extends AtomStyle {
         right: 0,
         padding: "5px",
         minHeight: "20px",
-        backgroundColor: "#F0F0F0",
-        top: 0
+        backgroundColor: "#404040",
+        color: "white",
+        top: 0,
+        borderTopRightRadius: "5px",
+        borderTopLeftRadius: "5px"
     }));
     public readonly title: AtomStyleClass = this.createClass("title", () => ({
         margin: "auto"
@@ -73,13 +76,17 @@ export class AtomWindowStyle extends AtomStyle {
         right: 0,
         bottom: 0,
         padding: "5px",
-        backgroundColor: "#A0A0A0",
-        textAlign: "right"
+        backgroundColor: "#d4d4d4",
+        textAlign: "right",
+        borderBottomRightRadius: "4px",
+        borderBottomLeftRadius: "4px"
     }));
 
     public readonly commandBarButton: AtomStyleClass = this.createClass("command-bar button", () => ({
         borderRadius: "3px",
         marginLeft: "5px",
-        marginRight: "5px"
+        marginRight: "5px",
+        padding: "4px 16px",
+        border: "1px solid gray"
     }));
 }
