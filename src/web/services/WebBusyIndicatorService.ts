@@ -23,6 +23,9 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
         spanStyle.margin = "auto";
         spanStyle.width = "66px";
         spanStyle.height = "66px";
+        spanStyle.maxHeight = "100%";
+        spanStyle.maxWidth = "100%";
+        spanStyle.left = spanStyle.right = spanStyle.bottom = spanStyle.top = "0";
         span.src = ModuleFiles.src.web.images.busy_gif;
 
         div.appendChild(span);
