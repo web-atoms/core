@@ -69,7 +69,7 @@ class AtomWindowTitleTemplate extends AtomControl {
         // add close button
         const closeButton = document.createElement("button");
         this.bind(closeButton, "styleClass", [["templateParent", "controlStyle", "closeButton"]]);
-        closeButton.textContent = "x";
+        // closeButton.textContent = "x";
 
         this.bindEvent(closeButton, "click", (e) => {
             const w = this.templateParent as AtomWindow;

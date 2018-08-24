@@ -1,3 +1,4 @@
+import { ModuleFiles } from "../../ModuleFiles";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleClass } from "./AtomStyleClass";
 
@@ -21,7 +22,8 @@ export class AtomWindowStyle extends AtomStyle {
         border: "solid 1px #808080",
         fontFamily: "Arial",
         borderRadius: "5px",
-        padding: "5px"
+        padding: "5px",
+        backgroundColor: "white"
     }));
 
     public readonly titlePresenter: AtomStyleClass = this.createClass("titlePresenter", () => ({
@@ -36,35 +38,33 @@ export class AtomWindowStyle extends AtomStyle {
         position: "absolute",
         left: 0,
         right: 0,
-        padding: "5px",
+        padding: "7px",
         minHeight: "20px",
-        backgroundColor: "#F0F0F0",
-        top: 0
+        backgroundColor: "#404040",
+        color: "white",
+        top: 0,
+        borderTopRightRadius: "4px",
+        borderTopLeftRadius: "4px"
     }));
     public readonly title: AtomStyleClass = this.createClass("title", () => ({
         margin: "auto"
     }));
     public readonly closeButton: AtomStyleClass = this.createClass("close-button", () => ({
         position: "absolute",
-        right: "5px",
-        top: 0,
-        bottom: 0,
-        padding: 0,
-        color: "white",
+        right: "6px",
+        top: "7px",
+        width: "0",
+        height: "0",
+        padding: "9px",
         border: "none",
-        backgroundColor: "red",
-        margin: "auto",
-        height: "20px",
-        borderRadius: "10px",
-        width: "20px",
-        verticalAlign: "middle",
-        textAlign: "center"
+        backgroundColor: "#00000000",
+        backgroundImage: `url(${ModuleFiles.src.web.images.closeButtonHover_svg})`
     }));
     public readonly content: AtomStyleClass = this.createClass("content", () => ({
         position: "relative",
         padding: "10px",
         background: "white",
-        marginTop: "25px"
+        marginTop: "30px"
     }));
     public readonly commandBar: AtomStyleClass = this.createClass("command-bar", () => ({
         position: "absolute",
@@ -72,13 +72,18 @@ export class AtomWindowStyle extends AtomStyle {
         right: 0,
         bottom: 0,
         padding: "5px",
-        backgroundColor: "#A0A0A0",
-        textAlign: "right"
+        backgroundColor: "#d4d4d4",
+        textAlign: "right",
+        borderBottomRightRadius: "4px",
+        borderBottomLeftRadius: "4px"
     }));
 
     public readonly commandBarButton: AtomStyleClass = this.createClass("command-bar button", () => ({
         borderRadius: "3px",
         marginLeft: "5px",
-        marginRight: "5px"
+        marginRight: "5px",
+        padding: "4px 16px",
+        backgroundColor: "whitesmoke",
+        border: "1px solid gray"
     }));
 }
