@@ -8,6 +8,8 @@ import { ChildEnumerator } from "./core/AtomUI";
 import { WindowService } from "./services/WindowService";
 import { AtomStyleSheet } from "./styles/AtomStyleSheet";
 import { AtomTheme } from "./styles/AtomTheme";
+import { BusyIndicatorService } from "../services/BusyIndicatorService";
+import { WebBusyIndicatorService } from "./services/WebBusyIndicatorService";
 
 export default class WebApp extends App {
 
@@ -63,6 +65,9 @@ export default class WebApp extends App {
         this.url = new AtomUri(location.href);
 
         this.put(NavigationService, this.resolve(WindowService));
+
+        this.put(BusyIndicatorService, this.resolve(WebBusyIndicatorService));
+
         ServiceCollection.instance.registerSingleton(AtomStyleSheet, (sp) => sp.resolve(AtomTheme));
 
         // let us set contextId

@@ -46,6 +46,14 @@ export interface IRect {
 
 export class AtomDisposable implements IDisposable {
 
+    private static mEmpty: AtomDisposable;
+
+    public static get empty(): AtomDisposable {
+        return AtomDisposable.mEmpty || (AtomDisposable.mEmpty = new AtomDisposable(() => {
+            // do nothing
+        }));
+    }
+
     // tslint:disable-next-line:ban-types
     private f: Function;
 

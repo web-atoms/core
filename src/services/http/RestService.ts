@@ -1,5 +1,6 @@
 import { AjaxOptions } from "./AjaxOptions";
 
+import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
@@ -356,7 +357,10 @@ export class BaseService {
 
     public methodReturns: any = {};
 
-    constructor(@Inject public readonly jsonService: JsonService) {
+    constructor(
+        @Inject private readonly app: App,
+        @Inject public readonly jsonService: JsonService
+    ) {
 
     }
 
@@ -387,65 +391,74 @@ export class BaseService {
         bag: ServiceParameter[],
         values: any[], responseType: string): Promise<any> {
 
-        url = UMD.resolvePath(url);
+        const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
 
-        let options: AjaxOptions = new AjaxOptions();
-        options.method = method;
-        options.dataType = responseType;
-        if (bag) {
-            for (let i: number = 0; i < bag.length; i++) {
-                const p: ServiceParameter = bag[i];
-                const v: any = values[i];
-                switch (p.type) {
-                    case "path":
-                        const vs: string = v + "";
-                        // escaping should be responsibility of the caller
-                        // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
-                        url = url.replace(`{${p.key}}`, vs);
-                        break;
-                    case "query":
-                        if (url.indexOf("?") === -1) {
-                            url += "?";
-                        }
-                        url += `&${p.key}=${encodeURIComponent(v)}`;
-                        break;
-                    case "body":
-                        options.data = v;
-                        options = this.encodeData(options);
-                        break;
-                    case "bodyformmodel":
-                        options.data = v;
-                        break;
-                    case "rawbody":
-                        options.data = v;
-                        break;
-                    case "xmlbody":
-                        options.contentType = "text/xml";
-                        options.data = v;
-                        break;
-                    case "cancel":
-                        options.cancel = v as CancelToken;
-                        break;
-                    case "header":
-                        options.headers = options.headers = {};
-                        options.headers[p.key] = v;
-                        break;
+        try {
+
+            url = UMD.resolvePath(url);
+
+            let options: AjaxOptions = new AjaxOptions();
+            options.method = method;
+            options.dataType = responseType;
+            if (bag) {
+                for (let i: number = 0; i < bag.length; i++) {
+                    const p: ServiceParameter = bag[i];
+                    const v: any = values[i];
+                    switch (p.type) {
+                        case "path":
+                            const vs: string = v + "";
+                            // escaping should be responsibility of the caller
+                            // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
+                            url = url.replace(`{${p.key}}`, vs);
+                            break;
+                        case "query":
+                            if (url.indexOf("?") === -1) {
+                                url += "?";
+                            }
+                            url += `&${p.key}=${encodeURIComponent(v)}`;
+                            break;
+                        case "body":
+                            options.data = v;
+                            options = this.encodeData(options);
+                            break;
+                        case "bodyformmodel":
+                            options.data = v;
+                            break;
+                        case "rawbody":
+                            options.data = v;
+                            break;
+                        case "xmlbody":
+                            options.contentType = "text/xml";
+                            options.data = v;
+                            break;
+                        case "cancel":
+                            options.cancel = v as CancelToken;
+                            break;
+                        case "header":
+                            options.headers = options.headers = {};
+                            options.headers[p.key] = v;
+                            break;
+                    }
                 }
             }
+            options.url = url;
+
+            const xhr = await this.ajax(url, options);
+
+            if (xhr.status >= 400) {
+                throw new Error(xhr.responseText);
+            }
+
+            if (options.dataType && /json/i.test(options.dataType)) {
+                return this.jsonService.parse(xhr.responseText);
+            }
+
+            return xhr.responseText;
+        } finally {
+            if (busyIndicator) {
+                busyIndicator.dispose();
+            }
         }
-        options.url = url;
-
-        const xhr = await this.ajax(url, options);
-
-        if (xhr.status >= 400) {
-            throw new Error(xhr.responseText);
-        }
-
-        if (options.dataType && /json/i.test(options.dataType)) {
-            return this.jsonService.parse(xhr.responseText);
-        }
-
-        return xhr.responseText;
 
         // const rp: Promise<any> = new Promise(
         //     (resolve, reject) => {
