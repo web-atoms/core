@@ -141,7 +141,9 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         }
 
         const l = (e) => {
-            f((element as HTMLInputElement).value);
+            const e1 = element as HTMLInputElement;
+            const v = e1.type === "checkbox" ? e1.checked : e1.value;
+            f(v);
         };
         for (const iterator of events) {
             element.addEventListener(iterator, l , false);
