@@ -358,7 +358,7 @@ export class BaseService {
     public methodReturns: any = {};
 
     constructor(
-        @Inject private readonly app: App,
+        @Inject protected readonly app: App,
         @Inject public readonly jsonService: JsonService
     ) {
 
