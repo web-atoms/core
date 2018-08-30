@@ -123,10 +123,6 @@ export class WindowService extends NavigationService {
         const theme = this.app.get(AtomTheme).popup;
 
         while (target) {
-
-            if (!target.classList.contains(theme.host.className)) {
-                break;
-            }
             if (target === element) {
                 // do not close this popup....
                 return;
