@@ -124,7 +124,7 @@ export class WindowService extends NavigationService {
 
         while (target) {
 
-            if (target.classList.contains(theme.host.className)) {
+            if (!target.classList.contains(theme.host.className)) {
                 break;
             }
             if (target === element) {
