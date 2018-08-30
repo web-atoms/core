@@ -129,15 +129,3 @@ export declare class UMD {
 }
 
 export const DI = UMD;
-
-export function DIMock(name: string): any {
-    return (target: any): void => {
-        UMD.mockType(target, name);
-    };
-}
-
-export function DIInject(name: string): any {
-    return (target: any): void => {
-        UMD.inject(target, name);
-    };
-}
