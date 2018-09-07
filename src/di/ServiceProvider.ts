@@ -97,13 +97,15 @@ export class ServiceProvider implements IDisposable {
 
     private create(key: any): any {
 
-        const typeKey1 = TypeKey.get(key);
+        const originalKey = key;
+        const originalTypeKey = TypeKey.get(originalKey);
 
-        const mappedType = ServiceProvider.mappedTypes[typeKey1] || (
-            ServiceProvider.mappedTypes[typeKey1] = DI.resolveType(key)
+        const mappedType = ServiceProvider.mappedTypes[originalTypeKey] || (
+            ServiceProvider.mappedTypes[originalTypeKey] = DI.resolveType(originalKey)
         );
 
         key = mappedType;
+        const typeKey1 = TypeKey.get(key);
 
         let plist = InjectedTypes.paramList[typeKey1];
 

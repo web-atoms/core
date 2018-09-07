@@ -23,7 +23,7 @@ export class AtomTheme extends AtomStyleSheet
     public color: string = "gray";
 
     @BindableProperty
-    public hoverColor: string = "lightyellow";
+    public hoverColor: string = "lightgray";
 
     @BindableProperty
     public activeColor: string = "lightblue";

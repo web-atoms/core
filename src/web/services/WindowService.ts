@@ -99,7 +99,10 @@ export class WindowService extends NavigationService {
         });
     }
 
-    public alert(message: string, title?: string): Promise<any> {
+    public alert(message: string | any, title?: string): Promise<any> {
+        if (typeof message !== "string") {
+            message = message.toString();
+        }
         return this.openPage("web-atoms-core/dist/{platform}/controls/AtomAlertWindow", {
             message,
             title,
@@ -123,10 +126,6 @@ export class WindowService extends NavigationService {
         const theme = this.app.get(AtomTheme).popup;
 
         while (target) {
-
-            if (target.classList.contains(theme.host.className)) {
-                break;
-            }
             if (target === element) {
                 // do not close this popup....
                 return;

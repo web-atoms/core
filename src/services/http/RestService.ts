@@ -1,10 +1,12 @@
 import { AjaxOptions } from "./AjaxOptions";
 
+import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { JsonService } from "../JsonService";
+import JsonError from "./JsonError";
 
 declare var UMD: any;
 
@@ -356,18 +358,21 @@ export class BaseService {
 
     public methodReturns: any = {};
 
-    constructor(@Inject public readonly jsonService: JsonService) {
+    constructor(
+        @Inject protected readonly app: App,
+        @Inject public readonly jsonService: JsonService
+    ) {
 
     }
 
-    public encodeData(o: AjaxOptions): AjaxOptions {
+    protected encodeData(o: AjaxOptions): AjaxOptions {
         o.dataType = "application/json";
         o.data = this.jsonService.stringify(o.data);
         o.contentType = "application/json";
         return o;
     }
 
-    public async sendResult(result: any, error?: any): Promise<any> {
+    protected async sendResult(result: any, error?: any): Promise<any> {
         return new Promise((resolve, reject) => {
             if (error) {
                 setTimeout(() => {
@@ -381,71 +386,85 @@ export class BaseService {
         });
     }
 
-    public async invoke(
+    protected async invoke(
         url: string,
         method: string,
         bag: ServiceParameter[],
         values: any[], responseType: string): Promise<any> {
 
-        url = UMD.resolvePath(url);
+        const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
 
-        let options: AjaxOptions = new AjaxOptions();
-        options.method = method;
-        options.dataType = responseType;
-        if (bag) {
-            for (let i: number = 0; i < bag.length; i++) {
-                const p: ServiceParameter = bag[i];
-                const v: any = values[i];
-                switch (p.type) {
-                    case "path":
-                        const vs: string = v + "";
-                        // escaping should be responsibility of the caller
-                        // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
-                        url = url.replace(`{${p.key}}`, vs);
-                        break;
-                    case "query":
-                        if (url.indexOf("?") === -1) {
-                            url += "?";
-                        }
-                        url += `&${p.key}=${encodeURIComponent(v)}`;
-                        break;
-                    case "body":
-                        options.data = v;
-                        options = this.encodeData(options);
-                        break;
-                    case "bodyformmodel":
-                        options.data = v;
-                        break;
-                    case "rawbody":
-                        options.data = v;
-                        break;
-                    case "xmlbody":
-                        options.contentType = "text/xml";
-                        options.data = v;
-                        break;
-                    case "cancel":
-                        options.cancel = v as CancelToken;
-                        break;
-                    case "header":
-                        options.headers = options.headers = {};
-                        options.headers[p.key] = v;
-                        break;
+        try {
+
+            url = UMD.resolvePath(url);
+
+            let options: AjaxOptions = new AjaxOptions();
+            options.method = method;
+            options.dataType = responseType;
+            if (bag) {
+                for (let i: number = 0; i < bag.length; i++) {
+                    const p: ServiceParameter = bag[i];
+                    const v: any = values[i];
+                    switch (p.type) {
+                        case "path":
+                            const vs: string = v + "";
+                            // escaping should be responsibility of the caller
+                            // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
+                            url = url.replace(`{${p.key}}`, vs);
+                            break;
+                        case "query":
+                            if (url.indexOf("?") === -1) {
+                                url += "?";
+                            }
+                            url += `&${p.key}=${encodeURIComponent(v)}`;
+                            break;
+                        case "body":
+                            options.data = v;
+                            options = this.encodeData(options);
+                            break;
+                        case "bodyformmodel":
+                            options.data = v;
+                            break;
+                        case "rawbody":
+                            options.data = v;
+                            break;
+                        case "xmlbody":
+                            options.contentType = "text/xml";
+                            options.data = v;
+                            break;
+                        case "cancel":
+                            options.cancel = v as CancelToken;
+                            break;
+                        case "header":
+                            options.headers = options.headers = {};
+                            options.headers[p.key] = v;
+                            break;
+                    }
                 }
             }
+            options.url = url;
+
+            const xhr = await this.ajax(url, options);
+
+            let response: any = xhr.responseText;
+
+            if (/json/i.test(xhr.responseType)) {
+                response = this.jsonService.parse(xhr.responseText);
+
+                if (xhr.status >= 400) {
+                    throw new JsonError("Json Server Error", response);
+                }
+            }
+            if (xhr.status >= 400) {
+                throw new Error(xhr.responseText);
+            }
+
+            return response;
+        } finally {
+            if (busyIndicator) {
+                busyIndicator.dispose();
+            }
         }
-        options.url = url;
-
-        const xhr = await this.ajax(url, options);
-
-        if (xhr.status >= 400) {
-            throw new Error(xhr.responseText);
-        }
-
-        if (options.dataType && /json/i.test(options.dataType)) {
-            return this.jsonService.parse(xhr.responseText);
-        }
-
-        return xhr.responseText;
 
         // const rp: Promise<any> = new Promise(
         //     (resolve, reject) => {
@@ -480,7 +499,7 @@ export class BaseService {
         // });
     }
 
-    public async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
+    protected async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
 
         // return new CancellablePromise();
 
@@ -528,7 +547,8 @@ export class BaseService {
                     // }
                     options.status = xhr.status;
                     options.responseText = xhr.responseText;
-                    options.responseType = xhr.responseType;
+                    const ct = xhr.getResponseHeader("content-type");
+                    options.responseType = ct || xhr.responseType;
                     resolve(options);
                 }
             };

@@ -3,6 +3,7 @@ import { AtomUri } from "./core/AtomUri";
 import { AtomDisposable, IDisposable } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
+import { BusyIndicatorService } from "./services/BusyIndicatorService";
 
 export type AtomAction = (channel: string, data: any) => void;
 
@@ -32,6 +33,9 @@ export class AtomMessageAction {
 export class App extends ServiceProvider {
 
     private bag: any;
+
+    private busyIndicators: IDisposable[] = [];
+    private busyIndicatorService: BusyIndicatorService;
 
     private mUrl: AtomUri;
     public get url(): AtomUri {
@@ -64,6 +68,12 @@ export class App extends ServiceProvider {
             });
         }, 5);
 
+    }
+
+    public createBusyIndicator(): IDisposable {
+        this.busyIndicatorService = this.busyIndicatorService
+            || this.resolve(BusyIndicatorService);
+        return this.busyIndicatorService.createIndicator();
     }
 
     public syncUrl(): void {
