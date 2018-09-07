@@ -6,6 +6,7 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { JsonService } from "../JsonService";
+import JsonError from "./JsonError";
 
 declare var UMD: any;
 
@@ -364,14 +365,14 @@ export class BaseService {
 
     }
 
-    public encodeData(o: AjaxOptions): AjaxOptions {
+    protected encodeData(o: AjaxOptions): AjaxOptions {
         o.dataType = "application/json";
         o.data = this.jsonService.stringify(o.data);
         o.contentType = "application/json";
         return o;
     }
 
-    public async sendResult(result: any, error?: any): Promise<any> {
+    protected async sendResult(result: any, error?: any): Promise<any> {
         return new Promise((resolve, reject) => {
             if (error) {
                 setTimeout(() => {
@@ -385,7 +386,7 @@ export class BaseService {
         });
     }
 
-    public async invoke(
+    protected async invoke(
         url: string,
         method: string,
         bag: ServiceParameter[],
@@ -445,15 +446,20 @@ export class BaseService {
 
             const xhr = await this.ajax(url, options);
 
+            let response: any = xhr.responseText;
+
+            if (options.dataType && /json/i.test(options.dataType)) {
+                response = this.jsonService.parse(xhr.responseText);
+
+                if (xhr.status >= 400) {
+                    throw new JsonError("Json Server Error", response);
+                }
+            }
             if (xhr.status >= 400) {
                 throw new Error(xhr.responseText);
             }
 
-            if (options.dataType && /json/i.test(options.dataType)) {
-                return this.jsonService.parse(xhr.responseText);
-            }
-
-            return xhr.responseText;
+            return response;
         } finally {
             if (busyIndicator) {
                 busyIndicator.dispose();
@@ -493,7 +499,7 @@ export class BaseService {
         // });
     }
 
-    public async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
+    protected async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
 
         // return new CancellablePromise();
 
