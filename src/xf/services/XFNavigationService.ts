@@ -43,7 +43,10 @@ export default class XFNavigationService extends NavigationService {
         super();
     }
 
-    public alert(message: string, title?: string): Promise<any> {
+    public alert(message: string | any, title?: string): Promise<any> {
+        if (typeof message !== "string") {
+            message = message.toString();
+        }
         return new Promise((resolve, reject) => {
             bridge.alert(message, title, () => {
                 resolve();
