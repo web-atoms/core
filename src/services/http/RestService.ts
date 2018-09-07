@@ -466,37 +466,6 @@ export class BaseService {
             }
         }
 
-        // const rp: Promise<any> = new Promise(
-        //     (resolve, reject) => {
-
-        //     pr.then(() => {
-        //         const v: any = pr.value();
-
-        //         // deep clone...
-        //         // var rv = new returns();
-        //         // reject("Clone pending");
-
-        //         if (options.cancel) {
-        //             if (options.cancel.cancelled) {
-        //                 reject("cancelled");
-        //                 return;
-        //             }
-        //         }
-
-        //         resolve(v);
-        //     });
-        //     pr.failed(() => {
-        //         reject(pr.error.msg);
-        //     });
-
-        //     pr.showError(this.showError);
-        //     pr.showProgress(this.showProgress);
-        //     pr.invoke("Ok");
-        // });
-
-        // return new CancellablePromise(rp, () => {
-        //     pr.abort();
-        // });
     }
 
     protected async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
