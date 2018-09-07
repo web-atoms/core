@@ -448,7 +448,7 @@ export class BaseService {
 
             let response: any = xhr.responseText;
 
-            if (options.dataType && /json/i.test(options.dataType)) {
+            if (/json/i.test(xhr.responseType)) {
                 response = this.jsonService.parse(xhr.responseText);
 
                 if (xhr.status >= 400) {
@@ -547,7 +547,8 @@ export class BaseService {
                     // }
                     options.status = xhr.status;
                     options.responseText = xhr.responseText;
-                    options.responseType = xhr.responseType;
+                    const ct = xhr.getResponseHeader("content-type");
+                    options.responseType = ct || xhr.responseType;
                     resolve(options);
                 }
             };
