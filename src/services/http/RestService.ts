@@ -446,20 +446,19 @@ export class BaseService {
 
             const xhr = await this.ajax(url, options);
 
-            let response: any = xhr.responseText;
-
             if (/json/i.test(xhr.responseType)) {
-                response = this.jsonService.parse(xhr.responseText);
+                const response = this.jsonService.parse(xhr.responseText);
 
                 if (xhr.status >= 400) {
                     throw new JsonError("Json Server Error", response);
                 }
+                return response;
             }
             if (xhr.status >= 400) {
                 throw new Error(xhr.responseText);
             }
 
-            return response;
+            return xhr.responseText;
         } finally {
             if (busyIndicator) {
                 busyIndicator.dispose();
@@ -509,11 +508,6 @@ export class BaseService {
 
             xhr.onreadystatechange = (e) => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
-                    // if (options.dataType && /json/i.test(options.dataType)) {
-                    //     resolve(JSON.parse(xhr.responseText));
-                    // } else {
-                    //     resolve(xhr.responseText);
-                    // }
                     options.status = xhr.status;
                     options.responseText = xhr.responseText;
                     const ct = xhr.getResponseHeader("content-type");
@@ -542,97 +536,10 @@ export class BaseService {
                 }
             }
 
-//            if (options.data) {
             xhr.send(options.data);
-//            }
 
         });
 
-        // throw new Error("Not implemented");
-        // return new CancellablePromise()
-        // let p: AtomPromise = new AtomPromise();
-
-        // options.success = p.success;
-        // options.error = p.error;
-
-        // // caching is disabled by default...
-        // if (options.cache === undefined) {
-        //     options.cache = false;
-        // }
-
-        // let u: string = url;
-
-        // let o: AjaxOptions = options;
-
-        // let attachments: any[] = o.attachments;
-        // if (attachments && attachments.length) {
-        //     let fd: FormData = new FormData();
-        //     let index: number = 0;
-        //     for (const file of attachments) {
-        //         fd.append(`file${index}`, file);
-        //     }
-        //     if (o.data) {
-        //         for (const k in o.data) {
-        //             if (k) {
-        //                 fd.append(k, o.data[k]);
-        //             }
-        //         }
-        //     }
-        //     o.type = "POST";
-        //     o.xhr = () => {
-        //         const myXhr: any = $.ajaxSettings.xhr();
-        //         if (myXhr.upload) {
-        //             myXhr.upload.addEventListener("progress", e => {
-        //                 if (e.lengthComputable) {
-        //                     const percentComplete: any = Math.round(e.loaded * 100 / e.total);
-        //                     // AtomBinder.setValue(atomApplication, "progress", percentComplete);
-        //                 }
-        //             }, false);
-        //         }
-        //         return myXhr;
-        //     };
-        //     o.cache = false;
-        //     o.contentType = null;
-        //     o.processData = false;
-        // }
-
-        // if (url) {
-        //     p.onInvoke(() => {
-        //         p.handle = $.ajax(u, o);
-        //     });
-        // }
-
-        // p.failed(() => {
-
-        //     let res: string = p.errors[0].responseText;
-        //     if (!res) {
-        //         if (!res || p.errors[2] !== "Internal Server Error") {
-        //             const m: string = p.errors[2];
-        //             if (m) {
-        //                 res = m;
-        //             }
-        //         }
-        //     }
-
-        //     p.error = {
-        //         msg: res
-        //     };
-        // });
-
-        // p.then(p => {
-        //     let v: any = p.value();
-        //     v = AtomPromise.parseDates(v);
-        //     if (v && v.items && v.merge) {
-        //         v.items.total = v.total;
-        //         v = v.items;
-        //         p.value(v);
-        //     }
-        // });
-
-        // p.showError(true);
-        // p.showProgress(true);
-
-        // return p;
     }
 
 }
