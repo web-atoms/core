@@ -95,26 +95,40 @@ export default class XFNavigationService extends NavigationService {
         return await new Promise<T>((resolve, reject) => {
 
             const disposables = new AtomDisposableList();
-            disposables.add(() => {
-                AtomBridge.instance.close(popup.element);
-            });
             disposables.add(popup);
 
-            disposables.add(this.app.subscribe(`atom-window-close:${id}`, (g, i) => {
+            const done = (success: boolean, r?: any, e?: any) => {
                 disposables.dispose();
-                resolve(i);
+                if (success) {
+                    resolve(r);
+                } else {
+                    reject(e || "cancelled");
+                }
+            };
+
+            disposables.add(this.app.subscribe(`atom-window-close:${id}`, (g, i) => {
+                AtomBridge.instance.close(popup.element, () => {
+                    done(true, i);
+                }, (e) => {
+                    done(false, null, e);
+                });
             }));
 
             disposables.add(this.app.subscribe(`atom-window-cancel:${id}`, (g, i) => {
-                disposables.dispose();
-                reject(i || "cancelled");
+                AtomBridge.instance.close(popup.element, () => {
+                    done(false, null, i);
+                }, (e) => {
+                    done(false, null, e);
+                });
             }));
 
+            AtomBridge.instance.setValue(popup.element, "name", id);
+
             bridge.pushPage(popup.element, () => {
-                resolve(null);
+                reject("cancelled");
             }, (e) => {
                 disposables.dispose();
-                reject(e);
+                reject(e || "cancelled");
             });
         });
 

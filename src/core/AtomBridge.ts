@@ -48,7 +48,7 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
 
     public abstract findChild(element: T, name: string): T;
 
-    public abstract close(element: T): void;
+    public abstract close(element: T, success: () => void, error: (e) => void): void;
 
 }
 
@@ -174,7 +174,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         throw new Error("Not supported");
     }
 
-    public close(element: HTMLElement): void {
+    public close(element: HTMLElement, success: () => void, error: (e) => void): void {
         throw new Error("Not supported");
     }
 }
