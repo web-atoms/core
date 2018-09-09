@@ -1,4 +1,5 @@
 import { App } from "../../App";
+import { AtomBridge } from "../../core/AtomBridge";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { AtomUri } from "../../core/AtomUri";
 import { INameValuePairs } from "../../core/types";
@@ -94,6 +95,9 @@ export default class XFNavigationService extends NavigationService {
         return await new Promise<T>((resolve, reject) => {
 
             const disposables = new AtomDisposableList();
+            disposables.add(() => {
+                AtomBridge.instance.close(popup.element);
+            });
             disposables.add(popup);
 
             disposables.add(this.app.subscribe(`atom-window-close:${id}`, (g, i) => {

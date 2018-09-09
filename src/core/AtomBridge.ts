@@ -48,6 +48,8 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
 
     public abstract findChild(element: T, name: string): T;
 
+    public abstract close(element: T): void;
+
 }
 
 export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
@@ -169,6 +171,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
     }
 
     public findChild(element: HTMLElement, name: string): HTMLElement {
+        throw new Error("Not supported");
+    }
+
+    public close(element: HTMLElement): void {
         throw new Error("Not supported");
     }
 }
