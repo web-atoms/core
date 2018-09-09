@@ -25,9 +25,8 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     public dispose(e?: IAtomElement): void {
-        AtomBridge.instance.dispose(this.element);
-
         super.dispose(e);
+        AtomBridge.instance.dispose(this.element);
     }
 
     protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
