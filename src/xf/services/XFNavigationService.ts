@@ -95,7 +95,9 @@ export default class XFNavigationService extends NavigationService {
         return await new Promise<T>((resolve, reject) => {
 
             const disposables = new AtomDisposableList();
-            disposables.add(popup);
+            // we will not dispose popup or window
+            // because page should be disposed when they are out of the navigation stack
+            // disposables.add(popup);
 
             const done = (success: boolean, r?: any, e?: any) => {
                 disposables.dispose();
