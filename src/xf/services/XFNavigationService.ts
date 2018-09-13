@@ -1,4 +1,5 @@
 import { App } from "../../App";
+import { AtomBridge } from "../../core/AtomBridge";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { AtomUri } from "../../core/AtomUri";
 import { INameValuePairs } from "../../core/types";
@@ -94,23 +95,43 @@ export default class XFNavigationService extends NavigationService {
         return await new Promise<T>((resolve, reject) => {
 
             const disposables = new AtomDisposableList();
-            disposables.add(popup);
+            // we will not dispose popup or window
+            // because page should be disposed when they are out of the navigation stack
+            // disposables.add(popup);
+
+            const done = (success: boolean, r?: any, e?: any) => {
+                disposables.dispose();
+                if (success) {
+                    resolve(r);
+                } else {
+                    reject(e || "cancelled");
+                }
+            };
 
             disposables.add(this.app.subscribe(`atom-window-close:${id}`, (g, i) => {
-                disposables.dispose();
-                resolve(i);
+                AtomBridge.instance.close(popup.element, () => {
+                    done(true, i);
+                }, (e) => {
+                    done(false, null, e);
+                });
             }));
 
             disposables.add(this.app.subscribe(`atom-window-cancel:${id}`, (g, i) => {
-                disposables.dispose();
-                reject(i || "cancelled");
+                AtomBridge.instance.close(popup.element, () => {
+                    done(false, null, i);
+                }, (e) => {
+                    done(false, null, e);
+                });
             }));
 
+            AtomBridge.instance.setValue(popup.element, "name", id);
+
             bridge.pushPage(popup.element, () => {
-                resolve(null);
+                // reject("cancelled");
+                // do nothing...
             }, (e) => {
                 disposables.dispose();
-                reject(e);
+                reject(e || "cancelled");
             });
         });
 
