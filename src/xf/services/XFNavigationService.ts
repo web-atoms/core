@@ -127,7 +127,8 @@ export default class XFNavigationService extends NavigationService {
             AtomBridge.instance.setValue(popup.element, "name", id);
 
             bridge.pushPage(popup.element, () => {
-                reject("cancelled");
+                // reject("cancelled");
+                // do nothing...
             }, (e) => {
                 disposables.dispose();
                 reject(e || "cancelled");
