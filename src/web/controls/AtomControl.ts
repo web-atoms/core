@@ -5,6 +5,7 @@ import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf } from "../../core/types";
 import { TypeKey } from "../../di/TypeKey";
+import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
@@ -211,20 +212,21 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             name = name.substr(5);
             name = name.charAt(0).toLowerCase() + name.substr(1);
             // element.style[name] = value;
-            this.bindEvent(element, name, (...e: any[]) => {
+            this.bindEvent(element, name, async (...e: any[]) => {
                 try {
                     const f = value as (...v: any[]) => any;
                     const pr = f.apply(this, e) as Promise<any>;
-                    if (pr && pr.catch && pr.then) {
-                        pr.catch((error) => {
+                    if (pr) {
+                        try {
+                            await pr;
+                        } catch (error) {
                             if (/cancelled/i.test(error)) {
-                                // tslint:disable-next-line:no-console
-                                console.warn(error);
                                 return;
                             }
-                            // tslint:disable-next-line:no-console
-                            console.error(error);
-                        });
+
+                            const nav: NavigationService = this.app.resolve(NavigationService);
+                            await nav.alert(error, "Error");
+                        }
                     }
                 } catch (er1) {
                     // tslint:disable-next-line:no-console
