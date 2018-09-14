@@ -2,6 +2,7 @@ import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { IAtomElement } from "../../core/types";
+import { NavigationService } from "../../services/NavigationService";
 
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
@@ -70,14 +71,18 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
     protected setElementValue(element: any, name: string, value: any): void {
         if (/^event/.test(name)) {
-            this.bindEvent(element, name.substr(5), () => {
-                const p = value() as Promise<any>;
-                if (p) {
-                    p.catch((e) => {
-                        const t = e.stack ? e.toString() + "\r\n" + e.stack : e.toString();
-                        // tslint:disable-next-line:no-console
-                        console.log(t);
-                    });
+            this.bindEvent(element, name.substr(5), async () => {
+                try {
+                    const p = value() as Promise<any>;
+                    if (p) {
+                        await p;
+                    }
+                } catch (e) {
+                    if (/cancelled/i.test(e)) {
+                        return;
+                    }
+                    const nav: NavigationService = this.app.resolve(NavigationService);
+                    await nav.alert(e, "Error");
                 }
             });
             return;
