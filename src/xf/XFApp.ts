@@ -1,7 +1,9 @@
 import * as A from "../App";
 import { AtomBridge } from "../core/AtomBridge";
+import { BusyIndicatorService } from "../services/BusyIndicatorService";
 import { NavigationService } from "../services/NavigationService";
 import { AtomXFControl } from "./controls/AtomXFControl";
+import XFBusyIndicatorService from "./services/XFBusyIndicatorService";
 import XFNavigationService from "./services/XFNavigationService";
 
 declare var bridge: any;
@@ -22,20 +24,7 @@ export default class XFApp extends A.App {
         super();
         AtomBridge.instance = bridge;
         this.put(NavigationService, this.resolve(XFNavigationService));
+        this.put(BusyIndicatorService, this.resolve(XFBusyIndicatorService));
     }
 
-    protected onReady(f: () => any): void {
-        const a = f();
-        if (a && a.then && a.catch) {
-            a.then((r) => {
-                // do nothing
-            });
-            a.catch((e) => {
-                // tslint:disable-next-line:no-console
-                // console.error("XFApp.onReady");
-                // tslint:disable-next-line:no-console
-                console.error(typeof e === "string" ? e : JSON.stringify(e));
-            });
-        }
-    }
 }

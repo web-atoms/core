@@ -2,14 +2,14 @@ import { App } from "../App";
 import { AtomOnce } from "../core/AtomOnce";
 import { AtomUri } from "../core/AtomUri";
 import { ServiceCollection } from "../di/ServiceCollection";
+import { BusyIndicatorService } from "../services/BusyIndicatorService";
 import { NavigationService } from "../services/NavigationService";
 import { AtomControl } from "./controls/AtomControl";
 import { ChildEnumerator } from "./core/AtomUI";
+import { WebBusyIndicatorService } from "./services/WebBusyIndicatorService";
 import { WindowService } from "./services/WindowService";
 import { AtomStyleSheet } from "./styles/AtomStyleSheet";
 import { AtomTheme } from "./styles/AtomTheme";
-import { BusyIndicatorService } from "../services/BusyIndicatorService";
-import { WebBusyIndicatorService } from "./services/WebBusyIndicatorService";
 
 export default class WebApp extends App {
 
@@ -127,13 +127,13 @@ export default class WebApp extends App {
         });
     }
 
-    public onReady(f: () => void): void {
+    protected invokeReady(): void {
         if (document.readyState === "complete") {
-            f();
+            super.invokeReady();
             return;
         }
         document.addEventListener("readystatechange", (e) => {
-            f();
+            super.invokeReady();
         });
     }
 
