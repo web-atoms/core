@@ -5,6 +5,8 @@ import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComp
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
 
+    public createBusyIndicator: () => IDisposable;
+
     public ajax: (
         url: string,
         options: AjaxOptions,

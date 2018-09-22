@@ -36,6 +36,8 @@ export class App extends ServiceProvider {
 
     private busyIndicators: IDisposable[] = [];
     private busyIndicatorService: BusyIndicatorService;
+    // tslint:disable-next-line:ban-types
+    private readyHandlers: Array<() => any> = [];
 
     private mUrl: AtomUri;
     public get url(): AtomUri {
@@ -56,18 +58,8 @@ export class App extends ServiceProvider {
         this.bag = {};
         this.put(App, this);
         setTimeout(() => {
-            this.onReady(() => {
-                try {
-                    this.main();
-                } catch (e) {
-                    // tslint:disable-next-line:no-console
-                    console.error("timeout for onReady");
-                    // tslint:disable-next-line:no-console
-                    console.error(e);
-                }
-            });
+            this.invokeReady();
         }, 5);
-
     }
 
     public createBusyIndicator(): IDisposable {
@@ -160,6 +152,38 @@ export class App extends ServiceProvider {
 
     // tslint:disable-next-line:no-empty
     protected onReady(f: () => any): void {
+        if (this.readyHandlers) {
+            this.readyHandlers.push(f);
+        } else {
+            this.invokeReadyHandler(f);
+        }
+    }
+
+    protected invokeReady(): void {
+        for (const iterator of this.readyHandlers) {
+            this.invokeReadyHandler(iterator);
+        }
+        this.readyHandlers = null;
+}
+
+    // tslint:disable-next-line:ban-types
+    private invokeReadyHandler(f: () => any): void {
+
+        const indicator = this.createBusyIndicator();
+        const a = f();
+        if (a && a.then && a.catch) {
+            a.then((r) => {
+                // do nothing
+                indicator.dispose();
+            });
+            a.catch((e) => {
+                indicator.dispose();
+                // tslint:disable-next-line:no-console
+                // console.error("XFApp.onReady");
+                // tslint:disable-next-line:no-console
+                console.error(typeof e === "string" ? e : JSON.stringify(e));
+            });
+        }
     }
 
 }
