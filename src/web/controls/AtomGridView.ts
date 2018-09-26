@@ -181,7 +181,7 @@ export class AtomGridView extends AtomControl {
             this.element = document.createElement("section");
         }
         window.addEventListener("resize", (evt) => {
-            this.updateSize();
+            this.invalidate();
         });
 
         const style = this.element.style;
