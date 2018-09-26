@@ -22,6 +22,8 @@ export abstract class NavigationService {
     public abstract navigate(url: string): void;
 
     public abstract back(): void;
+
+    public abstract refresh(): void;
 }
 
 // Do not mock Navigation unless you want it in design time..

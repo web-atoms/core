@@ -156,4 +156,8 @@ export default class XFNavigationService extends NavigationService {
             });
         }
     }
+
+    public refresh(): void {
+        AtomBridge.instance.reset();
+    }
 }
