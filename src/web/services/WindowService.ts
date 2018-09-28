@@ -138,6 +138,10 @@ export class WindowService extends NavigationService {
         device.broadcast(message, "cancelled");
     }
 
+    public refresh(): void {
+        location.reload(true);
+    }
+
     protected registerForPopup(): void {
 
         if (window) {

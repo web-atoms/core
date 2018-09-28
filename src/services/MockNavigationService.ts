@@ -60,6 +60,10 @@ export class MockNavigationService extends NavigationService {
         super();
     }
 
+    public refresh(): void {
+        // nothign
+    }
+
     /**
      * Navigate current browser to given url.
      * @param {string} url
