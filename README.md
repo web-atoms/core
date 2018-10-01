@@ -107,12 +107,12 @@ export class UserListViewModel extends AtomViewModel {
 ## How to run unit tests?
 
 1. Import test class `src\test.ts`
-2. Run `node .\bin\test.js`
+2. Run `node .\dist\test.js`
 
 ## How to get code coverage?
 
 1. Install istanbul, `npm install istanbul --save-dev`
 2. Install remap-istanbul, `npm install remap-istanbul`
-3. Cover Run, `.\node_modules\.bin\istanbul.cmd cover .\bin\test.js`
+3. Cover Run, `.\node_modules\.bin\istanbul.cmd cover .\dist\test.js`
 4. Report Run, `.\node_modules\.bin\remap-istanbul -i .\coverage\coverage.json -t html -o html-report`
 5. Open generated html-report on browser
