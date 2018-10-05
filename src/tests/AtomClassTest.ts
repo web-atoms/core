@@ -26,6 +26,15 @@ export class AtomClassTest extends AtomTest {
     }
 
     @Test
+    public encode(): void {
+
+        const url = Atom.encodeParameters({ a: { b: null }, c: 1 });
+
+        Assert.equals(`a=%7B%22b%22%3Anull%7D&c=1`, url);
+
+    }
+
+    @Test
     public url(): void {
 
         let url = Atom.url(null);
@@ -72,6 +81,10 @@ export class AtomClassTest extends AtomTest {
         Assert.isUndefined(Atom.get({}, "a"));
 
         Assert.isNull(Atom.get({a: null}, "a"));
+
+        Assert.isNull(Atom.get(null, "a"));
+
+        Assert.isUndefined(Atom.get(undefined, "a"));
 
         Assert.equals("a", Atom.get({ a: {b: "a"}}, "a.b"));
 

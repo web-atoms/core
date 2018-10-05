@@ -100,11 +100,13 @@ export class ServiceProvider implements IDisposable {
         const originalKey = key;
         const originalTypeKey = TypeKey.get(originalKey);
 
-        const mappedType = ServiceProvider.mappedTypes[originalTypeKey] || (
-            ServiceProvider.mappedTypes[originalTypeKey] = DI.resolveType(originalKey)
-        );
+        if (DI.resolveType) {
+            const mappedType = ServiceProvider.mappedTypes[originalTypeKey] || (
+                ServiceProvider.mappedTypes[originalTypeKey] = DI.resolveType(originalKey)
+            );
 
-        key = mappedType;
+            key = mappedType;
+        }
         const typeKey1 = TypeKey.get(key);
 
         let plist = InjectedTypes.paramList[typeKey1];
