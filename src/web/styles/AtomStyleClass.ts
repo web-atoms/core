@@ -196,12 +196,10 @@ export class AtomStyleClass
                     continue;
                 }
                 if (key === "subclasses") {
-                    for (const ke in element) {
-                        if (element.hasOwnProperty(ke)) {
-                            const ve = element[key];
-                            // tslint:disable-next-line:no-console
-                            console.log(ve);
-                            this.subClass(ke, () => ve);
+                    for (const subclassKey in element) {
+                        if (element.hasOwnProperty(subclassKey)) {
+                            const ve = element[subclassKey];
+                            this.subClass(subclassKey, () => ve);
                         }
                     }
                 } else {
