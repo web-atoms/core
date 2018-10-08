@@ -24,8 +24,7 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     public pushUpdate(): void {
-        if (this.isAttaching)
-        {
+        if (this.isAttaching) {
             return;
         }
         if (this.lastUpdateId) {
