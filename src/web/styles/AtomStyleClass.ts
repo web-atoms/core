@@ -177,7 +177,7 @@ export class AtomStyleClass
         pairs = pairs || {};
         this.createStyleText(pairs);
         for (const iterator of this.subClasses) {
-            iterator.toStyle(pairs);
+            pairs = iterator.toStyle(pairs);
         }
         return pairs;
     }
@@ -197,7 +197,7 @@ export class AtomStyleClass
                 }
                 if (key === "subclasses") {
                     for (const ke in element) {
-                        if (element.hasOwnProperty(key)) {
+                        if (element.hasOwnProperty(ke)) {
                             const ve = element[key];
                             this.subClass(ke, () => ve);
                         }
