@@ -19,6 +19,7 @@ export function StyleClass(name: string): (target: AtomStyle, propertyKey: strin
         descriptor.get = function()  {
             return this.createClass(name, original.call(this));
         };
+        Object.defineProperty(target, propertyKey, descriptor);
     };
 }
 
