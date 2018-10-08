@@ -140,11 +140,7 @@ export class AtomStyleClass
             for (const key in n) {
                 if (n.hasOwnProperty(key)) {
                     const element = n[key];
-                    if (typeof element === "object") {
-                        this.subClass(key, () => element);
-                    } else {
                     v[key] = element;
-                    }
                 }
             }
             return v;
@@ -199,8 +195,13 @@ export class AtomStyleClass
                 if (element === undefined || element === null) {
                     continue;
                 }
-                if (typeof element === "object") {
-                    this.subClass(key, () => element);
+                if (key === "subclasses") {
+                    for (const ke in element) {
+                        if (element.hasOwnProperty(key)) {
+                            const ve = element[key];
+                            this.subClass(ke, () => ve);
+                        }
+                    }
                 } else {
                     const keyName = StringHelper.fromCamelToHyphen(key);
                     sslist.push(`${keyName}: ${element}`);
