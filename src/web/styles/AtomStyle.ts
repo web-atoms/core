@@ -73,7 +73,7 @@ export class AtomStyle
             // if it is class
             const c = element as IStyleDeclaration;
             if (c && typeof c === "object") {
-                pairs = this.createStyleText(this.toFullName(key), pairs, c);
+                pairs = this.createStyleText(key, pairs, c);
                 continue;
             }
         }
@@ -134,20 +134,20 @@ export class AtomStyle
                 if (element === undefined || element === null) {
                     continue;
                 }
+                const keyName = StringHelper.fromCamelToHyphen(key);
                 if (key === "subclasses") {
                     for (const subclassKey in element) {
                         if (element.hasOwnProperty(subclassKey)) {
                             const ve = element[subclassKey];
-                            pairs = this.createStyleText(this.toFullName(`${name}${subclassKey}`), pairs, ve);
+                            pairs = this.createStyleText(`${keyName}${subclassKey}`, pairs, ve);
                         }
                     }
                 } else {
-                    const keyName = StringHelper.fromCamelToHyphen(key);
                     sslist.push(`${keyName}: ${element}`);
                 }
             }
         }
-        pairs[name] = `{ ${sslist.join(";\r\n")} }`;
+        pairs[`${this.name}-${name}`] = `{ ${sslist.join(";\r\n")} }`;
         styles.className = name;
         return pairs;
     }
