@@ -89,6 +89,7 @@ export class AtomStyle
             return;
         }
         this.isBuilt = true;
+        this.styleSheet.pushUpdate();
         const self = this as any;
         for (const key in self) {
             if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme)$/.test(key)) {
