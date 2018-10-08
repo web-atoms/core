@@ -139,7 +139,7 @@ export class AtomStyle
                     for (const subclassKey in element) {
                         if (element.hasOwnProperty(subclassKey)) {
                             const ve = element[subclassKey];
-                            pairs = this.createStyleText(`${keyName}${subclassKey}`, pairs, ve);
+                            pairs = this.createStyleText(`${name}${subclassKey}`, pairs, ve);
                         }
                     }
                 } else {
@@ -147,7 +147,9 @@ export class AtomStyle
                 }
             }
         }
-        pairs[`${this.name}-${name}`] = `{ ${sslist.join(";\r\n")} }`;
+        const cname = StringHelper.fromCamelToHyphen(name);
+
+        pairs[`${this.name}-${cname}`] = `{ ${sslist.join(";\r\n")} }`;
         styles.className = name;
         return pairs;
     }
