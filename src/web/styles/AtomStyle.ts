@@ -46,6 +46,13 @@ export class AtomStyle
         return this[name] = newStyle;
     }
 
+    public getBaseProperty(s: object, name: string): any {
+        const c = Object.getPrototypeOf(this);
+        const b = Object.getPrototypeOf(c);
+        const pd = Object.getOwnPropertyDescriptor(b, name);
+        return pd.get.apply(this);
+    }
+
     public toStyle(pairs?: INameValuePairs): INameValuePairs {
 
         pairs = pairs || {};
