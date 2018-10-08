@@ -1,12 +1,10 @@
-import { ArrayHelper, IClassOf, INameValuePairs } from "../../core/types";
+import { StringHelper } from "../../core/StringHelper";
+import { INameValuePairs } from "../../core/types";
 import { TypeKey } from "../../di/TypeKey";
-import { AtomControl } from "../controls/AtomControl";
-import { AtomStyleClass } from "./AtomStyleClass";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { IStyleDeclaration } from "./IStyleDeclaration";
-import { IStyleDeclarationFunc } from "./IStyleDeclarationFunc";
 
-export type StyleItem = AtomStyle | AtomStyleClass;
+export type StyleItem = AtomStyle;
 
 export interface IAtomStyle {
     name: string;
@@ -15,10 +13,9 @@ export interface IAtomStyle {
 export class AtomStyle
     implements IAtomStyle {
 
-    private children: StyleItem[] = [];
-
     private defaults: { [key: string]: AtomStyle} = {};
 
+    // tslint:disable-next-line:ban-types
     [key: string]: any;
 
     constructor(
@@ -28,64 +25,19 @@ export class AtomStyle
     ) {
     }
 
-    public createClass(name: string, props: IStyleDeclarationFunc): AtomStyleClass {
-        return this.replace(new AtomStyleClass(this.styleSheet, this, `${this.name}-${name}`, props));
-    }
-
-    public createNamedStyle<T extends AtomStyle>(c: IClassOf<T>, name: string): T {
-        return this.replace(new (c)(this.styleSheet, this, `${this.name}-${name}`));
-    }
-
-    public createStyle<TC extends AtomControl, T extends AtomStyle>(tc: IClassOf<TC>, c: IClassOf<T>, name: string): T {
-
-        this.defaults = this.defaults || {};
-
-        const newStyle = new (c)(this.styleSheet, this, `${this.name}-${name}`);
-        const key = TypeKey.get(tc);
-        this.defaults[key] = newStyle;
-        return this.replace(newStyle);
-    }
-
     public getDefaultStyle(forKey: any): AtomStyle {
         return this.defaults[TypeKey.get(forKey)];
-    }
-
-    public replace<T extends IAtomStyle>(item: T): T {
-        ArrayHelper.remove(this.children, (x) => x.name === item.name);
-        this.children.push(item as any);
-        if (item instanceof AtomStyle) {
-            const s = item as AtomStyle;
-            if (!s.initialized) {
-                s.init();
-                s.initialized = true;
-            }
-        }
-        this.styleSheet.pushUpdate();
-        return item;
-    }
-
-    public clone(s: IStyleDeclaration, d: IStyleDeclaration): IStyleDeclaration {
-        if (s.className) {
-            const sc = (s as any) as AtomStyleClass;
-            const sdd = sc.props();
-            // merge...
-            for (const key in d) {
-                if (d.hasOwnProperty(key)) {
-                    const element = d[key];
-                    sdd[key] = element;
-                }
-            }
-            return sdd;
-        }
-        throw new Error("Never...");
     }
 
     public toStyle(pairs?: INameValuePairs): INameValuePairs {
 
         pairs = pairs || {};
 
-        for (const element of this.children) {
-
+        for (const key in this) {
+            if (!this.hasOwnProperty(key)) {
+                continue;
+            }
+            const element = this[key];
             // if it is nested style
             const style = element as AtomStyle;
             if (style && style.toStyle) {
@@ -94,20 +46,47 @@ export class AtomStyle
             }
 
             // if it is class
-            const c = element as AtomStyleClass;
-            if (c  && c.className) {
-                // for (const iterator of c.createStyle()) {
-                //     pairs[iterator.key] = iterator.value;
-                // }
-                pairs = c.toStyle(pairs);
+            const c = element as IStyleDeclaration;
+            if (c && typeof c === "object") {
+                pairs = this.createStyleText(this.toFullName(key), pairs, c);
                 continue;
             }
         }
         return pairs;
     }
 
+    protected toFullName(n: string): string {
+        return `${this.name}-${n}`;
+    }
+
     protected init(): void {
         // empty...
+    }
+
+    private createStyleText(name: string, pairs: INameValuePairs, styles: IStyleDeclaration): INameValuePairs {
+        const sslist: any[] = [];
+        for (const key in styles) {
+            if (styles.hasOwnProperty(key)) {
+                const element = styles[key];
+                if (element === undefined || element === null) {
+                    continue;
+                }
+                if (key === "subclasses") {
+                    for (const subclassKey in element) {
+                        if (element.hasOwnProperty(subclassKey)) {
+                            const ve = element[subclassKey];
+                            pairs = this.createStyleText(this.toFullName(`${name}${subclassKey}`), pairs, ve);
+                        }
+                    }
+                } else {
+                    const keyName = StringHelper.fromCamelToHyphen(key);
+                    sslist.push(`${keyName}: ${element}`);
+                }
+            }
+        }
+        pairs[name] = `{ ${sslist.join(";\r\n")} }`;
+        styles.className = name;
+        return pairs;
     }
 
 }

@@ -1,6 +1,5 @@
 import { INameValuePairs, INotifyPropertyChanging } from "../../core/types";
 import { AtomStyle } from "./AtomStyle";
-import { AtomStyleClass } from "./AtomStyleClass";
 
 export class AtomStyleSheet extends AtomStyle
         implements INotifyPropertyChanging {
@@ -18,8 +17,6 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     public onPropertyChanging(name: string, newValue: any, oldValue: any): void {
-        const ov = oldValue as AtomStyleClass;
-
         this.pushUpdate();
     }
 

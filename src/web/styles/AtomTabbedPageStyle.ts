@@ -1,7 +1,6 @@
 import { BindableProperty } from "../../core/BindableProperty";
 import { ModuleFiles } from "../../ModuleFiles";
 import { AtomStyle } from "./AtomStyle";
-import { AtomStyleClass, StyleClass } from "./AtomStyleClass";
 import { AtomTheme } from "./AtomTheme";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
@@ -14,7 +13,6 @@ export class AtomTabbedPageStyle extends AtomStyle {
         return this.styleSheet as AtomTheme;
     }
 
-    @StyleClass("tab-item")
     public get tabItem(): IStyleDeclaration {
         return {
             display: "inline-block",
@@ -44,9 +42,9 @@ export class AtomTabbedPageStyle extends AtomStyle {
         };
     }
 
-    @StyleClass("selected-tab-item")
     public get selectedTabItem(): IStyleDeclaration {
-        return this.clone(this.tabItem, {
+        return {
+            ... this.tabItem,
             borderColor: this.theme.activeColor,
             backgroundColor: this.theme.selectedBgColor,
             color: this.theme.selectedColor,
@@ -62,10 +60,9 @@ export class AtomTabbedPageStyle extends AtomStyle {
                     right: "22px"
                 }
             }
-        });
+        };
     }
 
-    @StyleClass("close-button")
     public get closeButton(): IStyleDeclaration {
         return {
             position: "absolute",
