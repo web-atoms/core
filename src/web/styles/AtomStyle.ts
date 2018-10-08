@@ -16,6 +16,8 @@ export class AtomStyle
 
     private defaults: { [key: string]: AtomStyle} = {};
 
+    private isBuilt: boolean = false;
+
     constructor(
         public styleSheet: AtomStyleSheet,
         public readonly parent: AtomStyle,
@@ -51,7 +53,10 @@ export class AtomStyle
         const self = this as any;
 
         for (const key in self) {
-            if (/^(constructor|name|parent|styleSheet|defaults)$/.test(key)) {
+            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults)$/.test(key)) {
+                continue;
+            }
+            if (/^\_/.test(key)) {
                 continue;
             }
             const element = self[key];
@@ -80,9 +85,15 @@ export class AtomStyle
     }
 
     protected build(): void {
+        if (this.isBuilt) {
+            return;
+        }
         const self = this as any;
         for (const key in self) {
-            if (/^(constructor|name|parent|styleSheet|defaults)$/.test(key)) {
+            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults)$/.test(key)) {
+                continue;
+            }
+            if (/^\_\$\_/.test(key)) {
                 continue;
             }
             const element = self[key];
@@ -98,6 +109,7 @@ export class AtomStyle
                 element.className = this.toFullName(key);
             }
         }
+        this.isBuilt = true;
     }
 
     protected init(): void {
