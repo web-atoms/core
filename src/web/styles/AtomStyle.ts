@@ -106,7 +106,15 @@ export class AtomStyle
                 continue;
             }
             if (typeof element === "object") {
-                element.className = this.toFullName(key);
+                const descriptor: PropertyDescriptor = {
+                    get() {
+                        return {
+                            ... element,
+                            className: this.toFullName(key)
+                        };
+                    }, configurable: true, enumerable: true
+                };
+                Object.defineProperty(this, key, descriptor);
             }
         }
         this.isBuilt = true;
