@@ -193,6 +193,10 @@ export interface IStyleDeclaration {
     breakBefore?: string | null;
     breakInside?: string | null;
     captionSide?: CaptionSideType;
+    /**
+     * Warning, do not use this
+     */
+    className?: string;
     clear?: ClearType;
     clip?: string | null;
     clipPath?: string | null;
@@ -501,4 +505,9 @@ export interface IStyleDeclaration {
     writingMode?: string | null;
     zIndex?: string | null;
     zoom?: string | null;
+
+    // [key: string]: any | IStyleDeclaration;
+
+    subclasses?: { [key: string]: IStyleDeclaration };
+
 }

@@ -11,6 +11,17 @@ import { IStyleDeclarationFunc } from "./IStyleDeclarationFunc";
 //     styles: INameValuePairs;
 // }
 
+export function StyleClass(name: string): (target: AtomStyle, propertyKey: string, descriptor: any) => any {
+    return (target: AtomStyle, propertyKey: string, descriptor: any) => {
+        // tslint:disable-next-line:ban-types
+        const original = descriptor.get as Function;
+        // tslint:disable-next-line:only-arrow-functions
+        descriptor.get = function()  {
+            return this.createClass(name, original.call(this));
+        };
+    };
+}
+
 export class AtomStyleClass
     implements INotifyPropertyChanged,
     IAtomStyle {
@@ -38,7 +49,7 @@ export class AtomStyleClass
         ArrayHelper.remove(this.subClasses, (s) => s.name === name);
         const sc = new AtomStyleClass(this.styleSheet, this.parent, name, styles);
         this.subClasses.push(sc);
-        return this;
+        return sc;
     }
 
     /**
@@ -127,7 +138,11 @@ export class AtomStyleClass
             for (const key in n) {
                 if (n.hasOwnProperty(key)) {
                     const element = n[key];
+                    if (typeof element === "object") {
+                        this.subClass(key, () => element);
+                    } else {
                     v[key] = element;
+                    }
                 }
             }
             return v;
@@ -136,48 +151,62 @@ export class AtomStyleClass
         return this;
     }
 
-    public updateSubClass(name: string, props: IStyleDeclarationFunc): AtomStyleClass {
-        const sc = this.subClasses.find( (s) => s.name === name);
-        sc.updateStyle(props);
-        // for (const key in props) {
-        //     if (props.hasOwnProperty(key)) {
-        //         const element = props[key];
-        //         sc.styles[key] = element;
-        //     }
-        // }
-        this.styleSheet.pushUpdate();
-        return this;
-    }
+    // public updateSubClass(name: string, props: IStyleDeclarationFunc): AtomStyleClass {
+    //     const sc = this.subClasses.find( (s) => s.name === name);
+    //     sc.updateStyle(props);
+    //     // for (const key in props) {
+    //     //     if (props.hasOwnProperty(key)) {
+    //     //         const element = props[key];
+    //     //         sc.styles[key] = element;
+    //     //     }
+    //     // }
+    //     this.styleSheet.pushUpdate();
+    //     return this;
+    // }
 
-    public createStyle(): KeyValuePairs {
+    // public createStyle(): KeyValuePairs {
 
-        const result: KeyValuePairs = [];
-        result.push({ key: this.className, value: this.createStyleText(this.props) });
+    //     const result: KeyValuePairs = [];
+    //     result.push({ key: this.className, value: this.createStyleText(this.props) });
 
+    //     for (const iterator of this.subClasses) {
+    //         result.push({ key: `${this.className}${iterator.name}`, value: this.createStyleText(iterator.props) });
+    //     }
+    //     return result;
+    // }
+
+    public toStyle(pairs: INameValuePairs): any {
+        pairs = pairs || {};
+        this.createStyleText(pairs);
         for (const iterator of this.subClasses) {
-            result.push({ key: `${this.className}${iterator.name}`, value: this.createStyleText(iterator.props) });
+            iterator.toStyle(pairs);
         }
-        return result;
+        return pairs;
     }
 
     public onPropertyChanged(name: string): void {
         this.styleSheet.pushUpdate();
     }
 
-    private createStyleText(a: IStyleDeclarationFunc): string {
+    private createStyleText(pairs: INameValuePairs): INameValuePairs {
         const sslist: any[] = [];
-        const styles = a();
+        const styles = this.props();
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
                 const element = styles[key];
                 if (element === undefined || element === null) {
                     continue;
                 }
-                const keyName = StringHelper.fromCamelToHyphen(key);
-                sslist.push(`${keyName}: ${element}`);
+                if (typeof element === "object") {
+                    this.subClass(key, () => element);
+                } else {
+                    const keyName = StringHelper.fromCamelToHyphen(key);
+                    sslist.push(`${keyName}: ${element}`);
+                }
             }
         }
-        return `{ ${sslist.join(";\r\n")} }`;
+        pairs[this.className] = `{ ${sslist.join(";\r\n")} }`;
+        return pairs;
     }
 
     private createSubClass(

@@ -1,15 +1,21 @@
 import { ModuleFiles } from "../../ModuleFiles";
 import { AtomStyle } from "../styles/AtomStyle";
-import { AtomStyleClass } from "./AtomStyleClass";
+import { AtomStyleClass, StyleClass } from "./AtomStyleClass";
+import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomWindowStyle extends AtomStyle {
-    public readonly frameHost: AtomStyleClass = this.createClass("frameHost", () => ({
-        position: "absolute",
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0
-    }));
+
+    @StyleClass("frameHost")
+    public get frameHost(): IStyleDeclaration {
+        return {
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        };
+    }
+
     public readonly frame: AtomStyleClass = this.createClass("frame", () => ({
         position: "absolute",
         left: 0,

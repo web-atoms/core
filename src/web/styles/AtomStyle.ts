@@ -64,7 +64,7 @@ export class AtomStyle
         return item;
     }
 
-    public toStyle(pairs?: INameValuePairs): INameValuePairs {
+    public toStyle(pairs: INameValuePairs): INameValuePairs {
 
         pairs = pairs || {};
 
@@ -80,9 +80,10 @@ export class AtomStyle
             // if it is class
             const c = element as AtomStyleClass;
             if (c  && c.className) {
-                for (const iterator of c.createStyle()) {
-                    pairs[iterator.key] = iterator.value;
-                }
+                // for (const iterator of c.createStyle()) {
+                //     pairs[iterator.key] = iterator.value;
+                // }
+                pairs = c.toStyle(pairs);
                 continue;
             }
         }

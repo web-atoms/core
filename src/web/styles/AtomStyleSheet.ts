@@ -39,7 +39,7 @@ export class AtomStyleSheet extends AtomStyle
     public attach(): void {
         const ss = document.createElement("style");
 
-        const pairs = this.toStyle();
+        const pairs = this.toStyle({});
 
         ss.textContent = this.flatten(pairs);
 
