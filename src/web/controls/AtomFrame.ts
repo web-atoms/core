@@ -1,6 +1,7 @@
 // tslint:disable:ban-types no-console
 import { Atom } from "../../Atom";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
+import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
@@ -9,9 +10,9 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
 import { AtomControl } from "./AtomControl";
 
-declare class UMD {
-    public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
-}
+// declare class UMD {
+//     public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
+// }
 
 export class AtomFrame
     extends AtomControl
@@ -138,13 +139,15 @@ export class AtomFrame
         //     }
         // }
 
-        const ctClass = await UMD.resolveViewClassAsync(uri.path);
+        // const ctClass = await UMD.resolveViewClassAsync(uri.path);
 
-        const ct = new ctClass(this.app);
+        // const ct = new ctClass(this.app);
 
-        const q: any = uri.query;
+        // const q: any = uri.query;
 
-        const ctrl: AtomControl = this.createControl(ct as AtomControl, q);
+        // const ctrl: AtomControl = this.createControl(ct as AtomControl, q);
+
+        const ctrl = await AtomLoader.loadView<AtomControl>(uri, this.app);
 
         Atom.postAsync(async () => {
             const vm = ctrl.viewModel;

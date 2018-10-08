@@ -1,9 +1,9 @@
 import { AtomBinder } from "../../core/AtomBinder";
+import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf } from "../../core/types";
 import { JsonService } from "../../services/JsonService";
-import { AtomViewLoader } from "../AtomViewLoader";
 import { AtomContentControl } from "./AtomContentControl";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
@@ -45,7 +45,7 @@ export class AtomViewPager extends AtomItemsControl {
                 return si.view;
             }
             this.app.runAsync( async () => {
-                const ctrl = await AtomViewLoader.loadView(new AtomUri(si.value), this.app);
+                const ctrl = await AtomLoader.loadView<AtomControl>(new AtomUri(si.value), this.app);
                 si.view = ctrl;
                 AtomBinder.refreshValue(this, "selectedItem");
             });

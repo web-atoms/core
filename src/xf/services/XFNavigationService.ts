@@ -1,13 +1,14 @@
 import { App } from "../../App";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
+import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
 import { INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { JsonService } from "../../services/JsonService";
 import { ILocation, NavigationService } from "../../services/NavigationService";
-import { AtomViewLoader } from "../../web/AtomViewLoader";
+import { AtomControl } from "../../web/controls/AtomControl";
 import { AtomUI } from "../../web/core/AtomUI";
 
 declare var bridge: {
@@ -84,7 +85,7 @@ export default class XFNavigationService extends NavigationService {
         //     return;
         // }
 
-        const popup = await AtomViewLoader.loadView(url, this.app);
+        const popup = await AtomLoader.loadView(url, this.app);
 
         const id = `AtomWindow_${this.windowId++}`;
 
@@ -141,7 +142,7 @@ export default class XFNavigationService extends NavigationService {
         const  uri = new AtomUri(url);
         this.stack.push(url);
         this.app.runAsync(async () => {
-            const popup = await AtomViewLoader.loadView(uri, this.app);
+            const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
             bridge.setRoot(popup.element);
         });
     }
@@ -151,7 +152,7 @@ export default class XFNavigationService extends NavigationService {
             const url = this.stack.pop();
             this.app.runAsync(async () => {
                 const uri = new AtomUri(url);
-                const popup = await AtomViewLoader.loadView(uri, this.app);
+                const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
                 bridge.setRoot(popup.element);
             });
         }

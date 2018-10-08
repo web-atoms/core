@@ -9,7 +9,6 @@ import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
 import { ILocation, NavigationService } from "../../services/NavigationService";
 import { AtomUI } from "../../web/core/AtomUI";
-import { AtomViewLoader } from "../AtomViewLoader";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
@@ -172,7 +171,7 @@ export class WindowService extends NavigationService {
 
         // const popup = this.app.resolve(windowId, true) as AtomControl;
         // const popupType = await UMD.resolveViewClassAsync(url.path);
-        const popup = await AtomViewLoader.loadView(url, this.app);
+        const popup = await AtomLoader.loadView<AtomControl>(url, this.app);
         const e = popup.element;
 
         if (popup instanceof AtomWindow) {
