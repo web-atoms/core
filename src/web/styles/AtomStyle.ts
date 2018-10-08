@@ -51,6 +51,9 @@ export class AtomStyle
             if (!self.hasOwnProperty(key)) {
                 continue;
             }
+            if (/^(name|parent|styleSheet|defaults)$/.test(key)) {
+                continue;
+            }
             const element = self[key];
             // if it is nested style
             const style = element as AtomStyle;
