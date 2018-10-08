@@ -64,7 +64,7 @@ export class AtomStyle
         return item;
     }
 
-    public toStyle(pairs: INameValuePairs): INameValuePairs {
+    public toStyle(pairs?: INameValuePairs): INameValuePairs {
 
         pairs = pairs || {};
 

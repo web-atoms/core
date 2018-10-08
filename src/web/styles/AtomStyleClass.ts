@@ -17,7 +17,7 @@ export function StyleClass(name: string): (target: AtomStyle, propertyKey: strin
         const original = descriptor.get as Function;
         // tslint:disable-next-line:only-arrow-functions
         descriptor.get = function()  {
-            return this.createClass(name, original.call(this));
+            return this.createClass(name, () => original.call(this));
         };
         Object.defineProperty(target, propertyKey, descriptor);
     };
