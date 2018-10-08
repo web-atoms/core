@@ -28,7 +28,9 @@ export class AtomStyle
     }
 
     public createNamedStyle<T extends AtomStyle>(c: IClassOf<T>, name: string): T {
-        return this[name] = new (c)(this.styleSheet, this, `${this.name}-${name}`);
+        const style = this[name] = new (c)(this.styleSheet, this, `${this.name}-${name}`);
+        style.build();
+        return style;
     }
 
     public createStyle<TC extends AtomControl, T extends AtomStyle>(tc: IClassOf<TC>, c: IClassOf<T>, name: string): T {
@@ -38,6 +40,7 @@ export class AtomStyle
         const newStyle = new (c)(this.styleSheet, this, `${this.name}-${name}`);
         const key = TypeKey.get(tc);
         this.defaults[key] = newStyle;
+        newStyle.build();
         return this[name] = newStyle;
     }
 
@@ -73,7 +76,25 @@ export class AtomStyle
     }
 
     protected toFullName(n: string): string {
-        return `${this.name}-${n}`;
+        return `${this.name}-${ StringHelper.fromCamelToHyphen(n)}`;
+    }
+
+    protected build(): void {
+        const self = this as any;
+        for (const key in self) {
+            if (self.hasOwnProperty(key)) {
+                const element = self[key];
+                if (/^(name|parent|styleSheet|defaults)$/.test(key)) {
+                    continue;
+                }
+                if (element instanceof AtomStyle) {
+                    continue;
+                }
+                if (typeof element === "object") {
+                    element.className = this.toFullName(key);
+                }
+            }
+        }
     }
 
     protected init(): void {
