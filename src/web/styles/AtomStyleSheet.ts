@@ -7,6 +7,8 @@ export class AtomStyleSheet extends AtomStyle
     public styleElement: HTMLElement;
     private lastUpdateId: number = 0;
 
+    private isAttaching: boolean = false;
+
     [key: string]: any;
 
     constructor(prefix: string) {
@@ -22,6 +24,10 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     public pushUpdate(): void {
+        if (this.isAttaching)
+        {
+            return;
+        }
         if (this.lastUpdateId) {
             clearTimeout(this.lastUpdateId);
         }
@@ -37,6 +43,7 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     public attach(): void {
+        this.isAttaching = true;
         const ss = document.createElement("style");
 
         const pairs = this.toStyle({});
@@ -48,6 +55,7 @@ export class AtomStyleSheet extends AtomStyle
         }
         document.head.appendChild(ss);
         this.styleElement = ss;
+        this.isAttaching = false;
     }
 
     private flatten(pairs: INameValuePairs): string {
