@@ -1,6 +1,7 @@
 import { StringHelper } from "../../core/StringHelper";
-import { INameValuePairs } from "../../core/types";
+import { IClassOf, INameValuePairs } from "../../core/types";
 import { TypeKey } from "../../di/TypeKey";
+import { AtomControl } from "../controls/AtomControl";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
@@ -15,9 +16,6 @@ export class AtomStyle
 
     private defaults: { [key: string]: AtomStyle} = {};
 
-    // tslint:disable-next-line:ban-types
-    [key: string]: any;
-
     constructor(
         public styleSheet: AtomStyleSheet,
         public readonly parent: AtomStyle,
@@ -29,15 +27,31 @@ export class AtomStyle
         return this.defaults[TypeKey.get(forKey)];
     }
 
+    public createNamedStyle<T extends AtomStyle>(c: IClassOf<T>, name: string): T {
+        return this[name] = new (c)(this.styleSheet, this, `${this.name}-${name}`);
+    }
+
+    public createStyle<TC extends AtomControl, T extends AtomStyle>(tc: IClassOf<TC>, c: IClassOf<T>, name: string): T {
+
+        this.defaults = this.defaults || {};
+
+        const newStyle = new (c)(this.styleSheet, this, `${this.name}-${name}`);
+        const key = TypeKey.get(tc);
+        this.defaults[key] = newStyle;
+        return this[name] = newStyle;
+    }
+
     public toStyle(pairs?: INameValuePairs): INameValuePairs {
 
         pairs = pairs || {};
 
-        for (const key in this) {
-            if (!this.hasOwnProperty(key)) {
+        const self = this as any;
+
+        for (const key in self) {
+            if (!self.hasOwnProperty(key)) {
                 continue;
             }
-            const element = this[key];
+            const element = self[key];
             // if it is nested style
             const style = element as AtomStyle;
             if (style && style.toStyle) {
