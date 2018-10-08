@@ -47,7 +47,7 @@ export class AtomStyleClass
 
     public subClass(name: string, styles: IStyleDeclarationFunc): AtomStyleClass {
         ArrayHelper.remove(this.subClasses, (s) => s.name === name);
-        const sc = new AtomStyleClass(this.styleSheet, this.parent, name, styles);
+        const sc = new AtomStyleClass(this.styleSheet, this.parent, this.className + name, styles);
         this.subClasses.push(sc);
         return sc;
     }
