@@ -53,7 +53,7 @@ export class AtomStyle
         const self = this as any;
 
         for (const key in self) {
-            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults)$/.test(key)) {
+            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme)$/.test(key)) {
                 continue;
             }
             if (/^\_/.test(key)) {
@@ -88,9 +88,10 @@ export class AtomStyle
         if (this.isBuilt) {
             return;
         }
+        this.isBuilt = true;
         const self = this as any;
         for (const key in self) {
-            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults)$/.test(key)) {
+            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme)$/.test(key)) {
                 continue;
             }
             if (/^\_\$\_/.test(key)) {
