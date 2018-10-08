@@ -88,6 +88,8 @@ export class AtomStyle
                     continue;
                 }
                 if (element instanceof AtomStyle) {
+                    const ec = element as AtomStyle;
+                    ec.build();
                     continue;
                 }
                 if (typeof element === "object") {
