@@ -64,6 +64,22 @@ export class AtomStyle
         return item;
     }
 
+    public clone(s: IStyleDeclaration, d: IStyleDeclaration): IStyleDeclaration {
+        if (s.className) {
+            const sc = (s as any) as AtomStyleClass;
+            const sdd = sc.props();
+            // merge...
+            for (const key in d) {
+                if (d.hasOwnProperty(key)) {
+                    const element = d[key];
+                    sdd[key] = element;
+                }
+            }
+            return sdd;
+        }
+        throw new Error("Never...");
+    }
+
     public toStyle(pairs?: INameValuePairs): INameValuePairs {
 
         pairs = pairs || {};

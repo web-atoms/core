@@ -46,7 +46,7 @@ export class AtomTabbedPageStyle extends AtomStyle {
 
     @StyleClass("selected-tab-item")
     public get selectedTabItem(): IStyleDeclaration {
-        return {
+        return this.clone(this.tabItem, {
             borderColor: this.theme.activeColor,
             backgroundColor: this.theme.selectedBgColor,
             color: this.theme.selectedColor,
@@ -62,7 +62,7 @@ export class AtomTabbedPageStyle extends AtomStyle {
                     right: "22px"
                 }
             }
-        };
+        });
     }
 
     @StyleClass("close-button")
