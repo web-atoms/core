@@ -51,13 +51,13 @@ export class AtomStyle
         const self = this as any;
 
         for (const key in self) {
-            if (!self.hasOwnProperty(key)) {
-                continue;
-            }
-            if (/^(name|parent|styleSheet|defaults)$/.test(key)) {
+            if (/^(constructor|name|parent|styleSheet|defaults)$/.test(key)) {
                 continue;
             }
             const element = self[key];
+            if (typeof element === "function") {
+                continue;
+            }
             // if it is nested style
             const style = element as AtomStyle;
             if (style && style.toStyle) {
@@ -82,19 +82,20 @@ export class AtomStyle
     protected build(): void {
         const self = this as any;
         for (const key in self) {
-            if (self.hasOwnProperty(key)) {
-                const element = self[key];
-                if (/^(name|parent|styleSheet|defaults)$/.test(key)) {
-                    continue;
-                }
-                if (element instanceof AtomStyle) {
-                    const ec = element as AtomStyle;
-                    ec.build();
-                    continue;
-                }
-                if (typeof element === "object") {
-                    element.className = this.toFullName(key);
-                }
+            if (/^(constructor|name|parent|styleSheet|defaults)$/.test(key)) {
+                continue;
+            }
+            const element = self[key];
+            if (typeof element === "function") {
+                continue;
+            }
+            if (element instanceof AtomStyle) {
+                const ec = element as AtomStyle;
+                ec.build();
+                continue;
+            }
+            if (typeof element === "object") {
+                element.className = this.toFullName(key);
             }
         }
     }
