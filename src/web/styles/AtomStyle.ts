@@ -50,6 +50,10 @@ export class AtomStyle
         const c = Object.getPrototypeOf(this);
         const b = Object.getPrototypeOf(c);
         const pd = Object.getOwnPropertyDescriptor(b, name);
+        const cd = Object.getOwnPropertyDescriptor(c, name);
+        const cc = cd.get.apply(this);
+        // tslint:disable-next-line:no-console
+        console.log(cc);
         return pd.get.apply(this);
     }
 
