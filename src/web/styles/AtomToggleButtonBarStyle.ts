@@ -11,6 +11,8 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 
     public get item(): IStyleDeclaration {
         return {
+            // tslint:disable-next-line:no-string-literal
+            ... super["item"],
             borderRadius: 0,
             display: "inline-block",
             border: "1px solid",
@@ -18,14 +20,14 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
             color: this.toggleColor,
             borderColor: this.toggleColor,
             subclasses: {
-                "::first-child": {
+                ":first-child": {
                     borderTopLeftRadius: `${this.padding || this.theme.padding}px`,
                     borderBottomLeftRadius: `${this.padding || this.theme.padding}px`,
                     borderTopRightRadius: 0,
                     borderBottomRightRadius: 0,
                     borderLeft: "1px solid"
                 },
-                "::last-child": {
+                ":last-child": {
                     borderTopLeftRadius: 0,
                     borderBottomLeftRadius: 0,
                     borderTopRightRadius: `${this.padding || this.theme.padding}px`,
@@ -44,13 +46,13 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
             borderLeft: "none",
             borderColor: this.toggleColor,
             subclasses: {
-                "::first-child": {
+                ":first-child": {
                     borderTopLeftRadius: `${this.padding || this.theme.padding}px`,
                     borderBottomLeftRadius: `${this.padding || this.theme.padding}px`,
                     borderTopRightRadius: 0,
                     borderBottomRightRadius: 0
                 },
-                "::last-child": {
+                ":last-child": {
                     borderTopLeftRadius: 0,
                     borderBottomLeftRadius: 0,
                     borderTopRightRadius: `${this.padding || this.theme.padding}px`,
