@@ -199,6 +199,8 @@ export class AtomStyleClass
                     for (const ke in element) {
                         if (element.hasOwnProperty(ke)) {
                             const ve = element[key];
+                            // tslint:disable-next-line:no-console
+                            console.log(ve);
                             this.subClass(ke, () => ve);
                         }
                     }
