@@ -47,7 +47,7 @@ export class AtomStyle
     }
 
     public getBaseProperty<T>(tc: IClassOf<T>, name: string): any {
-        let c = tc;
+        let c = tc.prototype;
         do {
             c = c.prototype;
             if (!c) {
