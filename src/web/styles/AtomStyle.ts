@@ -1,3 +1,4 @@
+import { ColorItem } from "../../core/Colors";
 import { StringHelper } from "../../core/StringHelper";
 import { IClassOf, INameValuePairs } from "../../core/types";
 import { TypeKey } from "../../di/TypeKey";
@@ -79,9 +80,8 @@ export class AtomStyle
                 continue;
             }
             // if it is nested style
-            const style = element as AtomStyle;
-            if (style && style.toStyle) {
-                pairs = style.toStyle(pairs);
+            if (element instanceof AtomStyle) {
+                pairs = element.toStyle(pairs);
                 continue;
             }
 
@@ -120,6 +120,9 @@ export class AtomStyle
             if (element instanceof AtomStyle) {
                 const ec = element as AtomStyle;
                 ec.build();
+                continue;
+            }
+            if (element instanceof ColorItem) {
                 continue;
             }
             if (typeof element === "object") {
