@@ -131,7 +131,7 @@ export default class Colors {
             }
         }
 
-        if (/^(\#|rgb\(|rgba\())/i.test(color)) {
+        if (/^(\#|rgb\(|rgba\()/i.test(color)) {
             return new ColorItem(color);
         }
 
