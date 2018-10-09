@@ -42,12 +42,8 @@ export class ColorItem {
         return this.colorCode;
     }
 
-    public withAlpha(a: number): ColorItem {
-        return new ColorItem(this.red, this.green, this.blue, a);
-    }
-
     public withAlphaPercent(a: number): ColorItem {
-        a = a * 255;
+        // a = a * 255;
         return new ColorItem(this.red, this.green, this.blue, a);
     }
 
@@ -92,9 +88,6 @@ export class ColorItem {
             r = r * 255;
             g = g * 255;
             b = b * 255;
-            if (a !== undefined) {
-                a = a * 255;
-            }
         }
         if (a !== undefined) {
             return `rgba(${r},${g},${b},${a})`;

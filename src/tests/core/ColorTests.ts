@@ -18,6 +18,8 @@ export class TestCase extends TestItem {
         ci = new ColorItem(0, 255, 0, 0);
         Assert.equals("rgba(0,255,0,0)", ci.colorCode);
 
+        ci = new ColorItem(0, 255, 0, 0.5);
+        Assert.equals("rgba(0,255,0,0.5)", ci.colorCode);
     }
 
 }
