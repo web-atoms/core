@@ -85,6 +85,10 @@ export class AtomStyle
                 continue;
             }
 
+            if (element instanceof ColorItem) {
+                continue;
+            }
+
             // if it is class
             const c = element as IStyleDeclaration;
             if (c && typeof c === "object") {
