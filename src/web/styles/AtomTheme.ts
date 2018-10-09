@@ -45,7 +45,7 @@ export class AtomTheme extends AtomStyleSheet
 
     public readonly popup = this.createNamedStyle(AtomPopupStyle, "popup");
 
-    public readonly listBox = this.createStyle(AtomListBox, AtomListBoxStyle, "listbox");
+    // public readonly listBox = this.createStyle(AtomListBox, AtomListBoxStyle, "listbox");
 
     constructor() {
         super("atom-theme");
