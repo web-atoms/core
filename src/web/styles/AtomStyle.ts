@@ -49,7 +49,7 @@ export class AtomStyle
     public getBaseProperty<T>(tc: IClassOf<T>, name: string): any {
         let c = tc;
         do {
-            c = Object.getPrototypeOf(c);
+            c = c.prototype;
             if (!c) {
                 throw new Error("No property descriptor found for " + name);
             }
