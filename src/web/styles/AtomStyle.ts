@@ -46,9 +46,9 @@ export class AtomStyle
         return this[name] = newStyle;
     }
 
-    public getBaseProperty(name: string): any {
-        const c = Object.getPrototypeOf(this);
-        const b = Object.getPrototypeOf(c);
+    public getBaseProperty<T>(tc: IClassOf<T>, name: string): any {
+        // const c = Object.getPrototypeOf(this);
+        const b = Object.getPrototypeOf(tc);
         const pd = Object.getOwnPropertyDescriptor(b, name);
         return pd.get.apply(this);
     }

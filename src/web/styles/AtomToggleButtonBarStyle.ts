@@ -12,7 +12,7 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
     public get item(): IStyleDeclaration {
         return {
             // tslint:disable-next-line:no-string-literal
-            ... this.getBaseProperty("item"),
+            ... this.getBaseProperty(AtomToggleButtonBarStyle, "item"),
             borderRadius: 0,
             display: "inline-block",
             border: "1px solid",
@@ -39,7 +39,7 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 
     public get selectedItem(): IStyleDeclaration {
         return {
-            ... this.getBaseProperty("selectedItem"),
+            ... this.getBaseProperty(AtomToggleButtonBarStyle, "selectedItem"),
             borderRadius: 0,
             display: "inline-block",
             border: "1px solid",
