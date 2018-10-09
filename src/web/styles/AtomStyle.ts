@@ -54,6 +54,9 @@ export class AtomStyle
                 throw new Error("No property descriptor found for " + name);
             }
             const pd = Object.getOwnPropertyDescriptor(c, name);
+            if (!pd) {
+                continue;
+            }
             return pd.get.apply(this);
         } while (true);
     }
