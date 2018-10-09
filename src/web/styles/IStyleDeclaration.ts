@@ -235,6 +235,7 @@ export interface IStyleDeclaration {
     flexGrow?: string | null;
     flexShrink?: string | null;
     flexWrap?: FlexWrapType;
+    float?: FloatType;
     floodColor?: string | null;
     floodOpacity?: string | null;
     font?: string | null;
