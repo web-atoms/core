@@ -240,6 +240,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             case "text":
                 element.textContent = value;
                 break;
+            case "class":
+                element.className = value;
+                break;
             default:
                 element[name] = value;
         }
