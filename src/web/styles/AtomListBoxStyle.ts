@@ -17,7 +17,8 @@ export class AtomListBoxStyle extends AtomStyle {
             backgroundColor: this.theme.bgColor,
             color: this.theme.color,
             padding: (this.padding || this.theme.padding) + "px",
-            borderRadius: (this.padding || this.theme.padding) + "px"
+            borderRadius: (this.padding || this.theme.padding) + "px",
+            cursor: "pointer"
         };
     }
 
@@ -25,7 +26,8 @@ export class AtomListBoxStyle extends AtomStyle {
         return {
             ... this.item,
             backgroundColor: this.theme.selectedBgColor,
-            color: this.theme.selectedColor
+            color: this.theme.selectedColor,
+            cursor: "pointer"
         };
     }
 

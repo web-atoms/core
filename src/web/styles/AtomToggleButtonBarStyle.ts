@@ -19,6 +19,7 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
             borderLeft: "none",
             color: this.toggleColor,
             borderColor: this.toggleColor,
+            cursor: "pointer",
             subclasses: {
                 ":first-child": {
                     borderTopLeftRadius: `${this.padding || this.theme.padding}px`,
@@ -45,6 +46,7 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
             border: "1px solid",
             borderLeft: "none",
             borderColor: this.toggleColor,
+            cursor: "pointer",
             subclasses: {
                 ":first-child": {
                     borderTopLeftRadius: `${this.padding || this.theme.padding}px`,
