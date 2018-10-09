@@ -53,7 +53,7 @@ export class AtomStyle
             if (!c) {
                 throw new Error("No property descriptor found for " + name);
             }
-            const pd = Object.getOwnPropertyDescriptor(c, name);
+            const pd = Object.getOwnPropertyDescriptor(c.prototype, name);
             if (!pd) {
                 continue;
             }
