@@ -82,7 +82,7 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
 
             const closeButton = document.createElement("img");
             this.bind(closeButton, "styleClass", [["this", "controlStyle", "closeButton"]], false, null, __creator);
-            closeButton.textContent = "x";
+            // closeButton.textContent = "x";
             this.append(closeButton);
 
             this.bindEvent(closeButton, "click", (e) => __creator.localViewModel.closePage(this.data));
