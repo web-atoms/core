@@ -1,5 +1,7 @@
 import { BindableProperty } from "../../core/BindableProperty";
 import { ModuleFiles } from "../../ModuleFiles";
+import CloseButtonDataUrl from "../images/CloseButtonDataUrl";
+import CloseButtonHoverDataUrl from "../images/CloseButtonHoverDataUrl";
 import { AtomStyle } from "./AtomStyle";
 import { AtomTheme } from "./AtomTheme";
 import { IStyleDeclaration } from "./IStyleDeclaration";
@@ -71,10 +73,10 @@ export class AtomTabbedPageStyle extends AtomStyle {
             width: "0",
             height: "0",
             padding: "8px",
-            backgroundImage: `url(${ModuleFiles.src.web.images.closeButton_svg})`,
+            backgroundImage: CloseButtonDataUrl,
             subclasses: {
                 ":hover": {
-                    backgroundImage: `url(${ModuleFiles.src.web.images.closeButtonHover_svg})`
+                    backgroundImage: CloseButtonHoverDataUrl
                 }
             }
         };
