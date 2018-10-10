@@ -10,10 +10,10 @@
             }
         },
         {
-            "label": "Http Server",
-            "command": "powershell",
+            "label": "Web Atoms Dev Server",
+            "command": "node",
             "args": [
-                "http-server"
+                "${env:APPDATA}/npm/node_modules/web-atoms-dev-server/index.js",
             ],
             "problemMatcher": []
         },{

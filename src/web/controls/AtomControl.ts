@@ -7,8 +7,8 @@ import { IClassOf } from "../../core/types";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
-import { AtomStyleClass } from "../styles/AtomStyleClass";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
+import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 
 // tslint:disable-next-line:interface-name
 export interface IAtomControlElement extends HTMLElement {
@@ -195,7 +195,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     return;
                 }
 
-                const s = value as AtomStyleClass;
+                const s = value as IStyleDeclaration;
                 if (s.className) {
                     element.classList.add(s.className);
                     (element as any)._lastClass = s.className;
@@ -239,6 +239,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         switch (name) {
             case "text":
                 element.textContent = value;
+                break;
+            case "class":
+                element.className = value;
                 break;
             default:
                 element[name] = value;

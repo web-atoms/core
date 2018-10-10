@@ -8,6 +8,11 @@ export class AtomListBox extends AtomItemsControl {
 
     public selectItemOnClick: boolean = true;
 
+    protected preCreate(): void {
+        super.preCreate();
+        this.defaultControlStyle = AtomListBoxStyle;
+    }
+
     protected createChild(df: DocumentFragment, data: any): AtomControl {
         const child = super.createChild(df, data);
         child.bindEvent(child.element, "click", (e) => {

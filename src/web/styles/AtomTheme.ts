@@ -3,6 +3,8 @@ import { AtomWindowStyle } from "./AtomWindowStyle";
 import { AtomPopupStyle } from "./AtomPopupStyle";
 
 import { BindableProperty } from "../../core/BindableProperty";
+import Color from "../../core/Color";
+import Colors, { ColorItem } from "../../core/Colors";
 import { IDisposable, INotifyPropertyChanging } from "../../core/types";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { AtomListBox } from "../controls/AtomListBox";
@@ -17,22 +19,22 @@ export class AtomTheme extends AtomStyleSheet
         IDisposable {
 
     @BindableProperty
-    public bgColor: string = "white";
+    public bgColor: ColorItem = Colors.white;
 
     @BindableProperty
-    public color: string = "gray";
+    public color: ColorItem = Colors.gray;
 
     @BindableProperty
-    public hoverColor: string = "lightgray";
+    public hoverColor: ColorItem = Colors.lightGray;
 
     @BindableProperty
-    public activeColor: string = "lightblue";
+    public activeColor: ColorItem = Colors.lightBlue;
 
     @BindableProperty
-    public selectedBgColor: string = "blue";
+    public selectedBgColor: ColorItem = Colors.blue;
 
     @BindableProperty
-    public selectedColor: string = "white";
+    public selectedColor: ColorItem = Colors.white;
 
     @BindableProperty
     public padding: number = 5;
@@ -43,7 +45,7 @@ export class AtomTheme extends AtomStyleSheet
 
     public readonly popup = this.createNamedStyle(AtomPopupStyle, "popup");
 
-    public readonly listBox = this.createStyle(AtomListBox, AtomListBoxStyle, "listbox");
+    // public readonly listBox = this.createStyle(AtomListBox, AtomListBoxStyle, "listbox");
 
     constructor() {
         super("atom-theme");

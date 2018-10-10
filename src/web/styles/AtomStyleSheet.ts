@@ -1,11 +1,12 @@
 import { INameValuePairs, INotifyPropertyChanging } from "../../core/types";
 import { AtomStyle } from "./AtomStyle";
-import { AtomStyleClass } from "./AtomStyleClass";
 
 export class AtomStyleSheet extends AtomStyle
         implements INotifyPropertyChanging {
     public styleElement: HTMLElement;
     private lastUpdateId: number = 0;
+
+    private isAttaching: boolean = false;
 
     [key: string]: any;
 
@@ -16,12 +17,13 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     public onPropertyChanging(name: string, newValue: any, oldValue: any): void {
-        const ov = oldValue as AtomStyleClass;
-
         this.pushUpdate();
     }
 
     public pushUpdate(): void {
+        if (this.isAttaching) {
+            return;
+        }
         if (this.lastUpdateId) {
             clearTimeout(this.lastUpdateId);
         }
@@ -37,9 +39,10 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     public attach(): void {
+        this.isAttaching = true;
         const ss = document.createElement("style");
 
-        const pairs = this.toStyle();
+        const pairs = this.toStyle({});
 
         ss.textContent = this.flatten(pairs);
 
@@ -48,6 +51,7 @@ export class AtomStyleSheet extends AtomStyle
         }
         document.head.appendChild(ss);
         this.styleElement = ss;
+        this.isAttaching = false;
     }
 
     private flatten(pairs: INameValuePairs): string {

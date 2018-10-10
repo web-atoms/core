@@ -12,6 +12,7 @@ import "./web/controls/atom-items-control-tests";
 import "./web/controls/AtomGridViewTests";
 import "./tests/AtomClassTest";
 import "./tests/AppTest";
+import "./tests/core/ColorTests";
 import "./tests/core/AtomBinderTest";
 import "./tests/core/StringHelperTests";
 import "./tests/core/PropertyBinderTest";

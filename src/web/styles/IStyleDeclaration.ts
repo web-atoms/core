@@ -1,3 +1,5 @@
+import { ColorItem } from "../../core/Colors";
+
 export type StylePosition = "" | "default" | "initial" | "static" | "relative" | "absolute" | string | null;
 export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "center" | "justify" | string | null;
 export type FloatPosition = "" | "default" | "none" | "left" | "right" | "initial" | "inherit" | string | null;
@@ -144,7 +146,7 @@ export interface IStyleDeclaration {
     backgroundAttachment?: BackgroundAttachmentType;
     backgroundBlendMode?: BackgroundBlendType;
     backgroundClip?: BackgroundClipType;
-    backgroundColor?: string | null;
+    backgroundColor?: string | null | ColorItem;
     backgroundImage?: string | null;
     backgroundOrigin?: BackgroundOriginType;
     backgroundPosition?: BackgroundPositionType;
@@ -155,13 +157,13 @@ export interface IStyleDeclaration {
     baselineShift?: string | null;
     border?: string | null;
     borderBottom?: string | null;
-    borderBottomColor?: string | null;
+    borderBottomColor?: string | null | ColorItem;
     borderBottomLeftRadius?: string | 0 | null;
     borderBottomRightRadius?: string | 0 | null;
     borderBottomStyle?: CommanStyleType;
     borderBottomWidth?: CommamWidthType;
     borderCollapse?: BorderCollapseType;
-    borderColor?: string | null;
+    borderColor?: string | null | ColorItem;
     borderImage?: string | null;
     borderImageOutset?: string | null;
     borderImageRepeat?: BorderImageRepeatType;
@@ -169,18 +171,18 @@ export interface IStyleDeclaration {
     borderImageSource?: string | null;
     borderImageWidth?: string | null;
     borderLeft?: string | null;
-    borderLeftColor?: string | null;
+    borderLeftColor?: string | null | ColorItem;
     borderLeftStyle?: CommanStyleType;
     borderLeftWidth?: CommamWidthType;
     borderRadius?: string | 0 | null;
     borderRight?: string | null;
-    borderRightColor?: string | null;
+    borderRightColor?: string | null | ColorItem;
     borderRightStyle?: CommanStyleType;
     borderRightWidth?: CommamWidthType;
     borderSpacing?: BorderSpacingType;
     borderStyle?: CommanStyleType;
     borderTop?: string | null;
-    borderTopColor?: string | null;
+    borderTopColor?: string | null | ColorItem;
     borderTopLeftRadius?: string | 0 | null;
     borderTopRightRadius?: string | 0 | null;
     borderTopStyle?: CommanStyleType;
@@ -193,17 +195,21 @@ export interface IStyleDeclaration {
     breakBefore?: string | null;
     breakInside?: string | null;
     captionSide?: CaptionSideType;
+    /**
+     * Warning, do not use this
+     */
+    className?: string;
     clear?: ClearType;
     clip?: string | null;
     clipPath?: string | null;
     clipRule?: string | null;
-    color?: string | null;
+    color?: string | null | ColorItem;
     colorInterpolationFilters?: string | null;
     columnCount?: any;
     columnFill?: string | null;
     columnGap?: ColumnGapType;
     columnRule?: string | null;
-    columnRuleColor?: any;
+    columnRuleColor?: any | ColorItem;
     columnRuleStyle?: CommanStyleType;
     columnRuleWidth?: CommamWidthType;
     columnSpan?: string | null;
@@ -231,7 +237,8 @@ export interface IStyleDeclaration {
     flexGrow?: string | null;
     flexShrink?: string | null;
     flexWrap?: FlexWrapType;
-    floodColor?: string | null;
+    float?: FloatType;
+    floodColor?: string | null | ColorItem;
     floodOpacity?: string | null;
     font?: string | null;
     fontFamily?: string | null;
@@ -277,7 +284,7 @@ export interface IStyleDeclaration {
     left?: PositionType;
     readonly length?: number;
     letterSpacing?: string | null;
-    lightingColor?: string | null;
+    lightingColor?: string | null | ColorItem;
     lineBreak?: string | null;
     lineHeight?: string | null;
     listStyle?: string | null;
@@ -352,7 +359,7 @@ export interface IStyleDeclaration {
     order?: string | null;
     orphans?: string | null;
     outline?: string | null;
-    outlineColor?: string | null;
+    outlineColor?: string | null | ColorItem;
     outlineOffset?: string | null;
     outlineStyle?: CommanStyleType;
     outlineWidth?: CommamWidthType;
@@ -382,7 +389,7 @@ export interface IStyleDeclaration {
     rubyOverhang?: string | null;
     rubyPosition?: string | null;
     scale?: string | null;
-    stopColor?: string | null;
+    stopColor?: string | null | ColorItem;
     stopOpacity?: string | null;
     stroke?: string | null;
     strokeDasharray?: string | null;
@@ -457,7 +464,7 @@ export interface IStyleDeclaration {
     webkitColumnCount?: any;
     webkitColumnGap?: any;
     webkitColumnRule?: string | null;
-    webkitColumnRuleColor?: any;
+    webkitColumnRuleColor?: any | ColorItem;
     webkitColumnRuleStyle?: string | null;
     webkitColumnRuleWidth?: any;
     webkitColumnSpan?: string | null;
@@ -475,11 +482,11 @@ export interface IStyleDeclaration {
     webkitOrder?: string | null;
     webkitPerspective?: string | null;
     webkitPerspectiveOrigin?: string | null;
-    webkitTapHighlightColor?: string | null;
-    webkitTextFillColor?: string | null;
+    webkitTapHighlightColor?: string | null | ColorItem;
+    webkitTextFillColor?: string | null | ColorItem;
     webkitTextSizeAdjust?: any;
     webkitTextStroke?: string | null;
-    webkitTextStrokeColor?: string | null;
+    webkitTextStrokeColor?: string | null | ColorItem;
     webkitTextStrokeWidth?: string | null;
     webkitTransform?: string | null;
     webkitTransformOrigin?: string | null;
@@ -501,4 +508,9 @@ export interface IStyleDeclaration {
     writingMode?: string | null;
     zIndex?: string | null;
     zoom?: string | null;
+
+    // [key: string]: any | IStyleDeclaration;
+
+    subclasses?: { [key: string]: IStyleDeclaration };
+
 }

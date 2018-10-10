@@ -1,10 +1,13 @@
 import { AtomStyle } from "../styles/AtomStyle";
-import {AtomStyleClass } from "../styles/AtomStyleClass";
+import { IStyleDeclaration } from "./IStyleDeclaration";
 export class AtomPopupStyle extends AtomStyle {
-    public readonly host: AtomStyleClass = this.createClass("popup", () => ({
-        backgroundColor: "white",
-        border: "solid 1px lightgray",
-        padding: "5px",
-        borderRadius: "5px"
-    }));
+
+    public get host(): IStyleDeclaration {
+        return {
+            backgroundColor: "white",
+            border: "solid 1px lightgray",
+            padding: "5px",
+            borderRadius: "5px"
+        };
+    }
 }

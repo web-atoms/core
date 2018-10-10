@@ -1,6 +1,7 @@
 import { App } from "../../App";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { AtomList } from "../../core/AtomList";
+import { AtomLoader } from "../../core/AtomLoader";
 import { AtomOnce } from "../../core/AtomOnce";
 import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
@@ -81,7 +82,7 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
 
             const closeButton = document.createElement("img");
             this.bind(closeButton, "styleClass", [["this", "controlStyle", "closeButton"]], false, null, __creator);
-            closeButton.textContent = "x";
+            // closeButton.textContent = "x";
             this.append(closeButton);
 
             this.bindEvent(closeButton, "click", (e) => __creator.localViewModel.closePage(this.data));
@@ -93,9 +94,9 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
     };
 }
 
-declare class UMD {
-    public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
-}
+// declare class UMD {
+//     public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
+// }
 
 interface ITabState {
     urls: string[];
@@ -219,8 +220,9 @@ class AtomTabViewModel extends AtomViewModel {
 
         const url = new AtomUri(message);
 
-        const popupType = await UMD.resolveViewClassAsync(url.path);
-        const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
+        // const popupType = await UMD.resolveViewClassAsync(url.path);
+        // const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
+        const page = await AtomLoader.loadView<AtomPage>(url, this.app);
         AtomUI.assignID(page.element);
         page.title = "Title";
         page.tag = message;
