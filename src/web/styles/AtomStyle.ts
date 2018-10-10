@@ -1,6 +1,7 @@
 import { ColorItem } from "../../core/Colors";
 import { StringHelper } from "../../core/StringHelper";
 import { IClassOf, INameValuePairs } from "../../core/types";
+import WebImage from "../../core/WebImage";
 import { TypeKey } from "../../di/TypeKey";
 import { AtomControl } from "../controls/AtomControl";
 import { AtomStyleSheet } from "./AtomStyleSheet";
@@ -85,7 +86,7 @@ export class AtomStyle
                 continue;
             }
 
-            if (element instanceof ColorItem) {
+            if (element instanceof ColorItem || element instanceof WebImage) {
                 continue;
             }
 
@@ -165,7 +166,11 @@ export class AtomStyle
                         }
                     }
                 } else {
-                    sslist.push(`${keyName}: ${element}`);
+                    if (element instanceof WebImage) {
+                        sslist.push(`${keyName}: url(${element})`);
+                    } else {
+                        sslist.push(`${keyName}: ${element}`);
+                    }
                 }
             }
         }

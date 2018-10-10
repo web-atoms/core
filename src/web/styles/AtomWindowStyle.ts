@@ -1,4 +1,8 @@
 import { ModuleFiles } from "../../ModuleFiles";
+import CloseButton from "../images/CloseButton";
+import CloseButtonDataUrl from "../images/CloseButtonDataUrl";
+import CloseButtonHover from "../images/CloseButtonHover";
+import CloseButtonHoverDataUrl from "../images/CloseButtonHoverDataUrl";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
@@ -73,7 +77,12 @@ export class AtomWindowStyle extends AtomStyle {
             padding: "9px",
             border: "none",
             backgroundColor: "#00000000",
-            backgroundImage: `url(${ModuleFiles.src.web.images.closeButtonHover_svg})`
+            backgroundImage: CloseButtonDataUrl,
+            subclasses: {
+                ":hover": {
+                    backgroundImage: CloseButtonHoverDataUrl
+                }
+            }
         };
     }
 
