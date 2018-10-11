@@ -66,7 +66,7 @@ export class ColorItem {
         if (/^rgba/i.test(rgba)) {
             rgba = rgba.substr(5);
             rgba = rgba.substr(0, rgba.length - 1);
-            const a = rgba.split(",").map( (x) => Number.parseInt(x, 10) );
+            const a = rgba.split(",").map( (x, i) => i === 3 ? Number.parseFloat(x) : Number.parseInt(x, 10) );
             return { red: a[0], green: a[1], blue: a[2], alpha: a[3]};
         }
         if (/^rgb/i.test(rgba)) {
@@ -80,15 +80,15 @@ export class ColorItem {
     }
 
     private static rgb(r: number, g: number, b: number, a?: number): string {
-        if (!isInt(r)) {
-            // all must be less than one...
-            if (isInt(g) || isInt(b) || (a !== undefined && isInt(a))) {
-                throw new Error("All color values must be either fractions or integers between 0 to 255");
-            }
-            r = r * 255;
-            g = g * 255;
-            b = b * 255;
-        }
+        // if (!isInt(r)) {
+        //     // all must be less than one...
+        //     if (isInt(g) || isInt(b) || (a !== undefined && isInt(a))) {
+        //         throw new Error("All color values must be either fractions or integers between 0 to 255");
+        //     }
+        //     r = r * 255;
+        //     g = g * 255;
+        //     b = b * 255;
+        // }
         if (a !== undefined) {
             return `rgba(${r},${g},${b},${a})`;
         }
@@ -96,9 +96,9 @@ export class ColorItem {
     }
 }
 
-function isInt(n: number): boolean {
-    return Number(n) === n && n % 1 === 0;
-}
+// function isInt(n: number): boolean {
+//     return Number(n) === n && n % 1 === 0;
+// }
 
 function toFixedString(t: number): string {
     return ("0" + t.toString(16)).slice(-2);
