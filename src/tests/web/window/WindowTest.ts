@@ -5,7 +5,7 @@ export class TestCase extends TestItem {
 
     @Test
     public async cancelWindow(): Promise<any> {
-
+        // task: pending
     }
 
 }
