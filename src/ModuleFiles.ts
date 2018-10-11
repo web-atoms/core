@@ -18,5 +18,12 @@
         }
       }
     }
+  },
+  "tests": {
+    "web": {
+      "views": {
+        "TestHost": "web-atoms-core/dist/tests/web/views/TestHost"
+      }
+    }
   }
 }

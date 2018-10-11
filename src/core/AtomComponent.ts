@@ -42,7 +42,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     protected pendingInits: Array<() => void>;
 
-    private mInvalidated: number = 0;
+    private mInvalidated: any = 0;
 
     private disposables: IDisposable[];
 

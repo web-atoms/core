@@ -2,14 +2,7 @@
 // tslint:disable:ordered-imports
 
 // import unit test modules here
-import "./core/atom-ui-tests";
-import "./di/tests";
-import "./web/styles/tests";
 import { TestRunner } from "./unit/TestRunner";
-import "./view-model/test";
-import "./web/controls/atom-control-tests";
-import "./web/controls/atom-items-control-tests";
-import "./web/controls/AtomGridViewTests";
 import { statSync, readdirSync } from "fs";
 import * as path from "path";
 // import "./tests/AtomClassTest";

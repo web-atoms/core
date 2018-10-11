@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@types/node": "^10.11.7",
     "fs": "0.0.1-security",
     "istanbul": "^0.4.5",
     "jsdom": "^11.11.0",
