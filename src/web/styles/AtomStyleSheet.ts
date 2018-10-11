@@ -8,8 +8,6 @@ export class AtomStyleSheet extends AtomStyle
 
     private isAttaching: boolean = false;
 
-    private isAttaching: boolean = false;
-
     [key: string]: any;
 
     constructor(prefix: string) {
