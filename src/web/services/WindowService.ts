@@ -8,6 +8,7 @@ import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
 import { ILocation, NavigationService } from "../../services/NavigationService";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
@@ -218,6 +219,22 @@ export class WindowService extends NavigationService {
                 ArrayHelper.remove(this.popups, (a) => a === popup);
             };
 
+            const wvm = popup.viewModel;
+            popup.bindEvent(document.body, "keyup", (keyboardEvent: KeyboardEvent) => {
+                if (keyboardEvent.key === "Escape") {
+                    if (isPopup) {
+                        closeFunction();
+                    } else {
+                        // check if cancel is supported
+                        if (wvm.cancel) {
+                            this.app.runAsync(() => wvm.cancel());
+                        } else {
+                            closeFunction();
+                        }
+                    }
+                }
+            });
+
             const device = this.app.get(App);
 
             disposables.push(device.subscribe(`atom-window-close:${e.id}`, (g, i) => {
@@ -230,7 +247,6 @@ export class WindowService extends NavigationService {
                 reject(i || "cancelled");
             }));
 
-            const wvm = popup.viewModel;
             if (wvm) {
                 wvm.windowName = e.id;
 
