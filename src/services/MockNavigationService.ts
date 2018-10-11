@@ -27,6 +27,7 @@ export class MockConfirmViewModel extends AtomWindowViewModel {
  * @class MockWindowService
  * @extends {WindowService}
  */
+@RegisterSingleton
 export class MockNavigationService extends NavigationService {
 
     public title: string;
