@@ -909,7 +909,7 @@ export class AtomItemsControl extends AtomControl {
     protected onCollectionChangedInternal(key: string, index: number, item: any): void {
         // Atom.refresh(this, "allValues");
         AtomBinder.refreshValue(this, "allValues");
-        const value = this.mValue;
+        const value = this.value;
 
         this.onCollectionChanged(key, index, item);
 
@@ -919,7 +919,7 @@ export class AtomItemsControl extends AtomControl {
             }
         }
         if (value != null) {
-            this.mValue  = value;
+            this.value  = value;
             if (this.selectedIndex !== -1) {
                 return;
             } else {

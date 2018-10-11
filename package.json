@@ -1,10 +1,12 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.399",
+  "version": "1.0.411",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretest": "istanbul cover ./dist/test.js",
+    "test": "remap-istanbul -i ./coverage/coverage.json -t html -o ./html-report",
+    "posttest": "start ./html-report/index.html",
     "postversion": "npm publish"
   },
   "repository": {
@@ -23,8 +25,10 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
+    "fs": "0.0.1-security",
     "istanbul": "^0.4.5",
     "jsdom": "^11.11.0",
+    "path": "^0.12.7",
     "remap-istanbul": "^0.11.1",
     "test-dom": "^1.0.0",
     "web-atoms-amd-loader": "^1.0.37"

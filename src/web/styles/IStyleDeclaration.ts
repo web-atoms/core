@@ -1,4 +1,5 @@
 import { ColorItem } from "../../core/Colors";
+import WebImage from "../../core/WebImage";
 
 export type StylePosition = "" | "default" | "initial" | "static" | "relative" | "absolute" | string | null;
 export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "center" | "justify" | string | null;
@@ -147,7 +148,7 @@ export interface IStyleDeclaration {
     backgroundBlendMode?: BackgroundBlendType;
     backgroundClip?: BackgroundClipType;
     backgroundColor?: string | null | ColorItem;
-    backgroundImage?: string | null;
+    backgroundImage?: string | null | WebImage;
     backgroundOrigin?: BackgroundOriginType;
     backgroundPosition?: BackgroundPositionType;
     backgroundPositionX?: string | null;

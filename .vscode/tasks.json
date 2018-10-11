@@ -16,7 +16,8 @@
                 "${env:APPDATA}/npm/node_modules/web-atoms-dev-server/index.js",
             ],
             "problemMatcher": []
-        },{
+        },
+        {
             "label": "Component Compiler",
             "command": "node",
             "isBackground": true,

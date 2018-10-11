@@ -4,7 +4,7 @@ import { AtomStyle } from "./AtomStyle";
 export class AtomStyleSheet extends AtomStyle
         implements INotifyPropertyChanging {
     public styleElement: HTMLElement;
-    private lastUpdateId: number = 0;
+    private lastUpdateId: any = 0;
 
     private isAttaching: boolean = false;
 

@@ -199,7 +199,10 @@ export class AtomViewModel {
             updater.run(() => {
                 const value = hash || query;
                 if (value) {
-                    this[name] = value;
+                    // tslint:disable-next-line:triple-equals
+                    if (value != this[name]) {
+                        this[name] = value;
+                    }
                 }
             });
         }));

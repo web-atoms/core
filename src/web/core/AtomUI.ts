@@ -67,15 +67,15 @@ export class AtomUI {
         throw new Error("Method not implemented.");
     }
 
-    public static forEachChild(e: HTMLElement, a: (c: HTMLElement) => void): void {
-        let en: Element = e.firstElementChild;
-        while (en) {
-            if (en as HTMLElement) {
-                a(e);
-            }
-            en = en.nextElementSibling;
-        }
-    }
+    // public static forEachChild(e: HTMLElement, a: (c: HTMLElement) => void): void {
+    //     let en: Element = e.firstElementChild;
+    //     while (en) {
+    //         if (en as HTMLElement) {
+    //             a(e);
+    //         }
+    //         en = en.nextElementSibling;
+    //     }
+    // }
 
     public static screenOffset(e: HTMLElement): IRect {
         const r = {

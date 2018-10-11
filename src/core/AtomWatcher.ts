@@ -215,6 +215,13 @@ export class AtomWatcher<T> implements IDisposable {
      */
     public evaluate(force?: boolean): any {
 
+        if (!this.path) {
+            // this watcher may have been disposed...
+            // tslint:disable-next-line:no-console
+            console.warn(`Watcher is not disposed properly, please watch for any memory leak`);
+            return;
+        }
+
         if (this.isExecuting) {
             return;
         }

@@ -4,6 +4,7 @@ import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf } from "../../core/types";
+import WebImage from "../../core/WebImage";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
@@ -203,6 +204,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     element.classList.add(value);
                     (element as any)._lastClass = value;
                 }
+            }
+            if (value instanceof WebImage) {
+                value = `url(${value})`;
             }
             element.style[name] = value;
             return;

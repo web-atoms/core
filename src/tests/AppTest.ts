@@ -1,11 +1,18 @@
 import { App } from "../App";
 import { Atom } from "../Atom";
 import { CancelToken } from "../core/types";
+import { MockNavigationService } from "../services/MockNavigationService";
+import { NavigationService } from "../services/NavigationService";
 import { Assert } from "../unit/Assert";
 import { AtomTest } from "../unit/AtomTest";
 import { Test } from "../unit/Test";
 
 class TestApp extends App {
+
+    constructor() {
+        super();
+        this.put(NavigationService, this.resolve(MockNavigationService));
+    }
 
     protected onReady(f: () => void): void {
         f();

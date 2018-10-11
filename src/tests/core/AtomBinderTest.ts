@@ -1,4 +1,4 @@
-import { IWatchableObject } from "../../core/AtomBinder";
+import { AtomBinder, IWatchableObject } from "../../core/AtomBinder";
 import { AtomList } from "../../core/AtomList";
 import { AtomWatcher } from "../../core/AtomWatcher";
 import { Assert } from "../../unit/Assert";
@@ -12,6 +12,31 @@ interface ICustomer {
 }
 
 export class AtomBinderTest extends AtomTest {
+
+    @Test
+    public refreshValue(): void {
+        AtomBinder.refreshValue(undefined, "key");
+        AtomBinder.refreshValue(null, "key");
+    }
+
+    @Test
+    public clear(): void {
+        const a = [1, 2];
+        AtomBinder.clear(a);
+        Assert.equals(0, a.length);
+
+        AtomBinder.addItem(a, 1);
+        Assert.equals(1, a.length);
+
+        AtomBinder.removeItem(a, 4);
+        Assert.equals(1, a.length);
+
+        AtomBinder.removeItem(a, 1);
+        Assert.equals(0, a.length);
+
+        AtomBinder.removeItem(a, 4);
+    }
+
     @Test
     public atomList(): void {
 
