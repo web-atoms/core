@@ -307,6 +307,9 @@ export class AtomWatcher<T> implements IDisposable {
 
             newTarget = target[p.name];
             if (!p.target) {
+                if (p.watcher) {
+                    p.watcher.dispose();
+                }
                 p.watcher = AtomBinder.watch(target, p.name, this.runEvaluate);
             } else if (p.target !== target) {
                 if (p.watcher) {

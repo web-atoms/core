@@ -1,10 +1,32 @@
+import { AtomUri } from "../../core/AtomUri";
 import { Assert } from "../../unit/Assert";
 import { Test } from "../../unit/Test";
 import { AtomViewModel, BindableBroadcast,
-    BindableReceive, Receive, Validate, Watch } from "../../view-model/AtomViewModel";
+    BindableReceive, BindableUrlParameter, Receive, Validate, Watch } from "../../view-model/AtomViewModel";
 import AtomWebTest from "../web/AtomWebTest";
 
 export class AtomViewModelTest extends AtomWebTest {
+
+    @Test
+    public async bindableUrlTest(): Promise<any> {
+
+        // tslint:disable-next-line:no-string-literal
+        global["location"] = {};
+
+        this.app.url = new AtomUri("http://localhost/test");
+
+        const vm = new BindableUrlViewModel(this.app);
+
+        await vm.waitForReady();
+
+        Assert.equals("start", vm.url);
+
+        vm.url = "page2";
+
+        const i = this.app.url.hash["app-url"];
+        Assert.doesNotEqual(-1, i);
+
+    }
 
     @Test
     public async broadCastingProperty(): Promise<any> {
@@ -194,5 +216,12 @@ class ReceiveViewModel extends AtomViewModel {
     public receiveSome(sender: any, message: any): void {
         this.channel2 = message;
     }
+
+}
+
+class BindableUrlViewModel extends AtomViewModel {
+
+    @BindableUrlParameter("app-url")
+    public url: string = "start";
 
 }
