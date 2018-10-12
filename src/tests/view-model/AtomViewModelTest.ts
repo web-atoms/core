@@ -1,9 +1,26 @@
 import { Assert } from "../../unit/Assert";
 import { Test } from "../../unit/Test";
-import { AtomViewModel, Validate, Watch } from "../../view-model/AtomViewModel";
+import { AtomViewModel, BindableBroadcast,
+    BindableReceive, Receive, Validate, Watch } from "../../view-model/AtomViewModel";
 import AtomWebTest from "../web/AtomWebTest";
 
 export class AtomViewModelTest extends AtomWebTest {
+
+    @Test
+    public async broadCastingProperty(): Promise<any> {
+        const b = new BroadcastViewModel(this.app);
+        const r = new ReceiveViewModel(this.app);
+
+        await Promise.all([b.waitForReady(), r.waitForReady()]);
+
+        b.channel1 = "a";
+
+        Assert.equals("a", r.channel1);
+
+        b.broadcast("channel2", "b");
+
+        Assert.equals("b", r.channel2);
+    }
 
     @Test
     public async disposeTest(): Promise<void> {
@@ -157,4 +174,25 @@ class TestViewModel extends AtomViewModel {
             return;
         }
     }
+}
+
+class BroadcastViewModel extends AtomViewModel {
+
+    @BindableBroadcast("channel1")
+    public channel1: string;
+
+}
+
+class ReceiveViewModel extends AtomViewModel {
+
+    @BindableReceive("channel1")
+    public channel1: string;
+
+    public channel2: any;
+
+    @Receive("channel2")
+    public receiveSome(sender: any, message: any): void {
+        this.channel2 = message;
+    }
+
 }
