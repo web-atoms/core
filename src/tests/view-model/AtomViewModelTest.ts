@@ -82,6 +82,9 @@ export class AtomViewModelTest extends AtomWebTest {
 
         Assert.isEmpty(vm.errorLastName);
 
+        const noErrors = vm.errors;
+        Assert.equals(0, noErrors.length);
+
         await vm.save();
 
         Assert.isNotEmpty(vm.errorFirstName);
