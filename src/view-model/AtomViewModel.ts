@@ -162,6 +162,7 @@ export class AtomViewModel {
         this.disposables.push(d);
         return new AtomDisposable(() => {
             ArrayHelper.remove(this.disposables, (f) => f === d);
+            d.dispose();
         });
     }
     /**

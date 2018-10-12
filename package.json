@@ -4,9 +4,8 @@
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
-    "pretest": "istanbul cover ./dist/test.js",
-    "test": "remap-istanbul -i ./coverage/coverage.json -t html -o ./html-report",
-    "posttest": "start ./html-report/index.html",
+    "test": "istanbul cover ./dist/test.js",
+    "posttest": "remap-istanbul -i ./coverage/coverage.json -t html -o ./html-report",
     "postversion": "npm publish"
   },
   "repository": {
