@@ -1,4 +1,5 @@
 import { AtomBinder } from "../../core/AtomBinder";
+import { AtomDispatcher } from "../../core/AtomDispatcher";
 import "../../core/AtomList";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
@@ -89,6 +90,8 @@ export class AtomItemsControl extends AtomControl {
 
     private mItemsDisposable: IDisposable = null;
 
+    private isUpdating = false;
+
     public get itemsPresenter(): HTMLElement {
         return this.mItemsPresenter || (this.mItemsPresenter = this.element);
     }
@@ -177,9 +180,6 @@ export class AtomItemsControl extends AtomControl {
                 (target, key, index, item) => {
                     this.onCollectionChangedInternal(key, index, item);
             }));
-            this.runAfterInit(() => {
-                this.onCollectionChangedInternal("refresh", -1, null);
-            });
             // this.onCollectionChangedInternal("refresh", -1, null);
         }
         AtomBinder.refreshValue(this, "items");
@@ -238,58 +238,6 @@ export class AtomItemsControl extends AtomControl {
         }
         this.selectedItem = this.mItems[n];
     }
-
-    // public getIndexOfDataItem(item: any) {
-    //     if (item === null) {
-    //         return -1;
-    //     }
-    //     const array = this.get_dataItems();
-    //     for (const itm of array) {
-    //         if (itm === item) {
-    //             return itm;
-    //         }
-    //     }
-    //     return -1;
-    // }
-
-    // public get itemTemplate(): IClassOf<AtomControl> {
-    //     return this.mItemTemplate;
-    // }
-
-    // public set itemTemplate(v: IClassOf<AtomControl>) {
-    //     this.mItemTemplate = v;
-    //     this.onCollectionChangedInternal("refresh", -1, null);
-    // }
-
-    // public get_dataItems() {
-    //     let r: any[] = this.mItems;
-    //     if (r) {
-    //         const f = this.mFilter;
-    //         if (f) {
-    //             let a = [];
-    //             if (typeof f === "object") {
-    //                 a = Atom.query(r).where(f).toArray();
-    //             } else {
-    //                 for (const itm of r) {
-    //                     const item = itm;
-    //                     if (f(item, item.currentIndex)) {
-    //                         a.push(item);
-    //                     }
-    //                 }
-    //             }
-    //             this.mFilteredItems = a;
-    //             r = a;
-    //         }
-
-    //         // const sp = this.mSortPath;
-    //         // if (sp) {
-    //         //     const spf = window.AtomFilter.sort(sp);
-    //         //     r = r.sort(spf);
-    //         // }
-    //         return r;
-    //     }
-    //     return $(this.itemsPresenter).children();
-    // }
 
     public dispose(e?: HTMLElement): void {
         this.items = null;
@@ -684,62 +632,17 @@ export class AtomItemsControl extends AtomControl {
         // this.invokePost();
     }
 
-    // public invokePost() {
-    //     if (!this.mOnUIChanged) {
-    //         return;
-    //     }
-
-    //     const errors = undefined;
-    //    // const errors = this.get_errors();
-    //     if (errors.length) {
-
-    //        // Atom.alert(errors.join("\n"));
-
-    //         return false;
-    //     }
-
-    //     if (this.mConfirm) {
-    //         if (!confirm(this.mConfirmMessage)) {
-    //             return;
-    //         }
-    //     }
-
-    //     if (!this.mPostUrl) {
-    //         AtomControl.invokeAction(this.mNext);
-    //         return;
-    //     }
-    //     let data = null;
-    //     // let data = this.get_postData();
-
-    //     if (data === null || data === undefined) {
-    //         return;
-    //     }
-    //     data = AtomBinder.getClone(data);
-    //     const p = null;
-    //    // const p = AtomPromise.json(this.mPostUrl, null, { type: "POST", data: data });
-    //     p.then(() => {
-    //         this.invokeNext();
-    //     });
-    //     const errorNext = this.mErrorNext;
-    //     if (errorNext) {
-    //         p.failed((pr) => {
-    //             AtomControl.invokeAction(errorNext);
-    //         });
-    //     }
-    //     p.invoke();
-    // }
-
-    // public invokeNext() {
-    //     AtomControl.invokeAction(this.mNext);
-    // }
-
     public hasItems() {
         return this.mItems !== undefined && this.mItems !== null;
     }
 
     public onUpdateUI(): void {
         super.onUpdateUI();
-        // this.onCollectionChangedInternal("refresh", -1, null);
+        if (this.isUpdating) {
+            // what to do... ignore for moment...
+        } else {
+            this.onCollectionChangedInternal("refresh", -1, null);
+        }
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {
@@ -911,24 +814,31 @@ export class AtomItemsControl extends AtomControl {
 
     protected onCollectionChangedInternal(key: string, index: number, item: any): void {
         // Atom.refresh(this, "allValues");
-        AtomBinder.refreshValue(this, "allValues");
+        // AtomBinder.refreshValue(this, "allValues");
         const value = this.value;
 
-        this.onCollectionChanged(key, index, item);
+        try {
+            this.isUpdating = true;
+            this.onCollectionChanged(key, index, item);
 
-        if (value) {
-            if (!(value || this.mAllowSelectFirst)) {
-                AtomBinder.clear(this.mSelectedItems);
-            }
-        }
-        if (value != null) {
-            this.value  = value;
-            if (this.selectedIndex !== -1) {
-                return;
-            } else {
-                this.mValue = undefined;
+            if (value) {
+                if (!(value || this.mAllowSelectFirst)) {
+                    AtomBinder.clear(this.mSelectedItems);
                 }
             }
+            if (value != null) {
+                this.value  = value;
+                if (this.selectedIndex !== -1) {
+                    return;
+                } else {
+                    this.mValue = undefined;
+                }
+            }
+        } finally {
+            AtomDispatcher.instance.callLater(() => {
+                this.isUpdating = false;
+            });
+        }
         // this.selectDefault();
     }
 
@@ -972,44 +882,6 @@ export class AtomItemsControl extends AtomControl {
         }
         this.mOnUIChanged = false;
     }
-
-    // protected refresh() {
-    //     if (this.mPromises && this.mPromises.items) {
-    //         this.mPromises.items.invoke();
-    //     }
-
-    // }
-
-    // protected onUpdateUI() {
-    //    // base.onUpdateUI.call(this);
-
-    //     if (this.mUiVirtualize) {
-    //         this.onVirtualCollectionChanged();
-    //     }
-
-    //     for (const aeItem of AtomUI.childEnumerator(this.itemsPresenter)) {
-    //         const item = aeItem as any;
-    //         if (!item.atomControl) {
-    //             continue;
-    //         }
-    //         const dataItem = item.atomControl.get_data();
-    //         AtomBinder.refreshValue(item.atomControl.get_scope(), "itemSelected");
-    //         this.applyItemStyle(item, dataItem, item.isFirst(), item.isLast());
-    //     }
-    // }
-
-    // protected onCreated() {
-    //     if (this.mItems) {
-    //         this.onCollectionChangedInternal("refresh", -1, null);
-    //     }
-
-    //     // this.dispatcher.callLater(function () {
-    //     //     if (caller._autoScrollToSelection) {
-    //     //         caller.bringSelectionIntoView();
-    //     //     }
-    //     // });
-
-    // }
 
     protected validateScroller() {
 
