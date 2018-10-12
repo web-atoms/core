@@ -25,11 +25,11 @@ export class AtomItemsControl extends AtomControl {
     @BindableProperty
     public version: number = 1;
 
+    public sort: string | ((a: any, b: any) => number) = null;
+
     public valueSeparator: string = ", ";
 
     private mValue: any = undefined;
-
-    private mSortPath: string;
 
     private mSelectedItems: any[];
     private mSelectedItemsWatcher: IDisposable;
@@ -254,6 +254,7 @@ export class AtomItemsControl extends AtomControl {
             case "valuePath":
             case "items":
             case "filter":
+            case "sort":
                 this.invalidate();
                 // this.runAfterInit(() => {
                 //     if (this.mItems) {
@@ -261,13 +262,6 @@ export class AtomItemsControl extends AtomControl {
                 //     }
                 // });
                 break;
-        }
-    }
-
-    public set sortPath(v: string) {
-        this.mSortPath = v;
-        if (v) {
-            this.onCollectionChangedInternal("refresh", -1, null);
         }
     }
 
@@ -638,11 +632,12 @@ export class AtomItemsControl extends AtomControl {
 
     public onUpdateUI(): void {
         super.onUpdateUI();
-        if (this.isUpdating) {
-            // what to do... ignore for moment...
-        } else {
-            this.onCollectionChangedInternal("refresh", -1, null);
-        }
+        // if (this.isUpdating) {
+        //     // what to do... ignore for moment...
+
+        // } else {
+        this.onCollectionChangedInternal("refresh", -1, null);
+//        }
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {
@@ -699,7 +694,19 @@ export class AtomItemsControl extends AtomControl {
         //     }
         // }
 
-        const items = this.mFilter ? this.mItems.filter(this.mFilter) : this.mItems;
+        let items: any[] = this.mFilter ? this.mItems.filter(this.mFilter) : this.mItems;
+        let s = this.sort;
+        if (s) {
+            if (typeof s === "string") {
+                const sp = s;
+                s = (l, r) => {
+                    const lv: string = (l[sp] || "").toString();
+                    const rv: string = (r[sp] || "").toString();
+                    return lv.toLowerCase().localeCompare(rv.toLowerCase());
+                };
+            }
+            items = items.sort(s);
+        }
 
         if (/add/gi.test(key)) {
            // WebAtoms.dispatcher.pause();
@@ -817,27 +824,20 @@ export class AtomItemsControl extends AtomControl {
         // AtomBinder.refreshValue(this, "allValues");
         const value = this.value;
 
-        try {
-            this.isUpdating = true;
-            this.onCollectionChanged(key, index, item);
+        this.onCollectionChanged(key, index, item);
 
-            if (value) {
-                if (!(value || this.mAllowSelectFirst)) {
-                    AtomBinder.clear(this.mSelectedItems);
-                }
+        if (value) {
+            if (!(value || this.mAllowSelectFirst)) {
+                AtomBinder.clear(this.mSelectedItems);
             }
-            if (value != null) {
-                this.value  = value;
-                if (this.selectedIndex !== -1) {
-                    return;
-                } else {
-                    this.mValue = undefined;
-                }
+        }
+        if (value != null) {
+            this.value  = value;
+            if (this.selectedIndex !== -1) {
+                return;
+            } else {
+                this.mValue = undefined;
             }
-        } finally {
-            AtomDispatcher.instance.callLater(() => {
-                this.isUpdating = false;
-            });
         }
         // this.selectDefault();
     }
