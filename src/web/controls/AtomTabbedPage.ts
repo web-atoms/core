@@ -184,7 +184,7 @@ class AtomTabViewModel extends AtomViewModel {
     public closePage(page: AtomPage): void {
         this.app.runAsync(async () => {
             const vm = page.viewModel as AtomWindowViewModel;
-            if (vm.cancel) {
+            if (vm && vm.cancel) {
                 await vm.cancel();
             } else {
                 this.app.broadcast(`atom-window-cancel:${page.element.id}`, null);
