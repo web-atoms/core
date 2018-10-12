@@ -173,10 +173,10 @@ export class AtomItemsControl extends AtomControl {
         this.mItems = v;
         // this.mFilteredItems = null;
         if (v != null) {
-            this.mItemsDisposable = AtomBinder.add_CollectionChanged(v,
+            this.mItemsDisposable = this.registerDisposable(AtomBinder.add_CollectionChanged(v,
                 (target, key, index, item) => {
                     this.onCollectionChangedInternal(key, index, item);
-            });
+            }));
             // this.onCollectionChangedInternal("refresh", -1, null);
         }
         AtomBinder.refreshValue(this, "items");
@@ -210,10 +210,10 @@ export class AtomItemsControl extends AtomControl {
         }
         this.mSelectedItems = v;
         if (v) {
-            this.mSelectedItemsWatcher = AtomBinder.add_CollectionChanged(v,
+            this.mSelectedItemsWatcher = this.registerDisposable(AtomBinder.add_CollectionChanged(v,
                 (t, k, i, item) => {
                     this.onSelectedItemsChanged(k, i, item);
-                });
+                }));
         }
     }
 

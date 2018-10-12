@@ -440,6 +440,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         this.disposables.add(d);
         return new AtomDisposable(() => {
             ArrayHelper.remove(this.disposables, (f) => f === d);
+            d.dispose();
         });
     }
 
