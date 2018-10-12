@@ -632,12 +632,12 @@ export class AtomItemsControl extends AtomControl {
 
     public onUpdateUI(): void {
         super.onUpdateUI();
-        // if (this.isUpdating) {
-        //     // what to do... ignore for moment...
-
-        // } else {
-        this.onCollectionChangedInternal("refresh", -1, null);
-//        }
+        if (this.isUpdating) {
+            // queueing invalidation further....
+            this.invalidate();
+        } else {
+            this.onCollectionChangedInternal("refresh", -1, null);
+        }
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {
@@ -824,20 +824,27 @@ export class AtomItemsControl extends AtomControl {
         // AtomBinder.refreshValue(this, "allValues");
         const value = this.value;
 
-        this.onCollectionChanged(key, index, item);
+        try {
+            this.isUpdating = true;
+            this.onCollectionChanged(key, index, item);
 
-        if (value) {
-            if (!(value || this.mAllowSelectFirst)) {
-                AtomBinder.clear(this.mSelectedItems);
+            if (value) {
+                if (!(value || this.mAllowSelectFirst)) {
+                    AtomBinder.clear(this.mSelectedItems);
+                }
             }
-        }
-        if (value != null) {
-            this.value  = value;
-            if (this.selectedIndex !== -1) {
-                return;
-            } else {
-                this.mValue = undefined;
+            if (value != null) {
+                this.value  = value;
+                if (this.selectedIndex !== -1) {
+                    return;
+                } else {
+                    this.mValue = undefined;
+                }
             }
+        } finally {
+            AtomDispatcher.instance.callLater(() => {
+                this.isUpdating = false;
+            });
         }
         // this.selectDefault();
     }
