@@ -108,6 +108,8 @@ export class WindowService extends NavigationService {
             title,
             okTitle: "Ok",
             cancelTitle: ""
+        }).catch(() => {
+            // do nothing...
         });
     }
 
