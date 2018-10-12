@@ -284,7 +284,7 @@ export class AtomWatcher<T> implements IDisposable {
                 if (op.watcher) {
                     op.watcher.dispose();
                     op.watcher = null;
-                    op.target = null;
+                    // op.target = null;
                 }
             }
         }
