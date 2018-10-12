@@ -177,6 +177,9 @@ export class AtomItemsControl extends AtomControl {
                 (target, key, index, item) => {
                     this.onCollectionChangedInternal(key, index, item);
             }));
+            this.runAfterInit(() => {
+                this.onCollectionChangedInternal("refresh", -1, null);
+            });
             // this.onCollectionChangedInternal("refresh", -1, null);
         }
         AtomBinder.refreshValue(this, "items");
@@ -736,7 +739,7 @@ export class AtomItemsControl extends AtomControl {
 
     public onUpdateUI(): void {
         super.onUpdateUI();
-        this.onCollectionChangedInternal("refresh", -1, null);
+        // this.onCollectionChangedInternal("refresh", -1, null);
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {
