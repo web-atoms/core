@@ -290,7 +290,7 @@ export class AtomWatcher<T> implements IDisposable {
             }
         }
         // tslint:disable-next-line:no-string-literal
-        this["disposedPath"] = this.path;
+        // this["disposedPath"] = this.path;
         this.func = null;
         // this.path.length = 0;
         this.path = null;
