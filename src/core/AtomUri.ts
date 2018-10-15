@@ -33,9 +33,9 @@ export class AtomUri {
 
         // extract protocol and domain...
 
-        let scheme: string = location ? location.protocol : "";
-        let host: string = location ? location.host : "";
-        let port: string = location ? location.port : "";
+        let scheme: string = "";
+        let host: string = "";
+        let port: string = "";
 
         let i: number = path.indexOf("//");
         if (i !== -1) {

@@ -7,7 +7,7 @@ import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceCollection } from "../di/ServiceCollection";
 import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import { ILocation, NavigationService } from "./NavigationService";
+import { NavigationService } from "./NavigationService";
 
 export interface IWindowRegistration {
     windowType: string;
@@ -33,8 +33,8 @@ export class MockNavigationService extends NavigationService {
     public title: string;
 
     private windowStack: IWindowRegistration[] = [];
-    private history: ILocation[] = [];
-    private mLocation: ILocation = {};
+    private history: AtomUri[] = [];
+    private mLocation: AtomUri = new AtomUri("");
 
     /**
      * Gets current location of browser, this does not return
@@ -45,11 +45,11 @@ export class MockNavigationService extends NavigationService {
      * @type {AtomLocation}
      * @memberof BrowserService
      */
-    public get location(): ILocation {
+    public get location(): AtomUri {
         return this.mLocation;
     }
 
-    public set location(v: ILocation) {
+    public set location(v: AtomUri) {
         if (JSON.stringify(this.location) === JSON.stringify(v)) {
             return;
         }
@@ -71,9 +71,7 @@ export class MockNavigationService extends NavigationService {
      * @memberof BrowserService
      */
     public navigate(url: string): void {
-        const l = JSON.parse(JSON.stringify(this.location)) as ILocation;
-        l.href = url;
-        this.location = l;
+        this.location = new AtomUri(url);
     }
 
     public back(): void {

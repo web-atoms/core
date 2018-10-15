@@ -7,11 +7,17 @@ import { INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { JsonService } from "../../services/JsonService";
-import { ILocation, NavigationService } from "../../services/NavigationService";
+import { NavigationService } from "../../services/NavigationService";
 import { AtomControl } from "../../web/controls/AtomControl";
 import { AtomUI } from "../../web/core/AtomUI";
 
+interface IDeviceNavigationService {
+    getLocation(): string;
+    setLocation(v: string): void;
+}
+
 declare var bridge: {
+    navigationService: IDeviceNavigationService;
     alert(message: string, title: string, success: () => void, failed: (r) => void);
     confirm(message: string, title: string, success: () => void, failed: (r) => void);
     getTitle(): string;
@@ -34,9 +40,13 @@ export default class XFNavigationService extends NavigationService {
         throw new Error("Not supported");
     }
 
-    private mLocation: ILocation;
-    public get location(): ILocation {
-        return this.mLocation;
+    // private mLocation: ILocation;
+    public get location(): AtomUri {
+        return new AtomUri( bridge.navigationService.getLocation() );
+    }
+
+    public set location(v: AtomUri) {
+        bridge.navigationService.setLocation(v.toString());
     }
 
     private windowId: number = 1;
