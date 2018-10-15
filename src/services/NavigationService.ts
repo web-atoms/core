@@ -19,6 +19,7 @@ export abstract class NavigationService {
     public abstract set title(v: string);
 
     public abstract get location(): AtomUri;
+    public abstract set location(v: AtomUri);
 
     public abstract navigate(url: string): void;
 

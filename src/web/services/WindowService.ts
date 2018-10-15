@@ -55,6 +55,10 @@ export class WindowService extends NavigationService {
         return new AtomUri(location.href);
     }
 
+    public set location(v: AtomUri) {
+        location.href = v.toString();
+    }
+
     constructor(@Inject private app: App, @Inject private jsonService: JsonService) {
         super();
 
