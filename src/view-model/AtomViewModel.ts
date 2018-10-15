@@ -57,8 +57,7 @@ export class AtomViewModel {
         const e: Array<{ name: string, error: string}> = [];
         for (const v of this.validations) {
             if (!v.initialized) {
-                v.watcher.evaluate(true);
-                v.initialized = true;
+                return e;
             }
             const error = this [v.name];
             if (error) {
@@ -162,6 +161,7 @@ export class AtomViewModel {
         this.disposables.push(d);
         return new AtomDisposable(() => {
             ArrayHelper.remove(this.disposables, (f) => f === d);
+            d.dispose();
         });
     }
     /**

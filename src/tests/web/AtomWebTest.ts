@@ -4,7 +4,7 @@ import { AtomGridView } from "../../web/controls/AtomGridView";
 import { AtomStyleSheet } from "../../web/styles/AtomStyleSheet";
 import { AtomTheme } from "../../web/styles/AtomTheme";
 
-export default class AtomWebTest extends AtomTest {
+export default class  AtomWebTest extends AtomTest {
 
     constructor() {
         super();

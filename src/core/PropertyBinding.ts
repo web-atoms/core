@@ -16,6 +16,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
 
     private fromSourceToTarget: (...v: any[]) => any;
     private fromTargetToSource: (v: any) => any;
+    private disposed: boolean;
 
     constructor(
         private target: IAtomComponent<T> | any,
@@ -41,6 +42,9 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         this.watcher = new AtomWatcher(target, path, true, false,
             (...v: any[]) => {
                 this.updaterOnce.run(() => {
+                    if (this.disposed) {
+                        return;
+                    }
                     // set value
                     for (const iterator of v) {
                         if (iterator === undefined) {
@@ -113,6 +117,9 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         }
 
         this.updaterOnce.run(() => {
+            if (this.disposed) {
+                return;
+            }
             const first = this.path[0];
             const length = first.length;
             let v: any = this.target;
@@ -141,5 +148,6 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             this.twoWaysDisposable = null;
         }
         this.watcher.dispose();
+        this.disposed = true;
     }
 }
