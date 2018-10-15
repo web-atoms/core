@@ -27,26 +27,6 @@ export class AtomViewModel {
 
     private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
-    // private mChannelPrefix: string = "";
-    // public get channelPrefix(): string {
-    //     return this.mChannelPrefix;
-    // }
-    // public set channelPrefix(v: string) {
-    //     this.mChannelPrefix = v;
-
-    //     const temp: IVMSubscription[] = this.subscriptions;
-    //     if (temp) {
-    //         this.subscriptions = [];
-    //         for (const s of temp) {
-    //             s.disposable.dispose();
-    //         }
-    //         for (const s1 of temp) {
-    //             this.subscribe(s1.channel, s1.action);
-    //         }
-    //     }
-    //     this.refresh("channelPrefix");
-    // }
-
     private pendingInits: Array<() => void> = [];
 
     public get isReady(): boolean {
