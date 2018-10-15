@@ -285,7 +285,7 @@ export class AtomWatcher<T> implements IDisposable {
                 if (op.watcher) {
                     op.watcher.dispose();
                     op.watcher = null;
-                    // op.target = null;
+                    op.target = null;
                 }
             }
         }
@@ -294,6 +294,7 @@ export class AtomWatcher<T> implements IDisposable {
         this.func = null;
         // this.path.length = 0;
         this.path = null;
+        this.source = null;
     }
 
     public evaluatePath(target: any, path: ObjectProperty[]): any {
