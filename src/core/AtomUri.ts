@@ -83,6 +83,11 @@ export class AtomUri {
         }
         const qstr = q.length ? "?" + q.join("&")  : "";
         const hash = h.length ? "#" + h.join("&") : "";
-        return `${this.protocol}//${this.host}/${this.path}${qstr}${hash}`;
+        const port = this.port ? ":" + this.port : "";
+        let path: string = this.path || "/";
+        if (path.startsWith("/")) {
+            path = path.substr(1);
+        }
+        return `${this.protocol}//${this.host}${port}/${path}${qstr}${hash}`;
     }
 }
