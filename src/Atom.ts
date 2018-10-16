@@ -61,7 +61,9 @@ export class Atom {
                 if (v === undefined || v === null) {
                     continue;
                 }
-                if (typeof element === "object") {
+                if (v instanceof Date) {
+                    v = v.toISOString();
+                } else if (typeof element === "object") {
                     v = JSON.stringify(element);
                 }
                 if (s) {
