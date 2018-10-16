@@ -10,10 +10,12 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
 import { AtomControl } from "./AtomControl";
 
-// declare class UMD {
-//     public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
-// }
-
+/**
+ * Creates and hosts an instance of AtomControl available at given URL. Query string parameters
+ * from the url will be passed to view model as initial property values.
+ *
+ * By default stack is turned off, so elements and controls will be destroyed when new control is hosted.
+ */
 export class AtomFrame
     extends AtomControl
     implements INotifyPropertyChanged {
@@ -24,7 +26,7 @@ export class AtomFrame
     public url: string;
 
     @BindableProperty
-    public keepStack: boolean = true;
+    public keepStack: boolean = false;
 
     @BindableProperty
     public current: AtomControl = null;
@@ -121,31 +123,6 @@ export class AtomFrame
         }
 
         const uri: AtomUri = new AtomUri(url);
-
-        // const fragments: string[] =
-        //     uri.path.split(".")
-        //     .map( (f) => this.toUpperCase(f));
-
-        // const scope: any = window;
-        // var vm: any = null;
-        // for (var f of fragments) {
-        //     vm = scope[f + "ViewModel"];
-        //     if (!vm) {
-        //         vm = scope[f + "Model"];
-        //     }
-        //     scope = scope[f];
-        //     if (!scope) {
-        //         throw new Error(`No ${f} in ${url} found.`);
-        //     }
-        // }
-
-        // const ctClass = await UMD.resolveViewClassAsync(uri.path);
-
-        // const ct = new ctClass(this.app);
-
-        // const q: any = uri.query;
-
-        // const ctrl: AtomControl = this.createControl(ct as AtomControl, q);
 
         const ctrl = await AtomLoader.loadView<AtomControl>(uri, this.app);
 
