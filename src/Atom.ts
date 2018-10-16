@@ -58,6 +58,9 @@ export class Atom {
             if (p.hasOwnProperty(key)) {
                 const element: any = p[key];
                 let v = element;
+                if (v === undefined || v === null) {
+                    continue;
+                }
                 if (typeof element === "object") {
                     v = JSON.stringify(element);
                 }
