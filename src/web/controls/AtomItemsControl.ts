@@ -255,7 +255,7 @@ export class AtomItemsControl extends AtomControl {
             case "items":
             case "filter":
             case "sort":
-                this.invalidate();
+                this.invalidateItems();
                 // this.runAfterInit(() => {
                 //     if (this.mItems) {
                 //         this.onCollectionChangedInternal("refresh", -1, null);
@@ -630,14 +630,19 @@ export class AtomItemsControl extends AtomControl {
         return this.mItems !== undefined && this.mItems !== null;
     }
 
-    public onUpdateUI(): void {
-        super.onUpdateUI();
+    public invalidateItems(): void {
         if (this.isUpdating) {
-            // queueing invalidation further....
-            this.invalidate();
-        } else {
-            this.onCollectionChangedInternal("refresh", -1, null);
+            const i = setTimeout(() => {
+                this.invalidateItems();
+            }, 5);
+            this.registerDisposable({
+                dispose() {
+                    clearTimeout(i);
+                }
+            });
+            return;
         }
+        this.onCollectionChangedInternal("refresh", -1, null);
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {
