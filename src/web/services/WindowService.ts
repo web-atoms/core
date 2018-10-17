@@ -7,7 +7,7 @@ import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
-import { ILocation, NavigationService } from "../../services/NavigationService";
+import { NavigationService } from "../../services/NavigationService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
@@ -51,15 +51,12 @@ export class WindowService extends NavigationService {
      * @type {AtomLocation}
      * @memberof BrowserService
      */
-    public get location(): ILocation {
-        return {
-            href: location.href,
-            hash: location.hash,
-            host: location.host,
-            hostName: location.hostname,
-            port: location.port,
-            protocol: location.protocol
-        };
+    public get location(): AtomUri {
+        return new AtomUri(location.href);
+    }
+
+    public set location(v: AtomUri) {
+        location.href = v.toString();
     }
 
     constructor(@Inject private app: App, @Inject private jsonService: JsonService) {

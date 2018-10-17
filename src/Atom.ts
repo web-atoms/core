@@ -58,7 +58,12 @@ export class Atom {
             if (p.hasOwnProperty(key)) {
                 const element: any = p[key];
                 let v = element;
-                if (typeof element === "object") {
+                if (v === undefined || v === null) {
+                    continue;
+                }
+                if (v instanceof Date) {
+                    v = v.toISOString();
+                } else if (typeof element === "object") {
                     v = JSON.stringify(element);
                 }
                 if (s) {

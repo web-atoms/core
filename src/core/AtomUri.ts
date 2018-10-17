@@ -33,9 +33,9 @@ export class AtomUri {
 
         // extract protocol and domain...
 
-        let scheme: string = location ? location.protocol : "";
-        let host: string = location ? location.host : "";
-        let port: string = location ? location.port : "";
+        let scheme: string = "";
+        let host: string = "";
+        let port: string = "";
 
         let i: number = path.indexOf("//");
         if (i !== -1) {
@@ -83,6 +83,11 @@ export class AtomUri {
         }
         const qstr = q.length ? "?" + q.join("&")  : "";
         const hash = h.length ? "#" + h.join("&") : "";
-        return `${this.protocol}//${this.host}/${this.path}${qstr}${hash}`;
+        const port = this.port ? ":" + this.port : "";
+        let path: string = this.path || "/";
+        if (path.startsWith("/")) {
+            path = path.substr(1);
+        }
+        return `${this.protocol}//${this.host}${port}/${path}${qstr}${hash}`;
     }
 }

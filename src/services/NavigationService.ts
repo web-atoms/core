@@ -1,13 +1,14 @@
+import { AtomUri } from "../core/AtomUri";
 import { INameValuePairs } from "../core/types";
 
-export interface ILocation {
-    href?: string;
-    hash?: string;
-    host?: string;
-    hostName?: string;
-    port?: string;
-    protocol?: string;
-}
+// export interface ILocation {
+//     href?: string;
+//     hash?: INameValues;
+//     host?: string;
+//     hostName?: string;
+//     port?: string;
+//     protocol?: string;
+// }
 
 export abstract class NavigationService {
     public abstract alert(message: string, title?: string): Promise<any>;
@@ -17,7 +18,8 @@ export abstract class NavigationService {
     public abstract get title(): string;
     public abstract set title(v: string);
 
-    public abstract get location(): ILocation;
+    public abstract get location(): AtomUri;
+    public abstract set location(v: AtomUri);
 
     public abstract navigate(url: string): void;
 
