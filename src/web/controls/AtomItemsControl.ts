@@ -634,14 +634,9 @@ export class AtomItemsControl extends AtomControl {
 
     public invalidateItems(): void {
         if (this.isUpdating) {
-            const i = setTimeout(() => {
+            setTimeout(() => {
                 this.invalidateItems();
             }, 5);
-            // this.registerDisposable({
-            //     dispose() {
-            //         clearTimeout(i);
-            //     }
-            // });
             return;
         }
         if (this.itemsInvalidated) {
