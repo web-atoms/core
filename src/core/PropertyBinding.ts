@@ -64,6 +64,10 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         this.path = this.watcher.path;
         if (this.target instanceof AtomComponent) {
             this.target.runAfterInit(() => {
+                if (!this.watcher) {
+                    // this is disposed ...
+                    return;
+                }
                 this.watcher.evaluate();
                 if (twoWays) {
                     this.setupTwoWayBinding();
@@ -149,5 +153,6 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         }
         this.watcher.dispose();
         this.disposed = true;
+        this.watcher = null;
     }
 }

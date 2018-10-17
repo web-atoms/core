@@ -1,3 +1,4 @@
+import { App } from "./App";
 import { AtomDispatcher } from "./core/AtomDispatcher";
 import { CancelToken, INameValuePairs } from "./core/types";
 
@@ -109,9 +110,9 @@ export class Atom {
      * @returns {Promise<any>}
      * @memberof Atom
      */
-    public static postAsync(f: () => Promise<any>): Promise<any> {
+    public static postAsync(app: App, f: () => Promise<any>): Promise<any> {
         return new Promise((resolve, reject) => {
-            AtomDispatcher.instance.callLater( async () => {
+            app.callLater( async () => {
                 try {
                     resolve(await f());
                 } catch (error) {

@@ -8,7 +8,7 @@ export class AtomClassTest extends AtomTest {
 
     @Test
     public async postAsync(): Promise<any> {
-        const r = await Atom.postAsync( async () => {
+        const r = await Atom.postAsync(this.app, async () => {
             await Atom.delay(100);
             return "test";
         });
@@ -16,7 +16,7 @@ export class AtomClassTest extends AtomTest {
         Assert.equals("test", r);
 
         try {
-            await Atom.postAsync( async () => {
+            await Atom.postAsync(this.app, async () => {
                 await Atom.delay(1);
                 throw new Error("error");
             });

@@ -1,4 +1,5 @@
 import "test-dom";
+import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { MockNavigationService } from "../../services/MockNavigationService";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomTest } from "../../unit/AtomTest";
@@ -21,6 +22,7 @@ export default class  AtomWebTest extends AtomTest {
 
     public async dispose(): Promise<any> {
         this.navigationService.assert();
+        await this.app.waitForPendingCalls();
     }
 
 }
