@@ -4,8 +4,15 @@ node_js:
 install:
   - npm install
   - npm install typescript
+  - npm install codecov -g
 cache:
   directories:
     - "node_modules"
 before_script:
   - tsc
+script:
+  - ./node_modules/.bin/istanbul cover ./dist/test.js
+  - ./node_modules/.bin/remap-istanbul -i ./coverage/coverage.json -t json -o ./coverage/coverage.json
+after_success:
+  - codecov
+  
