@@ -126,7 +126,9 @@ export class AtomFrame
 
         const ctrl = await AtomLoader.loadView<AtomControl>(uri, this.app);
 
-        Atom.postAsync(async () => {
+        this.push(ctrl);
+
+        await Atom.postAsync(this.app, async () => {
             const vm = ctrl.viewModel;
             if (vm) {
                 if (vm instanceof AtomWindowViewModel) {
@@ -135,9 +137,6 @@ export class AtomFrame
                 }
             }
         });
-
-        this.push(ctrl);
-
     }
 
     public toUpperCase(s: string): string {

@@ -248,11 +248,11 @@ export class AtomViewModel {
 
     private async privateInit(): Promise<any> {
         try {
-            await Atom.postAsync(async () => {
+            await Atom.postAsync(this.app, async () => {
                 this.runDecoratorInits();
                 // this.registerWatchers();
             });
-            await Atom.postAsync(async () => {
+            await Atom.postAsync(this.app, async () => {
                 await this.init();
                 this.onReady();
             });

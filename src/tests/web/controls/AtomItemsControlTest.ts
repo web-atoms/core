@@ -42,7 +42,7 @@ class TestItemTemplate extends AtomControl {
         super.create();
 
         this.element = document.createElement("span");
-        this.bind(this.element, "textContent", [["data", "label"]]);
+        this.bind(this.element, "text", [["data", "label"]]);
     }
 
 }
@@ -66,6 +66,8 @@ export class TestCase extends AtomTest {
         ic.bind(null, "items", [["viewModel", "movies"]]);
 
         await vm.waitForReady();
+
+        await this.app.waitForPendingCalls();
 
         const first = root.firstElementChild;
 

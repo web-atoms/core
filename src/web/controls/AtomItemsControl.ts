@@ -847,7 +847,7 @@ export class AtomItemsControl extends AtomControl {
                 }
             }
         } finally {
-            AtomDispatcher.instance.callLater(() => {
+            this.app.callLater(() => {
                 this.isUpdating = false;
             });
         }

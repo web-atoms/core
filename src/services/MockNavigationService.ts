@@ -132,7 +132,7 @@ export class MockNavigationService extends NavigationService {
         return new Promise((resolve, reject) => {
             const w: any = this.windowStack.find((x) => x.windowType === url.path);
             if (!w) {
-                const ex: Error = new Error(`No window registered for ${c}`);
+                const ex: Error = new Error(`No window registered for "${c}"`);
                 reject(ex);
                 return;
             }
@@ -233,7 +233,7 @@ export class MockNavigationService extends NavigationService {
             return;
         }
 
-        throw new Error(`Expected windows did not open ${this.windowStack.map((x) => x.windowType).join(",")}`);
+        throw new Error(`Expected windows did not open ${this.windowStack.map((x) => `"${x.windowType}"`).join(",")}`);
     }
 
     protected registerForPopup(): void {

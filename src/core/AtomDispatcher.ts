@@ -1,6 +1,6 @@
 export class AtomDispatcher {
 
-    public static instance: AtomDispatcher = new AtomDispatcher();
+    // public static instance: AtomDispatcher = new AtomDispatcher();
     public paused: boolean;
     public head = null;
     public tail = null;
@@ -51,6 +51,12 @@ export class AtomDispatcher {
         }
     }
 
-}
+    public waitForAll(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.callLater(() => {
+                resolve();
+            });
+        });
+    }
 
-AtomDispatcher.instance.start();
+}

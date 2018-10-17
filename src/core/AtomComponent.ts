@@ -129,7 +129,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         this.preCreate();
         this.create();
         this.attachControl();
-        AtomDispatcher.instance.callLater(() => a.dispose());
+        app.callLater(() => a.dispose());
     }
 
     public abstract atomParent(e: T): TC;
@@ -411,7 +411,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
         this.mInvalidated = setTimeout(() => {
             this.mInvalidated = 0;
-            AtomDispatcher.instance.callLater(() => {
+            this.app.callLater(() => {
                 this.onUpdateUI();
             });
         }, 5);

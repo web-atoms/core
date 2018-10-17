@@ -1,4 +1,5 @@
 import { AtomBinder } from "./core/AtomBinder";
+import { AtomDispatcher } from "./core/AtomDispatcher";
 import { AtomUri } from "./core/AtomUri";
 import { AtomDisposable, IDisposable } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
@@ -32,6 +33,8 @@ export class AtomMessageAction {
 @RegisterSingleton
 export class App extends ServiceProvider {
 
+    public readonly dispatcher: AtomDispatcher;
+
     private bag: any;
 
     private busyIndicators: IDisposable[] = [];
@@ -57,6 +60,9 @@ export class App extends ServiceProvider {
         super(null);
         this.bag = {};
         this.put(App, this);
+        this.dispatcher = new AtomDispatcher();
+        this.dispatcher.start();
+        this.put(AtomDispatcher, this.dispatcher);
         setTimeout(() => {
             this.invokeReady();
         }, 5);
@@ -70,6 +76,14 @@ export class App extends ServiceProvider {
 
     public syncUrl(): void {
         // must be implemented by platform specific app
+    }
+
+    public callLater(f: () => void) {
+        this.dispatcher.callLater(f);
+    }
+
+    public waitForPendingCalls(): Promise<any> {
+        return this.dispatcher.waitForAll();
     }
 
     /**
