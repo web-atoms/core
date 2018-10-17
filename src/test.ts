@@ -1,10 +1,15 @@
 // tslint:disable:no-console
 // tslint:disable:ordered-imports
 
+declare var require: any;
+declare var __dirname: any;
+
 // import unit test modules here
 import { TestRunner } from "./unit/TestRunner";
-import { statSync, readdirSync } from "fs";
-import * as path from "path";
+// tslint:disable-next-line:no-var-requires
+const { statSync, readdirSync } = require("fs") as any;
+// tslint:disable-next-line:no-var-requires
+const path = require("path");
 // import "./tests/AtomClassTest";
 // import "./tests/AppTest";
 // import "./tests/core/ColorTests";
@@ -13,9 +18,6 @@ import * as path from "path";
 // import "./tests/core/PropertyBinderTest";
 // import "./tests/services/JsonServiceTest";
 // import "./tests/web/window/WindowTest";
-
-declare var require: any;
-declare var __dirname: any;
 
 function loadScripts(start) {
     for (const item of readdirSync(start)) {
