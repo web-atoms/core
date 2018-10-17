@@ -359,6 +359,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             for (const iterator of this.disposables) {
                 iterator.dispose();
             }
+
+            this.pendingInits = null;
         }
     }
 
@@ -394,15 +396,21 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     public beginEdit(): IDisposable {
         this.pendingInits = [];
         const a = this.pendingInits;
-        return new AtomDisposable(() => {
-            this.pendingInits = null;
-            if (a) {
-                for (const iterator of a) {
-                    iterator();
+        return {
+            dispose: () => {
+                if (this.pendingInits == null) {
+                    // case where current control is disposed...
+                    return;
                 }
+                this.pendingInits = null;
+                if (a) {
+                    for (const iterator of a) {
+                        iterator();
+                    }
+                }
+                this.invalidate();
             }
-            this.invalidate();
-        });
+        };
     }
 
     public invalidate(): void {
