@@ -34,6 +34,8 @@ export class AtomItemsControl extends AtomControl {
     private mSelectedItems: any[];
     private mSelectedItemsWatcher: IDisposable;
 
+    private itemsInvalidated: any;
+
     // private mFilteredItems: any[] = [];
 
     // private mSelectedItem: any = undefined;
@@ -642,7 +644,21 @@ export class AtomItemsControl extends AtomControl {
             });
             return;
         }
-        this.onCollectionChangedInternal("refresh", -1, null);
+        if (this.itemsInvalidated) {
+            clearTimeout(this.itemsInvalidated);
+            this.itemsInvalidated = 0;
+        }
+        this.itemsInvalidated = setTimeout(() => {
+            this.itemsInvalidated = 0;
+            this.onCollectionChangedInternal("refresh", -1, null);
+        }, 5);
+        // this.registerDisposable({
+        //     dispose: () => {
+        //         if (this.itemsInvalidated) {
+        //             clearTimeout(this.itemsInvalidated);
+        //         }
+        //     }
+        // });
     }
 
     public onCollectionChanged(key: string, index: number, item: any): any {

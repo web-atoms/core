@@ -1,4 +1,5 @@
 import "test-dom";
+import { Atom } from "../../../Atom";
 import { BindableProperty } from "../../../core/BindableProperty";
 import { Assert } from "../../../unit/Assert";
 import { AtomTest } from "../../../unit/AtomTest";
@@ -68,6 +69,8 @@ export class TestCase extends AtomTest {
         await vm.waitForReady();
 
         await this.app.waitForPendingCalls();
+
+        await Atom.delay(20);
 
         const first = root.firstElementChild;
 
