@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/neurospeech/web-atoms-core.svg?branch=master)](https://travis-ci.com/neurospeech/web-atoms-core)
+
+[![codecov](https://codecov.io/gh/neurospeech/web-atoms-core/branch/master/graph/badge.svg)](https://codecov.io/gh/neurospeech/web-atoms-core)
+
 # Web-Atoms Core
 Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to design modern web and mobile applications.
 
