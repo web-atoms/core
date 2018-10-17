@@ -6,3 +6,5 @@ install:
 cache:
   directories:
     - "node_modules"
+before_script:
+  - tsc
