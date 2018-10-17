@@ -5,6 +5,8 @@ import { AtomViewModel, BindableBroadcast,
     BindableReceive, BindableUrlParameter, Receive, Validate, Watch } from "../../view-model/AtomViewModel";
 import AtomWebTest from "../web/AtomWebTest";
 
+declare var global: any;
+
 export class AtomViewModelTest extends AtomWebTest {
 
     @Test
