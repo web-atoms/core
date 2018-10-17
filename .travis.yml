@@ -3,6 +3,7 @@ node_js:
   - "8.12"
 install:
   - npm install
+  - npm install typescript
 cache:
   directories:
     - "node_modules"
