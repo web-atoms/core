@@ -372,7 +372,7 @@ export class BaseService {
         return o;
     }
 
-    protected async sendResult(result: any, error?: any): Promise<any> {
+    protected sendResult(result: any, error?: any): Promise<any> {
         return new Promise((resolve, reject) => {
             if (error) {
                 setTimeout(() => {
