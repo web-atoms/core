@@ -1,12 +1,13 @@
 import { App } from "../../../App";
 import { Assert } from "../../../unit/Assert";
+import { AtomTest } from "../../../unit/AtomTest";
 import { Category } from "../../../unit/Category";
 import { Test } from "../../../unit/Test";
 import { TestItem } from "../../../unit/TestItem";
 import { AtomGridView } from "../../../web/controls/AtomGridView";
 
 @Category("Grid view")
-export class TestCase extends TestItem {
+export class TestCase extends AtomTest {
 
     @Test("Grid Test")
     public async test(): Promise<any> {
@@ -51,7 +52,7 @@ export class TestCase extends TestItem {
 
         gv.invalidate();
 
-        await this.delay(100);
+        await this.app.waitForPendingCalls();
 
         const hps = header.parentElement.style;
 
