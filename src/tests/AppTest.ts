@@ -25,7 +25,7 @@ export class AppTest extends AtomTest {
     @Test
     public async broadcastReceiveTest(): Promise<any> {
 
-        const app = new TestApp();
+        const app = this.app;
 
         await this.delay(100);
 
@@ -49,11 +49,13 @@ export class AppTest extends AtomTest {
 
         d.dispose();
         d2.dispose();
+
+        await Atom.delay(100);
     }
 
     @Test
     public async runAsync(): Promise<any> {
-        const app = new TestApp();
+        const app = this.app;
 
         app.runAsync( async () => {
             await this.delay(10);
@@ -65,5 +67,7 @@ export class AppTest extends AtomTest {
         app.runAsync( async () => {
             await Atom.delay(10, ct);
         });
+
+        await Atom.delay(100);
     }
 }

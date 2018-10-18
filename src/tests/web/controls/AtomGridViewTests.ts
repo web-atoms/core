@@ -1,19 +1,20 @@
 import { App } from "../../../App";
+import { Atom } from "../../../Atom";
 import { Assert } from "../../../unit/Assert";
+import { AtomTest } from "../../../unit/AtomTest";
 import { Category } from "../../../unit/Category";
 import { Test } from "../../../unit/Test";
 import { TestItem } from "../../../unit/TestItem";
 import { AtomGridView } from "../../../web/controls/AtomGridView";
+import AtomWebTest from "../AtomWebTest";
 
 @Category("Grid view")
-export class TestCase extends TestItem {
+export class TestCase extends AtomWebTest {
 
     @Test("Grid Test")
     public async test(): Promise<any> {
 
-        const app = new App();
-
-        const gv = new AtomGridView(app, document.createElement("section"));
+        const gv = new AtomGridView(this.app, document.createElement("section"));
         gv.columns = "20,*,50";
         gv.rows = "10,*,30%";
         gv.element.style.width = "1000px";
@@ -51,7 +52,9 @@ export class TestCase extends TestItem {
 
         gv.invalidate();
 
-        await this.delay(100);
+        await Atom.delay(10);
+
+        await this.app.waitForPendingCalls();
 
         const hps = header.parentElement.style;
 

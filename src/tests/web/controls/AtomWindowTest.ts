@@ -12,7 +12,7 @@ export class AtomWindowTest extends AtomWebTest {
 
         const win = new SampleWindow(this.app);
 
-        await Atom.delay(100);
+        await this.app.waitForPendingCalls();
 
         // window.dispatchEvent(new MouseEvent("mousedown"));
         // window.dispatchEvent(new MouseEvent("mousemove"));
