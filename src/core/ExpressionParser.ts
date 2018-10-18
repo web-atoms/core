@@ -59,12 +59,22 @@ export function parsePath(f: any): PathList[] {
 
         path = path.map(
             (px2) => px2.endsWith("===") ? px2.substr(0, px2.length - 3) :
-                ( px2.endsWith("==") ? px2.substr(0, px2.length - 2) : px2 ) );
+                ( px2.endsWith("==") ? px2.substr(0, px2.length - 2) : px2 ) )
+                .map((px2) => px2.trim());
 
         return m;
     });
 
     path = path.sort( (a, b) => b.localeCompare(a) );
+
+    const dups = path;
+    path = [];
+    for (const iterator of dups) {
+        if (path.find( (px2) => px2 === iterator )) {
+            continue;
+        }
+        path.push(iterator);
+    }
 
     const rp: string[] = [];
     for (const rpitem of path) {
