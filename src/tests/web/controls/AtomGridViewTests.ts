@@ -5,9 +5,10 @@ import { Category } from "../../../unit/Category";
 import { Test } from "../../../unit/Test";
 import { TestItem } from "../../../unit/TestItem";
 import { AtomGridView } from "../../../web/controls/AtomGridView";
+import AtomWebTest from "../AtomWebTest";
 
 @Category("Grid view")
-export class TestCase extends AtomTest {
+export class TestCase extends AtomWebTest {
 
     @Test("Grid Test")
     public async test(): Promise<any> {
