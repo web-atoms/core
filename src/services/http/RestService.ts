@@ -455,7 +455,7 @@ export class BaseService {
                 return response;
             }
             if (xhr.status >= 400) {
-                throw new Error(xhr.responseText);
+                throw new Error(xhr.responseText || "Server Error");
             }
 
             return xhr.responseText;
