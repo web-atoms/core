@@ -37,12 +37,8 @@ function methodBuilder(method: string) {
                     }
                 }
 
-                try {
-                    const r: any = this.invoke(url, method, a, args, responseType);
-                    return r;
-                } catch (e) {
-                    return Promise.reject(e);
-                }
+                const r: any = this.invoke(url, method, a, args, responseType);
+                return r;
             };
 
             // console.log("methodBuilder called");
