@@ -5,15 +5,42 @@ import { Atom } from "../../Atom";
 import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
+import CacheService from "../CacheService";
 import { JsonService } from "../JsonService";
 import JsonError from "./JsonError";
 
 declare var UMD: any;
 
+export interface IMethodOptions {
+
+    /**
+     * Cache value retrived from server in JavaScript runtime for
+     * given seconds
+     */
+    jsCacheSeconds?: number;
+
+    /**
+     * Accept header, application/json if not set
+     */
+    accept?: string;
+
+    /**
+     * Other headers to pass along with the request
+     */
+    headers?: {[key: string]: string};
+
+    /**
+     * JsonService to use with this request, use this only if naming strategy
+     * is different for this request
+     */
+    jsonService?: JsonService;
+
+}
+
 // tslint:disable-next-line
 function methodBuilder(method: string) {
     // tslint:disable-next-line
-    return function (url: string, responseType: string = "application/json") {
+    return function (url: string, options: IMethodOptions) {
         // tslint:disable-next-line
         return function (target: BaseService, propertyKey: string, descriptor: any) {
 
@@ -29,32 +56,26 @@ function methodBuilder(method: string) {
                 if (this.testMode || Atom.designMode) {
 
                     // tslint:disable-next-line:no-console
-                    console.log(`Test\Design Mode: ${url} .. ${args.join(",")}`);
+                    console.log(`Test Design Mode: ${url} .. ${args.join(",")}`);
 
                     const ro: any = oldFunction.apply(this, args);
                     if (ro) {
                         return ro;
                     }
                 }
-
-                const r: any = this.invoke(url, method, a, args, responseType);
-                return r;
+                const jsCache = options ? options.jsCacheSeconds : 0;
+                if (jsCache) {
+                    const cacheService: CacheService = this.app.resolve(CacheService);
+                    const jargs = args.map((arg) => arg instanceof CancelToken ? null : arg);
+                    const key = `${this.constructor.name}:${method}:${url}:${JSON.stringify(jargs)}`;
+                    return cacheService.getOrCreate(key, (e) => {
+                        e.ttlSeconds = options.jsCacheSeconds;
+                        return this.invoke(url, method, a, args, options);
+                    });
+                }
+                return this.invoke(url, method, a, args, options);
             };
-
-            // console.log("methodBuilder called");
-            // console.log({ url: url, propertyKey: propertyKey,descriptor: descriptor });
         };
-    };
-}
-
-// tslint:disable-next-line
-export function Return(type: { new() }) {
-    // tslint:disable-next-line
-    return function (target: BaseService, propertyKey: string, descriptor: any) {
-        if (!target.methodReturns) {
-            target.methodReturns = {};
-        }
-        target.methodReturns[propertyKey] = type;
     };
 }
 
@@ -90,7 +111,7 @@ export type RestAttr =
 export type RestParamAttr = (key: string)
     => RestAttr;
 
-export type RestMethodAttr = (key: string)
+export type RestMethodAttr = (key: string, options?: IMethodOptions)
     => (target: BaseService, propertyKey: string | symbol, descriptor: any)
         => void;
 
@@ -302,42 +323,6 @@ export class ServiceParameter {
     }
 }
 
-// /**
-//  *
-//  *
-//  * @export
-//  * @class CancellablePromise
-//  * @implements {Promise<T>}
-//  * @template T
-//  */
-// export class CancellablePromise<T> implements Promise<T> {
-
-//     public [Symbol.toStringTag]: "Promise";
-
-//     public onCancel: () => void;
-//     public p: Promise<T>;
-//     constructor(p: Promise<T>, onCancel: () => void) {
-//         this.p = p;
-//         this.onCancel = onCancel;
-//     }
-
-//     public abort(): void {
-//         this.onCancel();
-//     }
-
-//     public then<TResult1 = T, TResult2 = never>(
-//         onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-//         onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null):
-//         Promise<TResult1 | TResult2> {
-//         return this.p.then(onfulfilled, onrejected);
-//     }
-
-//     public catch<TResult = never>(onrejected?:
-//         ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult> {
-//         return this.p.catch(onrejected);
-//     }
-// }
-
 /**
  *
  *
@@ -360,19 +345,19 @@ export class BaseService {
 
     constructor(
         @Inject protected readonly app: App,
-        @Inject public readonly jsonService: JsonService
+        @Inject public jsonService: JsonService
     ) {
 
     }
 
-    protected encodeData(o: AjaxOptions): AjaxOptions {
+    protected encodeData(o: AjaxOptions, jsonService: JsonService): AjaxOptions {
         o.dataType = "application/json";
-        o.data = this.jsonService.stringify(o.data);
+        o.data = jsonService.stringify(o.data);
         o.contentType = "application/json";
         return o;
     }
 
-    protected async sendResult(result: any, error?: any): Promise<any> {
+    protected sendResult(result: any, error?: any): Promise<any> {
         return new Promise((resolve, reject) => {
             if (error) {
                 setTimeout(() => {
@@ -390,7 +375,7 @@ export class BaseService {
         url: string,
         method: string,
         bag: ServiceParameter[],
-        values: any[], responseType: string): Promise<any> {
+        values: any[], methodOptions: IMethodOptions): Promise<any> {
 
         const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
 
@@ -398,13 +383,25 @@ export class BaseService {
 
             url = UMD.resolvePath(url);
 
+            let jsonService = this.jsonService;
+
             let options: AjaxOptions = new AjaxOptions();
             options.method = method;
+            if (methodOptions) {
+                options.headers = methodOptions.headers;
+                if (methodOptions.jsonService) {
+                    jsonService = methodOptions.jsonService;
+                }
+            }
+            const responseType = methodOptions.accept || "application/json";
             options.dataType = responseType;
             if (bag) {
                 for (let i: number = 0; i < bag.length; i++) {
                     const p: ServiceParameter = bag[i];
                     const v: any = values[i];
+                    if (v instanceof CancelToken) {
+                        options.cancel = v;
+                    }
                     switch (p.type) {
                         case "path":
                             const vs: string = v + "";
@@ -420,7 +417,7 @@ export class BaseService {
                             break;
                         case "body":
                             options.data = v;
-                            options = this.encodeData(options);
+                            options = this.encodeData(options, jsonService );
                             break;
                         case "bodyformmodel":
                             options.data = v;
@@ -436,7 +433,7 @@ export class BaseService {
                             options.cancel = v as CancelToken;
                             break;
                         case "header":
-                            options.headers = options.headers = {};
+                            options.headers = options.headers || {};
                             options.headers[p.key] = v;
                             break;
                     }
@@ -455,7 +452,7 @@ export class BaseService {
                 return response;
             }
             if (xhr.status >= 400) {
-                throw new Error(xhr.responseText);
+                throw new Error(xhr.responseText || "Server Error");
             }
 
             return xhr.responseText;
