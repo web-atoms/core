@@ -360,7 +360,7 @@ export class BaseService {
 
     constructor(
         @Inject protected readonly app: App,
-        @Inject public readonly jsonService: JsonService
+        @Inject public jsonService: JsonService
     ) {
 
     }
