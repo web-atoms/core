@@ -5,7 +5,7 @@ import { Atom } from "../../Atom";
 import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
-import CacheService from "../CacheService";
+import CacheService, { CacheSeconds } from "../CacheService";
 import { JsonService } from "../JsonService";
 import JsonError from "./JsonError";
 
@@ -17,7 +17,7 @@ export interface IMethodOptions {
      * Cache value retrived from server in JavaScript runtime for
      * given seconds
      */
-    jsCacheSeconds?: number;
+    jsCacheSeconds?: CacheSeconds<any>;
 
     /**
      * Accept header, application/json if not set
