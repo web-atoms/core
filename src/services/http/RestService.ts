@@ -69,7 +69,7 @@ function methodBuilder(method: string) {
                     const jargs = args.map((arg) => arg instanceof CancelToken ? null : arg);
                     const key = `${this.constructor.name}:${method}:${url}:${JSON.stringify(jargs)}`;
                     return cacheService.getOrCreate(key, (e) => {
-                        e.ttlSeconds = options.jsCacheSeconds;
+                        e.ttlSeconds = jsCache;
                         return this.invoke(url, method, a, args, options);
                     });
                 }

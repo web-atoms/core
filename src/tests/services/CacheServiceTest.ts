@@ -15,7 +15,7 @@ export class CacheServiceTest extends AtomTest {
         const f = async (): Promise<any> => {
             return await c.getOrCreate("a", async (ci) => {
                 await Atom.delay(10);
-                ci.ttlSeconds = 100;
+                ci.ttlSeconds = 100 / 1000;
                 return "A" + i;
             });
         };
@@ -48,7 +48,7 @@ export class CacheServiceTest extends AtomTest {
         const f = async (): Promise<any> => {
             return await c.getOrCreate("a", async (ci) => {
                 await Atom.delay(10);
-                ci.ttlSeconds = (x: string) => x.endsWith(n) ? 100 : 0;
+                ci.ttlSeconds = (x: string) => x.endsWith(n) ? (100 / 1000) : 0;
                 return "A" + i;
             });
         };
@@ -82,7 +82,7 @@ export class CacheServiceTest extends AtomTest {
         const f = async (): Promise<any> => {
             return await c.getOrCreate("a", async (ci) => {
                 await Atom.delay(10);
-                ci.ttlSeconds = 100;
+                ci.ttlSeconds = 100 / 1000;
                 return "A" + i;
             });
         };

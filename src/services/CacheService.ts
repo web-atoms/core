@@ -79,7 +79,7 @@ export default class CacheService {
             c.timeout = setTimeout(() => {
                 c.timeout = 0;
                 this.clear(c);
-            }, c.finalTTL);
+            }, c.finalTTL * 1000);
         }
         return c.value;
     }
