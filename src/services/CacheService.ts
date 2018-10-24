@@ -17,10 +17,10 @@ export interface ICacheEntry<T> {
      */
     ttlSeconds?: CacheSeconds<T>;
 
-    /**
-     * Not supported yet
-     */
-    expires?: Date;
+    // /**
+    //  * Not supported yet
+    //  */
+    // expires?: Date;
 
     /**
      * Cached value
@@ -48,8 +48,7 @@ export default class CacheService {
     public remove(key: string): any {
         const v = this.cache[key];
         if (v) {
-            this.cache[key] = null;
-            delete this.cache[key];
+            this.clear(v);
             return v.value;
         }
         return null;
@@ -63,7 +62,6 @@ export default class CacheService {
             finalTTL: 3600
         };
         if (!c.value) {
-            this.cache[key] = c;
             c.value = await task(c);
             if (c.ttlSeconds !== undefined) {
                 if (typeof c.ttlSeconds === "number") {
@@ -79,15 +77,20 @@ export default class CacheService {
         if (c.finalTTL) {
             this.cache[key] = c;
             c.timeout = setTimeout(() => {
-                this.cache[key] = null;
                 c.timeout = 0;
-                delete this.cache[key];
+                this.clear(c);
             }, c.finalTTL);
-
-        } else if (c.expires) {
-            throw new Error("not supported");
         }
         return c.value;
+    }
+
+    private clear(ci: IFinalCacheEntry): void {
+        if (ci.timeout) {
+            clearTimeout(ci.timeout);
+            ci.timeout = 0;
+        }
+        this.cache[ci.key] = null;
+        delete this.cache[ci.key];
     }
 
 }
