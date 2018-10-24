@@ -256,7 +256,9 @@ export class AtomControlTests extends AtomWebTest {
 
         root.element.dispatchEvent(new MouseEvent("click"));
 
-        await Atom.delay(10);
+        await this.app.waitForPendingCalls();
+
+        await Atom.delay(20);
 
         Assert.isTrue(b);
 

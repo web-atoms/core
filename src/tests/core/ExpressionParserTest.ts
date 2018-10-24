@@ -26,7 +26,7 @@ export class ExpressionParserTest extends AtomTest {
         });
 
         // tslint:disable-next-line:no-console
-        console.log(JSON.stringify(p, undefined, 2));
+        // console.log(JSON.stringify(p, undefined, 2));
         Assert.equals(9, p.filter( (px) => /^v/.test(px[0]) ).length );
         Assert.equals(0, p.filter( (px) => !/^v/.test(px[0]) ).length);
 
