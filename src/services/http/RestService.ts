@@ -5,7 +5,7 @@ import { Atom } from "../../Atom";
 import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
-import CacheService from "../CacheService";
+import CacheService, { CacheSeconds } from "../CacheService";
 import { JsonService } from "../JsonService";
 import JsonError from "./JsonError";
 
@@ -17,7 +17,7 @@ export interface IMethodOptions {
      * Cache value retrived from server in JavaScript runtime for
      * given seconds
      */
-    jsCacheSeconds?: number;
+    jsCacheSeconds?: CacheSeconds<any>;
 
     /**
      * Accept header, application/json if not set
@@ -69,7 +69,7 @@ function methodBuilder(method: string) {
                     const jargs = args.map((arg) => arg instanceof CancelToken ? null : arg);
                     const key = `${this.constructor.name}:${method}:${url}:${JSON.stringify(jargs)}`;
                     return cacheService.getOrCreate(key, (e) => {
-                        e.ttlSeconds = options.jsCacheSeconds;
+                        e.ttlSeconds = jsCache;
                         return this.invoke(url, method, a, args, options);
                     });
                 }
@@ -393,7 +393,7 @@ export class BaseService {
                     jsonService = methodOptions.jsonService;
                 }
             }
-            const responseType = methodOptions.accept || "application/json";
+            const responseType = (methodOptions ? methodOptions.accept : null ) || "application/json";
             options.dataType = responseType;
             if (bag) {
                 for (let i: number = 0; i < bag.length; i++) {

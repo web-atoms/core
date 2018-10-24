@@ -3,7 +3,8 @@ import { Atom } from "../Atom";
 import DISingleton from "../di/DISingleton";
 import { Inject } from "../di/Inject";
 
-export interface ICacheEntry {
+export type CacheSeconds<T> = number | ((result: T) => number);
+export interface ICacheEntry<T> {
 
     /**
      * Cache Key, must be unique
@@ -14,23 +15,32 @@ export interface ICacheEntry {
      * Time to Live in seconds, after given ttl
      * object will be removed from cache
      */
-    ttlSeconds?: number;
+    ttlSeconds?: CacheSeconds<T>;
 
-    /**
-     * Not supported yet
-     */
-    expires?: Date;
+    // /**
+    //  * Not supported yet
+    //  */
+    // expires?: Date;
 
     /**
      * Cached value
      */
     value?: any;
+
+}
+
+interface IFinalCacheEntry extends ICacheEntry<any> {
+
+    finalTTL?: number;
+
+    timeout?: any;
+
 }
 
 @DISingleton()
 export default class CacheService {
 
-    private cache: { [key: string]: ICacheEntry } = {};
+    private cache: { [key: string]: IFinalCacheEntry } = {};
 
     constructor(@Inject private app: App) {
     }
@@ -38,8 +48,7 @@ export default class CacheService {
     public remove(key: string): any {
         const v = this.cache[key];
         if (v) {
-            this.cache[key] = null;
-            delete this.cache[key];
+            this.clear(v);
             return v.value;
         }
         return null;
@@ -47,28 +56,41 @@ export default class CacheService {
 
     public async getOrCreate<T>(
         key: string,
-        task: (cacheEntry?: ICacheEntry) => Promise<T> ): Promise<T> {
-        const v = this.cache[key];
-        if (v && v.value) {
-            return v.value;
-        }
-        const c: ICacheEntry = {
+        task: (cacheEntry?: ICacheEntry<T>) => Promise<T> ): Promise<T> {
+        const c = this.cache[key] || {
             key,
-            ttlSeconds: 3600
+            finalTTL: 3600
         };
-        c.value = await task(c);
-        if (c.ttlSeconds) {
+        if (!c.value) {
+            c.value = await task(c);
+            if (c.ttlSeconds !== undefined) {
+                if (typeof c.ttlSeconds === "number") {
+                    c.finalTTL = c.ttlSeconds;
+                } else {
+                    c.finalTTL = c.ttlSeconds(c.value);
+                }
+            }
+        }
+        if (c.timeout) {
+            clearTimeout(c.timeout);
+        }
+        if (c.finalTTL) {
             this.cache[key] = c;
-            this.app.runAsync(async () => {
-                await Atom.delay(c.ttlSeconds * 1000);
-                c.value = null;
-                this.cache[key] = null;
-                delete this.cache[key];
-            });
-        } else if (c.expires) {
-            throw new Error("not supported");
+            c.timeout = setTimeout(() => {
+                c.timeout = 0;
+                this.clear(c);
+            }, c.finalTTL * 1000);
         }
         return c.value;
+    }
+
+    private clear(ci: IFinalCacheEntry): void {
+        if (ci.timeout) {
+            clearTimeout(ci.timeout);
+            ci.timeout = 0;
+        }
+        this.cache[ci.key] = null;
+        delete this.cache[ci.key];
     }
 
 }
