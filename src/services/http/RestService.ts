@@ -393,7 +393,7 @@ export class BaseService {
                     jsonService = methodOptions.jsonService;
                 }
             }
-            const responseType = methodOptions.accept || "application/json";
+            const responseType = (methodBuilder ? methodOptions.accept : null ) || "application/json";
             options.dataType = responseType;
             if (bag) {
                 for (let i: number = 0; i < bag.length; i++) {
