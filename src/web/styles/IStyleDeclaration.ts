@@ -49,7 +49,7 @@ export type BackgroundRepeatType = "" | "default" | "repeat" | "repeat-x" | "rep
 "round" |"initial" | "inherit" | string | null;
 export type BackgroundSizeType = "" | "default" | "auto" | "0px" | "0px 0px" | "0%" | "50% 50%" | "cover" |
 "contain" |"initial" | "inherit" | string | null;
-export type CommanStyleType = "" | "default" | "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" |
+export type BorderStyleType = "" | "default" | "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" |
 "groove" | "ridge" | "inset" | "outset" | "initial" | "inherit" | string | null;
 export type CommamWidthType = "" | "default" | "medium" | "thin" | "thick" | "initial" | "inherit" | string | null;
 export type BorderCollapseType = "" | "default" | "separate" | "collapse" | "initial" | "inherit" | string | null;
@@ -161,7 +161,7 @@ export interface IStyleDeclaration {
     borderBottomColor?: string | null | ColorItem;
     borderBottomLeftRadius?: string | 0 | null;
     borderBottomRightRadius?: string | 0 | null;
-    borderBottomStyle?: CommanStyleType;
+    borderBottomStyle?: BorderStyleType;
     borderBottomWidth?: CommamWidthType;
     borderCollapse?: BorderCollapseType;
     borderColor?: string | null | ColorItem;
@@ -173,20 +173,20 @@ export interface IStyleDeclaration {
     borderImageWidth?: string | null;
     borderLeft?: string | null;
     borderLeftColor?: string | null | ColorItem;
-    borderLeftStyle?: CommanStyleType;
+    borderLeftStyle?: BorderStyleType;
     borderLeftWidth?: CommamWidthType;
     borderRadius?: string | 0 | null;
     borderRight?: string | null;
     borderRightColor?: string | null | ColorItem;
-    borderRightStyle?: CommanStyleType;
+    borderRightStyle?: BorderStyleType;
     borderRightWidth?: CommamWidthType;
     borderSpacing?: BorderSpacingType;
-    borderStyle?: CommanStyleType;
+    borderStyle?: BorderStyleType;
     borderTop?: string | null;
     borderTopColor?: string | null | ColorItem;
     borderTopLeftRadius?: string | 0 | null;
     borderTopRightRadius?: string | 0 | null;
-    borderTopStyle?: CommanStyleType;
+    borderTopStyle?: BorderStyleType;
     borderTopWidth?: CommamWidthType;
     borderWidth?: CommamWidthType;
     bottom?: PositionType;
@@ -211,7 +211,7 @@ export interface IStyleDeclaration {
     columnGap?: ColumnGapType;
     columnRule?: string | null;
     columnRuleColor?: any | ColorItem;
-    columnRuleStyle?: CommanStyleType;
+    columnRuleStyle?: BorderStyleType;
     columnRuleWidth?: CommamWidthType;
     columnSpan?: string | null;
     columnWidth?: any;
@@ -362,7 +362,7 @@ export interface IStyleDeclaration {
     outline?: string | null;
     outlineColor?: string | null | ColorItem;
     outlineOffset?: string | null;
-    outlineStyle?: CommanStyleType;
+    outlineStyle?: BorderStyleType;
     outlineWidth?: CommamWidthType;
     overflow?: OverFlowType;
     overflowX?: OverFlowType;
