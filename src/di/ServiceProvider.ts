@@ -111,41 +111,27 @@ export class ServiceProvider implements IDisposable {
 
         const plist = InjectedTypes.getParamList(key, typeKey1);
 
-        // let plist = InjectedTypes.paramList[typeKey1];
-
-        // // We need to find @Inject for base types if
-        // // current type does not define any constructor
-        // let type = key;
-        // while (plist === undefined) {
-        //     type = Object.getPrototypeOf(type);
-        //     if (!type) {
-        //         break;
-        //     }
-        //     const typeKey = TypeKey.get(type);
-        //     plist = InjectedTypes.paramList[typeKey];
-        //     if (!plist) {
-        //         InjectedTypes.paramList[typeKey] = plist;
-        //     }
-        // }
+        let value: any = null;
 
         if (plist) {
             const pv = plist.map( (x) => x ? this.resolve(x) : (void 0) );
             pv.unshift(null);
-            return new (key.bind.apply(key, pv))();
+            value = new (key.bind.apply(key, pv))();
+        } else {
+            value = new (key)();
         }
-        const v = new (key)();
 
         const propList = InjectedTypes.getPropertyList(key, typeKey1);
         if (propList) {
             for (const key1 in propList) {
                 if (propList.hasOwnProperty(key1)) {
                     const element = propList[key1];
-                    v[key1] = this.resolve(element);
+                    value[key1] = this.resolve(element);
                 }
             }
         }
 
-        return v;
+        return value;
     }
 
 }

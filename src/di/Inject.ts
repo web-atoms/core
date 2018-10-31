@@ -73,11 +73,14 @@ export function Inject(target: any, name: string, index?: number): void {
                 "parameter or a property without get/set methods");
         }
     } else {
-        const prot = Object.getPrototypeOf(target);
-        const plist = (Reflect as any).getMetadata("design:type", prot, name);
+        const plist = (Reflect as any).getMetadata("design:type", target, name);
+        const kc = target.constructor;
+        if (kc) {
+            const key2 = TypeKey.get(kc);
+            const p1 = InjectedTypes.propertyList[key2] || (InjectedTypes.propertyList[key2] = {});
+            p1[name] = plist;
+        }
         const p = InjectedTypes.propertyList[key] || (InjectedTypes.propertyList[key] = {});
         p[name] = plist;
-        // tslint:disable-next-line:no-debugger
-        debugger;
     }
 }

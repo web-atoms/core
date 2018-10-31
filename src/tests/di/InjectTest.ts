@@ -21,16 +21,18 @@ export default class InjectTest extends AtomTest {
 
     }
 
-}
+    @Test
+    public propertyInjectionWithConstructor(): void {
+        const vm = this.app.resolve(VM2, true) as VM2;
 
-class VM {
+        const first = vm.propertyService.time;
 
-    @Inject
-    public readonly propertyService: PropertyService;
+        const vm2 = this.app.resolve(VM2, true) as VM2;
 
-    // constructor(@Inject private service: Service) {
+        const second = vm2.propertyService.time;
 
-    // }
+        Assert.equals(first, second);
+    }
 
 }
 
@@ -52,4 +54,26 @@ class PropertyService {
     constructor() {
         this.time = (new Date()).getTime();
     }
+}
+
+class VM {
+
+    @Inject
+    public readonly propertyService: PropertyService;
+
+    // constructor(@Inject private service: Service) {
+
+    // }
+
+}
+
+class VM2 {
+
+    @Inject
+    public readonly propertyService: PropertyService;
+
+    constructor(@Inject private service: Service) {
+
+    }
+
 }
