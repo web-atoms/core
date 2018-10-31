@@ -109,22 +109,24 @@ export class ServiceProvider implements IDisposable {
         }
         const typeKey1 = TypeKey.get(key);
 
-        let plist = InjectedTypes.paramList[typeKey1];
+        const plist = InjectedTypes.getParamList(key, typeKey1);
 
-        // We need to find @Inject for base types if
-        // current type does not define any constructor
-        let type = key;
-        while (plist === undefined) {
-            type = Object.getPrototypeOf(type);
-            if (!type) {
-                break;
-            }
-            const typeKey = TypeKey.get(type);
-            plist = InjectedTypes.paramList[typeKey];
-            if (!plist) {
-                InjectedTypes.paramList[typeKey] = plist;
-            }
-        }
+        // let plist = InjectedTypes.paramList[typeKey1];
+
+        // // We need to find @Inject for base types if
+        // // current type does not define any constructor
+        // let type = key;
+        // while (plist === undefined) {
+        //     type = Object.getPrototypeOf(type);
+        //     if (!type) {
+        //         break;
+        //     }
+        //     const typeKey = TypeKey.get(type);
+        //     plist = InjectedTypes.paramList[typeKey];
+        //     if (!plist) {
+        //         InjectedTypes.paramList[typeKey] = plist;
+        //     }
+        // }
 
         if (plist) {
             const pv = plist.map( (x) => x ? this.resolve(x) : (void 0) );
@@ -132,6 +134,17 @@ export class ServiceProvider implements IDisposable {
             return new (key.bind.apply(key, pv))();
         }
         const v = new (key)();
+
+        const propList = InjectedTypes.getPropertyList(key, typeKey1);
+        if (propList) {
+            for (const key1 in propList) {
+                if (propList.hasOwnProperty(key1)) {
+                    const element = propList[key1];
+                    v[key1] = this.resolve(element);
+                }
+            }
+        }
+
         return v;
     }
 
