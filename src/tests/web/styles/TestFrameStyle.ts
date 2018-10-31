@@ -1,12 +1,12 @@
 import { AtomStyle } from "../../../web/styles/AtomStyle";
-import Box from "../../../web/styles/Box";
 import { IStyleDeclaration } from "../../../web/styles/IStyleDeclaration";
+import StyleBuilder from "../../../web/styles/StyleBuilder";
 
 export default class TestFrameStyle extends AtomStyle {
 
     public get root(): IStyleDeclaration {
         return {
-            ... Box.box(800, 800),
+            ... StyleBuilder.newStyle.size(800, 800).toStyle(),
             position: "absolute"
         };
     }

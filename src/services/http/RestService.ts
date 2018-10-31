@@ -6,7 +6,7 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import CacheService, { CacheSeconds } from "../CacheService";
-import { JsonService } from "../JsonService";
+import { IJsonParserOptions, JsonService } from "../JsonService";
 import JsonError from "./JsonError";
 
 declare var UMD: any;
@@ -30,10 +30,10 @@ export interface IMethodOptions {
     headers?: {[key: string]: string};
 
     /**
-     * JsonService to use with this request, use this only if naming strategy
+     * JsonService options to use with this request, use this only if naming strategy
      * is different for this request
      */
-    jsonService?: JsonService;
+    jsonOptions?: IJsonParserOptions;
 
 }
 
@@ -343,16 +343,20 @@ export class BaseService {
 
     public methodReturns: any = {};
 
+    public jsonOptions: IJsonParserOptions = null;
+
     constructor(
         @Inject protected readonly app: App,
-        @Inject public jsonService: JsonService
+        @Inject public readonly jsonService: JsonService
     ) {
-
+        this.jsonOptions = {
+            ... this.jsonService.options
+        };
     }
 
-    protected encodeData(o: AjaxOptions, jsonService: JsonService): AjaxOptions {
+    protected encodeData(o: AjaxOptions): AjaxOptions {
         o.dataType = "application/json";
-        o.data = jsonService.stringify(o.data);
+        o.data = this.jsonService.stringify(o.data, this.jsonOptions);
         o.contentType = "application/json";
         return o;
     }
@@ -383,18 +387,21 @@ export class BaseService {
 
             url = UMD.resolvePath(url);
 
-            let jsonService = this.jsonService;
-
             let options: AjaxOptions = new AjaxOptions();
             options.method = method;
+
             if (methodOptions) {
                 options.headers = methodOptions.headers;
-                if (methodOptions.jsonService) {
-                    jsonService = methodOptions.jsonService;
-                }
+                options.dataType = methodOptions.accept;
             }
-            const responseType = (methodOptions ? methodOptions.accept : null ) || "application/json";
-            options.dataType = responseType;
+
+            options.dataType = options.dataType || "application/json";
+
+            const jsonOptions = {
+                ... this.jsonOptions,
+                ... (methodOptions ? methodOptions.jsonOptions : {})
+            };
+
             if (bag) {
                 for (let i: number = 0; i < bag.length; i++) {
                     const p: ServiceParameter = bag[i];
@@ -417,7 +424,7 @@ export class BaseService {
                             break;
                         case "body":
                             options.data = v;
-                            options = this.encodeData(options, jsonService );
+                            options = this.encodeData(options);
                             break;
                         case "bodyformmodel":
                             options.data = v;
@@ -444,7 +451,7 @@ export class BaseService {
             const xhr = await this.ajax(url, options);
 
             if (/json/i.test(xhr.responseType)) {
-                const response = this.jsonService.parse(xhr.responseText);
+                const response = this.jsonService.parse(xhr.responseText, jsonOptions );
 
                 if (xhr.status >= 400) {
                     throw new JsonError("Json Server Error", response);

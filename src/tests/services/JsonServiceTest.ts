@@ -1,4 +1,4 @@
-import { JsonService } from "../../services/JsonService";
+import { dateFormatISORegEx, JsonService } from "../../services/JsonService";
 import { Assert } from "../../unit/Assert";
 import { AtomTest } from "../../unit/AtomTest";
 import { Test } from "../../unit/Test";
@@ -38,7 +38,7 @@ export class JsonServiceTest extends AtomTest {
     @Test
     public underscoreNamingStrategy(): void {
         const s = new JsonService();
-        s.namingStrategy = "underscore";
+        // s.options.namingStrategy = "underscore";
 
         const r = s.parse(`{
             "string_value": "text",
@@ -49,7 +49,7 @@ export class JsonServiceTest extends AtomTest {
                     "bool_value": false
                 }
             }]
-        }`);
+        }`, { namingStrategy: "underscore" });
 
         Assert.equals("text", r.stringValue);
         Assert.equals(2, r.arrayValue.length);
@@ -64,7 +64,7 @@ export class JsonServiceTest extends AtomTest {
     @Test
     public hyphenNamingStrategy(): void {
         const s = new JsonService();
-        s.namingStrategy = "hyphen";
+        s.options.namingStrategy = "hyphen";
 
         const r = s.parse(`{
             "string-value": "text",
@@ -89,7 +89,7 @@ export class JsonServiceTest extends AtomTest {
     @Test
     public stringifyHyphenNamingStrategy(): void {
         const s = new JsonService();
-        s.namingStrategy = "hyphen";
+        s.options.namingStrategy = "hyphen";
 
         const p = new JsonService();
 
@@ -112,7 +112,7 @@ export class JsonServiceTest extends AtomTest {
     @Test
     public stringifyUnderscoreNamingStrategy(): void {
         const s = new JsonService();
-        s.namingStrategy = "underscore";
+        s.options.namingStrategy = "underscore";
 
         const p = new JsonService();
 
@@ -127,5 +127,20 @@ export class JsonServiceTest extends AtomTest {
 
         // tslint:disable-next-line:no-string-literal
         Assert.equals("text", o["string_value"]);
+    }
+
+    @Test
+    public dateParser(): void {
+        const s = new JsonService();
+
+        const text = `"2018-10-24T18:54:51.831Z"`;
+
+        const d = s.parse(text) as Date;
+
+        Assert.isTrue(d instanceof Date);
+
+        Assert.equals("2018-10-24T18:54:51.831Z", d.toISOString());
+
+        Assert.equals(`{"d":"2018-10-24T18:54:51.831Z"}`, s.stringify({ d }, { indent: 0 }) );
     }
 }
