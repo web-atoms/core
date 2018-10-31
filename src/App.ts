@@ -97,12 +97,15 @@ export class App extends ServiceProvider {
      */
     public runAsync<T>(tf: () => Promise<T>): void {
         try {
-            tf().then((): void => {
-                // nothing
-            }).catch((error) => {
-                this.onError("runAsync");
-                this.onError(error);
-            });
+            const p = tf();
+            if (p && p.then && p.catch) {
+                p.then((): void => {
+                    // nothing
+                }).catch((error) => {
+                    this.onError("runAsync");
+                    this.onError(error);
+                });
+            }
         } catch (e) {
             this.onError("runAsync");
             this.onError(e);

@@ -233,9 +233,11 @@ export class AtomViewModel {
             this, ft, !forValidation && this.isReady, forValidation, proxy );
 
         if (!forValidation) {
-            this.runAfterInit(() => {
-                d.runEvaluate();
-            });
+            if (proxy) {
+                const op = proxy as () => any;
+                proxy = () => this.app.runAsync( () => op() );
+            }
+            this.runAfterInit(() => d.runEvaluate());
         } else {
             this.validations = this.validations || [];
             this.validations.push({ name, watcher: d, initialized: false});
