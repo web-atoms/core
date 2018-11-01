@@ -171,6 +171,9 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public set items(v: any[]) {
+        if (this.mItems === v) {
+            return;
+        }
         if (this.mItemsDisposable) {
             this.mItemsDisposable.dispose();
             this.mItemsDisposable = null;
