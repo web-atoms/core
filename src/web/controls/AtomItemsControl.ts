@@ -171,9 +171,6 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public set items(v: any[]) {
-        if (this.mItems === v) {
-            return;
-        }
         if (this.mItemsDisposable) {
             this.mItemsDisposable.dispose();
             this.mItemsDisposable = null;
@@ -260,7 +257,9 @@ export class AtomItemsControl extends AtomControl {
             case "items":
             case "filter":
             case "sort":
-                this.invalidateItems();
+                if (this.mItems) {
+                    this.invalidateItems();
+                }
                 // this.runAfterInit(() => {
                 //     if (this.mItems) {
                 //         this.onCollectionChangedInternal("refresh", -1, null);
