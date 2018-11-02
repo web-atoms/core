@@ -32,4 +32,15 @@ export class ExpressionParserTest extends AtomTest {
 
     }
 
+    @Test
+    public parseLambda(): void {
+        const p = parsePath((a) => a.firstName + " " + a.lastName);
+        Assert.equals(2, p.length);
+    }
+
+    @Test
+    public parseLambdaText(): void {
+        const p = parsePath("function(a) { return a.firstName + ' ' + a.lastName; }");
+        Assert.equals(2, p.length);
+    }
 }

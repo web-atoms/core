@@ -18,6 +18,7 @@ import { AtomDisposable, IDisposable } from "./types";
         private startValue: number = 0;
         private totalValue: number = 0;
         private sizeValue: number = 10;
+        // private version: number = 1;
         constructor() {
             super();
 
@@ -77,6 +78,7 @@ import { AtomDisposable, IDisposable } from "./types";
             const n: number = this.push(item);
             AtomBinder.invokeItemsEvent(this, "add", i, item);
             AtomBinder.refreshValue(this, "length");
+            // this.version++;
             return n;
         }
 
@@ -97,6 +99,7 @@ import { AtomDisposable, IDisposable } from "./types";
             if (t) {
                 this.total = t;
             }
+            // this.version++;
         }
 
         /**
@@ -165,6 +168,7 @@ import { AtomDisposable, IDisposable } from "./types";
                     if (item(it)) {
                         this.removeAt(index);
                         removed = true;
+                        continue;
                     }
                     index++;
                 }
@@ -191,6 +195,7 @@ import { AtomDisposable, IDisposable } from "./types";
         public refresh(): void {
             AtomBinder.invokeItemsEvent(this, "refresh", -1, null);
             AtomBinder.refreshValue(this, "length");
+            // this.version++;
         }
 
         public watch(
@@ -222,6 +227,7 @@ import { AtomDisposable, IDisposable } from "./types";
     Array.prototype["remove"] = AtomList.prototype.remove;
     Array.prototype["removeAt"] = AtomList.prototype.removeAt;
     Array.prototype["watch"] = AtomList.prototype.watch;
+    Array.prototype["replace"] = AtomList.prototype.replace;
 
 declare global { 
     interface Array<T> {
@@ -231,6 +237,9 @@ declare global {
         refresh?():void;
         remove?(item: T | ((i:T) => boolean)):boolean;
         removeAt?(i: number):void;
-        watch?(f:()=>void): IDisposable;
+        watch?(
+            f: (target: any, key: string, index?: number, item?: any) => void,
+            wrap?: boolean): IDisposable;
+        replace(items: T[], start?: number, size?: number): void;
     }
 }
