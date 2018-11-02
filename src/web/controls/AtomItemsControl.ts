@@ -257,7 +257,9 @@ export class AtomItemsControl extends AtomControl {
             case "items":
             case "filter":
             case "sort":
-                this.invalidateItems();
+                if (this.mItems) {
+                    this.invalidateItems();
+                }
                 // this.runAfterInit(() => {
                 //     if (this.mItems) {
                 //         this.onCollectionChangedInternal("refresh", -1, null);
