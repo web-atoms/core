@@ -414,7 +414,11 @@ export class BaseService {
                             const vs: string = v + "";
                             // escaping should be responsibility of the caller
                             // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
-                            url = url.replace(`{${p.key}}`, vs);
+                            const replacer = `{${p.key}}`;
+                            // while (url.indexOf(replacer) !== -1) {
+                            //     url = url.replace(`{${p.key}}`, vs);
+                            // }
+                            url = url.split(replacer).join(vs);
                             break;
                         case "query":
                             if (url.indexOf("?") === -1) {
