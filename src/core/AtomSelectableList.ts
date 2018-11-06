@@ -2,24 +2,40 @@ import { AtomViewModel } from "../view-model/AtomViewModel";
 import { AtomDisposableList } from "./AtomDisposableList";
 import { IDisposable } from "./types";
 
+export type valuePathOrFunc<T> = string | ((item: T) => any);
+
 export default class AtomSelectableList<T> {
 
     public readonly items: Array<ISelectableItem<T>>;
 
     public readonly selectedItems: Array<ISelectableItem<T>> = [];
 
+    private mValue: any = undefined;
+    public get value(): any {
+        if (this.mValue !== undefined) {
+            return this.mValue;
+        }
+    }
+    public set value(v: any) {
+        this.mValue = v;
+    }
+
     constructor(
-        disposablesOrVM: AtomDisposableList | AtomViewModel,
-        private source: T[]
+        source: T[],
+        public valuePath?: valuePathOrFunc<T>,
+        public allowMultipleSelection: boolean = false,
+        disposablesOrVM?: AtomDisposableList | AtomViewModel
     ) {
-        if (disposablesOrVM instanceof AtomViewModel) {
-            disposablesOrVM.registerDisposable(source.watch((target, key, index, item) => {
-                this.syncItems(target, key, index, item);
-            }));
-        } else {
-            disposablesOrVM.add(source.watch((target, key, index, item) => {
-                this.syncItems(target, key, index, item);
-            }));
+        if (disposablesOrVM) {
+            if (disposablesOrVM instanceof AtomViewModel) {
+                disposablesOrVM.registerDisposable(source.watch((target, key, index, item) => {
+                    this.syncItems(target, key, index, item);
+                }));
+            } else {
+                disposablesOrVM.add(source.watch((target, key, index, item) => {
+                    this.syncItems(target, key, index, item);
+                }));
+            }
         }
         this.items = source.map((x) => this.newItem(x));
     }
@@ -28,7 +44,7 @@ export default class AtomSelectableList<T> {
         switch (key) {
             case "reset":
             case "refresh":
-                this.items.replace(this.source.map( (x) => this.newItem(x) ));
+                this.items.replace(target.map( (x) => this.newItem(x) ));
                 break;
             case "add":
                 this.items.insert(index, this.newItem(a));

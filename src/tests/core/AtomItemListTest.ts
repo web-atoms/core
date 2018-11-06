@@ -10,7 +10,7 @@ export class AtomItemListTest extends AtomTest {
     public singleItem(): void {
         const d = new AtomDisposableList();
 
-        const list = new AtomSelectableList(d, [1, 2, 3, 4, 5]);
+        const list = new AtomSelectableList([1, 2, 3, 4, 5]);
 
         list.items[2].selected = true;
 
