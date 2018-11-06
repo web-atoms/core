@@ -12,6 +12,8 @@ export class AtomItemListTest extends AtomTest {
         const items = [1, 2, 3, 4, 5];
 
         const list = new AtomSelectableList();
+        const a = items as any;
+        a.total = 20;
         list.replace(items);
         list.value = 2;
 
@@ -125,7 +127,7 @@ export class AtomItemListTest extends AtomTest {
         ]);
 
         Assert.equals(2, list.selectedItems.length);
-        Assert.equals("l1,l2", list.selectedItems.map((x) => x.item.label).sort().join(","));
+        Assert.equals("l2,l3", list.selectedItems.map((x) => x.item.label).sort().join(","));
     }
 }
 

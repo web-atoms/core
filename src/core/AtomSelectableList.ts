@@ -62,13 +62,50 @@ export default class AtomSelectableList<T> {
     }
 
     public replace(source: T[], start?: number, size?: number): void {
-        const map = source.map((x) => this.newItem(x));
+        let values = this.value as any[];
+        if (!this.allowMultipleSelection) {
+            values = [values];
+        }
+        const map = source.map((x) => {
+            const item = this.newItem(x);
+            if (values && values.length) {
+                const v = this.valuePath(x);
+                if (values.find((v1) => v1 === v)) {
+                    item.selected = true;
+                }
+            }
+            return item;
+        });
         const a = source as any;
         if (a.total) {
             (map as any).total = a.total;
         }
         this.items.replace(map, start, size);
         this.mValue = undefined;
+    }
+
+    public find(item: T | ((i: T) => boolean)): ISelectableItem<T> {
+        let itemf = (i: T) => (item as any)(i);
+        if (typeof item !== "function") {
+            const e = item;
+            itemf = (i: T) => i === e;
+        }
+        return this.items.find((i) => itemf(i.item));
+    }
+
+    public select(item: T): void {
+        const si = this.items.find( (x) => x.item === item);
+        si.selected = true;
+    }
+
+    public deselect(item: T): void {
+        const si = this.items.find( (x) => x.item === item);
+        si.selected = false;
+    }
+
+    public toggle(item: T): void {
+        const si = this.items.find( (x) => x.item === item);
+        si.selected = !si.selected;
     }
 
     // private syncItems(target: T[], key: string, index: number, a: T): void {
@@ -115,16 +152,16 @@ export default class AtomSelectableList<T> {
                 AtomBinder.refreshValue(self, "value");
             }
         };
-        const value = this.valuePath(item);
-        let values = this.value as any[];
-        if (values) {
-            if (!this.allowMultipleSelection) {
-                values = [values];
-            }
-            if (values.find((x) => x === value)) {
-                newItem.selected = true;
-            }
-        }
+        // const value = this.valuePath(item);
+        // let values = this.value as any[];
+        // if (values) {
+        //     if (!this.allowMultipleSelection) {
+        //         values = [values];
+        //     }
+        //     if (values.find((x) => x === value)) {
+        //         newItem.selected = true;
+        //     }
+        // }
         return newItem;
     }
 
