@@ -411,6 +411,9 @@ export class BaseService {
                     }
                     switch (p.type) {
                         case "path":
+                            if (v === undefined) {
+                                continue;
+                            }
                             const vs: string = v + "";
                             // escaping should be responsibility of the caller
                             // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
@@ -421,6 +424,9 @@ export class BaseService {
                             url = url.split(replacer).join(vs);
                             break;
                         case "query":
+                            if (v === undefined) {
+                                continue;
+                            }
                             if (url.indexOf("?") === -1) {
                                 url += "?";
                             }
@@ -444,6 +450,9 @@ export class BaseService {
                             options.cancel = v as CancelToken;
                             break;
                         case "header":
+                            if (v === undefined) {
+                                continue;
+                            }
                             options.headers = options.headers || {};
                             options.headers[p.key] = v;
                             break;
