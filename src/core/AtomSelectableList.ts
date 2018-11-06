@@ -1,39 +1,69 @@
-import { AtomList } from "./AtomList";
+import { AtomViewModel } from "../view-model/AtomViewModel";
+import { AtomDisposableList } from "./AtomDisposableList";
+import { IDisposable } from "./types";
 
 export default class AtomSelectableList<T> {
 
-    public selected: T[];
+    public readonly items: Array<ISelectableItem<T>>;
 
-    constructor(public readonly list: T[]) {
-    }
+    public readonly selectedItems: Array<ISelectableItem<T>> = [];
 
-    public toggle(item: T): void {
-        if (this.isSelected(item)) {
-            this.deselect(item);
+    constructor(
+        disposablesOrVM: AtomDisposableList | AtomViewModel,
+        private source: T[]
+    ) {
+        if (disposablesOrVM instanceof AtomViewModel) {
+            disposablesOrVM.registerDisposable(source.watch((target, key, index, item) => {
+                this.syncItems(target, key, index, item);
+            }));
         } else {
-            this.select(item);
+            disposablesOrVM.add(source.watch((target, key, index, item) => {
+                this.syncItems(target, key, index, item);
+            }));
+        }
+        this.items = source.map((x) => this.newItem(x));
+    }
+
+    private syncItems(target: T[], key: string, index: number, a: T): void {
+        switch (key) {
+            case "reset":
+            case "refresh":
+                this.items.replace(this.source.map( (x) => this.newItem(x) ));
+                break;
+            case "add":
+                this.items.insert(index, this.newItem(a));
+                break;
+            case "remove":
+                const item = this.items[index];
+                item.selected = false;
+                this.items.removeAt(index);
+                break;
         }
     }
 
-    public isSelected(item: T): boolean {
-        return this.selected.findIndex( (x) => x === item) !== -1;
+    private newItem(item: T): ISelectableItem<T> {
+        const self = this;
+        return {
+            item,
+            get selected(): boolean {
+                return self.selectedItems.find((x) => x.item === item) ? true : false;
+            },
+            set selected(v: boolean) {
+                if (v) {
+                    if (this.selected) {
+                        return;
+                    }
+                    self.selectedItems.add(this);
+                } else {
+                    self.selectedItems.remove(this);
+                }
+            }
+        };
     }
 
-    public select(item: T): void {
-        if (this.selected.findIndex((x) => x === item) === -1) {
-            this.selected.add(item);
-        }
-    }
+}
 
-    public deselect(item: T): void {
-        this.selected.remove(item);
-    }
-
-    public selectAll(): void {
-        this.selected.replace(this.list);
-    }
-
-    public clearSelection(): void {
-        this.selected.clear();
-    }
+export interface ISelectableItem<T> {
+    selected?: boolean;
+    item: T;
 }
