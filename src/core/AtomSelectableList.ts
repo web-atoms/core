@@ -52,51 +52,53 @@ export default class AtomSelectableList<T> {
     }
 
     constructor(
-        source: T[],
-        public valuePath?: valuePathOrFunc<T>,
         public allowMultipleSelection: boolean = false,
-        disposablesOrVM?: AtomDisposableList | AtomViewModel
+        public valuePath?: valuePathOrFunc<T>
     ) {
-        if (disposablesOrVM) {
-            if (disposablesOrVM instanceof AtomViewModel) {
-                disposablesOrVM.registerDisposable(source.watch((target, key, index, item) => {
-                    this.syncItems(target, key, index, item);
-                }));
-            } else {
-                disposablesOrVM.add(source.watch((target, key, index, item) => {
-                    this.syncItems(target, key, index, item);
-                }));
-            }
-        }
-        this.items = source.map((x) => this.newItem(x));
         if (!this.valuePath) {
-            this.valuePath = (x) => x ? x.toString() : undefined;
+            this.valuePath = (x) => x;
         }
+        this.items = [];
     }
 
-    private syncItems(target: T[], key: string, index: number, a: T): void {
-        switch (key) {
-            case "reset":
-            case "refresh":
-                this.items.replace(target.map( (x) => this.newItem(x) ));
-                break;
-            case "add":
-                this.items.insert(index, this.newItem(a));
-                break;
-            case "remove":
-                const item = this.items[index];
-                item.selected = false;
-                this.items.removeAt(index);
-                break;
+    public replace(source: T[], start?: number, size?: number): void {
+        const map = source.map((x) => this.newItem(x));
+        const a = source as any;
+        if (a.total) {
+            (map as any).total = a.total;
         }
+        this.items.replace(map, start, size);
+        this.mValue = undefined;
     }
+
+    // private syncItems(target: T[], key: string, index: number, a: T): void {
+    //     switch (key) {
+    //         case "reset":
+    //         case "refresh":
+    //             if (!target.length) {
+    //                 this.selectedItems.clear();
+    //             } else {
+    //                 this.items.replace(target.map( (x) => this.newItem(x) ));
+    //             }
+    //             this.mValue = undefined;
+    //             break;
+    //         case "add":
+    //             this.items.insert(index, this.newItem(a));
+    //             break;
+    //         case "remove":
+    //             const item = this.items[index];
+    //             item.selected = false;
+    //             this.items.removeAt(index);
+    //             break;
+    //     }
+    // }
 
     private newItem(item: T): ISelectableItem<T> {
         const self = this;
         const newItem = {
             item,
             get selected(): boolean {
-                return self.selectedItems.find((x) => x.item === item) ? true : false;
+                return self.selectedItems.find((x) => x === this) ? true : false;
             },
             set selected(v: boolean) {
                 if (v) {
@@ -115,11 +117,13 @@ export default class AtomSelectableList<T> {
         };
         const value = this.valuePath(item);
         let values = this.value as any[];
-        if (!this.allowMultipleSelection) {
-            values = [values];
-        }
-        if (values.find((x) => x === value)) {
-            newItem.selected = true;
+        if (values) {
+            if (!this.allowMultipleSelection) {
+                values = [values];
+            }
+            if (values.find((x) => x === value)) {
+                newItem.selected = true;
+            }
         }
         return newItem;
     }
