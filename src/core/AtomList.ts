@@ -228,6 +228,7 @@ import { AtomDisposable, IDisposable } from "./types";
     Array.prototype["removeAt"] = AtomList.prototype.removeAt;
     Array.prototype["watch"] = AtomList.prototype.watch;
     Array.prototype["replace"] = AtomList.prototype.replace;
+    Array.prototype["insert"] = AtomList.prototype.insert;
 
 declare global { 
     interface Array<T> {
@@ -235,6 +236,7 @@ declare global {
         addAll?(item:T[]):void;
         clear?():void;
         refresh?():void;
+        insert?(index: number, item: T): void;
         remove?(item: T | ((i:T) => boolean)):boolean;
         removeAt?(i: number):void;
         watch?(
