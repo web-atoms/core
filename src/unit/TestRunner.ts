@@ -1,6 +1,8 @@
 // tslint:disable:no-console
 import { TestMethod } from "./TestMethod";
 
+import * as colors from "colors/safe";
+
 declare var global: any;
 
 global.UMD = {
@@ -38,10 +40,16 @@ export class TestRunner {
 
         let errors = 0;
 
+        const errorLogs: string[] = [];
+
+        colors.setTheme({
+            error: ["red", "bold"]
+        });
+
         for (const result of this.executed) {
             if (result.error) {
-                console.error(`${result.category} > ${result.description} failed ${result.error.message}.`);
-                console.error(result.error);
+                errorLogs.push(`${result.category} > ${result.description} failed ${result.error.message}.`);
+                errorLogs.push(result.error);
                 errors ++;
             } else {
                 console.log(`${result.category} > ${result.description} succeeded.`);
@@ -52,6 +60,9 @@ export class TestRunner {
         }
 
         if (errors) {
+            for (const iterator of errorLogs) {
+                console.error( colors.red(iterator) );
+            }
             throw new Error(`${errors} of ${this.executed.length} tests have failed.`);
         } else {
             console.log(`${this.executed.length} tests ran successfully.`);

@@ -5,6 +5,8 @@ import { IDisposable } from "./types";
 
 export type valuePathOrFunc<T> = ((item: T) => any);
 
+const isSelectableItem = {};
+
 export default class AtomSelectableList<T> {
 
     public readonly items: Array<ISelectableItem<T>>;
@@ -59,6 +61,7 @@ export default class AtomSelectableList<T> {
             this.valuePath = (x) => x;
         }
         this.items = [];
+
     }
 
     public replace(source: T[], start?: number, size?: number): void {
@@ -93,47 +96,44 @@ export default class AtomSelectableList<T> {
         return this.items.find((i) => itemf(i.item));
     }
 
-    public select(item: T): void {
+    public select(item: T | ISelectableItem<T>): void {
+        const i = item as ISelectableItem<T>;
+        if (i.itemType === isSelectableItem) {
+            i.select();
+            return;
+        }
         const si = this.items.find( (x) => x.item === item);
-        si.selected = true;
+        si.select();
     }
 
-    public deselect(item: T): void {
+    public deselect(item: T | ISelectableItem<T>): void {
+        const i = item as ISelectableItem<T>;
+        if (i.itemType === isSelectableItem) {
+            i.deselect();
+            return;
+        }
         const si = this.items.find( (x) => x.item === item);
-        si.selected = false;
+        si.deselect();
     }
 
-    public toggle(item: T): void {
+    public toggle(item: T | ISelectableItem<T>): void {
+        const i = item as ISelectableItem<T>;
+        if (i.itemType === isSelectableItem) {
+            i.toggle();
+            return;
+        }
         const si = this.items.find( (x) => x.item === item);
-        si.selected = !si.selected;
+        si.toggle();
     }
-
-    // private syncItems(target: T[], key: string, index: number, a: T): void {
-    //     switch (key) {
-    //         case "reset":
-    //         case "refresh":
-    //             if (!target.length) {
-    //                 this.selectedItems.clear();
-    //             } else {
-    //                 this.items.replace(target.map( (x) => this.newItem(x) ));
-    //             }
-    //             this.mValue = undefined;
-    //             break;
-    //         case "add":
-    //             this.items.insert(index, this.newItem(a));
-    //             break;
-    //         case "remove":
-    //             const item = this.items[index];
-    //             item.selected = false;
-    //             this.items.removeAt(index);
-    //             break;
-    //     }
-    // }
 
     private newItem(item: T): ISelectableItem<T> {
         const self = this;
-        const newItem = {
+        const newItem: ISelectableItem<T> = {
             item,
+            itemType: isSelectableItem,
+            select: null,
+            deselect: null,
+            toggle: null,
             get selected(): boolean {
                 return self.selectedItems.find((x) => x === this) ? true : false;
             },
@@ -152,22 +152,26 @@ export default class AtomSelectableList<T> {
                 AtomBinder.refreshValue(self, "value");
             }
         };
-        // const value = this.valuePath(item);
-        // let values = this.value as any[];
-        // if (values) {
-        //     if (!this.allowMultipleSelection) {
-        //         values = [values];
-        //     }
-        //     if (values.find((x) => x === value)) {
-        //         newItem.selected = true;
-        //     }
-        // }
+        newItem.select = () => {
+            newItem.selected = true;
+        };
+        newItem.deselect = () => {
+            newItem.selected = false;
+        };
+        newItem.toggle = () => {
+            newItem.selected = !newItem.selected;
+        };
+
         return newItem;
     }
 
 }
 
 export interface ISelectableItem<T> {
-    selected?: boolean;
+    selected: boolean;
     item: T;
+    itemType: any;
+    select: () => void;
+    deselect: () => void;
+    toggle: () => void;
 }

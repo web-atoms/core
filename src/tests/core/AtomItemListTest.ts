@@ -129,6 +129,54 @@ export class AtomItemListTest extends AtomTest {
         Assert.equals(2, list.selectedItems.length);
         Assert.equals("l2,l3", list.selectedItems.map((x) => x.item.label).sort().join(","));
     }
+
+    @Test
+    public selectMethod(): void {
+        const list = new AtomSelectableList();
+        list.replace([1, 2]);
+        list.select(1);
+
+        Assert.equals(0, list.selectedIndex);
+        list.deselect(1);
+        Assert.equals(-1, list.selectedIndex);
+        list.toggle(1);
+        Assert.equals(0, list.selectedIndex);
+    }
+
+    @Test
+    public selectItemMethod(): void {
+        const list = new AtomSelectableList();
+        list.replace([1, 2]);
+        const one = list.items[0];
+        list.select(one);
+
+        Assert.equals(0, list.selectedIndex);
+        list.deselect(one);
+        Assert.equals(-1, list.selectedIndex);
+        list.toggle(one);
+        Assert.equals(0, list.selectedIndex);
+    }
+
+    @Test
+    public find(): void {
+        const list = new AtomSelectableList<IKeyValue>(true, (x) => x.value);
+        list.value = ["v2", "v3"];
+
+        list.replace([
+            { label: "l1", value: "v1" },
+            { label: "l2", value: "v2" },
+            { label: "l3", value: "v3" },
+            { label: "l4", value: "v4" }
+        ]);
+
+        const item = list.find((x) => x.value === "v4");
+        Assert.equals("l4", item.item.label);
+
+        const item2 = list.find(item.item);
+
+        Assert.equals("l4", item2.item.label);
+
+    }
 }
 
 interface IKeyValue {
