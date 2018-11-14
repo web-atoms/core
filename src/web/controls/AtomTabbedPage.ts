@@ -262,7 +262,11 @@ class AtomTabViewModel extends AtomViewModel {
 
         page.bind(page.element, "title", [["viewModel", "title"]]);
 
-        page.bind(page.element, "styleDisplay", [["this", "selectedPage"]], false, (v) => v ? "" : "none", this);
+        page.bind(page.element,
+            "styleDisplay",
+            [["this", "selectedPage"]],
+            false,
+            (v) => v === page ? "" : "none", this);
 
         this.pages.add(page);
 
