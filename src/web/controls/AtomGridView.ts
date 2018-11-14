@@ -187,6 +187,7 @@ export class AtomGridView extends AtomControl {
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";
+        style.overflow = "hidden";
     }
 
     private updateStyle(e: HTMLElement): void {
