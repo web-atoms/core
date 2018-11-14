@@ -69,7 +69,7 @@ export class AtomTabbedPage extends AtomGridView
 
         this.presenter = document.createElement("div");
         this.append(this.presenter);
-        (this.presenter as any).row = 1;
+        (this.presenter as any).row = "1";
 
         this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
 
