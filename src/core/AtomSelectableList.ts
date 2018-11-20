@@ -28,6 +28,28 @@ export default class AtomSelectableList<T> {
         this.selectedItems.add(this.items[n]);
     }
 
+    public get selectedItem(): T {
+        if (!this.selectedItems.length) {
+            return null;
+        }
+        const s = this.selectedItems[0];
+        return s ? s.item : null;
+    }
+
+    public set selectedItem(item: T) {
+        this.clearSelection();
+        const si = this.items.find((s) => s.item === item);
+        si.select();
+    }
+
+    public get label(): any {
+        const labels = this.selectedItems.map((x) => this.labelPath(x.item));
+        if (this.allowMultipleSelection) {
+            return labels;
+        }
+        return labels[0] || null;
+    }
+
     private mValue: any = undefined;
     public get value(): any {
         if (this.selectedItems.length) {
@@ -55,10 +77,14 @@ export default class AtomSelectableList<T> {
 
     constructor(
         public allowMultipleSelection: boolean = false,
-        public valuePath?: valuePathOrFunc<T>
+        public valuePath?: valuePathOrFunc<T>,
+        public labelPath?: valuePathOrFunc<T>
     ) {
         if (!this.valuePath) {
             this.valuePath = (x) => x;
+        }
+        if (!this.labelPath) {
+            this.labelPath = (x) => (x as any).label || x;
         }
         this.items = [];
 
@@ -142,14 +168,16 @@ export default class AtomSelectableList<T> {
                     if (this.selected) {
                         return;
                     }
-                    if (!self.allowMultipleSelection) {
-                        self.selectedItems.clear();
-                    }
+                    self.clearSelection();
                     self.selectedItems.add(this);
                 } else {
                     self.selectedItems.remove(this);
                 }
                 AtomBinder.refreshValue(self, "value");
+                AtomBinder.refreshValue(self, "label");
+                AtomBinder.refreshValue(this, "selected");
+                AtomBinder.refreshValue(this, "selectedItem");
+                AtomBinder.refreshValue(this, "selectedIndex");
             }
         };
         newItem.select = () => {
@@ -165,6 +193,15 @@ export default class AtomSelectableList<T> {
         return newItem;
     }
 
+    private clearSelection() {
+        if (!this.allowMultipleSelection) {
+            const items = this.selectedItems.map((s) => s);
+            this.selectedItems.clear();
+            for (const iterator of items) {
+                AtomBinder.refreshValue(iterator, "selected");
+            }
+        }
+    }
 }
 
 export interface ISelectableItem<T> {
