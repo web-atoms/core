@@ -302,9 +302,9 @@ export class WindowService extends NavigationService {
     }
 
     private refreshScreen() {
-        this.screen.height = document.body.clientHeight || 400;
-        this.screen.width = document.body.clientWidth || 800;
-        this.screen.scrollLeft = document.body.scrollLeft || 0;
-        this.screen.scrollTop = document.body.scrollTop || 0;
+        this.screen.height = window.innerHeight || document.body.clientHeight;
+        this.screen.width = window.innerWidth || document.body.clientWidth;
+        this.screen.scrollLeft = window.scrollX || document.body.scrollLeft || 0;
+        this.screen.scrollTop = window.scrollY || document.body.scrollTop || 0;
     }
 }
