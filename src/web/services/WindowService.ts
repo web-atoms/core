@@ -14,6 +14,7 @@ import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
+import { cssNumberToString } from "../styles/StyleBuilder";
 
 export interface IScreen {
     width?: number;
@@ -241,10 +242,10 @@ export class WindowService extends NavigationService {
                     }
                 });
                 this.refreshScreen();
-                popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, null, this.screen);
-                popup.bind(host, "styleTop", [["this", "scrollTop"]], false, null, this.screen);
-                popup.bind(host, "styleWidth", [["this", "width"]], false, null, this.screen);
-                popup.bind(host, "styleHeight", [["this", "height"]], false, null, this.screen);
+                popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
             }
 
             const closeFunction = () => {
