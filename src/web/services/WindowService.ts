@@ -15,8 +15,17 @@ import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 
+export interface IScreen {
+    width?: number;
+    height?: number;
+    scrollLeft?: number;
+    scrollTop?: number;
+}
+
 @RegisterSingleton
 export class WindowService extends NavigationService {
+
+    public screen: IScreen = {};
 
     private popups: AtomControl[] = [];
 
@@ -67,6 +76,18 @@ export class WindowService extends NavigationService {
                 this.currentTarget = e.target as HTMLElement;
                 this.closePopup();
             });
+
+            const update = (e) => {
+                this.screen.height = document.body.clientHeight;
+                this.screen.width = document.body.clientWidth;
+                this.screen.scrollLeft = document.body.scrollLeft;
+                this.screen.scrollTop = document.body.scrollTop;
+            };
+
+            window.addEventListener("resize", update);
+            window.addEventListener("scroll", update);
+            document.body.addEventListener("scroll", update);
+            document.body.addEventListener("resize", update);
         }
     }
 
@@ -189,6 +210,8 @@ export class WindowService extends NavigationService {
             e.id = `atom_popup_${this.lastPopupID++}`;
             e.style.zIndex = 10000 + this.lastPopupID + "";
 
+            const disposables: IDisposable[] = [popup];
+
             if (isPopup) {
                 (popup.element as IAtomControlElement)._logicalParent
                     = this.currentTarget as IAtomControlElement;
@@ -204,11 +227,22 @@ export class WindowService extends NavigationService {
                 e.classList.add(theme.host.className);
                 // popup.element.classList.add("close-popup");
                 this.popups.push(popup);
+                document.body.appendChild(e);
+            } else {
+                const host = document.createElement("div");
+                document.body.appendChild(host);
+                host.style.position = "absolute";
+                host.appendChild(e);
+                disposables.push({
+                    dispose() {
+                        host.remove();
+                    }
+                });
+                popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, null, this.screen);
+                popup.bind(host, "styleTop", [["this", "scrollTop"]], false, null, this.screen);
+                popup.bind(host, "styleWidth", [["this", "width"]], false, null, this.screen);
+                popup.bind(host, "styleHeight", [["this", "height"]], false, null, this.screen);
             }
-
-            document.body.appendChild(e);
-
-            const disposables: IDisposable[] = [popup];
 
             const closeFunction = () => {
                 for (const iterator of disposables) {
