@@ -88,6 +88,8 @@ export class WindowService extends NavigationService {
             window.addEventListener("scroll", update);
             document.body.addEventListener("scroll", update);
             document.body.addEventListener("resize", update);
+
+            update(null);
         }
     }
 
