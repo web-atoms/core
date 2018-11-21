@@ -78,10 +78,7 @@ export class WindowService extends NavigationService {
             });
 
             const update = (e) => {
-                this.screen.height = document.body.clientHeight || 400;
-                this.screen.width = document.body.clientWidth || 800;
-                this.screen.scrollLeft = document.body.scrollLeft || 0;
-                this.screen.scrollTop = document.body.scrollTop || 0;
+                this.refreshScreen();
             };
 
             window.addEventListener("resize", update);
@@ -243,6 +240,7 @@ export class WindowService extends NavigationService {
                         host.remove();
                     }
                 });
+                this.refreshScreen();
                 popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, null, this.screen);
                 popup.bind(host, "styleTop", [["this", "scrollTop"]], false, null, this.screen);
                 popup.bind(host, "styleWidth", [["this", "width"]], false, null, this.screen);
@@ -301,5 +299,12 @@ export class WindowService extends NavigationService {
             }
 
         });
+    }
+
+    private refreshScreen() {
+        this.screen.height = document.body.clientHeight || 400;
+        this.screen.width = document.body.clientWidth || 800;
+        this.screen.scrollLeft = document.body.scrollLeft || 0;
+        this.screen.scrollTop = document.body.scrollTop || 0;
     }
 }
