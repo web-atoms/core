@@ -78,10 +78,10 @@ export class WindowService extends NavigationService {
             });
 
             const update = (e) => {
-                this.screen.height = document.body.clientHeight;
-                this.screen.width = document.body.clientWidth;
-                this.screen.scrollLeft = document.body.scrollLeft;
-                this.screen.scrollTop = document.body.scrollTop;
+                this.screen.height = document.body.clientHeight || 400;
+                this.screen.width = document.body.clientWidth || 800;
+                this.screen.scrollLeft = document.body.scrollLeft || 0;
+                this.screen.scrollTop = document.body.scrollTop || 0;
             };
 
             window.addEventListener("resize", update);
@@ -89,7 +89,10 @@ export class WindowService extends NavigationService {
             document.body.addEventListener("scroll", update);
             document.body.addEventListener("resize", update);
 
-            update(null);
+            setTimeout(() => {
+                update(null);
+            }, 1000);
+
         }
     }
 
