@@ -10,37 +10,43 @@ export class AtomComboBox extends AtomItemsControl {
     constructor(@Inject app: App, e?: HTMLElement) {
         super(app, e || document.createElement("select"));
         this.allowMultipleSelection = false;
-        this.itemTemplate = AtomComboBoxItemTemplate;
-        this.bindEvent(this.element, "change", (s) => {
-            if (this.isChanging) {
-                return;
-            }
-            try {
-                this.isChanging = true;
-                const index = (this.element as HTMLSelectElement).selectedIndex;
-                if (index === -1) {
-                    this.selectedItems.clear();
-                    return;
-                }
-                this.selectedItem = this.items[index];
-                // this.selectedIndex = (this.element as HTMLSelectElement).selectedIndex;
-            } finally {
-                this.isChanging = false;
-            }
-        });
     }
 
     public onCollectionChanged(key: string, index: number, item: any): void {
         super.onCollectionChanged(key, index, item);
+        try {
+            this.isChanging = true;
+            const se = this.element as HTMLSelectElement;
+            se.selectedIndex = this.selectedIndex;
+        } finally {
+            this.isChanging = false;
+        }
+    }
+
+    protected preCreate(): void {
+        super.preCreate();
+
         this.runAfterInit(() => {
-            try {
-                this.isChanging = true;
-                const se = this.element as HTMLSelectElement;
-                se.selectedIndex = this.selectedIndex;
-            } finally {
-                this.isChanging = false;
-            }
+            this.itemTemplate = AtomComboBoxItemTemplate;
+            this.bindEvent(this.element, "change", (s) => {
+                if (this.isChanging) {
+                    return;
+                }
+                try {
+                    this.isChanging = true;
+                    const index = (this.element as HTMLSelectElement).selectedIndex;
+                    if (index === -1) {
+                        this.selectedItems.clear();
+                        return;
+                    }
+                    this.selectedItem = this.items[index];
+                    // this.selectedIndex = (this.element as HTMLSelectElement).selectedIndex;
+                } finally {
+                    this.isChanging = false;
+                }
+            });
         });
+
     }
 
     // public onCollectionChanged(key: string, index: number, item: any): any {
