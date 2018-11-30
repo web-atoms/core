@@ -32,13 +32,15 @@ export class AtomComboBox extends AtomItemsControl {
 
     public onCollectionChanged(key: string, index: number, item: any): void {
         super.onCollectionChanged(key, index, item);
-        try {
-            this.isChanging = true;
-            const se = this.element as HTMLSelectElement;
-            se.selectedIndex = this.selectedIndex;
-        } finally {
-            this.isChanging = false;
-        }
+        this.runAfterInit(() => {
+            try {
+                this.isChanging = true;
+                const se = this.element as HTMLSelectElement;
+                se.selectedIndex = this.selectedIndex;
+            } finally {
+                this.isChanging = false;
+            }
+        });
     }
 
     // public onCollectionChanged(key: string, index: number, item: any): any {
