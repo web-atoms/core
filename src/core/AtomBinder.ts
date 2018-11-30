@@ -82,12 +82,12 @@ export class AtomBinder {
         if (!tw._$_bindable) {
             tw._$_bindable = [];
         }
-        if (tw._$_bindable.indexOf(key) === -1) {
+        if (!Array.isArray(tw) && tw._$_bindable.indexOf(key) === -1) {
             tw._$_bindable.push(key);
 
             const keyName = `_$_${key}`;
 
-            const curentValue = target[key];
+            target[keyName] = target[key];
 
             const set = function(v: any) {
                 // tslint:disable-next-line:triple-equals
