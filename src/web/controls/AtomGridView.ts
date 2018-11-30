@@ -93,6 +93,8 @@ export class AtomGridView extends AtomControl {
 
     private availableRect: IRect = null;
 
+    private childrenReady: boolean = false;
+
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
         const ee = e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement;
         ((ee as any) as IAtomControlElement)._logicalParent = this.element as IAtomControlElement;
@@ -152,6 +154,7 @@ export class AtomGridView extends AtomControl {
         }
         super.onUpdateUI();
         this.updateSize();
+        this.childrenReady = true;
     }
 
     public resize(item: "column" | "row", index: number, delta: number): void {
@@ -168,6 +171,17 @@ export class AtomGridView extends AtomControl {
         next.offset += delta;
         next.size -= delta;
         this.updateSize();
+    }
+
+    public onPropertyChanged(name: string): void {
+        switch (name) {
+            case "rows":
+            case "columns":
+                if (this.childrenReady) {
+                    this.invalidate();
+                }
+                break;
+        }
     }
 
     protected onUpdateSize(): void {
