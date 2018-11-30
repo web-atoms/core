@@ -23,32 +23,6 @@ export class AtomComboBox extends AtomItemsControl {
         }
     }
 
-    protected preCreate(): void {
-        super.preCreate();
-
-        this.runAfterInit(() => {
-            this.itemTemplate = AtomComboBoxItemTemplate;
-            this.bindEvent(this.element, "change", (s) => {
-                if (this.isChanging) {
-                    return;
-                }
-                try {
-                    this.isChanging = true;
-                    const index = (this.element as HTMLSelectElement).selectedIndex;
-                    if (index === -1) {
-                        this.selectedItems.clear();
-                        return;
-                    }
-                    this.selectedItem = this.items[index];
-                    // this.selectedIndex = (this.element as HTMLSelectElement).selectedIndex;
-                } finally {
-                    this.isChanging = false;
-                }
-            });
-        });
-
-    }
-
     // public onCollectionChanged(key: string, index: number, item: any): any {
     //     const element = this.element as HTMLSelectElement;
     //     const dataItems = this.items;
@@ -90,6 +64,31 @@ export class AtomComboBox extends AtomItemsControl {
         }
     }
 
+    protected preCreate(): void {
+        super.preCreate();
+
+        this.runAfterInit(() => {
+            this.itemTemplate = AtomComboBoxItemTemplate;
+            this.bindEvent(this.element, "change", (s) => {
+                if (this.isChanging) {
+                    return;
+                }
+                try {
+                    this.isChanging = true;
+                    const index = (this.element as HTMLSelectElement).selectedIndex;
+                    if (index === -1) {
+                        this.selectedItems.clear();
+                        return;
+                    }
+                    this.selectedItem = this.items[index];
+                    // this.selectedIndex = (this.element as HTMLSelectElement).selectedIndex;
+                } finally {
+                    this.isChanging = false;
+                }
+            });
+        });
+
+    }
 }
 
 class AtomComboBoxItemTemplate extends AtomControl {
