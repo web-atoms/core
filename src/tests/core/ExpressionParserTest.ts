@@ -47,7 +47,7 @@ export class ExpressionParserTest extends AtomTest {
     @Test
     public parseLambdaTextWithComments(): void {
         const p = parsePath(`function(a) {
-            // test
+            // test a.firstName
             return a.firstName + ' ' + a.lastName;
         }`);
         Assert.equals(2, p.length);
