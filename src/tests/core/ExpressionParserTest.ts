@@ -61,4 +61,14 @@ export class ExpressionParserTest extends AtomTest {
 
         Assert.equals(2, p.length);
     }
+
+    @Test
+    public parse2(): void {
+        const p = parsePath(`function () {
+            this.dateChange(this["month"], this.year);
+        }`);
+
+        Assert.equals(1, p.length);
+    }
+
 }
