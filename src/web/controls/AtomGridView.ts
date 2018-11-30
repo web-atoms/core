@@ -194,14 +194,17 @@ export class AtomGridView extends AtomControl {
         if (!this.element) {
             this.element = document.createElement("section");
         }
-        window.addEventListener("resize", (evt) => {
-            this.invalidate();
-        });
-
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";
         style.overflow = "hidden";
+
+        this.bindEvent(window as any, "resize", () => {
+            this.invalidate();
+        });
+        this.bindEvent(document.body, "resize", () => {
+            this.invalidate();
+        });
     }
 
     private updateStyle(e: HTMLElement): void {
