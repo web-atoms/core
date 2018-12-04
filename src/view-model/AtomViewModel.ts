@@ -116,8 +116,17 @@ export class AtomViewModel {
      * @param twoWays optional, two ways IValueConverter
      */
     public bind(
-        target: any, propertyName: string, source: any, path: string[][], twoWays?: IValueConverter ): IDisposable {
-        const pb = new PropertyBinding(target, null, propertyName, path, twoWays ? true : false , twoWays, source);
+        target: any,
+        propertyName: string,
+        source: any,
+        path: string[][],
+        twoWays?: IValueConverter | ((v: any) => any) ): IDisposable {
+        const pb = new PropertyBinding(
+            target,
+            null,
+            propertyName,
+            path,
+            (twoWays && typeof twoWays !== "function") ? true : false , twoWays, source);
         return this.registerDisposable(pb);
     }
 
