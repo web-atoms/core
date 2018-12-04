@@ -93,6 +93,8 @@ export class AtomGridView extends AtomControl {
 
     private availableRect: IRect = null;
 
+    private childrenReady: boolean = false;
+
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
         const ee = e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement;
         ((ee as any) as IAtomControlElement)._logicalParent = this.element as IAtomControlElement;
@@ -152,6 +154,7 @@ export class AtomGridView extends AtomControl {
         }
         super.onUpdateUI();
         this.updateSize();
+        this.childrenReady = true;
     }
 
     public resize(item: "column" | "row", index: number, delta: number): void {
@@ -170,6 +173,17 @@ export class AtomGridView extends AtomControl {
         this.updateSize();
     }
 
+    public onPropertyChanged(name: string): void {
+        switch (name) {
+            case "rows":
+            case "columns":
+                if (this.childrenReady) {
+                    this.invalidate();
+                }
+                break;
+        }
+    }
+
     protected onUpdateSize(): void {
         for (const iterator of this.children) {
             this.updateStyle(iterator);
@@ -180,13 +194,17 @@ export class AtomGridView extends AtomControl {
         if (!this.element) {
             this.element = document.createElement("section");
         }
-        window.addEventListener("resize", (evt) => {
-            this.invalidate();
-        });
-
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";
+        style.overflow = "hidden";
+
+        this.bindEvent(window as any, "resize", () => {
+            this.invalidate();
+        });
+        this.bindEvent(document.body, "resize", () => {
+            this.invalidate();
+        });
     }
 
     private updateStyle(e: HTMLElement): void {

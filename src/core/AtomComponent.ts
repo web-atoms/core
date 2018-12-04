@@ -242,6 +242,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public hasProperty(name: string): boolean {
+        if (this[name] !== undefined) {
+            return true;
+        }
         const map = PropertyMap.from(this);
         return map.map[name];
     }

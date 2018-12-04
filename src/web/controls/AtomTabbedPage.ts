@@ -17,6 +17,7 @@ import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
 import { AtomListBox } from "./AtomListBox";
 import { AtomPage } from "./AtomPage";
+import { AtomWatcher } from "../../core/AtomWatcher";
 
 export class AtomTabbedPage extends AtomGridView
     implements INotifyPropertyChanged {
@@ -27,8 +28,19 @@ export class AtomTabbedPage extends AtomGridView
     @BindableProperty
     public titleTemplate: IClassOf<AtomControl>;
 
-    @BindableProperty
-    public selectedPage: AtomPage;
+    public presenter: HTMLElement;
+
+    private mSelectedPage: AtomPage;
+    public get selectedPage(): AtomPage {
+        return this.mSelectedPage;
+    }
+    public set selectedPage(value: AtomPage) {
+        this.mSelectedPage = value;
+
+        if (value && value.element && value.element.parentElement !== this.presenter) {
+            this.presenter.appendChild(value.element);
+        }
+    }
 
     protected preCreate(): void {
 
@@ -50,10 +62,17 @@ export class AtomTabbedPage extends AtomGridView
         ul.bind(ul.element, "items", [["localViewModel", "pages"]]);
         ul.bind(ul.element, "selectedItem", [["localViewModel", "selectedPage"]], true);
 
-        const presenter = new AtomContentControl(this.app, document.createElement("section"));
-        this.append(presenter);
-        presenter.setPrimitiveValue(presenter.element, "row", "1");
-        presenter.bind(presenter.element, "content", [["localViewModel", "selectedPage"]]);
+        // const presenter = new AtomContentControl(this.app, document.createElement("section"));
+        // this.append(presenter);
+        // presenter.setPrimitiveValue(presenter.element, "row", "1");
+        // presenter.bind(presenter.element, "content", [["localViewModel", "selectedPage"]]);
+
+        this.presenter = document.createElement("div");
+        this.append(this.presenter);
+        (this.presenter as any).row = "1";
+
+        this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
+
     }
 }
 
@@ -242,6 +261,12 @@ class AtomTabViewModel extends AtomViewModel {
         }
 
         page.bind(page.element, "title", [["viewModel", "title"]]);
+
+        page.bind(page.element,
+            "styleDisplay",
+            [["this", "selectedPage"]],
+            false,
+            (v) => v === page ? "" : "none", this);
 
         this.pages.add(page);
 

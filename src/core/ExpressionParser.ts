@@ -5,6 +5,8 @@ const viewModelParseWatchCache: {[key: string]: PathList[] } = {};
 export function parsePath(f: any): PathList[] {
     let str: string = f.toString().trim();
 
+    str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
+
     const key: string = str;
 
     const px1: PathList[] = viewModelParseWatchCache[key];

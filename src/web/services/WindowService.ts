@@ -14,9 +14,19 @@ import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
+import { cssNumberToString } from "../styles/StyleBuilder";
+
+export interface IScreen {
+    width?: number;
+    height?: number;
+    scrollLeft?: number;
+    scrollTop?: number;
+}
 
 @RegisterSingleton
 export class WindowService extends NavigationService {
+
+    public screen: IScreen = {};
 
     private popups: AtomControl[] = [];
 
@@ -67,6 +77,20 @@ export class WindowService extends NavigationService {
                 this.currentTarget = e.target as HTMLElement;
                 this.closePopup();
             });
+
+            const update = (e) => {
+                this.refreshScreen();
+            };
+
+            window.addEventListener("resize", update);
+            window.addEventListener("scroll", update);
+            document.body.addEventListener("scroll", update);
+            document.body.addEventListener("resize", update);
+
+            setTimeout(() => {
+                update(null);
+            }, 1000);
+
         }
     }
 
@@ -189,6 +213,8 @@ export class WindowService extends NavigationService {
             e.id = `atom_popup_${this.lastPopupID++}`;
             e.style.zIndex = 10000 + this.lastPopupID + "";
 
+            const disposables: IDisposable[] = [popup];
+
             if (isPopup) {
                 (popup.element as IAtomControlElement)._logicalParent
                     = this.currentTarget as IAtomControlElement;
@@ -204,11 +230,23 @@ export class WindowService extends NavigationService {
                 e.classList.add(theme.host.className);
                 // popup.element.classList.add("close-popup");
                 this.popups.push(popup);
+                document.body.appendChild(e);
+            } else {
+                const host = document.createElement("div");
+                document.body.appendChild(host);
+                host.style.position = "absolute";
+                host.appendChild(e);
+                disposables.push({
+                    dispose() {
+                        host.remove();
+                    }
+                });
+                this.refreshScreen();
+                popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
             }
-
-            document.body.appendChild(e);
-
-            const disposables: IDisposable[] = [popup];
 
             const closeFunction = () => {
                 for (const iterator of disposables) {
@@ -262,5 +300,12 @@ export class WindowService extends NavigationService {
             }
 
         });
+    }
+
+    private refreshScreen() {
+        this.screen.height = window.innerHeight || document.body.clientHeight;
+        this.screen.width = window.innerWidth || document.body.clientWidth;
+        this.screen.scrollLeft = window.scrollX || document.body.scrollLeft || 0;
+        this.screen.scrollTop = window.scrollY || document.body.scrollTop || 0;
     }
 }

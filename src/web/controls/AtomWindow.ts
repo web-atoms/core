@@ -182,7 +182,8 @@ export class AtomWindow extends AtomControl {
         this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
-            const offset = AtomUI.screenOffset(tp);
+            // const offset = AtomUI.screenOffset(tp);
+            const offset = { x: tp.parentElement.offsetLeft, y: tp.parentElement.offsetTop };
             const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
             tp.style.cursor = "move";
