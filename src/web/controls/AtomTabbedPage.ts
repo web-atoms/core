@@ -40,6 +40,8 @@ export class AtomTabbedPage extends AtomGridView
         if (value && value.element && value.element.parentElement !== this.presenter) {
             this.presenter.appendChild(value.element);
         }
+
+        this.invalidate();
     }
 
     protected preCreate(): void {
