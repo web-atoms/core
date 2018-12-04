@@ -477,7 +477,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     protected resolveWithParentViewModel<TService>(
         c: IClassOf<TService>): TService {
         const result = this.app.resolve(c, true);
-        result.parent = this.viewModel;
+        this.runAfterInit(() => {
+            const p = this.parent;
+            if (p) {
+                result.parent = p.viewModel;
+            }
+        });
         return result;
     }
 
