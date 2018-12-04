@@ -464,11 +464,20 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         AtomBridge.instance.setValue(element, name, value);
     }
 
-    protected resolve<TService>(c: IClassOf<TService>, selfName?: string ): TService {
+    protected resolve<TService>(
+        c: IClassOf<TService>,
+        selfName?: string): TService {
         const result = this.app.resolve(c, true);
         if (selfName) {
             result[selfName] = this;
         }
+        return result;
+    }
+
+    protected resolveWithParentViewModel<TService>(
+        c: IClassOf<TService>): TService {
+        const result = this.app.resolve(c, true);
+        result.parent = this.viewModel;
         return result;
     }
 

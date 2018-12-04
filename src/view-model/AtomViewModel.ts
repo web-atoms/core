@@ -47,6 +47,27 @@ export class AtomViewModel {
         return e;
     }
 
+    private mChildren: AtomViewModel[];
+    private mParent: AtomViewModel;
+    public get parent(): AtomViewModel {
+        return this.mParent;
+    }
+    public set parent(v: AtomViewModel) {
+        if (this.mParent && this.mParent.mChildren) {
+            this.mParent.mChildren.remove(this);
+        }
+        this.mParent = v;
+        if (v) {
+            const c = v.mChildren || (v.mChildren = []);
+            c.add(this);
+            this.registerDisposable({
+                dispose: () => {
+                    c.remove(this);
+                }
+            });
+        }
+    }
+
     public get isValid(): boolean {
         let valid = true;
         for (const v of this.validations) {
@@ -56,6 +77,13 @@ export class AtomViewModel {
             }
             if (this[v.name]) {
                 valid = false;
+            }
+        }
+        if (this.mChildren) {
+            for (const child of this.mChildren) {
+                if (!child.isValid) {
+                    valid = false;
+                }
             }
         }
         AtomBinder.refreshValue(this, "errors");
@@ -95,7 +123,7 @@ export class AtomViewModel {
     }
 
     /**
-     * Put your asynchronous initializations here
+     * Put your asynchronous initialization here
      *
      * @returns {Promise<any>}
      * @memberof AtomViewModel
