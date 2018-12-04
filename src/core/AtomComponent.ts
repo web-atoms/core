@@ -480,6 +480,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         this.runAfterInit(() => {
             const p = this.parent;
             if (p) {
+                result.owner = this;
                 result.parent = p.viewModel;
             }
         });
