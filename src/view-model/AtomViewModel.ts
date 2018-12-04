@@ -107,8 +107,17 @@ export class AtomViewModel {
         return this.app.resolve(c, create);
     }
 
-    public bind(propertyName: string, target: any, path: string[][], vc: IValueConverter ): IDisposable {
-        const pb = new PropertyBinding(this, null, propertyName, path, true, vc, target);
+    /**
+     * Binds source property to target property with optional two ways
+     * @param target target whose property will be set
+     * @param propertyName name of target property
+     * @param source source to read property from
+     * @param path property path of source
+     * @param twoWays optional, two ways IValueConverter
+     */
+    public bind(
+        target: any, propertyName: string, source: any, path: string[][], twoWays?: IValueConverter ): IDisposable {
+        const pb = new PropertyBinding(target, null, propertyName, path, twoWays ? true : false , twoWays, source);
         return this.registerDisposable(pb);
     }
 

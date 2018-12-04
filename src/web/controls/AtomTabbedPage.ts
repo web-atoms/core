@@ -151,7 +151,7 @@ class AtomTabViewModel extends AtomViewModel {
 
         this.pages = new AtomList();
 
-        this.bind("selectedUrl", this, [["selectedPage"]], {
+        this.bind(this, "selectedUrl", this, [["selectedPage"]], {
             fromSource: (v: any): any => {
                 return v.tag;
             },
