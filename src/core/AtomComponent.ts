@@ -466,24 +466,25 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     protected resolve<TService>(
         c: IClassOf<TService>,
-        selfName?: string): TService {
+        selfName?: string |  (() => any)): TService {
         const result = this.app.resolve(c, true);
         if (selfName) {
-            result[selfName] = this;
-        }
-        return result;
-    }
-
-    protected resolveWithParentViewModel<TService>(
-        c: IClassOf<TService>): TService {
-        const result = this.app.resolve(c, true);
-        this.runAfterInit(() => {
-            const p = this.parent;
-            if (p) {
-                result.owner = this;
-                result.parent = p.viewModel;
+            if (typeof selfName === "function") {
+                this.runAfterInit(() => {
+                    const v = selfName();
+                    if (v) {
+                        for (const key in v) {
+                            if (v.hasOwnProperty(key)) {
+                                const element = v[key];
+                                result[key] = element;
+                            }
+                        }
+                    }
+                });
+            } else {
+                result[selfName] = this;
             }
-        });
+        }
         return result;
     }
 
