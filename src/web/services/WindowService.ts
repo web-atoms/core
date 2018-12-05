@@ -10,6 +10,7 @@ import { JsonService } from "../../services/JsonService";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
+import AtomAlertWindow from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
@@ -25,6 +26,11 @@ export interface IScreen {
 
 @RegisterSingleton
 export class WindowService extends NavigationService {
+
+    /**
+     * This is just to preload Alert window.
+     */
+    public static alertWindow = AtomAlertWindow;
 
     public screen: IScreen = {};
 
