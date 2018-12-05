@@ -196,7 +196,7 @@ class AtomTabViewModel extends AtomViewModel {
 
     @Watch
     public watchSelectedPage(): void {
-        this.saveState();
+        this.saveState(this.selectedPage);
     }
 
     public closePage(page: AtomPage): void {
@@ -210,7 +210,7 @@ class AtomTabViewModel extends AtomViewModel {
         });
     }
 
-    protected saveState(): void {
+    protected saveState(a?: any): void {
         const state: ITabState = {
             urls: this.pages.map((p) => p.tag),
             selectedUrl: this.selectedUrl,
