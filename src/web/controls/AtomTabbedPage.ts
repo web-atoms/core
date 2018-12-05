@@ -11,13 +11,10 @@ import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
 import { AtomTabbedPageStyle } from "../styles/AtomTabbedPageStyle";
-import { AtomContentControl } from "./AtomContentControl";
 import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
-import { AtomListBox } from "./AtomListBox";
 import { AtomPage } from "./AtomPage";
-import { AtomWatcher } from "../../core/AtomWatcher";
 
 export class AtomTabbedPage extends AtomGridView
     implements INotifyPropertyChanged {
@@ -106,9 +103,9 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
             // closeButton.textContent = "x";
             this.append(closeButton);
 
-            this.bindEvent(closeButton, "click", (e) => __creator.localViewModel.closePage(this.data));
+            this.bindEvent(closeButton, "click", () => __creator.localViewModel.closePage(this.data));
 
-            this.bindEvent(divTitle, "click" , (e) => {
+            this.bindEvent(divTitle, "click" , () => {
                 this.localViewModel.selectedPage = this.data;
             });
         }
@@ -199,7 +196,7 @@ class AtomTabViewModel extends AtomViewModel {
 
     @Watch
     public watchSelectedPage(): void {
-        this.saveState(this.selectedPage);
+        this.saveState();
     }
 
     public closePage(page: AtomPage): void {
@@ -213,7 +210,7 @@ class AtomTabViewModel extends AtomViewModel {
         });
     }
 
-    protected saveState(v): void {
+    protected saveState(): void {
         const state: ITabState = {
             urls: this.pages.map((p) => p.tag),
             selectedUrl: this.selectedUrl,
@@ -231,8 +228,8 @@ class AtomTabViewModel extends AtomViewModel {
             this.loadPage(message, false).catch((error) => {
                 // tslint:disable-next-line:no-console
                 console.error(error);
-            }).then((v) => {
-                // nothing
+            }).then(() => {
+                // do nothing
             });
         }));
     }
@@ -296,7 +293,7 @@ class AtomTabViewModel extends AtomViewModel {
             }
         });
 
-        this.saveState(null);
+        this.saveState();
         return page;
     }
 

@@ -156,7 +156,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         valueFunc?: (...v: any[]) => any,
         source?: any): IDisposable {
 
-        // remove exisiting binding if any
+        // remove existing binding if any
         let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
         if (binding) {
             binding.dispose();
