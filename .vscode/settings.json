@@ -1,3 +1,6 @@
 {
-    "coverage-gutters.lcovname": "./coverage/lcov.info"
+    "coverage-gutters.lcovname": "./coverage/lcov.info",
+    "cSpell.words": [
+        "Descendents"
+    ]
 }

@@ -156,7 +156,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         valueFunc?: (...v: any[]) => any,
         source?: any): IDisposable {
 
-        // remove exisiting binding if any
+        // remove existing binding if any
         let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
         if (binding) {
             binding.dispose();
@@ -464,10 +464,26 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         AtomBridge.instance.setValue(element, name, value);
     }
 
-    protected resolve<TService>(c: IClassOf<TService>, selfName?: string ): TService {
+    protected resolve<TService>(
+        c: IClassOf<TService>,
+        selfName?: string |  (() => any)): TService {
         const result = this.app.resolve(c, true);
         if (selfName) {
-            result[selfName] = this;
+            if (typeof selfName === "function") {
+                this.runAfterInit(() => {
+                    const v = selfName();
+                    if (v) {
+                        for (const key in v) {
+                            if (v.hasOwnProperty(key)) {
+                                const element = v[key];
+                                result[key] = element;
+                            }
+                        }
+                    }
+                });
+            } else {
+                result[selfName] = this;
+            }
         }
         return result;
     }

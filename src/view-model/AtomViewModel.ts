@@ -47,6 +47,27 @@ export class AtomViewModel {
         return e;
     }
 
+    private mChildren: AtomViewModel[];
+    private mParent: AtomViewModel;
+    public get parent(): AtomViewModel {
+        return this.mParent;
+    }
+    public set parent(v: AtomViewModel) {
+        if (this.mParent && this.mParent.mChildren) {
+            this.mParent.mChildren.remove(this);
+        }
+        this.mParent = v;
+        if (v) {
+            const c = v.mChildren || (v.mChildren = []);
+            c.add(this);
+            this.registerDisposable({
+                dispose: () => {
+                    c.remove(this);
+                }
+            });
+        }
+    }
+
     public get isValid(): boolean {
         let valid = true;
         for (const v of this.validations) {
@@ -56,6 +77,13 @@ export class AtomViewModel {
             }
             if (this[v.name]) {
                 valid = false;
+            }
+        }
+        if (this.mChildren) {
+            for (const child of this.mChildren) {
+                if (!child.isValid) {
+                    valid = false;
+                }
             }
         }
         AtomBinder.refreshValue(this, "errors");
@@ -79,8 +107,26 @@ export class AtomViewModel {
         return this.app.resolve(c, create);
     }
 
-    public bind(propertyName: string, target: any, path: string[][], vc: IValueConverter ): IDisposable {
-        const pb = new PropertyBinding(this, null, propertyName, path, true, vc, target);
+    /**
+     * Binds source property to target property with optional two ways
+     * @param target target whose property will be set
+     * @param propertyName name of target property
+     * @param source source to read property from
+     * @param path property path of source
+     * @param twoWays optional, two ways IValueConverter
+     */
+    public bind(
+        target: any,
+        propertyName: string,
+        source: any,
+        path: string[][],
+        twoWays?: IValueConverter | ((v: any) => any) ): IDisposable {
+        const pb = new PropertyBinding(
+            target,
+            null,
+            propertyName,
+            path,
+            (twoWays && typeof twoWays !== "function") ? true : false , twoWays, source);
         return this.registerDisposable(pb);
     }
 
@@ -95,7 +141,7 @@ export class AtomViewModel {
     }
 
     /**
-     * Put your asynchronous initializations here
+     * Put your asynchronous initialization here
      *
      * @returns {Promise<any>}
      * @memberof AtomViewModel
