@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { INameValuePairs, INotifyPropertyChanging } from "../../core/types";
 import { AtomStyle } from "./AtomStyle";
 
@@ -10,7 +11,7 @@ export class AtomStyleSheet extends AtomStyle
 
     [key: string]: any;
 
-    constructor(prefix: string) {
+    constructor(public readonly app: App, prefix: string) {
         super(null, null, prefix);
         this.styleSheet = this;
         this.pushUpdate();
@@ -40,12 +41,18 @@ export class AtomStyleSheet extends AtomStyle
 
     public attach(): void {
         this.isAttaching = true;
-        const ss = document.createElement("style");
-
         const pairs = this.toStyle({});
 
-        ss.textContent = this.flatten(pairs);
+        const textContent = this.flatten(pairs);
+        if (this.styleElement) {
+            if (this.styleElement.textContent === textContent) {
+                this.isAttaching = false;
+                return;
+            }
+        }
+        const ss = document.createElement("style");
 
+        ss.textContent = textContent;
         if (this.styleElement) {
             this.styleElement.remove();
         }

@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { ColorItem } from "../../core/Colors";
 import { StringHelper } from "../../core/StringHelper";
 import { IClassOf, INameValuePairs } from "../../core/types";
@@ -70,13 +71,16 @@ export class AtomStyle
         const self = this as any;
 
         for (const key in self) {
-            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme)$/.test(key)) {
+            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme|styleElement)$/.test(key)) {
                 continue;
             }
             if (/^\_/.test(key)) {
                 continue;
             }
             const element = self[key];
+            if (element instanceof AtomStyleSheet || element instanceof App) {
+                continue;
+            }
             if (typeof element === "function") {
                 continue;
             }
@@ -112,13 +116,16 @@ export class AtomStyle
         this.styleSheet.pushUpdate();
         const self = this as any;
         for (const key in self) {
-            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme)$/.test(key)) {
+            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme|styleElement)$/.test(key)) {
                 continue;
             }
             if (/^\_\$\_/.test(key)) {
                 continue;
             }
             const element = self[key];
+            if (element instanceof AtomStyleSheet || element instanceof App) {
+                continue;
+            }
             if (typeof element === "function") {
                 continue;
             }
@@ -150,7 +157,7 @@ export class AtomStyle
     }
 
     private createStyleText(name: string, pairs: INameValuePairs, styles: IStyleDeclaration): INameValuePairs {
-        const sslist: any[] = [];
+        const styleList: any[] = [];
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
                 const element = styles[key];
@@ -167,16 +174,16 @@ export class AtomStyle
                     }
                 } else {
                     if (element instanceof WebImage) {
-                        sslist.push(`${keyName}: url(${element})`);
+                        styleList.push(`${keyName}: url(${element})`);
                     } else {
-                        sslist.push(`${keyName}: ${element}`);
+                        styleList.push(`${keyName}: ${element}`);
                     }
                 }
             }
         }
         const cname = StringHelper.fromCamelToHyphen(name);
 
-        pairs[`${this.name}-${cname}`] = `{ ${sslist.join(";\r\n")} }`;
+        pairs[`${this.name}-${cname}`] = `{ ${styleList.join(";\r\n")} }`;
         styles.className = name;
         return pairs;
     }

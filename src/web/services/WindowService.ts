@@ -2,6 +2,7 @@ import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
+import { IScreen, IScreenType } from "../../core/IScreen";
 import { ArrayHelper, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
@@ -17,13 +18,6 @@ import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 import { cssNumberToString } from "../styles/StyleBuilder";
 
-export interface IScreen {
-    width?: number;
-    height?: number;
-    scrollLeft?: number;
-    scrollTop?: number;
-}
-
 @RegisterSingleton
 export class WindowService extends NavigationService {
 
@@ -32,7 +26,7 @@ export class WindowService extends NavigationService {
      */
     public static alertWindow = AtomAlertWindow;
 
-    public screen: IScreen = {};
+    public readonly screen: IScreen;
 
     private popups: AtomControl[] = [];
 
@@ -61,7 +55,7 @@ export class WindowService extends NavigationService {
     /**
      * Gets current location of browser, this does not return
      * actual location but it returns values of browser location.
-     * This is done to provide mocking behaviour for unit testing.
+     * This is done to provide mocking behavior for unit testing.
      *
      * @readonly
      * @type {AtomLocation}
@@ -77,6 +71,19 @@ export class WindowService extends NavigationService {
 
     constructor(@Inject private app: App, @Inject private jsonService: JsonService) {
         super();
+
+        this.screen = app.screen;
+
+        let st: IScreenType = "desktop";
+
+        if (/mobile|android|ios/i.test(window.navigator.userAgent)) {
+            st = "mobile";
+            if (/tablet/i.test(window.navigator.userAgent)) {
+                st = "tablet";
+            }
+        }
+
+        this.screen.screenType = st;
 
         if (window) {
             window.addEventListener("click", (e) => {
@@ -309,9 +316,10 @@ export class WindowService extends NavigationService {
     }
 
     private refreshScreen() {
-        this.screen.height = window.innerHeight || document.body.clientHeight;
-        this.screen.width = window.innerWidth || document.body.clientWidth;
+        const height = this.screen.height = window.innerHeight || document.body.clientHeight;
+        const width = this.screen.width = window.innerWidth || document.body.clientWidth;
         this.screen.scrollLeft = window.scrollX || document.body.scrollLeft || 0;
         this.screen.scrollTop = window.scrollY || document.body.scrollTop || 0;
+        this.screen.orientation = width > height ? "landscape" : "portrait";
     }
 }

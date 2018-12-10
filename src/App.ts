@@ -1,6 +1,7 @@
 import { AtomBinder } from "./core/AtomBinder";
 import { AtomDispatcher } from "./core/AtomDispatcher";
 import { AtomUri } from "./core/AtomUri";
+import { IScreen } from "./core/IScreen";
 import { AtomDisposable, IDisposable } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
@@ -35,6 +36,8 @@ export class App extends ServiceProvider {
 
     public readonly dispatcher: AtomDispatcher;
 
+    public readonly screen: IScreen;
+
     private bag: any;
 
     private busyIndicators: IDisposable[] = [];
@@ -58,6 +61,7 @@ export class App extends ServiceProvider {
 
     constructor() {
         super(null);
+        this.screen = {};
         this.bag = {};
         this.put(App, this);
         this.dispatcher = new AtomDispatcher();

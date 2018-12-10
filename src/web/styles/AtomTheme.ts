@@ -2,11 +2,14 @@ import { AtomWindowStyle } from "./AtomWindowStyle";
 
 import { AtomPopupStyle } from "./AtomPopupStyle";
 
+import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import Color from "../../core/Color";
 import Colors, { ColorItem } from "../../core/Colors";
 import { IDisposable, INotifyPropertyChanging } from "../../core/types";
+import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
+import { NavigationService } from "../../services/NavigationService";
 import { AtomListBox } from "../controls/AtomListBox";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
@@ -47,8 +50,10 @@ export class AtomTheme extends AtomStyleSheet
 
     // public readonly listBox = this.createStyle(AtomListBox, AtomListBoxStyle, "listbox");
 
-    constructor() {
-        super("atom-theme");
+    constructor(
+        @Inject app: App,
+        @Inject private navigationService: NavigationService) {
+        super(app, "atom-theme");
     }
 
 }
