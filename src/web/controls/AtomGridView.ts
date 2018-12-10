@@ -2,6 +2,7 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IRect } from "../../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
+import { ChildEnumerator } from "../core/AtomUI";
 
 interface IOffsetSize {
     offset: number;
@@ -107,7 +108,14 @@ export class AtomGridView extends AtomControl {
 
         this.attempt ++;
 
-        this.removeAllChildren(this.element);
+        // this.removeAllChildren(this.element);
+
+        let child = this.element.firstElementChild;
+        while (child) {
+            const c = child;
+            child = child.nextElementSibling;
+            c.remove();
+        }
 
         const width =  this.element.offsetWidth ||
             this.element.clientWidth ||
