@@ -2,7 +2,6 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IRect } from "../../core/types";
 import { AtomControl, IAtomControlElement } from "./AtomControl";
-import { ChildEnumerator } from "../core/AtomUI";
 
 interface IOffsetSize {
     offset: number;

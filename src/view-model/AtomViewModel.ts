@@ -151,7 +151,7 @@ export class AtomViewModel {
     }
 
     /**
-     * dispose method will becalled when attached view will be disposed or
+     * dispose method will be called when attached view will be disposed or
      * when a new view model will be assigned to view, old view model will be disposed.
      *
      * @memberof AtomViewModel
@@ -441,7 +441,7 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
 
     descriptor.get = () => null;
 
-    // // repalce it with dummy descriptor...
+    // // replace it with dummy descriptor...
     // Object.defineProperty(target, key, descriptor);
 
     registerInit(target, (vm) => {
