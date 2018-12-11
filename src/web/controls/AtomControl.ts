@@ -247,6 +247,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             case "class":
                 element.className = value;
                 break;
+            case "autofocus":
+                this.app.callLater(() => {
+                    const ie = element as HTMLInputElement;
+                    if (ie) { ie.focus(); }
+                });
             default:
                 element[name] = value;
         }
