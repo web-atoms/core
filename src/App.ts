@@ -2,7 +2,7 @@ import { AtomBinder } from "./core/AtomBinder";
 import { AtomDispatcher } from "./core/AtomDispatcher";
 import { AtomUri } from "./core/AtomUri";
 import { IScreen } from "./core/IScreen";
-import { AtomDisposable, IDisposable } from "./core/types";
+import { IDisposable } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
 import { BusyIndicatorService } from "./services/BusyIndicatorService";
@@ -159,12 +159,14 @@ export class App extends ServiceProvider {
             this.bag[channel] = ary;
         }
         ary.list.push(action);
-        return new AtomDisposable(() => {
-            ary.list = ary.list.filter((a) => a !== action);
-            if (!ary.list.length) {
-                this.bag[channel] = null;
+        return {
+            dispose: () => {
+                ary.list = ary.list.filter((a) => a !== action);
+                if (!ary.list.length) {
+                    this.bag[channel] = null;
+                }
             }
-        });
+        };
     }
 
     public main(): void {

@@ -1,7 +1,7 @@
 import { AjaxOptions } from "../services/http/AjaxOptions";
 import { AtomControl } from "../web/controls/AtomControl";
 import { AtomUI, ChildEnumerator } from "../web/core/AtomUI";
-import { AtomDisposable, IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
+import { IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
 
@@ -63,15 +63,17 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         handler: EventListenerOrEventListenerObject,
         capture?: boolean): IDisposable {
             element.addEventListener(name, handler, capture);
-            return new AtomDisposable(() => {
-                element.removeEventListener(name, handler, capture);
-            });
+            return {
+                dispose: () => {
+                    element.removeEventListener(name, handler, capture);
+                }
+            };
         }
 
         public atomParent(element: HTMLElement, climbUp: boolean = true): AtomControl {
-            const eany: INameValuePairs = element as INameValuePairs;
-            if (eany.atomControl) {
-                return eany.atomControl;
+            const eAny: INameValuePairs = element as INameValuePairs;
+            if (eAny.atomControl) {
+                return eAny.atomControl;
             }
             if (!climbUp) {
                 return null;
@@ -83,8 +85,8 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
     }
 
     public elementParent(element: HTMLElement): HTMLElement {
-        const eany = element as any;
-        const lp = eany._logicalParent;
+        const eAny = element as any;
+        const lp = eAny._logicalParent;
         if (lp) {
             return lp;
         }
@@ -95,8 +97,8 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         if (!element) {
             return null;
         }
-        const eany = element as any;
-        if (eany._templateParent) {
+        const eAny = element as any;
+        if (eAny._templateParent) {
             return this.atomParent(element);
         }
         const parent = this.elementParent(element);
@@ -111,8 +113,8 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         const en = new ChildEnumerator(element);
         while (en.next()) {
             const iterator = en.current;
-            const eany = iterator as any;
-            const ac = eany ? eany.atomControl : undefined;
+            const eAny = iterator as any;
+            const ac = eAny ? eAny.atomControl : undefined;
 
             if (!action(iterator, ac)) {
                 continue;
@@ -122,9 +124,9 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
     }
 
     public dispose(element: HTMLElement): void {
-        const eany = element as any;
-        eany.atomControl = undefined;
-        delete eany.atomControl;
+        const eAny = element as any;
+        eAny.atomControl = undefined;
+        delete eAny.atomControl;
     }
 
     public appendChild(parent: HTMLElement, child: HTMLElement): void {
@@ -154,11 +156,13 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
             element.addEventListener(iterator, l , false);
         }
 
-        return new AtomDisposable(() => {
-            for (const iterator of events) {
-                element.removeEventListener(iterator, l, false);
+        return {
+            dispose: () => {
+                for (const iterator of events) {
+                    element.removeEventListener(iterator, l, false);
+                }
             }
-        });
+        };
     }
 
     public attachControl(element: HTMLElement, control: AtomControl): void {

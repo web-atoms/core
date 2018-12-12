@@ -1,4 +1,4 @@
-import { AtomDisposable, IDisposable } from "../../core/types";
+import { IDisposable } from "../../core/types";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { ModuleFiles } from "../../ModuleFiles";
 import { BusyIndicatorService } from "../../services/BusyIndicatorService";
@@ -31,9 +31,11 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
         div.appendChild(span);
 
         document.body.appendChild(div);
-        return new AtomDisposable(() => {
-            // dispose...
-            div.remove();
-        });
+        return {
+            dispose: () => {
+                // dispose...
+                div.remove();
+            }
+        };
     }
 }

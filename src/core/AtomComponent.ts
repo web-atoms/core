@@ -5,7 +5,7 @@ import { AtomDispatcher } from "../core/AtomDispatcher";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
-import { ArrayHelper, AtomDisposable, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
+import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { Inject } from "../di/Inject";
 
@@ -165,10 +165,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc, source);
         this.bindings.push(binding);
 
-        return new AtomDisposable(() => {
-            binding.dispose();
-            ArrayHelper.remove(this.bindings, (x) => x === binding);
-        });
+        return {
+            dispose: () => {
+                binding.dispose();
+                ArrayHelper.remove(this.bindings, (x) => x === binding);
+            }
+        };
     }
 
     /**
@@ -206,10 +208,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         be.disposable = AtomBridge.instance.addEventHandler(element, name, method, false);
         this.eventHandlers.push(be);
 
-        return new AtomDisposable(() => {
-            be.disposable.dispose();
-            ArrayHelper.remove(this.eventHandlers, (e) => e.disposable === be.disposable);
-        });
+        return {
+            dispose: () => {
+                be.disposable.dispose();
+                ArrayHelper.remove(this.eventHandlers, (e) => e.disposable === be.disposable);
+            }
+        };
     }
 
     public unbindEvent(
@@ -449,10 +453,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     protected registerDisposable(d: IDisposable): IDisposable {
         this.disposables.add(d);
-        return new AtomDisposable(() => {
-            ArrayHelper.remove(this.disposables, (f) => f === d);
-            d.dispose();
-        });
+        return {
+            dispose: () => {
+                ArrayHelper.remove(this.disposables, (f) => f === d);
+                d.dispose();
+            }
+        };
     }
 
     // tslint:disable-next-line:no-empty

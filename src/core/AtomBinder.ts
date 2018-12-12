@@ -1,4 +1,4 @@
-import { ArrayHelper, AtomDisposable, IDisposable  } from "./types";
+import { ArrayHelper, IDisposable  } from "./types";
 
 export type WatchFunction = (target: any, key: string, index?: number, item?: any) => void;
 export interface IWatchFunctionCollection {
@@ -198,9 +198,10 @@ export class AtomBinder {
         }
         const handlers = AtomBinder.get_WatchHandler(target as IWatchableObject, "_items");
         handlers.push(handler);
-        return new AtomDisposable(() => {
-            AtomBinder.remove_CollectionChanged(target, handler);
-        });
+        return { dispose: () => {
+                AtomBinder.remove_CollectionChanged(target, handler);
+            }
+        };
     }
 
     public static remove_CollectionChanged(t: any[], handler: WatchFunction) {
@@ -225,9 +226,11 @@ export class AtomBinder {
 
     public static watch(item: any, property: string, f: WatchFunction): IDisposable {
         AtomBinder.add_WatchHandler(item, property, f);
-        return new AtomDisposable( () => {
-            AtomBinder.remove_WatchHandler(item, property, f);
-        });
+        return {
+            dispose: () => {
+                AtomBinder.remove_WatchHandler(item, property, f);
+            }
+        };
     }
 
     public static clear(a: any[]): any {
