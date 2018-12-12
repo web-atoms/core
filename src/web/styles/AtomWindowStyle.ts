@@ -76,9 +76,10 @@ export class AtomWindowStyle extends AtomStyle {
             width: "0",
             height: "0",
             padding: "9px",
-            border: "none",
             backgroundColor: "#00000000",
             backgroundImage: CloseButtonHoverDataUrl,
+            backgroundRepeat: "no-repeat",
+            border: "none !important"
             // As suggested by srikanth sir
             // subclasses: {
             //     ":hover": {
