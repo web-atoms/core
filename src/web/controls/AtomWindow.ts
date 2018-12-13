@@ -203,8 +203,8 @@ export class AtomWindow extends AtomControl {
 
         const x = (parent.offsetWidth - e.offsetWidth) / 2;
         const y = (parent.offsetHeight - e.offsetHeight) / 2;
-        this.width = `${x}px`;
-        this.height = `${y}px`;
+        this.x = x;
+        this.y = y;
     }
 
     private setupDragging(tp: HTMLElement): void {
