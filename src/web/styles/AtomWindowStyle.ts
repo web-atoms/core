@@ -26,6 +26,8 @@ export class AtomWindowStyle extends AtomStyle {
             right: 0,
             top: 0,
             bottom: 0,
+            minHeight: "100px",
+            minWidth: "300px",
             maxWidth: "100%",
             maxHeight: "100%",
             margin: "auto",
@@ -76,10 +78,9 @@ export class AtomWindowStyle extends AtomStyle {
             width: "0",
             height: "0",
             padding: "9px",
+            border: "none",
             backgroundColor: "#00000000",
             backgroundImage: CloseButtonHoverDataUrl,
-            backgroundRepeat: "no-repeat",
-            border: "none !important"
             // As suggested by srikanth sir
             // subclasses: {
             //     ":hover": {

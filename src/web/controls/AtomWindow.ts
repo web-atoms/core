@@ -20,8 +20,8 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         // remember, if you do not wish to use dynamic themes
         // then use one time binding
         this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
-        this.bind(this.element, "styleWidth", [["templateParent", "width"]]);
-        this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
+        this.bind(this.element, "styleWidth", [["templateParent", "width"]], false, (v) => v || undefined);
+        this.bind(this.element, "styleHeight", [["templateParent", "height"]], false, (v) => v || undefined);
         this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v + "px" : undefined);
         this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v + "px" : undefined);
         this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
@@ -89,10 +89,10 @@ export class AtomWindow extends AtomControl {
     public title: string = "";
 
     @BindableProperty
-    public width: string = "300px";
+    public width: string = "";
 
     @BindableProperty
-    public height: string = "200px";
+    public height: string = "";
 
     @BindableProperty
     public x: number = -1;
