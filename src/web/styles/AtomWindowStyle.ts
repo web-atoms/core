@@ -22,10 +22,6 @@ export class AtomWindowStyle extends AtomStyle {
     public get frame(): IStyleDeclaration {
         return {
             position: "absolute",
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
             minHeight: "100px",
             minWidth: "300px",
             margin: "auto",
