@@ -178,6 +178,33 @@ export class AtomWindow extends AtomControl {
             frame.commandPresenter.appendChild(command.element);
         }
         this.append(frame);
+
+        // lets center frame...
+        setTimeout(() => {
+            this.centerFrame(frame.element);
+        }, 100);
+    }
+
+    private centerFrame(e: HTMLElement): void {
+        const parent = this.element.parentElement;
+        if (parent.offsetWidth <= 0 || parent.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerFrame(e);
+            }, 100);
+            return;
+        }
+
+        if (e.offsetWidth <= 0 || e.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerFrame(e);
+            }, 100);
+            return;
+        }
+
+        const x = (parent.offsetWidth - e.offsetWidth) / 2;
+        const y = (parent.offsetHeight - e.offsetHeight) / 2;
+        this.width = `${x}px`;
+        this.height = `${y}px`;
     }
 
     private setupDragging(tp: HTMLElement): void {
