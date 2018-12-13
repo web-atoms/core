@@ -28,8 +28,6 @@ export class AtomWindowStyle extends AtomStyle {
             bottom: 0,
             minHeight: "100px",
             minWidth: "300px",
-            maxWidth: "100%",
-            maxHeight: "100%",
             margin: "auto",
             border: "solid 1px #808080",
             fontFamily: "Arial",
