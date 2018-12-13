@@ -35,11 +35,11 @@ export class AtomWindowStyle extends AtomStyle {
 
     public get titlePresenter(): IStyleDeclaration {
         return {
-            position: "absolute",
+            position: "relative",
             left: 0,
             right: 0,
             top: 0,
-            height: "50px"
+            height: "37px"
         };
     }
 
@@ -86,16 +86,13 @@ export class AtomWindowStyle extends AtomStyle {
 
     public get content(): IStyleDeclaration {
         return {
-            position: "relative",
             padding: "10px",
-            background: "white",
-            marginTop: "30px"
+            background: "white"
         };
     }
 
     public get commandBar(): IStyleDeclaration {
         return {
-            position: "absolute",
             left: 0,
             right: 0,
             bottom: 0,
