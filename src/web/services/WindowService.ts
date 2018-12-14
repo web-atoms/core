@@ -205,7 +205,7 @@ export class WindowService extends NavigationService {
                     }
                     if (typeof element !== "string" &&
                         (typeof element === "object" || Array.isArray(element))) {
-                        url.query["json:" + key] = JSON.stringify(key);
+                        url.query["json:" + key] = JSON.stringify(element);
                     } else {
                         url.query[key] = element;
                     }
