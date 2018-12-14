@@ -196,7 +196,11 @@ export class WindowService extends NavigationService {
             for (const key in p) {
                 if (p.hasOwnProperty(key)) {
                     const element = p[key];
-                    url.query[key] = element;
+                    if (typeof element === "object" || Array.isArray(element)) {
+                        url.query["json:" + key] = JSON.stringify(key);
+                    } else {
+                        url.query[key] = element;
+                    }
                 }
             }
         }

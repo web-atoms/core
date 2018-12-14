@@ -29,7 +29,12 @@ export class AtomLoader {
                         if (typeof element === "object") {
                             vm[key] = jsonService.parse(jsonService.stringify(element));
                         } else {
-                            vm[key] = element;
+                            if (/^json\:/.test(key)) {
+                                const k = key.split(":")[1];
+                                vm[k] = JSON.parse(element as string);
+                            } else {
+                                vm[key] = element;
+                            }
                         }
                     }
                 }

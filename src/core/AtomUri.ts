@@ -69,7 +69,7 @@ export class AtomUri {
                 if (element === undefined || element === null) {
                     continue;
                 }
-                q.push(`${key}=${encodeURIComponent(element.toString())}`);
+                q.push(`${encodeURIComponent(key)}=${encodeURIComponent(element.toString())}`);
             }
         }
         for (const key in this.hash) {
@@ -78,7 +78,7 @@ export class AtomUri {
                 if (element === undefined || element === null) {
                     continue;
                 }
-                h.push(`${key}=${encodeURIComponent(element.toString())}`);
+                h.push(`${encodeURIComponent(key)}=${encodeURIComponent(element.toString())}`);
             }
         }
         const qstr = q.length ? "?" + q.join("&")  : "";
