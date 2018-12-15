@@ -31,7 +31,7 @@ export class AtomLoader {
                         } else {
                             if (/^json\:/.test(key)) {
                                 const k = key.split(":")[1];
-                                vm[k] = JSON.parse(element as string);
+                                vm[k] = jsonService.parse(element.toString());
                             } else {
                                 vm[key] = element;
                             }
