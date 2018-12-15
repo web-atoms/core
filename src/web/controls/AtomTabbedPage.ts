@@ -246,12 +246,6 @@ class AtomTabViewModel extends AtomViewModel {
         page.tag = message;
         const vm = page.viewModel;
         if (vm) {
-            for (const key in url.query) {
-                if (url.query.hasOwnProperty(key)) {
-                    const element = url.query[key];
-                    vm[key] = element;
-                }
-            }
             vm.windowName = page.element.id;
         }
 
