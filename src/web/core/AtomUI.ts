@@ -23,22 +23,7 @@ export class ChildEnumerator {
 }
 
 export class AtomUI {
-// no longer needed - Akash Kava
-//    public static getAtomType(arg0: any): any {
-//         throw new Error("Method not implemented.");
-//     }
 
-    // moved to AtomBridge
-    // public atomParent(element: HTMLElement): AtomControl {
-    //     const eany: INameValuePairs = element as INameValuePairs;
-    //     if (eany.atomControl) {
-    //         return eany.atomControl;
-    //     }
-    //     if (!element.parentNode) {
-    //         return null;
-    //     }
-    //     return this.atomParent(eany._logicalParent || element.parentNode);
-    // }
     public static addClass(e: HTMLElement, names: string): void {
         throw new Error("Method not implemented.");
     }
@@ -67,16 +52,6 @@ export class AtomUI {
         throw new Error("Method not implemented.");
     }
 
-    // public static forEachChild(e: HTMLElement, a: (c: HTMLElement) => void): void {
-    //     let en: Element = e.firstElementChild;
-    //     while (en) {
-    //         if (en as HTMLElement) {
-    //             a(e);
-    //         }
-    //         en = en.nextElementSibling;
-    //     }
-    // }
-
     public static screenOffset(e: HTMLElement): IRect {
         const r = {
             x: e.offsetLeft,
@@ -93,16 +68,6 @@ export class AtomUI {
 
         return r;
     }
-
-    // public static *childEnumerator(e: HTMLElement): Iterable<HTMLElement> {
-    //     let en: Element = e.firstElementChild;
-    //     while (en) {
-    //         if (en as HTMLElement) {
-    //             yield en as HTMLElement;
-    //         }
-    //         en = en.nextElementSibling;
-    //     }
-    // }
 
     public static parseUrl(url: string): INameValues {
         const r: INameValues = {};
@@ -142,14 +107,10 @@ export class AtomUI {
             return val;
         }
 
-        if (/true/.test(val)) {
-            // val = true;
-            // return val;
+        if (val === "true") {
             return true;
         }
-        if (/false/.test(val)) {
-            // val = false;
-            // return val;
+        if (val === "false") {
             return false;
         }
         return val;
