@@ -41,14 +41,16 @@ export class AtomTabbedPage extends AtomGridView
             if (!pe || pe.parentElement !== this.presenter) {
                 const p = document.createElement("div");
                 const s = p.style;
+                p.className = "page-host";
                 s.position = "absolute";
                 s.left = s.right = s.top = s.bottom = "0";
                 p.appendChild(value.element);
                 this.presenter.appendChild(p);
+                const ve = value;
 
                 value.bind(p,
                     "styleDisplay",
-                    [["this", "selectedPage"]], false, (v) => v === value ? "" : "none", this);
+                    [["this", "selectedPage"]], false, (v) => v === ve ? "" : "none", this);
             }
         }
 
