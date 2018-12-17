@@ -18,6 +18,8 @@ import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 import { cssNumberToString } from "../styles/StyleBuilder";
 
+export type HostForelementFunc = ((e: HTMLElement) => HTMLElement);
+
 @RegisterSingleton
 export class WindowService extends NavigationService {
 
@@ -29,6 +31,8 @@ export class WindowService extends NavigationService {
     public readonly screen: IScreen;
 
     private popups: AtomControl[] = [];
+
+    private hostForElementFunc: HostForelementFunc[] = [];
 
     private lastPopupID: number = 0;
 
@@ -105,6 +109,15 @@ export class WindowService extends NavigationService {
             }, 1000);
 
         }
+    }
+
+    public registerHostForWindow(f: HostForelementFunc): IDisposable {
+        this.hostForElementFunc.push(f);
+        return {
+            dispose: () => {
+                this.hostForElementFunc.remove(f);
+            }
+        };
     }
 
     /**
@@ -188,6 +201,20 @@ export class WindowService extends NavigationService {
         }
     }
 
+    private getHostForElement(): HTMLElement {
+        const ce = this.currentTarget;
+        if (!ce) {
+            return null;
+        }
+        for (const iterator of this.hostForElementFunc) {
+            const e = iterator(ce);
+            if (e) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     private async openPopupAsync<T>(windowId: string, p: INameValuePairs, isPopup: boolean): Promise<T> {
 
         const  url = new AtomUri(windowId);
@@ -257,20 +284,26 @@ export class WindowService extends NavigationService {
                 this.popups.push(popup);
                 document.body.appendChild(e);
             } else {
-                const host = document.createElement("div");
-                document.body.appendChild(host);
-                host.style.position = "absolute";
-                host.appendChild(e);
-                disposables.push({
-                    dispose() {
-                        host.remove();
-                    }
-                });
-                this.refreshScreen();
-                popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
-                popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
-                popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
-                popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
+
+                const eHost = this.getHostForElement();
+                if (eHost) {
+                    eHost.appendChild(e);
+                } else {
+                    const host = document.createElement("div");
+                    document.body.appendChild(host);
+                    host.style.position = "absolute";
+                    host.appendChild(e);
+                    disposables.push({
+                        dispose() {
+                            host.remove();
+                        }
+                    });
+                    this.refreshScreen();
+                    popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
+                    popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
+                    popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
+                    popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
+                }
             }
 
             const closeFunction = () => {

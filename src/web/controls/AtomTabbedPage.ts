@@ -7,9 +7,11 @@ import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
 import { Inject } from "../../di/Inject";
+import { NavigationService } from "../../services/NavigationService";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
+import { WindowService } from "../services/WindowService";
 import { AtomTabbedPageStyle } from "../styles/AtomTabbedPageStyle";
 import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
@@ -34,8 +36,13 @@ export class AtomTabbedPage extends AtomGridView
     public set selectedPage(value: AtomPage) {
         this.mSelectedPage = value;
 
-        if (value && value.element && value.element.parentElement !== this.presenter) {
-            this.presenter.appendChild(value.element);
+        if (value && value.element && value.element.parentElement.parentElement !== this.presenter) {
+            const p = document.createElement("div");
+            const s = p.style;
+            s.position = "absolute";
+            s.left = s.right = s.top = s.bottom = "0";
+            p.appendChild(value.element);
+            this.presenter.appendChild(p);
         }
 
         this.invalidate();
@@ -72,6 +79,21 @@ export class AtomTabbedPage extends AtomGridView
 
         this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
 
+        const ws = this.app.resolve(NavigationService) as WindowService;
+
+        this.registerDisposable(ws.registerHostForWindow((e) => this.getParentHost(e)));
+
+    }
+
+    private getParentHost(e: HTMLElement): HTMLElement {
+        const pe = e.parentElement;
+        if (pe === this.presenter) {
+            return e;
+        }
+        if (!pe) {
+            return null;
+        }
+        return this.getParentHost(pe);
     }
 }
 
