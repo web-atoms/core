@@ -89,7 +89,7 @@ export class AtomTabbedPage extends AtomGridView
     }
 
     private getParentHost(e: HTMLElement): HTMLElement {
-        const pe = e.parentElement;
+        const pe = e._logicalParent || e.parentElement;
         if (pe === this.presenter) {
             return e;
         }

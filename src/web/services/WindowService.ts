@@ -267,9 +267,9 @@ export class WindowService extends NavigationService {
 
             const disposables: IDisposable[] = [popup];
 
+            e._logicalParent = this.currentTarget;
+
             if (isPopup) {
-                (popup.element as IAtomControlElement)._logicalParent
-                    = this.currentTarget as IAtomControlElement;
 
                 const sr = AtomUI.screenOffset(this.currentTarget);
 
@@ -280,7 +280,6 @@ export class WindowService extends NavigationService {
                 e.style.left = x + "px";
                 e.style.top = (y + h) + "px";
                 e.classList.add(theme.host.className);
-                // popup.element.classList.add("close-popup");
                 this.popups.push(popup);
                 document.body.appendChild(e);
             } else {

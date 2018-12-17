@@ -18,6 +18,14 @@ export interface IAtomControlElement extends HTMLElement {
     _templateParent: AtomControl;
 }
 
+declare global {
+    // tslint:disable-next-line:interface-name
+    export interface HTMLElement {
+        atomControl: AtomControl;
+        _logicalParent: HTMLElement;
+    }
+}
+
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
 
 /**
