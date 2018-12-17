@@ -254,9 +254,9 @@ export class WindowService extends NavigationService {
             isPopup = false;
         }
 
-        if (isPopup) {
-            await Atom.delay(10);
-        }
+        // if (isPopup) {
+        await Atom.delay(10);
+        // }
 
         return await new Promise<T>((resolve, reject) => {
 
