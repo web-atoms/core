@@ -45,6 +45,10 @@ export class AtomTabbedPage extends AtomGridView
                 s.left = s.right = s.top = s.bottom = "0";
                 p.appendChild(value.element);
                 this.presenter.appendChild(p);
+
+                value.bind(p,
+                    "styleDisplay",
+                    [["this", "selectedPage"]], false, (v) => v === value ? "" : "none", this);
             }
         }
 
