@@ -305,6 +305,8 @@ export class WindowService extends NavigationService {
                 }
             }
 
+            this.currentTarget = e;
+
             const closeFunction = () => {
                 for (const iterator of disposables) {
                     iterator.dispose();
