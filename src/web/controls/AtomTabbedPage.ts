@@ -1,4 +1,5 @@
 import { App } from "../../App";
+import { AtomBinder } from "../../core/AtomBinder";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { AtomList } from "../../core/AtomList";
 import { AtomLoader } from "../../core/AtomLoader";
@@ -55,6 +56,8 @@ export class AtomTabbedPage extends AtomGridView
         }
 
         this.invalidate();
+
+        AtomBinder.refreshValue(this, "selectedPage");
     }
 
     protected preCreate(): void {

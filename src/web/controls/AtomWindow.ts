@@ -114,6 +114,8 @@ export class AtomWindow extends AtomControl {
     @BindableProperty
     public frameTemplate: IClassOf<AtomWindowFrameTemplate> = AtomWindowFrameTemplate;
 
+    private isReady: boolean = false;
+
     public onPropertyChanged(name: string): void {
         switch (name) {
             case "windowTemplate":
@@ -139,6 +141,10 @@ export class AtomWindow extends AtomControl {
 
     public onUpdateUI(): void {
         if (!(this.windowTemplate && this.frameTemplate)) {
+            return;
+        }
+
+        if (this.isReady) {
             return;
         }
 
@@ -183,6 +189,7 @@ export class AtomWindow extends AtomControl {
         setTimeout(() => {
             this.centerFrame(frame.element);
         }, 100);
+        this.isReady = true;
     }
 
     private centerFrame(e: HTMLElement): void {
