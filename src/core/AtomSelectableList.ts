@@ -114,12 +114,12 @@ export default class AtomSelectableList<T> {
     }
 
     public find(item: T | ((i: T) => boolean)): ISelectableItem<T> {
-        let itemf = (i: T) => (item as any)(i);
+        let itemF = (i: T) => (item as any)(i);
         if (typeof item !== "function") {
             const e = item;
-            itemf = (i: T) => i === e;
+            itemF = (i: T) => i === e;
         }
-        return this.items.find((i) => itemf(i.item));
+        return this.items.find((i) => itemF(i.item));
     }
 
     public select(item: T | ISelectableItem<T>): void {
