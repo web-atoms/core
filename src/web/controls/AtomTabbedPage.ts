@@ -36,13 +36,16 @@ export class AtomTabbedPage extends AtomGridView
     public set selectedPage(value: AtomPage) {
         this.mSelectedPage = value;
 
-        if (value && value.element && value.element.parentElement.parentElement !== this.presenter) {
-            const p = document.createElement("div");
-            const s = p.style;
-            s.position = "absolute";
-            s.left = s.right = s.top = s.bottom = "0";
-            p.appendChild(value.element);
-            this.presenter.appendChild(p);
+        if (value && value.element) {
+            const pe = value.element.parentElement;
+            if (!pe || pe.parentElement !== this.presenter) {
+                const p = document.createElement("div");
+                const s = p.style;
+                s.position = "absolute";
+                s.left = s.right = s.top = s.bottom = "0";
+                p.appendChild(value.element);
+                this.presenter.appendChild(p);
+            }
         }
 
         this.invalidate();
@@ -304,6 +307,11 @@ class AtomTabViewModel extends AtomViewModel {
                 return;
             }
             this.pages.remove(page);
+            const pe = page.element.parentElement;
+            page.dispose();
+            if (pe) {
+                pe.remove();
+            }
             if (this.selectedPage === page) {
                 this.selectedPage = this.pages[index - 1];
             }
