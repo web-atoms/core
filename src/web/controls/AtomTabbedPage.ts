@@ -124,7 +124,10 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
                     ["this", "controlStyle", "selectedTabItem"]
                 ],
                 false,
-                (data, selectedPage, tabItem, selectedTabItem) => data === selectedPage ? selectedTabItem : tabItem,
+                (data, selectedPage, tabItem, selectedTabItem) => ({
+                    [tabItem]: true,
+                    [selectedTabItem]: data === selectedPage
+                }),
                 __creator);
 
             const divTitle = document.createElement("div");
