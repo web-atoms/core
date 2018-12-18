@@ -195,22 +195,32 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
             // this is style class...
             if (name === "class") {
-                const last = (element as any)._lastClass;
-                if (last) {
-                    element.classList.remove(last);
-                }
-
-                if (!value) {
-                    return;
-                }
 
                 const s = value as IStyleDeclaration;
+                if (typeof s === "object") {
+                    if (!s.className) {
+                        for (const key in s) {
+                            if (s.hasOwnProperty(key)) {
+                                const sv = s[key];
+                                if (sv) {
+                                    if (!element.classList.contains(key)) {
+                                        element.classList.add(key);
+                                    }
+                                } else {
+                                    if (element.classList.contains(key)) {
+                                        element.classList.remove(key);
+                                    }
+                                }
+                            }
+                        }
+                        return;
+                    }
+                }
+
                 if (s.className) {
                     element.classList.add(s.className);
-                    (element as any)._lastClass = s.className;
                 } else {
                     element.classList.add(value);
-                    (element as any)._lastClass = value;
                 }
             }
             if (value instanceof WebImage) {
