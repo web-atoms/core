@@ -125,8 +125,8 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
                 ],
                 false,
                 (data, selectedPage, tabItem, selectedTabItem) => ({
-                    [tabItem]: true,
-                    [selectedTabItem]: data === selectedPage
+                    [tabItem.className]: true,
+                    [selectedTabItem.className]: data === selectedPage
                 }),
                 __creator);
 
