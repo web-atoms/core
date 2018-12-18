@@ -24,15 +24,13 @@ export class AtomListBox extends AtomItemsControl {
             [
                 ["this", "version"],
                 ["data"],
-                ["this", "selectedItems"],
-                ["this", "controlStyle", "item", "className"],
-                ["this", "controlStyle", "selectedItem", "className"]
+                ["this", "selectedItems"]
             ],
             false,
-            (version, itemData, selectedItems: any[], item, selectedItem) => {
+            (version, itemData, selectedItems: any[]) => {
                 return {
-                    [item]: true,
-                    [selectedItem]: selectedItems.length
+                    [this.controlStyle.item.className]: true,
+                    [this.controlStyle.selectedItem.className]: selectedItems.find(data)
                 };
             },
             this);
