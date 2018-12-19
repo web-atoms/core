@@ -30,7 +30,10 @@ export class AtomTabbedPage extends AtomGridView
 
     public presenter: HTMLElement;
 
-    protected readonly windowService: WindowService = this.resolve(WindowService);
+    private mWindowService: WindowService;
+    protected get windowService(): WindowService {
+        return this.mWindowService || (this.mWindowService = this.resolve(WindowService));
+    }
 
     private mSelectedPage: AtomPage;
     public get selectedPage(): AtomPage {
