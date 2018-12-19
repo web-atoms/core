@@ -30,6 +30,8 @@ export class AtomTabbedPage extends AtomGridView
 
     public presenter: HTMLElement;
 
+    protected readonly windowService: WindowService = this.resolve(WindowService);
+
     private mSelectedPage: AtomPage;
     public get selectedPage(): AtomPage {
         return this.mSelectedPage;
@@ -56,6 +58,8 @@ export class AtomTabbedPage extends AtomGridView
         }
 
         this.invalidate();
+
+        this.windowService.currentTarget = value.element;
 
         AtomBinder.refreshValue(this, "selectedPage");
     }
@@ -91,9 +95,7 @@ export class AtomTabbedPage extends AtomGridView
 
         this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
 
-        const ws = this.app.resolve(NavigationService) as WindowService;
-
-        this.registerDisposable(ws.registerHostForWindow((e) => this.getParentHost(e)));
+        this.registerDisposable(this.windowService.registerHostForWindow((e) => this.getParentHost(e)));
 
     }
 

@@ -18,7 +18,7 @@ import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 import { cssNumberToString } from "../styles/StyleBuilder";
 
-export type HostForelementFunc = ((e: HTMLElement) => HTMLElement);
+export type HostForElementFunc = ((e: HTMLElement) => HTMLElement);
 
 @RegisterSingleton
 export class WindowService extends NavigationService {
@@ -30,13 +30,13 @@ export class WindowService extends NavigationService {
 
     public readonly screen: IScreen;
 
+    public currentTarget: HTMLElement = null;
+
     private popups: AtomControl[] = [];
 
-    private hostForElementFunc: HostForelementFunc[] = [];
+    private hostForElementFunc: HostForElementFunc[] = [];
 
     private lastPopupID: number = 0;
-
-    private currentTarget: HTMLElement = null;
 
     /**
      * Get current window title
@@ -111,7 +111,7 @@ export class WindowService extends NavigationService {
         }
     }
 
-    public registerHostForWindow(f: HostForelementFunc): IDisposable {
+    public registerHostForWindow(f: HostForElementFunc): IDisposable {
         this.hostForElementFunc.push(f);
         return {
             dispose: () => {
@@ -191,17 +191,7 @@ export class WindowService extends NavigationService {
         location.reload(true);
     }
 
-    protected registerForPopup(): void {
-
-        if (window) {
-            window.addEventListener("click", (e) => {
-                this.currentTarget = e.target as HTMLElement;
-                this.closePopup();
-            });
-        }
-    }
-
-    private getHostForElement(): HTMLElement {
+    public getHostForElement(): HTMLElement {
         const ce = this.currentTarget;
         if (!ce) {
             return null;
@@ -213,6 +203,16 @@ export class WindowService extends NavigationService {
             }
         }
         return null;
+    }
+
+    protected registerForPopup(): void {
+
+        if (window) {
+            window.addEventListener("click", (e) => {
+                this.currentTarget = e.target as HTMLElement;
+                this.closePopup();
+            });
+        }
     }
 
     private async openPopupAsync<T>(windowId: string, p: INameValuePairs, isPopup: boolean): Promise<T> {
