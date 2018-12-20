@@ -426,7 +426,7 @@ export class BaseService {
                             if (url.indexOf("?") === -1) {
                                 url += "?";
                             }
-                            if (! /\&|\?$/.test(url)) {
+                            if (! /(\&|\?)$/.test(url)) {
                                 url += "&";
                             }
                             url += `${encodeURIComponent(p.key)}=${encodeURIComponent(v)}`;
