@@ -403,6 +403,7 @@ export class BaseService {
             };
 
             if (bag) {
+
                 for (let i: number = 0; i < bag.length; i++) {
                     const p: ServiceParameter = bag[i];
                     const v: any = values[i];
@@ -415,12 +416,7 @@ export class BaseService {
                                 continue;
                             }
                             const vs: string = v + "";
-                            // escaping should be responsibility of the caller
-                            // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
                             const replacer = `{${p.key}}`;
-                            // while (url.indexOf(replacer) !== -1) {
-                            //     url = url.replace(`{${p.key}}`, vs);
-                            // }
                             url = url.split(replacer).join(vs);
                             break;
                         case "query":
@@ -430,7 +426,10 @@ export class BaseService {
                             if (url.indexOf("?") === -1) {
                                 url += "?";
                             }
-                            url += `&${p.key}=${encodeURIComponent(v)}`;
+                            if (! /\&|\?$/.test(url)) {
+                                url += "&";
+                            }
+                            url += `${encodeURIComponent(p.key)}=${encodeURIComponent(v)}`;
                             break;
                         case "body":
                             options.data = v;

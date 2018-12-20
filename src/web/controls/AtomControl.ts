@@ -252,7 +252,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     protected setElementClass(element: HTMLElement, value: any): void {
         const s = value as IStyleDeclaration;
-        if (typeof s === "object") {
+        if (s && typeof s === "object") {
             if (!s.className) {
                 for (const key in s) {
                     if (s.hasOwnProperty(key)) {
@@ -271,7 +271,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 return;
             }
         }
-        const sv1 = s.className || s.toString();
+        const sv1 = s ? (s.className || s.toString()) : "";
         element.className = sv1;
     }
 
