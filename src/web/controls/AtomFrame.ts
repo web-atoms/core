@@ -77,6 +77,9 @@ export class AtomFrame
                 (this.current.element as HTMLElement).style.display = "none";
                 this.stack.push(this.current);
             } else {
+                if (this.current === ctrl) {
+                    return;
+                }
                 const c1: AtomControl = this.current;
                 const e: HTMLElement = c1.element as HTMLElement;
                 c1.dispose();
