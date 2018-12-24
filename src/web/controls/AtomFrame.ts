@@ -61,7 +61,7 @@ export class AtomFrame
         }
         const ctrl: AtomControl = this.current;
         const vm: AtomWindowViewModel = ctrl.viewModel;
-        if (vm.closeWarning) {
+        if (vm && vm.closeWarning) {
             if ( await this.navigationService.confirm(vm.closeWarning, "Are you sure?")) {
                 return true;
             }
