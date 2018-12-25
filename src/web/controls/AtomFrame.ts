@@ -88,11 +88,13 @@ export class AtomFrame
         }
 
         const element: HTMLElement = ctrl.element as HTMLElement;
-        element.style.position = "absolute";
-        element.style.top =
-        element.style.bottom =
-        element.style.left =
-        element.style.right = "0";
+        const style = element.style;
+        style.position = "absolute";
+        style.top =
+        style.bottom =
+        style.left =
+        style.right = "0";
+        style.width = style.height = "100%";
 
         (this.element as HTMLElement).appendChild(element);
 
@@ -177,6 +179,8 @@ export class AtomFrame
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";
+        style.width = "100%";
+        style.height = "100%";
         this.backCommand = () => {
             this.onBackCommand();
         };
