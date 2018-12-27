@@ -476,7 +476,7 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
 export function BindableUrlParameter(name: string): any {
     return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
         registerInit(target, (vm) => {
-            vm.bindUrlParameter(name, name);
+            vm.bindUrlParameter(key, name);
         } );
         return BindableProperty(target, key);
     };
