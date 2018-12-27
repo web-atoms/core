@@ -221,8 +221,8 @@ export class AtomViewModel {
         const updater = new AtomOnce();
         disposables.add(this.setupWatch(
             [
-                ["app", "url", "hash", name],
-                ["app", "url", "query", name]
+                ["app", "url", "hash", urlParameter],
+                ["app", "url", "query", urlParameter]
             ], (hash, query) => {
             updater.run(() => {
                 const value = hash || query;
