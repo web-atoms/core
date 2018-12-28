@@ -186,7 +186,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (/^style/.test(name)) {
 
             if (name.length === 5) {
-                element[name] = value;
+                element.setAttribute("style", value);
                 return;
             }
 
