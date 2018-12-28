@@ -44,16 +44,21 @@ export class AtomTheme extends AtomStyleSheet
 
     public readonly window = this.createStyle(AtomWindow, AtomWindowStyle, "window");
 
-    // public readonly button = this.createStyle(AtomButtonStyle, "button");
-
     public readonly popup = this.createNamedStyle(AtomPopupStyle, "popup");
-
-    // public readonly listBox = this.createStyle(AtomListBox, AtomListBoxStyle, "listbox");
 
     constructor(
         @Inject app: App,
         @Inject private navigationService: NavigationService) {
         super(app, "atom-theme");
+
+        setTimeout(() => {
+            window.addEventListener("resize", () => {
+                this.pushUpdate();
+            });
+            document.body.addEventListener("resize", () => {
+                this.pushUpdate();
+            });
+        }, 1000);
     }
 
 }
