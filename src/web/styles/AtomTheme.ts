@@ -53,10 +53,14 @@ export class AtomTheme extends AtomStyleSheet
 
         setTimeout(() => {
             window.addEventListener("resize", () => {
-                this.pushUpdate();
+                setTimeout(() => {
+                    this.pushUpdate();
+                }, 10);
             });
             document.body.addEventListener("resize", () => {
-                this.pushUpdate();
+                setTimeout(() => {
+                    this.pushUpdate();
+                }, 10);
             });
         }, 1000);
     }

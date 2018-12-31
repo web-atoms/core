@@ -97,7 +97,9 @@ export class AtomStyle
             // if it is class
             const c = element as IStyleDeclaration;
             if (c && typeof c === "object") {
-                pairs = this.createStyleText(key, pairs, c);
+                if (!Object.getPrototypeOf(c)) {
+                    pairs = this.createStyleText(key, pairs, c);
+                }
                 continue;
             }
         }
