@@ -10,6 +10,7 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export type StyleItem = AtomStyle;
 
+const emptyPrototype = Object.getPrototypeOf({});
 export interface IAtomStyle {
     name: string;
 }
@@ -97,7 +98,7 @@ export class AtomStyle
             // if it is class
             const c = element as IStyleDeclaration;
             if (c && typeof c === "object") {
-                if (!Object.getPrototypeOf(c)) {
+                if (emptyPrototype === Object.getPrototypeOf(c)) {
                     pairs = this.createStyleText(key, pairs, c);
                 }
                 continue;
