@@ -9,6 +9,7 @@ interface ICustomer {
     firstName: string;
     lastName: string;
     name?: string;
+    time?: number;
 }
 
 export class AtomBinderTest extends AtomTest {
@@ -98,5 +99,39 @@ export class AtomBinderTest extends AtomTest {
         c.firstName = "Simmi";
         Assert.equals("Simmi Kava", c.name);
     }
+
+    // @Test
+    // public plainObjectWithGetter(): void {
+    //     const c: ICustomer = {
+    //         firstName: "Akash",
+    //         lastName: "Kava",
+    //         get time(): number {
+    //             return (new Date()).getTime();
+    //         }
+    //     };
+
+    //     const bindable = c as IWatchableObject;
+    //     let ba = bindable._$_bindable;
+
+    //     Assert.isTrue(!ba);
+
+    //     const w = new AtomWatcher(c, [["firstName", "lastName", "time"]],
+    //      true, false, (firstName, lastName, time) => {
+    //         c.name = `${firstName} ${lastName} ${time}`;
+    //     });
+
+    //     w.evaluate(true);
+
+    //     Assert.equals("Akash Kava", c.name);
+
+    //     ba =  bindable._$_bindable;
+    //     Assert.isTrue(ba ? true : false);
+
+    //     const i = ba.indexOf("firstName");
+    //     Assert.doesNotEqual(-1, i);
+
+    //     c.firstName = "Simmi";
+    //     Assert.equals("Simmi Kava", c.name);
+    // }
 
 }
