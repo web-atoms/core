@@ -47,9 +47,9 @@ if (typeof Map === "undefined") {
         // public values(): IterableIterator<V> {
         //     throw new Error("Method not implemented.");
         // }
-        public get [Symbol.toStringTag](): string {
-            return "[Map]";
-        }
+        // public get [Symbol.toStringTag](): string {
+        //     return "[Map]";
+        // }
 
         private getItem(key: K, create: boolean = false): IKVP<K, V> {
             for (const iterator of this.map) {
