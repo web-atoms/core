@@ -5,6 +5,9 @@
         "Descendents",
         "Kava",
         "Selectable",
-        "Simmi"
+        "Simmi",
+        "bodyformmodel",
+        "rawbody",
+        "xmlbody"
     ]
 }

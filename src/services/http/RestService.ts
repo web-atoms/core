@@ -11,10 +11,19 @@ import JsonError from "./JsonError";
 
 declare var UMD: any;
 
+export interface IHttpHeaders {
+    [key: string]: string;
+}
+
+export interface IApiResponse<T> {
+    headers?: IHttpHeaders;
+    value?: T;
+}
+
 export interface IMethodOptions {
 
     /**
-     * Cache value retrived from server in JavaScript runtime for
+     * Cache value retrieved from server in JavaScript runtime for
      * given seconds
      */
     jsCacheSeconds?: CacheSeconds<any>;
@@ -27,13 +36,19 @@ export interface IMethodOptions {
     /**
      * Other headers to pass along with the request
      */
-    headers?: {[key: string]: string};
+    headers?: IHttpHeaders;
 
     /**
      * JsonService options to use with this request, use this only if naming strategy
      * is different for this request
      */
     jsonOptions?: IJsonParserOptions;
+
+    /**
+     * If you want to inspect response headers, pass this true, but make sure you have
+     * return type as IApiResponse<T>
+     */
+    returnHeaders?: boolean;
 
 }
 
@@ -66,8 +81,8 @@ function methodBuilder(method: string) {
                 const jsCache = options ? options.jsCacheSeconds : 0;
                 if (jsCache) {
                     const cacheService: CacheService = this.app.resolve(CacheService);
-                    const jargs = args.map((arg) => arg instanceof CancelToken ? null : arg);
-                    const key = `${this.constructor.name}:${method}:${url}:${JSON.stringify(jargs)}`;
+                    const jArgs = args.map((arg) => arg instanceof CancelToken ? null : arg);
+                    const key = `${this.constructor.name}:${method}:${url}:${JSON.stringify(jArgs)}`;
                     return cacheService.getOrCreate(key, (e) => {
                         e.ttlSeconds = jsCache;
                         return this.invoke(url, method, a, args, options);
@@ -468,12 +483,24 @@ export class BaseService {
                 if (xhr.status >= 400) {
                     throw new JsonError("Json Server Error", response);
                 }
+                if (methodOptions && methodOptions.returnHeaders) {
+                    return {
+                        headers: this.parseHeaders(xhr.responseHeaders),
+                        value: response
+                    };
+                }
                 return response;
             }
             if (xhr.status >= 400) {
                 throw new Error(xhr.responseText || "Server Error");
             }
 
+            if (methodOptions && methodOptions.returnHeaders) {
+                return {
+                    headers: this.parseHeaders(xhr.responseHeaders),
+                    value: xhr.responseText
+                };
+            }
             return xhr.responseText;
         } finally {
             if (busyIndicator) {
@@ -481,6 +508,19 @@ export class BaseService {
             }
         }
 
+    }
+
+    protected parseHeaders(headers: string | any): IHttpHeaders {
+        if (typeof headers === "object") {
+            return headers;
+        }
+        return (headers || "")
+                    .split("\n")
+                    .reduce((pv: IHttpHeaders, c: string) => {
+                        const cv = c.split(":");
+                        pv[cv[0]] = (cv[1] || "").trim();
+                        return pv;
+                    }, {});
     }
 
     protected async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
@@ -526,6 +566,11 @@ export class BaseService {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     options.status = xhr.status;
                     options.responseText = xhr.responseText;
+                    // options.responseHeaders = (xhr.getAllResponseHeaders())
+                    //     .split("\n")
+                    //     .map((s) => s.trim().split(":"))
+                    //     .reduce((pv, cv) => pv[cv[0]] = cv[1], {});
+                    options.responseHeaders = xhr.getAllResponseHeaders();
                     const ct = xhr.getResponseHeader("content-type");
                     options.responseType = ct || xhr.responseType;
                     resolve(options);

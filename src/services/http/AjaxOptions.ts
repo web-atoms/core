@@ -10,6 +10,7 @@ export class AjaxOptions {
     public cache?: any;
     public attachments?: any[];
     public responseText?: string;
+    public responseHeaders?: string;
     public status?: number;
     public responseType?: string;
 }
