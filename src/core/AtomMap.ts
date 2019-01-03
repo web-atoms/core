@@ -1,7 +1,6 @@
-// tslint:disable-next-line:triple-equals
 if (typeof Map === "undefined") {
 
-    interface IKVP<K, V> {
+    interface IKeyValuePair<K, V> {
         key: K;
         value: V;
     }
@@ -12,7 +11,7 @@ if (typeof Map === "undefined") {
             return this.map.length;
         }
 
-        private map: Array<IKVP<K, V>> = [];
+        private map: Array<IKeyValuePair<K, V>> = [];
 
         public clear(): void {
             this.map.length = 0;
@@ -51,7 +50,7 @@ if (typeof Map === "undefined") {
         //     return "[Map]";
         // }
 
-        private getItem(key: K, create: boolean = false): IKVP<K, V> {
+        private getItem(key: K, create: boolean = false): IKeyValuePair<K, V> {
             for (const iterator of this.map) {
                 if (iterator.key === key) {
                     return iterator;
