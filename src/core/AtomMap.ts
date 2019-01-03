@@ -1,4 +1,5 @@
-if (Map === undefined) {
+// tslint:disable-next-line:triple-equals
+if (Map == undefined) {
 
     interface IKVP<K, V> {
         key: K;
