@@ -95,7 +95,7 @@ function methodBuilder(method: string) {
 }
 
 // tslint:disable-next-line
-function parameterBuilder(paramName: string) {
+function parameterBuilder(paramName: string, defaultValue?: any) {
 
     // tslint:disable-next-line
     return function (key: string) {
@@ -113,7 +113,7 @@ function parameterBuilder(paramName: string) {
                 a = [];
                 target.methods[propertyKey] = a;
             }
-            a[parameterIndex] = new ServiceParameter(paramName, key);
+            a[parameterIndex] = new ServiceParameter(paramName, key, defaultValue);
         };
 
     };
@@ -123,7 +123,7 @@ export type RestAttr =
     (target: BaseService, propertyKey: string | symbol, parameterIndex: number)
         => void;
 
-export type RestParamAttr = (key: string)
+export type RestParamAttr = (key: string, defaultValue?: any)
     => RestAttr;
 
 export type RestMethodAttr = (key: string, options?: IMethodOptions)
@@ -329,10 +329,10 @@ export function Cancel(target: BaseService, propertyKey: string | symbol, parame
 
 export class ServiceParameter {
 
-    public key: string;
-    public type: string;
-
-    constructor(type: string, key: string) {
+    constructor(
+        public readonly type: string,
+        public readonly key: string,
+        public readonly defaultValue?: any) {
         this.type = type.toLowerCase();
         this.key = key;
     }
@@ -421,9 +421,11 @@ export class BaseService {
 
                 for (let i: number = 0; i < bag.length; i++) {
                     const p: ServiceParameter = bag[i];
-                    const v: any = values[i];
+                    const vi = values[i];
+                    const v: any = vi === undefined ? p.defaultValue : vi;
                     if (v instanceof CancelToken) {
                         options.cancel = v;
+                        continue;
                     }
                     switch (p.type) {
                         case "path":
