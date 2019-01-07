@@ -3,39 +3,39 @@ import { AtomControl } from "./AtomControl";
 
 export class AtomTemplateControl extends AtomControl {
 
-    public template: IClassOf<AtomControl>;
+    public contentTemplate: IClassOf<AtomControl>;
 
-    private templateContent: AtomControl;
+    private content: AtomControl;
 
     public onPropertyChanged(name: string): void {
-        if (name === "template") {
+        if (name === "contentTemplate") {
             this.createContent();
         }
     }
 
     public onUpdateUI(): void {
         super.onUpdateUI();
-        if (this.templateContent) {
+        if (this.content) {
             return;
         }
-        if (this.template) {
+        if (this.contentTemplate) {
             this.createContent();
         }
     }
 
     protected createContent(): void {
-        const t = this.template;
+        const t = this.contentTemplate;
         if (!t) {
             return;
         }
 
-        const tc = this.templateContent;
+        const tc = this.content;
         if (tc) {
             tc.dispose();
-            this.templateContent = null;
+            this.content = null;
         }
 
-        const ntc = this.templateContent = new (t)(this.app);
+        const ntc = this.content = new (t)(this.app);
 
         this.append(tc);
     }
