@@ -9,6 +9,7 @@ import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
 import { NavigationService } from "../../services/NavigationService";
+import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import AtomAlertWindow from "../controls/AtomAlertWindow";
@@ -228,6 +229,13 @@ export class WindowService extends NavigationService {
                     }
                     if (element === null) {
                         url.query["json:" + key] = "null";
+                        continue;
+                    }
+                    if (key.startsWith("ref:")) {
+                        const r = element instanceof ObjectReference ?
+                            element :
+                            (this.app.resolve(ReferenceService) as ReferenceService).put(element);
+                        url.query[key] = r.key;
                         continue;
                     }
                     if (typeof element !== "string" &&

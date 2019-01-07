@@ -1,5 +1,6 @@
 import { App } from "../App";
 import { JsonService } from "../services/JsonService";
+import ReferenceService from "../services/ReferenceService";
 import { AtomUri } from "./AtomUri";
 import { DI, IClassOf } from "./types";
 
@@ -32,6 +33,9 @@ export class AtomLoader {
                             if (/^json\:/.test(key)) {
                                 const k = key.split(":")[1];
                                 vm[k] = jsonService.parse(element.toString());
+                            } else if (/^ref\:/.test(key)) {
+                                const rs = app.get(ReferenceService);
+                                vm[key.split(":", 2)[1]] = rs.get(element as string).consume();
                             } else {
                                 vm[key] = element;
                             }
