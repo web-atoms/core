@@ -13,6 +13,16 @@ export class AtomTemplateControl extends AtomControl {
         }
     }
 
+    public onUpdateUI(): void {
+        super.onUpdateUI();
+        if (this.templateContent) {
+            return;
+        }
+        if (this.template) {
+            this.createContent();
+        }
+    }
+
     protected createContent(): void {
         const t = this.template;
         if (!t) {
