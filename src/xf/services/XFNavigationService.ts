@@ -8,6 +8,7 @@ import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { JsonService } from "../../services/JsonService";
 import { NavigationService } from "../../services/NavigationService";
+import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomControl } from "../../web/controls/AtomControl";
 import { AtomUI } from "../../web/core/AtomUI";
 
@@ -84,7 +85,26 @@ export default class XFNavigationService extends NavigationService {
             for (const key in p) {
                 if (p.hasOwnProperty(key)) {
                     const element = p[key];
-                    url.query[key] = element;
+                    if (element === undefined) {
+                        continue;
+                    }
+                    if (element === null) {
+                        url.query["json:" + key] = "null";
+                        continue;
+                    }
+                    if (key.startsWith("ref:")) {
+                        const r = element instanceof ObjectReference ?
+                            element :
+                            this.app.get(ReferenceService).put(element);
+                        url.query[key] = r.key;
+                        continue;
+                    }
+                    if (typeof element !== "string" &&
+                        (typeof element === "object" || Array.isArray(element))) {
+                        url.query["json:" + key] = JSON.stringify(element);
+                    } else {
+                        url.query[key] = element;
+                    }
                 }
             }
         }
