@@ -7,6 +7,20 @@ import { DI, IClassOf } from "./types";
 export class AtomLoader {
 
     public static async load<T>(url: AtomUri, app: App): Promise<T> {
+        if (url.host === "reference") {
+            const r = app.get(ReferenceService).get(url.path);
+            if (!r) {
+                throw new Error("reference not found");
+            }
+            return r.consume();
+        }
+        if (url.host === "class") {
+            const r = app.get(ReferenceService).get(url.path);
+            if (!r) {
+                throw new Error("reference not found");
+            }
+            return app.resolve(r.consume(), true);
+        }
         const type = await DI.resolveViewClassAsync<T>(url.path);
         const obj = app.resolve(type, true);
         return obj;
