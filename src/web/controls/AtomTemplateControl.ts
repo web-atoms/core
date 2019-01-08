@@ -37,7 +37,7 @@ export class AtomTemplateControl extends AtomControl {
 
         const ntc = this.content = new (t)(this.app);
 
-        this.append(tc);
+        this.append(ntc);
     }
 
 }
