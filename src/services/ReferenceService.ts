@@ -6,7 +6,7 @@ export class ObjectReference {
 
     public timeout: any;
 
-    constructor(public key: string) {}
+    constructor(public key: string, public value: any) {}
 
 }
 
@@ -23,13 +23,13 @@ export default class ReferenceService {
 
     public put(item: any, ttl: number = 60): ObjectReference {
         const key = `k${this.id++}`;
-        const r = new ObjectReference(key);
+        const r = new ObjectReference(key, item);
         r.consume = () => {
             delete this.cache[key];
             if (r.timeout) {
                 clearTimeout(r.timeout);
             }
-            return item;
+            return r.value;
         };
         r.timeout = setTimeout(() => {
             r.timeout = 0;
