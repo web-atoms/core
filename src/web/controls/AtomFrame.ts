@@ -8,6 +8,7 @@ import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types"
 import { NavigationService } from "../../services/NavigationService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
+import AtomFrameStyle from "../styles/AtomFrameStyle";
 import { AtomControl } from "./AtomControl";
 
 /**
@@ -88,14 +89,6 @@ export class AtomFrame
         }
 
         const element: HTMLElement = ctrl.element as HTMLElement;
-        const style = element.style;
-        style.position = "absolute";
-        style.top =
-        style.bottom =
-        style.left =
-        style.right = "0";
-        style.width = style.height = "100%";
-
         (this.element as HTMLElement).appendChild(element);
 
         this.current = ctrl;
@@ -172,15 +165,14 @@ export class AtomFrame
     }
 
     protected preCreate(): void {
+        this.defaultControlStyle = AtomFrameStyle;
         if (!this.element) {
             this.element = document.createElement("section");
         }
         AtomUI.assignID(this.element);
-        const style = this.element.style;
-        style.position = "absolute";
-        style.left = style.right = style.top = style.bottom = "0";
-        style.width = "100%";
-        style.height = "100%";
+        this.runAfterInit(() => {
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+        });
         this.backCommand = () => {
             this.onBackCommand();
         };
