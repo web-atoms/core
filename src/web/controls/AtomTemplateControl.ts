@@ -1,8 +1,10 @@
+import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf } from "../../core/types";
 import { AtomControl } from "./AtomControl";
 
 export class AtomTemplateControl extends AtomControl {
 
+    @BindableProperty
     public contentTemplate: IClassOf<AtomControl>;
 
     private content: AtomControl;
