@@ -43,17 +43,20 @@ export class AtomLoader {
                         const element = url.query[key];
                         if (typeof element === "object") {
                             vm[key] = jsonService.parse(jsonService.stringify(element));
-                        } else {
-                            if (/^json\:/.test(key)) {
-                                const k = key.split(":")[1];
-                                vm[k] = jsonService.parse(element.toString());
-                            } else if (/^ref\:/.test(key)) {
-                                const rs = app.get(ReferenceService);
-                                vm[key.split(":", 2)[1]] = rs.get(element as string).consume();
-                            } else {
-                                vm[key] = element;
-                            }
+                            continue;
                         }
+                        if (/^json\:/.test(key)) {
+                            const k = key.split(":")[1];
+                            vm[k] = jsonService.parse(element.toString());
+                            continue;
+                        }
+                        if (/^ref\:/.test(key)) {
+                            const rs = app.get(ReferenceService);
+                            const v = rs.get(element as string);
+                            vm[key.split(":", 2)[1]] = v.consume();
+                            continue;
+                        }
+                        vm[key] = element;
                     }
                 }
             }
