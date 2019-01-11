@@ -38,6 +38,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
 
+    public static propertyExtensions:
+        { [key: string]: ((
+            this: IAtomComponent<IAtomElement>,
+            element: IAtomElement,
+            name: string,
+            value: any) => void) } = {};
+
     public element: T;
 
     protected pendingInits: Array<() => void>;
@@ -291,7 +298,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 this[name] = value;
             });
         } else {
-            this.setElementValue(element, name, value);
+            const f = AtomComponent.propertyExtensions[name] || this.setElementValue;
+            f.call(this, element, name, value);
         }
     }
 
@@ -321,8 +329,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         if ((!element || element === this.element) &&  this.hasProperty(name)) {
             this[name] = value;
         } else {
-            // AtomBridge.instance.setValue(element, name, value);
-            this.setElementValue(element, name, value);
+            const f = AtomComponent.propertyExtensions[name] || this.setElementValue;
+            f.call(this, element, name, value);
         }
     }
 

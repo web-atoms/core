@@ -31,6 +31,19 @@ const defaultStyleSheets: { [key: string]: AtomStyle } = {};
 /**
  * AtomControl class represents UI Component for a web browser.
  */
+
+function selfEvent(name: string) {
+    return function(this: AtomControl, element: HTMLElement, eventName: string, value: any) {
+        this.bindEvent(element, name, (e) => {
+            if (e.target === element) {
+                return value(e);
+            }
+        } );
+    };
+}
+
+AtomComponent.propertyExtensions["event-self-click"] = selfEvent("click");
+
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public defaultControlStyle: any;
