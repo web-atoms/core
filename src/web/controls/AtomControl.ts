@@ -28,10 +28,6 @@ declare global {
 
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
 
-/**
- * AtomControl class represents UI Component for a web browser.
- */
-
 function selfEvent(name: string) {
     return function(this: AtomControl, element: HTMLElement, eventName: string, value: any) {
         this.bindEvent(element, name, (e) => {
@@ -42,7 +38,9 @@ function selfEvent(name: string) {
     };
 }
 
-AtomComponent.propertyExtensions["event-self-click"] = selfEvent("click");
+/**
+ * AtomControl class represents UI Component for a web browser.
+ */
 
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
@@ -221,6 +219,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (/^event/.test(name)) {
             name = name.substr(5);
             name = name.charAt(0).toLowerCase() + name.substr(1);
+
             // element.style[name] = value;
             this.bindEvent(element, name, async (...e: any[]) => {
                 try {
