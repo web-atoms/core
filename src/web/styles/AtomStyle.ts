@@ -1,4 +1,5 @@
 import { App } from "../../App";
+import { AtomBinder } from "../../core/AtomBinder";
 import { ColorItem } from "../../core/Colors";
 import { StringHelper } from "../../core/StringHelper";
 import { IClassOf, INameValuePairs } from "../../core/types";
@@ -116,31 +117,35 @@ export class AtomStyle
                 continue;
             }
             const element = self[key];
-            // if (element instanceof AtomStyleSheet || element instanceof App) {
-            //     continue;
-            // }
-            // if (typeof element === "function") {
-            //     continue;
-            // }
+            if (element instanceof AtomStyleSheet || element instanceof App) {
+                continue;
+            }
+            if (typeof element === "function") {
+                continue;
+            }
             if (element instanceof AtomStyle) {
                 const ec = element as AtomStyle;
                 ec.build();
                 continue;
             }
-            // if (element instanceof ColorItem) {
-            //     continue;
-            // }
-            // if (typeof element === "object") {
-            //     const descriptor: PropertyDescriptor = {
-            //         get() {
-            //             return {
-            //                 ... element,
-            //                 className: this.toFullName(key)
-            //             };
-            //         }, configurable: true, enumerable: true
-            //     };
-            //     Object.defineProperty(this, key, descriptor);
-            // }
+            if (element instanceof ColorItem) {
+                continue;
+            }
+            const c = element as IStyleDeclaration;
+            if (c && typeof c === "object") {
+                if (emptyPrototype === Object.getPrototypeOf(c)) {
+                    const pv = AtomBinder.getPropertyDescriptor(this, key);
+                    const descriptor: PropertyDescriptor = {
+                        get() {
+                            return {
+                                ... pv.get.apply(this),
+                                className: this.toFullName(key)
+                            };
+                        }, configurable: true, enumerable: true
+                    };
+                    Object.defineProperty(this, key, descriptor);
+                }
+            }
         }
         this.isBuilt = true;
     }
@@ -178,8 +183,8 @@ export class AtomStyle
 
         const styleClassName = `${this.name}-${cname}`;
         pairs[styleClassName] = `{ ${styleList.join(";\r\n")} }`;
-        styles.className = styleClassName;
-        styles.toString = () => styleClassName;
+        // styles.className = styleClassName;
+        // styles.toString = () => styleClassName;
         return pairs;
     }
 
