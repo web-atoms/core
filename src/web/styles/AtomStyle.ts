@@ -130,17 +130,17 @@ export class AtomStyle
             if (element instanceof ColorItem) {
                 continue;
             }
-            if (typeof element === "object") {
-                const descriptor: PropertyDescriptor = {
-                    get() {
-                        return {
-                            ... element,
-                            className: this.toFullName(key)
-                        };
-                    }, configurable: true, enumerable: true
-                };
-                Object.defineProperty(this, key, descriptor);
-            }
+            // if (typeof element === "object") {
+            //     const descriptor: PropertyDescriptor = {
+            //         get() {
+            //             return {
+            //                 ... element,
+            //                 className: this.toFullName(key)
+            //             };
+            //         }, configurable: true, enumerable: true
+            //     };
+            //     Object.defineProperty(this, key, descriptor);
+            // }
         }
         this.isBuilt = true;
     }
