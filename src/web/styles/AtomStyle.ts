@@ -79,19 +79,9 @@ export class AtomStyle
                 continue;
             }
             const element = self[key];
-            if (element instanceof AtomStyleSheet || element instanceof App) {
-                continue;
-            }
-            if (typeof element === "function") {
-                continue;
-            }
             // if it is nested style
             if (element instanceof AtomStyle) {
                 pairs = element.toStyle(pairs);
-                continue;
-            }
-
-            if (element instanceof ColorItem || element instanceof WebImage) {
                 continue;
             }
 
@@ -187,7 +177,7 @@ export class AtomStyle
         const cname = StringHelper.fromCamelToHyphen(name);
 
         pairs[`${this.name}-${cname}`] = `{ ${styleList.join(";\r\n")} }`;
-        styles.className = name;
+        // styles.className = name;
         return pairs;
     }
 
