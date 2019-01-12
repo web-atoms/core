@@ -21,7 +21,7 @@ export class AtomStyleSheet extends AtomStyle
         this.pushUpdate();
     }
 
-    public pushUpdate(delay: number = 100): void {
+    public pushUpdate(delay: number = 1): void {
         if (this.isAttaching) {
             return;
         }
