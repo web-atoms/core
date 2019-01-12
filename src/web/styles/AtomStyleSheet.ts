@@ -18,10 +18,10 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     public onPropertyChanging(name: string, newValue: any, oldValue: any): void {
-        this.pushUpdate();
+        this.pushUpdate(100);
     }
 
-    public pushUpdate(): void {
+    public pushUpdate(delay: number = 0): void {
         if (this.isAttaching) {
             return;
         }
@@ -30,7 +30,7 @@ export class AtomStyleSheet extends AtomStyle
         }
         this.lastUpdateId = setTimeout(() => {
             this.attach();
-        }, 1);
+        }, delay);
     }
 
     public dispose(): void {
