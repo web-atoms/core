@@ -14,14 +14,14 @@ export class AtomStyleSheet extends AtomStyle
     constructor(public readonly app: App, prefix: string) {
         super(null, null, prefix);
         this.styleSheet = this;
-        this.pushUpdate();
+        this.pushUpdate(0);
     }
 
     public onPropertyChanging(name: string, newValue: any, oldValue: any): void {
-        this.pushUpdate(100);
+        this.pushUpdate();
     }
 
-    public pushUpdate(delay: number = 0): void {
+    public pushUpdate(delay: number = 100): void {
         if (this.isAttaching) {
             return;
         }
