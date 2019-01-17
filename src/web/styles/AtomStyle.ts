@@ -117,18 +117,8 @@ export class AtomStyle
                 continue;
             }
             const element = self[key];
-            if (element instanceof AtomStyleSheet || element instanceof App) {
-                continue;
-            }
-            if (typeof element === "function") {
-                continue;
-            }
             if (element instanceof AtomStyle) {
-                const ec = element as AtomStyle;
-                ec.build();
-                continue;
-            }
-            if (element instanceof ColorItem) {
+                element.build();
                 continue;
             }
             const c = element as IStyleDeclaration;

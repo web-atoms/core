@@ -61,6 +61,10 @@ export class AtomStyleSheet extends AtomStyle
         this.isAttaching = false;
     }
 
+    protected build(): void {
+        // do nothing..
+    }
+
     private flatten(pairs: INameValuePairs): string {
         const sl: string[] = [];
         for (const key in pairs) {
