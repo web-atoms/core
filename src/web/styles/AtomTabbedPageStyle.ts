@@ -15,6 +15,16 @@ export class AtomTabbedPageStyle extends AtomStyle {
         return this.styleSheet as AtomTheme;
     }
 
+    public get root(): IStyleDeclaration {
+        return {
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        };
+    }
+
     public get tabItem(): IStyleDeclaration {
         return {
             display: "inline-block",

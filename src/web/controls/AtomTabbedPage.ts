@@ -71,9 +71,9 @@ export class AtomTabbedPage extends AtomGridView
 
         this.defaultControlStyle = AtomTabbedPageStyle;
         this.element = document.createElement("section");
-        const style = this.element.style;
-        style.position = "absolute";
-        style.left = style.top = style.right = style.bottom = "0";
+        this.runAfterInit(() => {
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+        });
         this.localViewModel = new AtomTabViewModel(this.app, this);
         this.titleTemplate = TitleItemTemplateCreator(this);
         this.columns = "*";
@@ -94,6 +94,7 @@ export class AtomTabbedPage extends AtomGridView
 
         this.presenter = document.createElement("div");
         this.append(this.presenter);
+        this.presenter.classList.add("presenter");
         (this.presenter as any).row = "1";
 
         this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
