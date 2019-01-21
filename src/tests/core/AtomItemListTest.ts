@@ -177,6 +177,23 @@ export class AtomItemListTest extends AtomTest {
         Assert.equals("l4", item2.item.label);
 
     }
+
+    @Test
+    public getLabels(): void {
+        const list = new AtomSelectableList<IKeyValue>(true, (x) => x.value, (x) => x.label);
+        list.value = ["v2", "v3"];
+
+        list.replace([
+            { label: "l1", value: "v1" },
+            { label: "l2", value: "v2" },
+            { label: "l3", value: "v3" },
+            { label: "l4", value: "v4" }
+        ]);
+
+        const label = list.label.join(",");
+
+        Assert.equals("l2,l3", label);
+    }
 }
 
 interface IKeyValue {

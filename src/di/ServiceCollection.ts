@@ -1,5 +1,6 @@
 import { ArrayHelper } from "../core/types";
 import { ServiceProvider } from "./ServiceProvider";
+import { TypeKey } from "./TypeKey";
 
 export type ServiceFactory = (sp: ServiceProvider) => any;
 
@@ -39,7 +40,7 @@ export class ServiceCollection {
         id?: string): ServiceDescription {
         ArrayHelper.remove(this.registrations, (r) => id ? r.id === id : r.type === type);
         if (!id) {
-            id = type.toString() + this.ids;
+            id = TypeKey.get(type) + this.ids;
             this.ids ++;
         }
         const sd = new ServiceDescription(id, scope, type, factory);

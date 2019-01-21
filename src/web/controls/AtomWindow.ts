@@ -20,10 +20,12 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         // remember, if you do not wish to use dynamic themes
         // then use one time binding
         this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
-        this.bind(this.element, "styleWidth", [["templateParent", "width"]]);
-        this.bind(this.element, "styleHeight", [["templateParent", "height"]]);
-        this.bind(this.element, "styleLeft", [["templateParent", "x"]], false, (v) => v ? v + "px" : undefined);
-        this.bind(this.element, "styleTop", [["templateParent", "y"]], false, (v) => v ? v + "px" : undefined);
+        this.bind(this.element, "styleWidth", [["templateParent", "width"]], false, (v) => v || undefined);
+        this.bind(this.element, "styleHeight", [["templateParent", "height"]], false, (v) => v || undefined);
+        this.bind(this.element, "styleLeft", [["templateParent", "x"]],
+            false, (v) => v >= 0 ? v + "px" : undefined);
+        this.bind(this.element, "styleTop", [["templateParent", "y"]],
+            false, (v) => v >= 0 ? v + "px" : undefined);
         this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         this.bind(this.element, "styleMarginLeft", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
         this.bind(this.element, "styleMarginRight", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
@@ -89,10 +91,10 @@ export class AtomWindow extends AtomControl {
     public title: string = "";
 
     @BindableProperty
-    public width: string = "300px";
+    public width: string = "";
 
     @BindableProperty
-    public height: string = "200px";
+    public height: string = "";
 
     @BindableProperty
     public x: number = -1;
@@ -111,6 +113,8 @@ export class AtomWindow extends AtomControl {
 
     @BindableProperty
     public frameTemplate: IClassOf<AtomWindowFrameTemplate> = AtomWindowFrameTemplate;
+
+    private isReady: boolean = false;
 
     public onPropertyChanged(name: string): void {
         switch (name) {
@@ -137,6 +141,10 @@ export class AtomWindow extends AtomControl {
 
     public onUpdateUI(): void {
         if (!(this.windowTemplate && this.frameTemplate)) {
+            return;
+        }
+
+        if (this.isReady) {
             return;
         }
 
@@ -176,6 +184,35 @@ export class AtomWindow extends AtomControl {
             frame.commandPresenter.appendChild(command.element);
         }
         this.append(frame);
+
+        // lets center frame...
+        setTimeout(() => {
+            this.centerFrame(frame.element);
+        }, 100);
+        this.isReady = true;
+    }
+
+    private centerFrame(e: HTMLElement): void {
+        const parent = this.element.parentElement;
+        if (parent.offsetWidth <= 0 || parent.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerFrame(e);
+            }, 100);
+            return;
+        }
+
+        if (e.offsetWidth <= 0 || e.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerFrame(e);
+            }, 100);
+            return;
+        }
+
+        const x = (parent.offsetWidth - e.offsetWidth) / 2;
+        const y = (parent.offsetHeight - e.offsetHeight) / 2;
+        this.x = x;
+        this.y = y;
+        e.style.opacity = "1";
     }
 
     private setupDragging(tp: HTMLElement): void {

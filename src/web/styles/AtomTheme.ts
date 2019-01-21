@@ -2,11 +2,14 @@ import { AtomWindowStyle } from "./AtomWindowStyle";
 
 import { AtomPopupStyle } from "./AtomPopupStyle";
 
+import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import Color from "../../core/Color";
 import Colors, { ColorItem } from "../../core/Colors";
 import { IDisposable, INotifyPropertyChanging } from "../../core/types";
+import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
+import { NavigationService } from "../../services/NavigationService";
 import { AtomListBox } from "../controls/AtomListBox";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
@@ -41,14 +44,25 @@ export class AtomTheme extends AtomStyleSheet
 
     public readonly window = this.createStyle(AtomWindow, AtomWindowStyle, "window");
 
-    // public readonly button = this.createStyle(AtomButtonStyle, "button");
-
     public readonly popup = this.createNamedStyle(AtomPopupStyle, "popup");
 
-    // public readonly listBox = this.createStyle(AtomListBox, AtomListBoxStyle, "listbox");
+    constructor(
+        @Inject app: App,
+        @Inject private navigationService: NavigationService) {
+        super(app, "atom-theme");
 
-    constructor() {
-        super("atom-theme");
+        setTimeout(() => {
+            window.addEventListener("resize", () => {
+                setTimeout(() => {
+                    this.pushUpdate();
+                }, 10);
+            });
+            document.body.addEventListener("resize", () => {
+                setTimeout(() => {
+                    this.pushUpdate();
+                }, 10);
+            });
+        }, 1000);
     }
 
 }

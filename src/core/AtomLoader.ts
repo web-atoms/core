@@ -1,11 +1,26 @@
 import { App } from "../App";
 import { JsonService } from "../services/JsonService";
+import ReferenceService from "../services/ReferenceService";
 import { AtomUri } from "./AtomUri";
 import { DI, IClassOf } from "./types";
 
 export class AtomLoader {
 
     public static async load<T>(url: AtomUri, app: App): Promise<T> {
+        if (url.host === "reference") {
+            const r = app.get(ReferenceService).get(url.path);
+            if (!r) {
+                throw new Error("reference not found");
+            }
+            return r.consume();
+        }
+        if (url.host === "class") {
+            const r = app.get(ReferenceService).get(url.path);
+            if (!r) {
+                throw new Error("reference not found");
+            }
+            return app.resolve(r.consume(), true);
+        }
         const type = await DI.resolveViewClassAsync<T>(url.path);
         const obj = app.resolve(type, true);
         return obj;
@@ -28,9 +43,20 @@ export class AtomLoader {
                         const element = url.query[key];
                         if (typeof element === "object") {
                             vm[key] = jsonService.parse(jsonService.stringify(element));
-                        } else {
-                            vm[key] = element;
+                            continue;
                         }
+                        if (/^json\:/.test(key)) {
+                            const k = key.split(":")[1];
+                            vm[k] = jsonService.parse(element.toString());
+                            continue;
+                        }
+                        if (/^ref\:/.test(key)) {
+                            const rs = app.get(ReferenceService);
+                            const v = rs.get(element as string);
+                            vm[key.split(":", 2)[1]] = v.consume();
+                            continue;
+                        }
+                        vm[key] = element;
                     }
                 }
             }

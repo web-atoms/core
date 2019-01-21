@@ -1,5 +1,5 @@
 import { AtomBridge } from "../../core/AtomBridge";
-import { AtomDisposable, IDisposable } from "../../core/types";
+import { IDisposable } from "../../core/types";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { BusyIndicatorService } from "../../services/BusyIndicatorService";
 
@@ -8,9 +8,11 @@ export default class XFBusyIndicatorService extends BusyIndicatorService {
 
     public createIndicator(): IDisposable {
         const popup = AtomBridge.instance.createBusyIndicator();
-        return new AtomDisposable(() => {
-            popup.dispose();
-        });
+        return {
+            dispose: () => {
+                popup.dispose();
+            }
+        };
     }
 
 }

@@ -8,7 +8,7 @@ import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
 import { IValueConverter } from "../core/IValueConverter";
 import { PropertyBinding } from "../core/PropertyBinding";
-import { ArrayHelper, AtomDisposable, IClassOf, IDisposable } from "../core/types";
+import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 
 /**
@@ -151,7 +151,7 @@ export class AtomViewModel {
     }
 
     /**
-     * dispose method will becalled when attached view will be disposed or
+     * dispose method will be called when attached view will be disposed or
      * when a new view model will be assigned to view, old view model will be disposed.
      *
      * @memberof AtomViewModel
@@ -185,10 +185,12 @@ export class AtomViewModel {
     public registerDisposable(d: IDisposable): IDisposable {
         this.disposables = this.disposables || [];
         this.disposables.push(d);
-        return new AtomDisposable(() => {
-            ArrayHelper.remove(this.disposables, (f) => f === d);
-            d.dispose();
-        });
+        return {
+            dispose: () => {
+                ArrayHelper.remove(this.disposables, (f) => f === d);
+                d.dispose();
+            }
+        };
     }
     /**
      * Broadcast given data to channel (msg)
@@ -219,8 +221,8 @@ export class AtomViewModel {
         const updater = new AtomOnce();
         disposables.add(this.setupWatch(
             [
-                ["app", "url", "hash", name],
-                ["app", "url", "query", name]
+                ["app", "url", "hash", urlParameter],
+                ["app", "url", "query", urlParameter]
             ], (hash, query) => {
             updater.run(() => {
                 const value = hash || query;
@@ -441,7 +443,7 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
 
     descriptor.get = () => null;
 
-    // // repalce it with dummy descriptor...
+    // // replace it with dummy descriptor...
     // Object.defineProperty(target, key, descriptor);
 
     registerInit(target, (vm) => {
@@ -474,7 +476,7 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
 export function BindableUrlParameter(name: string): any {
     return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
         registerInit(target, (vm) => {
-            vm.bindUrlParameter(name, name);
+            vm.bindUrlParameter(key, name);
         } );
         return BindableProperty(target, key);
     };

@@ -1,10 +1,16 @@
-import { AtomDisposable, IDisposable } from "../../core/types";
+import { IDisposable } from "../../core/types";
+import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { ModuleFiles } from "../../ModuleFiles";
 import { BusyIndicatorService } from "../../services/BusyIndicatorService";
+import { NavigationService } from "../../services/NavigationService";
+import { WindowService } from "./WindowService";
 
 @RegisterSingleton
 export class WebBusyIndicatorService extends BusyIndicatorService {
+
+    @Inject
+    private navigationService: NavigationService;
 
     private zIndex: number = 50000;
 
@@ -30,10 +36,16 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
         div.appendChild(span);
 
-        document.body.appendChild(div);
-        return new AtomDisposable(() => {
-            // dispose...
-            div.remove();
-        });
+        const ws = this.navigationService as WindowService;
+
+        const e = ws.getHostForElement() || document.body;
+
+        e.appendChild(div);
+        return {
+            dispose: () => {
+                // dispose...
+                div.remove();
+            }
+        };
     }
 }

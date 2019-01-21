@@ -1,4 +1,5 @@
 import { App } from "../../App";
+import { AtomBinder } from "../../core/AtomBinder";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { AtomList } from "../../core/AtomList";
 import { AtomLoader } from "../../core/AtomLoader";
@@ -7,9 +8,11 @@ import { AtomUri } from "../../core/AtomUri";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
 import { Inject } from "../../di/Inject";
+import { NavigationService } from "../../services/NavigationService";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
+import { WindowService } from "../services/WindowService";
 import { AtomTabbedPageStyle } from "../styles/AtomTabbedPageStyle";
 import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
@@ -27,6 +30,11 @@ export class AtomTabbedPage extends AtomGridView
 
     public presenter: HTMLElement;
 
+    private mWindowService: WindowService;
+    protected get windowService(): WindowService {
+        return this.mWindowService || (this.mWindowService = this.resolve(WindowService));
+    }
+
     private mSelectedPage: AtomPage;
     public get selectedPage(): AtomPage {
         return this.mSelectedPage;
@@ -34,20 +42,38 @@ export class AtomTabbedPage extends AtomGridView
     public set selectedPage(value: AtomPage) {
         this.mSelectedPage = value;
 
-        if (value && value.element && value.element.parentElement !== this.presenter) {
-            this.presenter.appendChild(value.element);
+        if (value && value.element) {
+            const pe = value.element.parentElement;
+            if (!pe || pe.parentElement !== this.presenter) {
+                const p = document.createElement("div");
+                const s = p.style;
+                p.className = "page-host";
+                s.position = "absolute";
+                s.left = s.right = s.top = s.bottom = "0";
+                p.appendChild(value.element);
+                this.presenter.appendChild(p);
+                const ve = value;
+
+                value.bind(p,
+                    "styleDisplay",
+                    [["this", "selectedPage"]], false, (v) => v === ve ? "" : "none", this);
+            }
         }
 
         this.invalidate();
+
+        this.windowService.currentTarget = value.element;
+
+        AtomBinder.refreshValue(this, "selectedPage");
     }
 
     protected preCreate(): void {
 
         this.defaultControlStyle = AtomTabbedPageStyle;
         this.element = document.createElement("section");
-        const style = this.element.style;
-        style.position = "absolute";
-        style.left = style.top = style.right = style.bottom = "0";
+        this.runAfterInit(() => {
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+        });
         this.localViewModel = new AtomTabViewModel(this.app, this);
         this.titleTemplate = TitleItemTemplateCreator(this);
         this.columns = "*";
@@ -68,10 +94,24 @@ export class AtomTabbedPage extends AtomGridView
 
         this.presenter = document.createElement("div");
         this.append(this.presenter);
+        this.presenter.classList.add("presenter");
         (this.presenter as any).row = "1";
 
         this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
 
+        this.registerDisposable(this.windowService.registerHostForWindow((e) => this.getParentHost(e)));
+
+    }
+
+    private getParentHost(e: HTMLElement): HTMLElement {
+        const pe = e._logicalParent || e.parentElement;
+        if (pe === this.presenter) {
+            return e;
+        }
+        if (!pe) {
+            return null;
+        }
+        return this.getParentHost(pe);
     }
 }
 
@@ -90,7 +130,10 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
                     ["this", "controlStyle", "selectedTabItem"]
                 ],
                 false,
-                (data, selectedPage, tabItem, selectedTabItem) => data === selectedPage ? selectedTabItem : tabItem,
+                (data, selectedPage, tabItem, selectedTabItem) => ({
+                    [tabItem.className]: true,
+                    [selectedTabItem.className]: data === selectedPage
+                }),
                 __creator);
 
             const divTitle = document.createElement("div");
@@ -196,7 +239,7 @@ class AtomTabViewModel extends AtomViewModel {
 
     @Watch
     public watchSelectedPage(): void {
-        this.saveState();
+        this.saveState(this.selectedPage);
     }
 
     public closePage(page: AtomPage): void {
@@ -210,7 +253,7 @@ class AtomTabViewModel extends AtomViewModel {
         });
     }
 
-    protected saveState(): void {
+    protected saveState(a?: any): void {
         const state: ITabState = {
             urls: this.pages.map((p) => p.tag),
             selectedUrl: this.selectedUrl,
@@ -246,12 +289,6 @@ class AtomTabViewModel extends AtomViewModel {
         page.tag = message;
         const vm = page.viewModel;
         if (vm) {
-            for (const key in url.query) {
-                if (url.query.hasOwnProperty(key)) {
-                    const element = url.query[key];
-                    vm[key] = element;
-                }
-            }
             vm.windowName = page.element.id;
         }
 
@@ -288,6 +325,11 @@ class AtomTabViewModel extends AtomViewModel {
                 return;
             }
             this.pages.remove(page);
+            const pe = page.element.parentElement;
+            page.dispose();
+            if (pe) {
+                pe.remove();
+            }
             if (this.selectedPage === page) {
                 this.selectedPage = this.pages[index - 1];
             }

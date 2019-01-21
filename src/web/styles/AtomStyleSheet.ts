@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { INameValuePairs, INotifyPropertyChanging } from "../../core/types";
 import { AtomStyle } from "./AtomStyle";
 
@@ -10,17 +11,17 @@ export class AtomStyleSheet extends AtomStyle
 
     [key: string]: any;
 
-    constructor(prefix: string) {
+    constructor(public readonly app: App, prefix: string) {
         super(null, null, prefix);
         this.styleSheet = this;
-        this.pushUpdate();
+        this.pushUpdate(0);
     }
 
     public onPropertyChanging(name: string, newValue: any, oldValue: any): void {
         this.pushUpdate();
     }
 
-    public pushUpdate(): void {
+    public pushUpdate(delay: number = 1): void {
         if (this.isAttaching) {
             return;
         }
@@ -29,7 +30,7 @@ export class AtomStyleSheet extends AtomStyle
         }
         this.lastUpdateId = setTimeout(() => {
             this.attach();
-        }, 1);
+        }, delay);
     }
 
     public dispose(): void {
@@ -40,18 +41,28 @@ export class AtomStyleSheet extends AtomStyle
 
     public attach(): void {
         this.isAttaching = true;
-        const ss = document.createElement("style");
-
         const pairs = this.toStyle({});
 
-        ss.textContent = this.flatten(pairs);
+        const textContent = this.flatten(pairs);
+        if (this.styleElement) {
+            if (this.styleElement.textContent === textContent) {
+                this.isAttaching = false;
+                return;
+            }
+        }
+        const ss = document.createElement("style");
 
+        ss.textContent = textContent;
         if (this.styleElement) {
             this.styleElement.remove();
         }
         document.head.appendChild(ss);
         this.styleElement = ss;
         this.isAttaching = false;
+    }
+
+    protected build(): void {
+        // do nothing..
     }
 
     private flatten(pairs: INameValuePairs): string {

@@ -22,28 +22,24 @@ export class AtomWindowStyle extends AtomStyle {
     public get frame(): IStyleDeclaration {
         return {
             position: "absolute",
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            maxWidth: "100%",
-            maxHeight: "100%",
+            minHeight: "100px",
+            minWidth: "300px",
             margin: "auto",
             border: "solid 1px #808080",
             fontFamily: "Arial",
             borderRadius: "5px",
-            padding: "5px",
-            backgroundColor: "white"
+            backgroundColor: "white",
+            opacity: "0",
         };
     }
 
     public get titlePresenter(): IStyleDeclaration {
         return {
-            position: "absolute",
+            position: "relative",
             left: 0,
             right: 0,
             top: 0,
-            height: "50px"
+            height: "37px"
         };
     }
 
@@ -90,16 +86,13 @@ export class AtomWindowStyle extends AtomStyle {
 
     public get content(): IStyleDeclaration {
         return {
-            position: "relative",
             padding: "10px",
-            background: "white",
-            marginTop: "30px"
+            background: "white"
         };
     }
 
     public get commandBar(): IStyleDeclaration {
         return {
-            position: "absolute",
             left: 0,
             right: 0,
             bottom: 0,

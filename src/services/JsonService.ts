@@ -29,7 +29,9 @@ export class JsonService {
                     fromSource(v: string): Date {
                         return new Date(v);
                     },
-                    fromTarget: null
+                    fromTarget(v: Date): any {
+                        return v.toISOString();
+                    }
                 }
             }, {
                 regex: dateFormatMSRegEx,
@@ -39,7 +41,9 @@ export class JsonService {
                         const b = a[1].split(/[-+,.]/);
                         return new Date(b[0] ? +b[0] : 0 - +b[1]);
                     },
-                    fromTarget: null
+                    fromTarget(v: Date): any {
+                        return v.toISOString();
+                    }
                 }
             }
         ]
@@ -119,9 +123,9 @@ export class JsonService {
             if (key && /^\_\$\_/.test(key)) {
                 return undefined;
             }
-            // if (dateConverter && (value instanceof Date)) {
-            //     return dateConverter[0].valueCovnerter.fromTarget(value);
-            // }
+            if (dateConverter && (value instanceof Date)) {
+                return dateConverter[0].valueCovnerter.fromTarget(value);
+            }
             return value;
         }, indent);
     }

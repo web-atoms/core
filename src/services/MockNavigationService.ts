@@ -1,7 +1,7 @@
 import { App } from "../App";
 import { Atom } from "../Atom";
 import { AtomUri } from "../core/AtomUri";
-import { AtomDisposable, IDisposable, INameValuePairs, INameValues } from "../core/types";
+import { IDisposable, INameValuePairs, INameValues } from "../core/types";
 import { Inject } from "../di/Inject";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 import { ServiceCollection } from "../di/ServiceCollection";
@@ -39,7 +39,7 @@ export class MockNavigationService extends NavigationService {
     /**
      * Gets current location of browser, this does not return
      * actual location but it returns values of browser location.
-     * This is done to provide mocking behaviour for unit testing.
+     * This is done to provide mocking behavior for unit testing.
      *
      * @readonly
      * @type {AtomLocation}
@@ -62,7 +62,7 @@ export class MockNavigationService extends NavigationService {
     }
 
     public refresh(): void {
-        // nothign
+        // nothing
     }
 
     /**
@@ -219,9 +219,11 @@ export class MockNavigationService extends NavigationService {
 
         this.windowStack.push(registration);
 
-        return new AtomDisposable(() => {
-            this.removeRegistration(registration);
-        });
+        return {
+            dispose: () => {
+                this.removeRegistration(registration);
+            }
+        };
     }
 
     public removeRegistration(r: IWindowRegistration): void {

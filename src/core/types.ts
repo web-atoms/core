@@ -44,32 +44,6 @@ export interface IRect {
     height?: number;
 }
 
-export class AtomDisposable implements IDisposable {
-
-    private static mEmpty: AtomDisposable;
-
-    public static get empty(): AtomDisposable {
-        return AtomDisposable.mEmpty || (AtomDisposable.mEmpty = new AtomDisposable(() => {
-            // do nothing
-        }));
-    }
-
-    // tslint:disable-next-line:ban-types
-    private f: Function;
-
-    /**
-     *
-     */
-    // tslint:disable-next-line:ban-types
-     constructor(f: Function) {
-        this.f = f;
-    }
-
-    public dispose(): void {
-        this.f();
-    }
-}
-
 /**
  *
  *

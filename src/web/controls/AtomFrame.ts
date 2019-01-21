@@ -8,6 +8,7 @@ import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types"
 import { NavigationService } from "../../services/NavigationService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
+import AtomFrameStyle from "../styles/AtomFrameStyle";
 import { AtomControl } from "./AtomControl";
 
 /**
@@ -61,7 +62,7 @@ export class AtomFrame
         }
         const ctrl: AtomControl = this.current;
         const vm: AtomWindowViewModel = ctrl.viewModel;
-        if (vm.closeWarning) {
+        if (vm && vm.closeWarning) {
             if ( await this.navigationService.confirm(vm.closeWarning, "Are you sure?")) {
                 return true;
             }
@@ -77,6 +78,9 @@ export class AtomFrame
                 (this.current.element as HTMLElement).style.display = "none";
                 this.stack.push(this.current);
             } else {
+                if (this.current === ctrl) {
+                    return;
+                }
                 const c1: AtomControl = this.current;
                 const e: HTMLElement = c1.element as HTMLElement;
                 c1.dispose();
@@ -85,12 +89,6 @@ export class AtomFrame
         }
 
         const element: HTMLElement = ctrl.element as HTMLElement;
-        element.style.position = "absolute";
-        element.style.top =
-        element.style.bottom =
-        element.style.left =
-        element.style.right = "0";
-
         (this.element as HTMLElement).appendChild(element);
 
         this.current = ctrl;
@@ -167,13 +165,14 @@ export class AtomFrame
     }
 
     protected preCreate(): void {
+        this.defaultControlStyle = AtomFrameStyle;
         if (!this.element) {
             this.element = document.createElement("section");
         }
         AtomUI.assignID(this.element);
-        const style = this.element.style;
-        style.position = "absolute";
-        style.left = style.right = style.top = style.bottom = "0";
+        this.runAfterInit(() => {
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+        });
         this.backCommand = () => {
             this.onBackCommand();
         };

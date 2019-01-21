@@ -2,12 +2,14 @@ import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
+import { IScreen, IScreenType } from "../../core/IScreen";
 import { ArrayHelper, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
 import { NavigationService } from "../../services/NavigationService";
+import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import AtomAlertWindow from "../controls/AtomAlertWindow";
@@ -17,12 +19,7 @@ import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 import { cssNumberToString } from "../styles/StyleBuilder";
 
-export interface IScreen {
-    width?: number;
-    height?: number;
-    scrollLeft?: number;
-    scrollTop?: number;
-}
+export type HostForElementFunc = ((e: HTMLElement) => HTMLElement);
 
 @RegisterSingleton
 export class WindowService extends NavigationService {
@@ -32,13 +29,15 @@ export class WindowService extends NavigationService {
      */
     public static alertWindow = AtomAlertWindow;
 
-    public screen: IScreen = {};
+    public readonly screen: IScreen;
+
+    public currentTarget: HTMLElement = null;
 
     private popups: AtomControl[] = [];
 
-    private lastPopupID: number = 0;
+    private hostForElementFunc: HostForElementFunc[] = [];
 
-    private currentTarget: HTMLElement = null;
+    private lastPopupID: number = 0;
 
     /**
      * Get current window title
@@ -61,7 +60,7 @@ export class WindowService extends NavigationService {
     /**
      * Gets current location of browser, this does not return
      * actual location but it returns values of browser location.
-     * This is done to provide mocking behaviour for unit testing.
+     * This is done to provide mocking behavior for unit testing.
      *
      * @readonly
      * @type {AtomLocation}
@@ -77,6 +76,19 @@ export class WindowService extends NavigationService {
 
     constructor(@Inject private app: App, @Inject private jsonService: JsonService) {
         super();
+
+        this.screen = app.screen;
+
+        let st: IScreenType = "desktop";
+
+        if (/mobile|android|ios/i.test(window.navigator.userAgent)) {
+            st = "mobile";
+            if (/tablet/i.test(window.navigator.userAgent)) {
+                st = "tablet";
+            }
+        }
+
+        this.screen.screenType = st;
 
         if (window) {
             window.addEventListener("click", (e) => {
@@ -98,6 +110,15 @@ export class WindowService extends NavigationService {
             }, 1000);
 
         }
+    }
+
+    public registerHostForWindow(f: HostForElementFunc): IDisposable {
+        this.hostForElementFunc.push(f);
+        return {
+            dispose: () => {
+                this.hostForElementFunc.remove(f);
+            }
+        };
     }
 
     /**
@@ -171,6 +192,20 @@ export class WindowService extends NavigationService {
         location.reload(true);
     }
 
+    public getHostForElement(): HTMLElement {
+        const ce = this.currentTarget;
+        if (!ce) {
+            return null;
+        }
+        for (const iterator of this.hostForElementFunc) {
+            const e = iterator(ce);
+            if (e) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     protected registerForPopup(): void {
 
         if (window) {
@@ -189,7 +224,26 @@ export class WindowService extends NavigationService {
             for (const key in p) {
                 if (p.hasOwnProperty(key)) {
                     const element = p[key];
-                    url.query[key] = element;
+                    if (element === undefined) {
+                        continue;
+                    }
+                    if (element === null) {
+                        url.query["json:" + key] = "null";
+                        continue;
+                    }
+                    if (key.startsWith("ref:")) {
+                        const r = element instanceof ObjectReference ?
+                            element :
+                            (this.app.resolve(ReferenceService) as ReferenceService).put(element);
+                        url.query[key] = r.key;
+                        continue;
+                    }
+                    if (typeof element !== "string" &&
+                        (typeof element === "object" || Array.isArray(element))) {
+                        url.query["json:" + key] = JSON.stringify(element);
+                    } else {
+                        url.query[key] = element;
+                    }
                 }
             }
         }
@@ -208,9 +262,9 @@ export class WindowService extends NavigationService {
             isPopup = false;
         }
 
-        if (isPopup) {
-            await Atom.delay(10);
-        }
+        // if (isPopup) {
+        await Atom.delay(10);
+        // }
 
         return await new Promise<T>((resolve, reject) => {
 
@@ -221,9 +275,9 @@ export class WindowService extends NavigationService {
 
             const disposables: IDisposable[] = [popup];
 
+            e._logicalParent = this.currentTarget;
+
             if (isPopup) {
-                (popup.element as IAtomControlElement)._logicalParent
-                    = this.currentTarget as IAtomControlElement;
 
                 const sr = AtomUI.screenOffset(this.currentTarget);
 
@@ -234,25 +288,32 @@ export class WindowService extends NavigationService {
                 e.style.left = x + "px";
                 e.style.top = (y + h) + "px";
                 e.classList.add(theme.host.className);
-                // popup.element.classList.add("close-popup");
                 this.popups.push(popup);
                 document.body.appendChild(e);
             } else {
-                const host = document.createElement("div");
-                document.body.appendChild(host);
-                host.style.position = "absolute";
-                host.appendChild(e);
-                disposables.push({
-                    dispose() {
-                        host.remove();
-                    }
-                });
-                this.refreshScreen();
-                popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
-                popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
-                popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
-                popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
+
+                const eHost = this.getHostForElement();
+                if (eHost) {
+                    eHost.appendChild(e);
+                } else {
+                    const host = document.createElement("div");
+                    document.body.appendChild(host);
+                    host.style.position = "absolute";
+                    host.appendChild(e);
+                    disposables.push({
+                        dispose() {
+                            host.remove();
+                        }
+                    });
+                    this.refreshScreen();
+                    popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
+                    popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
+                    popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
+                    popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
+                }
             }
+
+            this.currentTarget = e;
 
             const closeFunction = () => {
                 for (const iterator of disposables) {
@@ -309,9 +370,10 @@ export class WindowService extends NavigationService {
     }
 
     private refreshScreen() {
-        this.screen.height = window.innerHeight || document.body.clientHeight;
-        this.screen.width = window.innerWidth || document.body.clientWidth;
+        const height = this.screen.height = window.innerHeight || document.body.clientHeight;
+        const width = this.screen.width = window.innerWidth || document.body.clientWidth;
         this.screen.scrollLeft = window.scrollX || document.body.scrollLeft || 0;
         this.screen.scrollTop = window.scrollY || document.body.scrollTop || 0;
+        this.screen.orientation = width > height ? "landscape" : "portrait";
     }
 }

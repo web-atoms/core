@@ -11,10 +11,19 @@ import JsonError from "./JsonError";
 
 declare var UMD: any;
 
+export interface IHttpHeaders {
+    [key: string]: string;
+}
+
+export interface IApiResponse<T> {
+    headers?: IHttpHeaders;
+    value?: T;
+}
+
 export interface IMethodOptions {
 
     /**
-     * Cache value retrived from server in JavaScript runtime for
+     * Cache value retrieved from server in JavaScript runtime for
      * given seconds
      */
     jsCacheSeconds?: CacheSeconds<any>;
@@ -27,13 +36,19 @@ export interface IMethodOptions {
     /**
      * Other headers to pass along with the request
      */
-    headers?: {[key: string]: string};
+    headers?: IHttpHeaders;
 
     /**
      * JsonService options to use with this request, use this only if naming strategy
      * is different for this request
      */
     jsonOptions?: IJsonParserOptions;
+
+    /**
+     * If you want to inspect response headers, pass this true, but make sure you have
+     * return type as IApiResponse<T>
+     */
+    returnHeaders?: boolean;
 
 }
 
@@ -66,8 +81,8 @@ function methodBuilder(method: string) {
                 const jsCache = options ? options.jsCacheSeconds : 0;
                 if (jsCache) {
                     const cacheService: CacheService = this.app.resolve(CacheService);
-                    const jargs = args.map((arg) => arg instanceof CancelToken ? null : arg);
-                    const key = `${this.constructor.name}:${method}:${url}:${JSON.stringify(jargs)}`;
+                    const jArgs = args.map((arg) => arg instanceof CancelToken ? null : arg);
+                    const key = `${this.constructor.name}:${method}:${url}:${JSON.stringify(jArgs)}`;
                     return cacheService.getOrCreate(key, (e) => {
                         e.ttlSeconds = jsCache;
                         return this.invoke(url, method, a, args, options);
@@ -80,7 +95,7 @@ function methodBuilder(method: string) {
 }
 
 // tslint:disable-next-line
-function parameterBuilder(paramName: string) {
+function parameterBuilder(paramName: string, defaultValue?: any) {
 
     // tslint:disable-next-line
     return function (key: string) {
@@ -98,7 +113,7 @@ function parameterBuilder(paramName: string) {
                 a = [];
                 target.methods[propertyKey] = a;
             }
-            a[parameterIndex] = new ServiceParameter(paramName, key);
+            a[parameterIndex] = new ServiceParameter(paramName, key, defaultValue);
         };
 
     };
@@ -108,7 +123,7 @@ export type RestAttr =
     (target: BaseService, propertyKey: string | symbol, parameterIndex: number)
         => void;
 
-export type RestParamAttr = (key: string)
+export type RestParamAttr = (key: string, defaultValue?: any)
     => RestAttr;
 
 export type RestMethodAttr = (key: string, options?: IMethodOptions)
@@ -314,10 +329,10 @@ export function Cancel(target: BaseService, propertyKey: string | symbol, parame
 
 export class ServiceParameter {
 
-    public key: string;
-    public type: string;
-
-    constructor(type: string, key: string) {
+    constructor(
+        public readonly type: string,
+        public readonly key: string,
+        public readonly defaultValue?: any) {
         this.type = type.toLowerCase();
         this.key = key;
     }
@@ -403,11 +418,14 @@ export class BaseService {
             };
 
             if (bag) {
+
                 for (let i: number = 0; i < bag.length; i++) {
                     const p: ServiceParameter = bag[i];
-                    const v: any = values[i];
+                    const vi = values[i];
+                    const v: any = vi === undefined ? p.defaultValue : vi;
                     if (v instanceof CancelToken) {
                         options.cancel = v;
+                        continue;
                     }
                     switch (p.type) {
                         case "path":
@@ -415,12 +433,7 @@ export class BaseService {
                                 continue;
                             }
                             const vs: string = v + "";
-                            // escaping should be responsibility of the caller
-                            // vs = vs.split("/").map(s => encodeURIComponent(s)).join("/");
                             const replacer = `{${p.key}}`;
-                            // while (url.indexOf(replacer) !== -1) {
-                            //     url = url.replace(`{${p.key}}`, vs);
-                            // }
                             url = url.split(replacer).join(vs);
                             break;
                         case "query":
@@ -430,7 +443,10 @@ export class BaseService {
                             if (url.indexOf("?") === -1) {
                                 url += "?";
                             }
-                            url += `&${p.key}=${encodeURIComponent(v)}`;
+                            if (! /(\&|\?)$/.test(url)) {
+                                url += "&";
+                            }
+                            url += `${encodeURIComponent(p.key)}=${encodeURIComponent(v)}`;
                             break;
                         case "body":
                             options.data = v;
@@ -469,12 +485,24 @@ export class BaseService {
                 if (xhr.status >= 400) {
                     throw new JsonError("Json Server Error", response);
                 }
+                if (methodOptions && methodOptions.returnHeaders) {
+                    return {
+                        headers: this.parseHeaders(xhr.responseHeaders),
+                        value: response
+                    };
+                }
                 return response;
             }
             if (xhr.status >= 400) {
                 throw new Error(xhr.responseText || "Server Error");
             }
 
+            if (methodOptions && methodOptions.returnHeaders) {
+                return {
+                    headers: this.parseHeaders(xhr.responseHeaders),
+                    value: xhr.responseText
+                };
+            }
             return xhr.responseText;
         } finally {
             if (busyIndicator) {
@@ -482,6 +510,19 @@ export class BaseService {
             }
         }
 
+    }
+
+    protected parseHeaders(headers: string | any): IHttpHeaders {
+        if (typeof headers === "object") {
+            return headers;
+        }
+        return (headers || "")
+                    .split("\n")
+                    .reduce((pv: IHttpHeaders, c: string) => {
+                        const cv = c.split(":");
+                        pv[cv[0]] = (cv[1] || "").trim();
+                        return pv;
+                    }, {});
     }
 
     protected async ajax(url: string, options: AjaxOptions): Promise<AjaxOptions> {
@@ -527,6 +568,11 @@ export class BaseService {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     options.status = xhr.status;
                     options.responseText = xhr.responseText;
+                    // options.responseHeaders = (xhr.getAllResponseHeaders())
+                    //     .split("\n")
+                    //     .map((s) => s.trim().split(":"))
+                    //     .reduce((pv, cv) => pv[cv[0]] = cv[1], {});
+                    options.responseHeaders = xhr.getAllResponseHeaders();
                     const ct = xhr.getResponseHeader("content-type");
                     options.responseType = ct || xhr.responseType;
                     resolve(options);

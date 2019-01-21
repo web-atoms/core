@@ -3,7 +3,7 @@ import { AtomComponent, IAtomComponent } from "./AtomComponent";
 import { AtomOnce } from "./AtomOnce";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
 import { IValueConverter } from "./IValueConverter";
-import { AtomDisposable, IAtomElement, IDisposable, PathList } from "./types";
+import { IAtomElement, IDisposable, PathList } from "./types";
 
 export class PropertyBinding<T extends IAtomElement> implements IDisposable {
 

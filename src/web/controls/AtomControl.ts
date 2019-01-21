@@ -18,11 +18,30 @@ export interface IAtomControlElement extends HTMLElement {
     _templateParent: AtomControl;
 }
 
+declare global {
+    // tslint:disable-next-line:interface-name
+    export interface HTMLElement {
+        atomControl: AtomControl;
+        _logicalParent: HTMLElement;
+    }
+}
+
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
+
+function selfEvent(name: string) {
+    return function(this: AtomControl, element: HTMLElement, eventName: string, value: any) {
+        this.bindEvent(element, name, (e) => {
+            if (e.target === element) {
+                return value(e);
+            }
+        } );
+    };
+}
 
 /**
  * AtomControl class represents UI Component for a web browser.
  */
+
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public defaultControlStyle: any;
@@ -178,7 +197,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (/^style/.test(name)) {
 
             if (name.length === 5) {
-                element[name] = value;
+                element.setAttribute("style", value);
                 return;
             }
 
@@ -187,23 +206,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
             // this is style class...
             if (name === "class") {
-                const last = (element as any)._lastClass;
-                if (last) {
-                    element.classList.remove(last);
-                }
-
-                if (!value) {
-                    return;
-                }
-
-                const s = value as IStyleDeclaration;
-                if (s.className) {
-                    element.classList.add(s.className);
-                    (element as any)._lastClass = s.className;
-                } else {
-                    element.classList.add(value);
-                    (element as any)._lastClass = value;
-                }
+                this.setElementClass(element, value);
+                return;
             }
             if (value instanceof WebImage) {
                 value = `url(${value})`;
@@ -215,6 +219,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (/^event/.test(name)) {
             name = name.substr(5);
             name = name.charAt(0).toLowerCase() + name.substr(1);
+
             // element.style[name] = value;
             this.bindEvent(element, name, async (...e: any[]) => {
                 try {
@@ -245,11 +250,41 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 element.textContent = value;
                 break;
             case "class":
-                element.className = value;
+                this.setElementClass(element, value);
                 break;
+            case "autofocus":
+                this.app.callLater(() => {
+                    const ie = element as HTMLInputElement;
+                    if (ie) { ie.focus(); }
+                });
             default:
                 element[name] = value;
         }
+    }
+
+    protected setElementClass(element: HTMLElement, value: any): void {
+        const s = value as IStyleDeclaration;
+        if (s && typeof s === "object") {
+            if (!s.className) {
+                for (const key in s) {
+                    if (s.hasOwnProperty(key)) {
+                        const sv = s[key];
+                        if (sv) {
+                            if (!element.classList.contains(key)) {
+                                element.classList.add(key);
+                            }
+                        } else {
+                            if (element.classList.contains(key)) {
+                                element.classList.remove(key);
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+        }
+        const sv1 = s ? (s.className || s.toString()) : "";
+        element.className = sv1;
     }
 
     protected onUpdateSize(): void {
