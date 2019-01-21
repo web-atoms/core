@@ -125,6 +125,9 @@ export class AtomStyle
             if (c && typeof c === "object") {
                 if (emptyPrototype === Object.getPrototypeOf(c)) {
                     const pv = AtomBinder.getPropertyDescriptor(this, key);
+                    if (!pv.get) {
+                        continue;
+                    }
                     const fullName = this.toFullName(key);
                     const descriptor: PropertyDescriptor = {
                         get() {
