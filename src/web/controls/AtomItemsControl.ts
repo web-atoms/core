@@ -566,15 +566,17 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public bringIntoView(data: any): void {
-        const en = new ChildEnumerator(this.itemsPresenter || this.element);
-        while (en.next()) {
-            const item = en.current;
-            const dataItem = item.atomControl ? item.atomControl.data : item;
-            if (dataItem === data) {
-                item.scrollIntoView();
-                return;
+        this.app.callLater(() => {
+            const en = new ChildEnumerator(this.itemsPresenter || this.element);
+            while (en.next()) {
+                const item = en.current;
+                const dataItem = item.atomControl ? item.atomControl.data : item;
+                if (dataItem === data) {
+                    item.scrollIntoView();
+                    return;
+                }
             }
-        }
+        });
     }
 
     public bringSelectionIntoView() {
