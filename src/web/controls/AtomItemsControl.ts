@@ -565,6 +565,18 @@ export class AtomItemsControl extends AtomControl {
         return false;
     }
 
+    public bringIntoView(data: any): void {
+        const en = new ChildEnumerator(this.itemsPresenter || this.element);
+        while (en.next()) {
+            const item = en.current;
+            const dataItem = item.atomControl ? item.atomControl.data : item;
+            if (dataItem === data) {
+                item.scrollIntoView();
+                return;
+            }
+        }
+    }
+
     public bringSelectionIntoView() {
 
         // do not scroll for first auto select
