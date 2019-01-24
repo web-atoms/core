@@ -43,8 +43,8 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     protected loadXaml(content: string): void {
-        const bridge = AtomBridge.instance;
-        bridge.loadContent(this.element, content);
+        const bridge = AtomBridge.instance as any;
+        bridge.loadXamlContent(this, this.element, content);
     }
 
     protected find(name: string): any {
