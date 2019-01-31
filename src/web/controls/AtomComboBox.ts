@@ -68,7 +68,9 @@ export class AtomComboBox extends AtomItemsControl {
         super.preCreate();
 
         this.runAfterInit(() => {
-            this.itemTemplate = AtomComboBoxItemTemplate;
+            if (!this.itemTemplate) {
+                this.itemTemplate = AtomComboBoxItemTemplate;
+            }
             this.bindEvent(this.element, "change", (s) => {
                 if (this.isChanging) {
                     return;
