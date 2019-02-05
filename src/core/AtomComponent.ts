@@ -443,14 +443,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    // public abstract init(): void;
-
-    // tslint:disable-next-line:no-empty
-    protected create(): void {
-
-    }
-
-    protected registerDisposable(d: IDisposable): IDisposable {
+    public registerDisposable(d: IDisposable): IDisposable {
         this.disposables.add(d);
         return {
             dispose: () => {
@@ -458,6 +451,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 d.dispose();
             }
         };
+    }
+
+    // public abstract init(): void;
+
+    // tslint:disable-next-line:no-empty
+    protected create(): void {
+
     }
 
     // tslint:disable-next-line:no-empty
