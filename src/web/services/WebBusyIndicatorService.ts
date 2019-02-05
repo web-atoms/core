@@ -52,7 +52,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
             e.appendChild(host);
 
         } else {
-            document.body.append(host);
+            document.body.appendChild(host);
             ws.refreshScreen();
             popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, ws.screen);
             popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, ws.screen);
