@@ -206,6 +206,14 @@ export class WindowService extends NavigationService {
         return null;
     }
 
+    public refreshScreen() {
+        const height = this.screen.height = window.innerHeight || document.body.clientHeight;
+        const width = this.screen.width = window.innerWidth || document.body.clientWidth;
+        this.screen.scrollLeft = window.scrollX || document.body.scrollLeft || 0;
+        this.screen.scrollTop = window.scrollY || document.body.scrollTop || 0;
+        this.screen.orientation = width > height ? "landscape" : "portrait";
+    }
+
     protected registerForPopup(): void {
 
         if (window) {
@@ -369,11 +377,4 @@ export class WindowService extends NavigationService {
         });
     }
 
-    private refreshScreen() {
-        const height = this.screen.height = window.innerHeight || document.body.clientHeight;
-        const width = this.screen.width = window.innerWidth || document.body.clientWidth;
-        this.screen.scrollLeft = window.scrollX || document.body.scrollLeft || 0;
-        this.screen.scrollTop = window.scrollY || document.body.scrollTop || 0;
-        this.screen.orientation = width > height ? "landscape" : "portrait";
-    }
 }

@@ -1,9 +1,12 @@
+import { App } from "../../App";
 import { IDisposable } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { ModuleFiles } from "../../ModuleFiles";
 import { BusyIndicatorService } from "../../services/BusyIndicatorService";
 import { NavigationService } from "../../services/NavigationService";
+import { AtomControl } from "../controls/AtomControl";
+import { cssNumberToString } from "../styles/StyleBuilder";
 import { WindowService } from "./WindowService";
 
 @RegisterSingleton
@@ -12,15 +15,20 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
     @Inject
     private navigationService: NavigationService;
 
+    @Inject
+    private app: App;
+
     private zIndex: number = 50000;
 
     public createIndicator(): IDisposable {
 
-        const div = document.createElement("div");
+        const popup = new AtomControl(this.app);
+        const host = document.createElement("div");
+        popup.element = host;
 
         const span = document.createElement("img");
 
-        const divStyle = div.style;
+        const divStyle = host.style;
         divStyle.position = "absolute";
         divStyle.left = divStyle.right = divStyle.bottom = divStyle.top = "0";
         divStyle.zIndex = (this.zIndex ++) + "";
@@ -34,18 +42,30 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
         spanStyle.left = spanStyle.right = spanStyle.bottom = spanStyle.top = "0";
         span.src = ModuleFiles.src.web.images.busy_gif;
 
-        div.appendChild(span);
+        host.appendChild(span);
 
         const ws = this.navigationService as WindowService;
 
-        const e = ws.getHostForElement() || document.body;
+        const e = ws.getHostForElement();
 
-        e.appendChild(div);
-        return {
+        if (e) {
+            e.appendChild(host);
+
+        } else {
+            document.body.appendChild(host);
+            ws.refreshScreen();
+            popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, ws.screen);
+            popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, ws.screen);
+            popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, ws.screen);
+            popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, ws.screen);
+        }
+
+        popup.registerDisposable({
             dispose: () => {
-                // dispose...
-                div.remove();
+                host.remove();
             }
-        };
+        });
+
+        return popup;
     }
 }

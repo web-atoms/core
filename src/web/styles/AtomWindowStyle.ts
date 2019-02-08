@@ -73,7 +73,7 @@ export class AtomWindowStyle extends AtomStyle {
             height: "0",
             padding: "9px",
             border: "none",
-            backgroundColor: "#00000000",
+            backgroundColor: "transparent",
             backgroundImage: CloseButtonHoverDataUrl,
             // As suggested by srikanth sir
             // subclasses: {
