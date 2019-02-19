@@ -1,3 +1,4 @@
+import { Atom } from "../../Atom";
 import { ModuleFiles } from "../../ModuleFiles";
 import CloseButton from "../images/CloseButton";
 import CloseButtonDataUrl from "../images/CloseButtonDataUrl";
@@ -5,7 +6,6 @@ import CloseButtonHover from "../images/CloseButtonHover";
 import CloseButtonHoverDataUrl from "../images/CloseButtonHoverDataUrl";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
-import { Atom } from "../../Atom";
 
 export class AtomWindowStyle extends AtomStyle {
 
