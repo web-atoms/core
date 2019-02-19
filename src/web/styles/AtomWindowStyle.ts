@@ -5,6 +5,7 @@ import CloseButtonHover from "../images/CloseButtonHover";
 import CloseButtonHoverDataUrl from "../images/CloseButtonHoverDataUrl";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
+import { Atom } from "../../Atom";
 
 export class AtomWindowStyle extends AtomStyle {
 
@@ -29,7 +30,7 @@ export class AtomWindowStyle extends AtomStyle {
             fontFamily: "Arial",
             borderRadius: "5px",
             backgroundColor: "white",
-            opacity: "0",
+            opacity: Atom.designMode ? undefined : "0",
         };
     }
 
