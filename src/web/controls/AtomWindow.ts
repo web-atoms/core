@@ -37,7 +37,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.titlePresenter = titlePresenter;
         this.element.appendChild(titlePresenter);
 
-        // add content presneter
+        // add content presenter
         const cp = document.createElement("div");
         this.bind(cp, "styleClass", [["templateParent", "controlStyle", "content"]]);
         // cp.classList.add(style.content.className);
@@ -194,6 +194,9 @@ export class AtomWindow extends AtomControl {
 
     private centerFrame(e: HTMLElement): void {
         const parent = this.element.parentElement;
+        if (parent as any === window || parent as any === document.body) {
+            return;
+        }
         if (parent.offsetWidth <= 0 || parent.offsetHeight <= 0) {
             setTimeout(() => {
                 this.centerFrame(e);

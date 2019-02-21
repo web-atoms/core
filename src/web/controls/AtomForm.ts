@@ -10,8 +10,7 @@ export class AtomForm extends AtomControl {
 
     public append(e: AtomControl | HTMLElement | Text): AtomControl {
 
-        if (!(e instanceof AtomFormField))
-        {
+        if (!(e instanceof AtomFormField)) {
             throw new Error(`Only AtomFormField can be added inside AtomForm`);
         }
         return super.append(e);
