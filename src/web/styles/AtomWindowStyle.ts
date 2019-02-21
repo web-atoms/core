@@ -29,8 +29,7 @@ export class AtomWindowStyle extends AtomStyle {
             border: "solid 1px #808080",
             fontFamily: "Arial",
             borderRadius: "5px",
-            backgroundColor: "white",
-            opacity: Atom.designMode ? undefined : "0",
+            backgroundColor: "white"
         };
     }
 

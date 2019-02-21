@@ -213,6 +213,7 @@ export class AtomWindow extends AtomControl {
         this.x = x;
         this.y = y;
         e.style.opacity = "1";
+        this.element.style.opacity = "1";
     }
 
     private setupDragging(tp: HTMLElement): void {

@@ -268,6 +268,7 @@ export class WindowService extends NavigationService {
 
         if (popup instanceof AtomWindow) {
             isPopup = false;
+            e.style.opacity = "0";
         }
 
         // if (isPopup) {
