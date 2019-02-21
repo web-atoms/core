@@ -156,8 +156,10 @@ export class WindowService extends NavigationService {
             title,
             okTitle: "Ok",
             cancelTitle: ""
-        }).catch(() => {
+        }).catch((e) => {
             // do nothing...
+// tslint:disable-next-line: no-console
+            console.warn(e);
         });
     }
 
