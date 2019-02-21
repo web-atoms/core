@@ -49,6 +49,9 @@ export class AtomLoader {
             if (!view) {
                 // tslint:disable-next-line: no-console
                 console.warn(`failed to load view for ${url}`);
+            } else {
+                // tslint:disable-next-line:no-console
+                console.log(`View loaded from ${url.toString()}`);
             }
             const vm = view.viewModel;
             if (vm) {
