@@ -10,6 +10,8 @@ export class AtomLoader {
         if (url.host === "reference") {
             const r = app.get(ReferenceService).get(url.path);
             if (!r) {
+                // tslint:disable-next-line: no-console
+                console.warn(`reference not found for ${url.toString()}`);
                 throw new Error("reference not found");
             }
             return r.consume();
@@ -17,12 +19,22 @@ export class AtomLoader {
         if (url.host === "class") {
             const r = app.get(ReferenceService).get(url.path);
             if (!r) {
+                // tslint:disable-next-line: no-console
+                console.warn(`reference not found for ${url.toString()}`);
                 throw new Error("reference not found");
             }
             return app.resolve(r.consume(), true);
         }
         const type = await DI.resolveViewClassAsync<T>(url.path);
+        if (!type) {
+            // tslint:disable-next-line: no-console
+            console.warn(`type not found for ${url.path}`);
+        }
         const obj = app.resolve(type, true);
+        if (!obj) {
+            // tslint:disable-next-line: no-console
+            console.warn(`failed to resolve object for ${url.path}`);
+        }
         return obj;
     }
 
@@ -34,7 +46,10 @@ export class AtomLoader {
 
         try {
             const view = await AtomLoader.load<T>(url, app);
-
+            if (!view) {
+                // tslint:disable-next-line: no-console
+                console.warn(`failed to load view for ${url}`);
+            }
             const vm = view.viewModel;
             if (vm) {
                 const jsonService = app.get(JsonService);
