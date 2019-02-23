@@ -31,13 +31,20 @@ export class AtomLoader {
 
     public static async loadView<T extends { viewModel: any, element: any }>(
         url: AtomUri,
-        app: App): Promise<T> {
+        app: App,
+        vmFactory?: () => any): Promise<T> {
 
         const busyIndicator = app.createBusyIndicator();
 
         try {
             const view = await AtomLoader.load<T>(url, app);
-            const vm = view.viewModel;
+            let vm = view.viewModel;
+            if (!vm) {
+                if (!vmFactory) {
+                    return view;
+                }
+                vm = vmFactory();
+            }
             if (vm) {
                 const jsonService = app.get(JsonService);
                 for (const key in url.query) {
