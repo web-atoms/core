@@ -44,6 +44,7 @@ export class AtomLoader {
                     return view;
                 }
                 vm = vmFactory();
+                view.viewModel = vm;
             }
             if (vm) {
                 const jsonService = app.get(JsonService);
