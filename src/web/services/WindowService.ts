@@ -14,6 +14,7 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import AtomAlertWindow from "../controls/AtomAlertWindow";
 import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
+import AtomNotification from "../controls/AtomNotification";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
@@ -216,6 +217,12 @@ export class WindowService extends NavigationService {
         this.screen.orientation = width > height ? "landscape" : "portrait";
     }
 
+    public notify(message: string, title?: string): void {
+        const rs = this.app.resolve(ReferenceService) as ReferenceService;
+        const k = rs.put(AtomNotification);
+        this.app.runAsync(() => this.openPage(`app://reference/${k.key}`, { message, title }));
+    }
+
     protected registerForPopup(): void {
 
         if (window) {
@@ -322,6 +329,10 @@ export class WindowService extends NavigationService {
                     popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
                     popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
                     popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
+                }
+
+                if (popup instanceof AtomNotification) {
+                    this.popups.push(popup);
                 }
             }
 

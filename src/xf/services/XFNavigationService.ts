@@ -78,6 +78,12 @@ export default class XFNavigationService extends NavigationService {
         });
     }
 
+    public notify(message: string, title?: string): void {
+        // display toast pending..
+        // tslint:disable-next-line: no-console
+        console.warn("Display toast not yet implemented");
+    }
+
     public async openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
         const  url = new AtomUri(pageName);
 

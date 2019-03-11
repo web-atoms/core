@@ -15,6 +15,8 @@ export abstract class NavigationService {
     public abstract confirm(message: string, title?: string): Promise<boolean>;
     public abstract openPage<T>(pageName: string, p?: INameValuePairs): Promise<T>;
 
+    public abstract notify(message: string, title?: string): void;
+
     public abstract get title(): string;
     public abstract set title(v: string);
 
