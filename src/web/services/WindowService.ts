@@ -220,7 +220,7 @@ export class WindowService extends NavigationService {
     public notify(message: string, title?: string): void {
         const rs = this.app.resolve(ReferenceService) as ReferenceService;
         const k = rs.put(AtomNotification);
-        this.app.runAsync(() => this.openPage(`app://reference/${k.key}`, { message, title }));
+        this.app.runAsync(() => this.openPage(`app://class/${k.key}`, { message, title }));
     }
 
     protected registerForPopup(): void {
