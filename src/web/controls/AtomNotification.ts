@@ -17,8 +17,8 @@ export default class AtomNotification extends AtomWindow {
         }
     }
 
-    protected preCreate(): void {
-        super.preCreate();
+    protected create(): void {
+        this.element = document.createElement("div");
 
         this.runAfterInit(() => {
             this.app.callLater(() => {
