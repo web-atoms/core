@@ -227,7 +227,7 @@ export class WindowService extends NavigationService {
         this.app.runAsync(() => this.openPage(`app://class/${k.key}`, {
             message,
             title,
-            type,
+            type: type || NotifyType.Information,
             timeout: delay
         }));
     }
