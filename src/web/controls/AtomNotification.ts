@@ -24,12 +24,12 @@ export default class AtomNotification extends AtomControl {
         this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 5000 );
         this.bind(this.element,
             "styleClass",
-            [["this", "viewModel", "error"], ["this", "viewModel", "error"]],
+            [["this", "viewModel", "type"]],
             false,
-            (error, warning) => ({
+            (type) => ({
                 [this.controlStyle.root]: true,
-                error,
-                warning
+                error: type && /error/i.test(type),
+                warning: type && /warn/i.test(type)
             }));
     }
 

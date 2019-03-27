@@ -10,6 +10,12 @@ import { INameValuePairs } from "../core/types";
 //     protocol?: string;
 // }
 
+export enum NotifyType {
+    Information = "info",
+    Warning = "warn",
+    Error = "error"
+}
+
 export abstract class NavigationService {
     public abstract alert(message: string, title?: string): Promise<any>;
     public abstract confirm(message: string, title?: string): Promise<boolean>;

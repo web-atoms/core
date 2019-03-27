@@ -8,7 +8,7 @@ import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
-import { NavigationService } from "../../services/NavigationService";
+import { NavigationService, NotifyType } from "../../services/NavigationService";
 import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
@@ -217,10 +217,19 @@ export class WindowService extends NavigationService {
         this.screen.orientation = width > height ? "landscape" : "portrait";
     }
 
-    public notify(message: string, title?: string): void {
+    public notify(
+        message: string,
+        title?: string,
+        type?: NotifyType,
+        delay?: number): void {
         const rs = this.app.resolve(ReferenceService) as ReferenceService;
         const k = rs.put(AtomNotification);
-        this.app.runAsync(() => this.openPage(`app://class/${k.key}`, { message, title }));
+        this.app.runAsync(() => this.openPage(`app://class/${k.key}`, {
+            message,
+            title,
+            type,
+            timeout: delay
+        }));
     }
 
     protected registerForPopup(): void {
