@@ -386,6 +386,12 @@ export class WindowService extends NavigationService {
         const e = c.element;
         const parent = e.parentElement;
         if (parent as any === window || parent as any === document.body) {
+            setTimeout(() => {
+            const ew = (document.body.offsetWidth - e.offsetWidth) / 2;
+            const eh = (document.body.offsetHeight - e.offsetHeight) / 2;
+            e.style.left = `${ew}px`;
+            e.style.top = `${eh}px`;
+            }, 200);
             return;
         }
         if (parent.offsetWidth <= 0 || parent.offsetHeight <= 0) {
