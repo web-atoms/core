@@ -296,7 +296,9 @@ export class WindowService extends NavigationService {
 
             e._logicalParent = this.currentTarget;
 
-            if (isPopup) {
+            const isNotification = popup instanceof AtomNotification;
+
+            if (isPopup && !(isNotification)) {
 
                 const sr = AtomUI.screenOffset(this.currentTarget);
 
@@ -331,8 +333,9 @@ export class WindowService extends NavigationService {
                     popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
                 }
 
-                if (popup instanceof AtomNotification) {
+                if (isNotification) {
                     this.popups.push(popup);
+                    this.centerElement(popup);
                 }
             }
 
@@ -376,20 +379,36 @@ export class WindowService extends NavigationService {
 
             if (wvm) {
                 wvm.windowName = e.id;
-
-                // for (const key in url.query) {
-                //     if (url.query.hasOwnProperty(key)) {
-                //         const element = url.query[key];
-                //         if (typeof element === "object") {
-                //             wvm[key] = this.jsonService.parse(this.jsonService.stringify(element));
-                //         } else {
-                //             wvm[key] = element;
-                //         }
-                //     }
-                // }
             }
 
         });
+    }
+
+    private centerElement(c: AtomControl): void {
+        const e = c.element;
+        const parent = e.parentElement;
+        if (parent as any === window || parent as any === document.body) {
+            return;
+        }
+        if (parent.offsetWidth <= 0 || parent.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerElement(c);
+            }, 100);
+            return;
+        }
+
+        if (e.offsetWidth <= 0 || e.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerElement(c);
+            }, 100);
+            return;
+        }
+
+        const x = (parent.offsetWidth - e.offsetWidth) / 2;
+        const y = (parent.offsetHeight - e.offsetHeight) / 2;
+        e.style.left = `${x}px`;
+        e.style.top = `${y}px`;
+        e.style.removeProperty("opacity");
     }
 
 }

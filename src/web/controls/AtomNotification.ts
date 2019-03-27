@@ -1,8 +1,7 @@
 import { BindableProperty } from "../../core/BindableProperty";
 import { AtomControl } from "./AtomControl";
-import { AtomWindow } from "./AtomWindow";
 
-export default class AtomNotification extends AtomWindow {
+export default class AtomNotification extends AtomControl {
 
     @BindableProperty
     public timeout: number = 3000;
@@ -17,15 +16,11 @@ export default class AtomNotification extends AtomWindow {
         }
     }
 
-    protected create(): void {
+    public create(): void {
         this.element = document.createElement("div");
-
-        this.runAfterInit(() => {
-            this.app.callLater(() => {
-                this.setupTimeout();
-            });
-        });
-        this.windowTemplate = AtomNotificationTemplate;
+        this.bind(this.element, "text", [["this", "viewModel", "message"]], false, null, this);
+        this.element.style.opacity = "0";
+        this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 3000 );
     }
 
     protected setupTimeout(): void {
@@ -35,14 +30,5 @@ export default class AtomNotification extends AtomWindow {
         this.timeoutKey = setTimeout(() => {
             this.app.broadcast(`atom-window-close:${this.element.id}`, "");
         }, this.timeout);
-    }
-
-}
-
-export class AtomNotificationTemplate extends AtomControl {
-
-    public create(): void {
-        this.element = document.createElement("div");
-        this.bind(this.element, "text", [["this", "viewModel", "message"]], false, null, this);
     }
 }
