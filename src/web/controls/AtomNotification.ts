@@ -1,10 +1,11 @@
 import { BindableProperty } from "../../core/BindableProperty";
 import { AtomControl } from "./AtomControl";
+import AtomNotificationStyle from "../styles/AtomNotificationStyle";
 
 export default class AtomNotification extends AtomControl {
 
     @BindableProperty
-    public timeout: number = 3000;
+    public timeout: number = 5000;
 
     private timeoutKey: any = null;
 
@@ -17,9 +18,19 @@ export default class AtomNotification extends AtomControl {
     }
 
     public create(): void {
+        this.defaultControlStyle = AtomNotificationStyle;
         this.element = document.createElement("div");
         this.bind(this.element, "text", [["this", "viewModel", "message"]], false, null, this);
-        this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 3000 );
+        this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 5000 );
+        this.bind(this.element,
+            "styleClass",
+            [["this", "viewModel", "error"], ["this", "viewModel", "error"]],
+            false,
+            (error, warning) => ({
+                [this.controlStyle.root]: true,
+                error,
+                warning
+            }));
     }
 
     protected setupTimeout(): void {
