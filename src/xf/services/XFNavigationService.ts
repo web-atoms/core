@@ -7,7 +7,7 @@ import { INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { JsonService } from "../../services/JsonService";
-import { NavigationService } from "../../services/NavigationService";
+import { NavigationService, NotifyType } from "../../services/NavigationService";
 import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomControl } from "../../web/controls/AtomControl";
 import { AtomUI } from "../../web/core/AtomUI";
@@ -78,7 +78,7 @@ export default class XFNavigationService extends NavigationService {
         });
     }
 
-    public notify(message: string, title?: string): void {
+    public notify(message: string, title?: string, type?: NotifyType, delay?: number): void {
         // display toast pending..
         // tslint:disable-next-line: no-console
         console.warn("Display toast not yet implemented");
