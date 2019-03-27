@@ -19,7 +19,6 @@ export default class AtomNotification extends AtomControl {
     public create(): void {
         this.element = document.createElement("div");
         this.bind(this.element, "text", [["this", "viewModel", "message"]], false, null, this);
-        this.element.style.opacity = "0";
         this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 3000 );
     }
 

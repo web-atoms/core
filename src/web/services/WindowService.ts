@@ -298,7 +298,7 @@ export class WindowService extends NavigationService {
 
             const isNotification = popup instanceof AtomNotification;
 
-            if (isPopup && !(isNotification)) {
+            if (isPopup) {
 
                 const sr = AtomUI.screenOffset(this.currentTarget);
 
@@ -311,6 +311,9 @@ export class WindowService extends NavigationService {
                 e.classList.add(theme.host.className);
                 this.popups.push(popup);
                 document.body.appendChild(e);
+                if (isNotification) {
+                    this.centerElement(popup);
+                }
             } else {
 
                 const eHost = this.getHostForElement();
@@ -331,11 +334,6 @@ export class WindowService extends NavigationService {
                     popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
                     popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
                     popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
-                }
-
-                if (isNotification) {
-                    this.popups.push(popup);
-                    this.centerElement(popup);
                 }
             }
 
