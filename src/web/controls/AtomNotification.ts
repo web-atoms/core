@@ -1,6 +1,6 @@
 import { BindableProperty } from "../../core/BindableProperty";
-import { AtomControl } from "./AtomControl";
 import AtomNotificationStyle from "../styles/AtomNotificationStyle";
+import { AtomControl } from "./AtomControl";
 
 export default class AtomNotification extends AtomControl {
 
