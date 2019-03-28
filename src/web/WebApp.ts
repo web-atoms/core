@@ -104,7 +104,8 @@ export default class WebApp extends App {
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < links.length; index++) {
             const element = links[index];
-            if (element.href === location) {
+            const href = element.getAttribute("href");
+            if (href === location) {
                 return;
             }
         }
