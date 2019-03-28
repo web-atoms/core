@@ -619,6 +619,9 @@ export class AtomItemsControl extends AtomControl {
 
     public updateSelectionBindings(): void {
         this.version = this.version + 1;
+        if (this.mSelectedItems && this.mSelectedItems.length) {
+            this.mValue = undefined;
+        }
         AtomBinder.refreshValue(this, "value");
         AtomBinder.refreshValue(this, "selectedItem");
         AtomBinder.refreshValue(this, "selectedItems");
