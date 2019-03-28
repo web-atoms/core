@@ -11,6 +11,8 @@ import { WindowService } from "./services/WindowService";
 import { AtomStyleSheet } from "./styles/AtomStyleSheet";
 import { AtomTheme } from "./styles/AtomTheme";
 
+declare var UMD: any;
+
 export default class WebApp extends App {
 
     public get parentElement(): HTMLElement {
@@ -66,6 +68,8 @@ export default class WebApp extends App {
 
         this.put(NavigationService, this.resolve(WindowService));
 
+        this.put(WebApp, this);
+
         this.put(BusyIndicatorService, this.resolve(WebBusyIndicatorService));
 
         ServiceCollection.instance.registerSingleton(AtomStyleSheet, (sp) => sp.resolve(AtomTheme));
@@ -92,6 +96,22 @@ export default class WebApp extends App {
                 this.url = new AtomUri(location.href);
             });
         });
+    }
+
+    public installStyleSheet(location: string): void {
+        location = UMD.resolvePath(location);
+        const links = document.getElementsByTagName("link");
+        // tslint:disable-next-line:prefer-for-of
+        for (let index = 0; index < links.length; index++) {
+            const element = links[index];
+            if (element.href === location) {
+                return;
+            }
+        }
+        const ss = document.createElement("link");
+        ss.rel = "stylesheet";
+        ss.href = location;
+        document.body.appendChild(ss);
     }
 
     /**
