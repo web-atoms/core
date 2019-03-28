@@ -15,7 +15,6 @@ export default class AtomNotificationStyle extends AtomStyle {
                 ".error": {
                     borderColor: Colors.red,
                     color: Colors.red,
-                    backgroundColor: "#FFBABA"
                 },
                 ".warning": {
                     backgroundColor: Colors.lightYellow
