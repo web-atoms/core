@@ -4,7 +4,7 @@ import "../../core/AtomList";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
 import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
-import { AtomControl, IAtomControlElement } from "./AtomControl";
+import { AtomControl } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
     @BindableProperty
@@ -702,7 +702,7 @@ export class AtomItemsControl extends AtomControl {
             while (en.next()) {
                 const ce = en.current;
                 // tslint:disable-next-line:no-shadowed-variable
-                const c = ce as IAtomControlElement;
+                const c = ce;
                 if (c.atomControl && c.atomControl.data === item) {
                     c.atomControl.dispose();
                     ce.remove();
@@ -988,8 +988,8 @@ export class AtomItemsControl extends AtomControl {
     protected createChild(df: DocumentFragment, data: any): AtomControl {
         const t = this.itemTemplate;
         const ac = this.app.resolve(t, true);
-        const e = ac.element as IAtomControlElement;
-        e._logicalParent = this.element as IAtomControlElement;
+        const e = ac.element;
+        e._logicalParent = this.element;
         e._templateParent = this;
         if (df) {
             df.appendChild(ac.element as HTMLElement);

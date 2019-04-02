@@ -13,7 +13,7 @@ import ReferenceService, { ObjectReference } from "../../services/ReferenceServi
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import AtomAlertWindow from "../controls/AtomAlertWindow";
-import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
+import { AtomControl } from "../controls/AtomControl";
 import AtomNotification from "../controls/AtomNotification";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";

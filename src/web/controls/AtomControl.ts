@@ -11,18 +11,12 @@ import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 
-// tslint:disable-next-line:interface-name
-export interface IAtomControlElement extends HTMLElement {
-    atomControl: AtomControl;
-    _logicalParent: IAtomControlElement;
-    _templateParent: AtomControl;
-}
-
 declare global {
     // tslint:disable-next-line:interface-name
     export interface HTMLElement {
         atomControl: AtomControl;
         _logicalParent: HTMLElement;
+        _templateParent: AtomControl;
     }
 }
 
@@ -116,7 +110,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
      * Gets Parent AtomControl of this control.
      */
     public get parent(): AtomControl {
-        const ep = (this.element as IAtomControlElement)._logicalParent || this.element.parentElement;
+        const ep = this.element._logicalParent || this.element.parentElement;
         if (!ep) {
             return null;
         }
@@ -127,13 +121,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
      * Gets Template Parent, from where the current template was loaded.
      */
     public get templateParent(): AtomControl {
-        let e = this.element as IAtomControlElement;
+        let e = this.element;
         while (e) {
             const tp = e._templateParent;
             if (tp) {
                 return tp;
             }
-            e = e._logicalParent || e.parentElement as IAtomControlElement;
+            e = e._logicalParent || e.parentElement;
         }
     }
 
@@ -151,7 +145,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (!e) {
             return;
         }
-        const ep = e as IAtomControlElement;
+        const ep = e;
         if (ep.atomControl) {
             return ep.atomControl;
         }
@@ -159,7 +153,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     public attachControl(): void {
-        (this.element as IAtomControlElement).atomControl = this;
+        this.element.atomControl = this;
     }
 
     public append(element: AtomControl | HTMLElement | Text): AtomControl {
@@ -309,7 +303,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         while (child) {
             const c = child;
             child = child.nextElementSibling as HTMLElement;
-            const ac = c as IAtomControlElement;
+            const ac = c;
             if (ac && ac.atomControl) {
                 ac.atomControl.dispose();
             } else {
