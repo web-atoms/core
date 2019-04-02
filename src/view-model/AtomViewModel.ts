@@ -49,6 +49,7 @@ export class AtomViewModel {
 
     private mChildren: AtomViewModel[];
     private mParent: AtomViewModel;
+    private mShouldValidate: boolean = false;
     public get parent(): AtomViewModel {
         return this.mParent;
     }
@@ -70,6 +71,7 @@ export class AtomViewModel {
 
     public get isValid(): boolean {
         let valid = true;
+        this.mShouldValidate = true;
         for (const v of this.validations) {
             if (!v.initialized) {
                 v.watcher.evaluate(true);
@@ -92,6 +94,13 @@ export class AtomViewModel {
 
     constructor(@Inject public readonly app: App) {
         this.app.runAsync(() => this.privateInit());
+    }
+
+    public resetValidations(): void {
+        this.mShouldValidate = false;
+        for (const v of this.validations) {
+            this.refresh(v.name);
+        }
     }
 
     public runAfterInit(f: () => void): void {
@@ -454,7 +463,7 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
             enumerable: true,
             configurable: true,
             get() {
-                if (initialized.i) {
+                if ((vm as any).mShouldValidate && initialized.i) {
                     return getMethod.apply(this);
                 }
                 return null;
