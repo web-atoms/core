@@ -115,6 +115,35 @@ export default class WebApp extends App {
         document.body.appendChild(ss);
     }
 
+    public installScript(location: string): Promise<void> {
+        location = UMD.resolvePath(location);
+        const links = document.getElementsByTagName("script");
+        // tslint:disable-next-line:prefer-for-of
+        for (let index = 0; index < links.length; index++) {
+            const element = links[index];
+            const href = element.getAttribute("src");
+            if (href === location) {
+                return (element as any).loaderPromise;
+            }
+        }
+        const script: HTMLScriptElement = document.createElement("script");
+        const p = new Promise<void>((resolve, reject) => {
+            script.type = "text/javascript";
+            script.src = location;
+            const s: any = script as any;
+            script.onload = s.onreadystatechange = () => {
+                if ((s.readyState && s.readyState !== "complete" && s.readyState !== "loaded")) {
+                    return;
+                }
+                script.onload = s.onreadystatechange = null;
+                resolve();
+            };
+            document.body.appendChild(script);
+        });
+        (script as any).loaderPromise = p;
+        return p;
+    }
+
     /**
      * Do not use this method
      */
