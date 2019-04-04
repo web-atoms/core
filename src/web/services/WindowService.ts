@@ -183,6 +183,9 @@ export class WindowService extends NavigationService {
                 // do not close this popup....
                 return;
             }
+            if (element._logicalParent === target) {
+                return;
+            }
             target = target.parentElement;
         }
 
