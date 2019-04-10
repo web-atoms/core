@@ -38,6 +38,8 @@ export class App extends ServiceProvider {
 
     public readonly screen: IScreen;
 
+    public appReady: boolean = false;
+
     private bag: any;
 
     private busyIndicators: IDisposable[] = [];
