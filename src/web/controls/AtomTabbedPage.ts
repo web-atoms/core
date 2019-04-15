@@ -267,17 +267,27 @@ class AtomTabViewModel extends AtomViewModel {
             this.oldDisposable.dispose();
             this.oldDisposable = null;
         }
-        this.oldDisposable = this.registerDisposable( this.app.subscribe(name, (channel, message) => {
-            this.loadPage(message, false).catch((error) => {
-                // tslint:disable-next-line:no-console
-                console.error(error);
-            }).then(() => {
-                // do nothing
-            });
+        this.oldDisposable = this.registerDisposable(
+            this.app.subscribe(name, (channel, message) => {
+                this.app.runAsync(async () => {
+                    await this.loadPage(message, false);
+                });
         }));
     }
 
-    protected async loadPage(message: string, doNotSetSelected: boolean): Promise<AtomPage> {
+    protected async loadPage(
+        message: string,
+        doNotSetSelected: boolean): Promise<AtomPage> {
+
+        const existing = this.pages.find((x) => x.tag === message);
+        if (existing) {
+            if (!doNotSetSelected) {
+                if (this.selectedPage !== existing) {
+                    this.selectedPage = existing;
+                }
+            }
+            return existing;
+        }
 
         const url = new AtomUri(message);
 
