@@ -62,6 +62,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
         popup.registerDisposable({
             dispose: () => {
+                popup.dispose();
                 host.remove();
             }
         });
