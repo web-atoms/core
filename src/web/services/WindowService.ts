@@ -404,6 +404,7 @@ export class WindowService extends NavigationService {
             const eh = (document.body.offsetHeight - e.offsetHeight) / 2;
             e.style.left = `${ew}px`;
             e.style.top = `${eh}px`;
+            e.style.removeProperty("opacity");
             }, 200);
             return;
         }
