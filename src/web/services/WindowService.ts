@@ -324,6 +324,7 @@ export class WindowService extends NavigationService {
                 this.popups.push(popup);
                 document.body.appendChild(e);
                 if (isNotification) {
+                    e.style.opacity = "0";
                     this.centerElement(popup);
                 }
             } else {
