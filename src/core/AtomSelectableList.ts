@@ -64,7 +64,7 @@ export default class AtomSelectableList<T> {
             this.selectedItems.clear();
         }
         AtomBinder.refreshItems(this.selectedItems);
-        for (const iterator of this.selectedItems) {
+        for (const iterator of this.items) {
             AtomBinder.refreshValue(iterator, "selected");
         }
     }
