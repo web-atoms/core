@@ -51,7 +51,10 @@ export default class AtomSelectableList<T> {
     }
 
     public get selectAll(): boolean {
-        return this.items.length === this.selectedItems.length;
+        if (this.items.length) {
+            return this.items.length === this.selectedItems.length;
+        }
+        return false;
     }
 
     public set selectAll(v: boolean) {
@@ -61,6 +64,9 @@ export default class AtomSelectableList<T> {
             this.selectedItems.clear();
         }
         AtomBinder.refreshItems(this.selectedItems);
+        for (const iterator of this.selectedItems) {
+            AtomBinder.refreshValue(iterator, "selected");
+        }
     }
 
     private mValue: any = undefined;
@@ -188,7 +194,7 @@ export default class AtomSelectableList<T> {
                 }
                 AtomBinder.refreshValue(self, "value");
                 AtomBinder.refreshValue(self, "label");
-                AtomBinder.refreshValue(self, "selectAll");
+                AtomBinder.refreshValue(this, "selectAll");
                 AtomBinder.refreshValue(this, "selected");
                 AtomBinder.refreshValue(this, "selectedItem");
                 AtomBinder.refreshValue(this, "selectedIndex");
