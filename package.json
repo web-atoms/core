@@ -6,7 +6,7 @@
   "scripts": {
     "test": "istanbul cover ./dist/test.js",
     "posttest": "remap-istanbul -i ./coverage/coverage.json -t html -o ./html-report",
-    "postversion": "npm publish"
+    "postversion": "git push --follow-tags"
   },
   "repository": {
     "type": "git",
