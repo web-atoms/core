@@ -98,20 +98,32 @@ export default class WebApp extends App {
         });
     }
 
-    public installStyleSheet(location: string): void {
+    public installStyleSheet(ssConfig: string |
+        { href: string, integrity?: string, crossOrigin?: string}): void {
+
+        if (typeof ssConfig !== "object") {
+            ssConfig = { href: ssConfig };
+        }
+
         location = UMD.resolvePath(location);
         const links = document.getElementsByTagName("link");
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < links.length; index++) {
             const element = links[index];
             const href = element.getAttribute("href");
-            if (href === location) {
+            if (href === ssConfig.href) {
                 return;
             }
         }
         const ss = document.createElement("link");
         ss.rel = "stylesheet";
-        ss.href = location;
+        ss.href = ssConfig.href;
+        if (ssConfig.crossOrigin) {
+            ss.crossOrigin = ssConfig.crossOrigin;
+        }
+        if (ssConfig.integrity) {
+            ss.integrity = ssConfig.integrity;
+        }
         document.body.appendChild(ss);
     }
 
