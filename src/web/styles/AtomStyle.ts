@@ -33,6 +33,7 @@ export class AtomStyle
         public readonly parent: AtomStyle,
         public readonly name: string
     ) {
+        this.init();
     }
 
     public getDefaultStyle(forKey: any): AtomStyle {
