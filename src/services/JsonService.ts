@@ -2,7 +2,7 @@ import { IValueConverter } from "../core/IValueConverter";
 import { StringHelper } from "../core/StringHelper";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 
-export const dateFormatISORegEx = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*))(?:Z|(\+|-)([\d|:]*))?$/;
+export const dateFormatISORegEx = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/;
 export const dateFormatMSRegEx = /^\/Date\((d|-|.*)\)[\/|\\]$/;
 
 export type JsonKeysNamingStrategy = "underscore" | "hyphen" | "none";
