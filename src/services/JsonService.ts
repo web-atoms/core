@@ -16,6 +16,8 @@ export interface IJsonParserOptions {
     indent?: number;
 }
 
+const timeZoneDiff = (new Date()).getTimezoneOffset();
+
 @RegisterSingleton
 export class JsonService {
 
@@ -27,7 +29,11 @@ export class JsonService {
                 regex: dateFormatISORegEx,
                 valueCovnerter: {
                     fromSource(v: string): Date {
-                        return new Date(v);
+                        const d = new Date(v);
+                        if (/z$/i.test(v)) {
+                            d.setMinutes( d.getMinutes() + timeZoneDiff );
+                        }
+                        return d;
                     },
                     fromTarget(v: Date): any {
                         return v.toISOString();
