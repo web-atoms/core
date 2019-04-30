@@ -11,7 +11,7 @@ export interface IJsonParserOptions {
     namingStrategy?: JsonKeysNamingStrategy;
     dateConverter?: Array<{
         regex?: RegExp;
-        valueCovnerter: IValueConverter;
+        valueConverter: IValueConverter;
     }>;
     indent?: number;
 }
@@ -27,12 +27,12 @@ export class JsonService {
         dateConverter: [
             {
                 regex: dateFormatISORegEx,
-                valueCovnerter: {
+                valueConverter: {
                     fromSource(v: string): Date {
                         const d = new Date(v);
-                        if (/z$/i.test(v)) {
-                            d.setMinutes( d.getMinutes() + timeZoneDiff );
-                        }
+                        // if (/z$/i.test(v)) {
+                        //     d.setMinutes( d.getMinutes() - timeZoneDiff );
+                        // }
                         return d;
                     },
                     fromTarget(v: Date): any {
@@ -41,7 +41,7 @@ export class JsonService {
                 }
             }, {
                 regex: dateFormatMSRegEx,
-                valueCovnerter: {
+                valueConverter: {
                     fromSource(v: string): Date {
                         const a = dateFormatMSRegEx.exec(v);
                         const b = a[1].split(/[-+,.]/);
@@ -92,12 +92,12 @@ export class JsonService {
         };
 
         const result = JSON.parse(text, (key, value) => {
-            // trannsform date...
+            // transform date...
             if (typeof value === "string") {
                 for (const iterator of dateConverter) {
                     const a = iterator.regex.exec(value);
                     if (a) {
-                        return iterator.valueCovnerter.fromSource(value);
+                        return iterator.valueConverter.fromSource(value);
                     }
                 }
             }
@@ -130,7 +130,7 @@ export class JsonService {
                 return undefined;
             }
             if (dateConverter && (value instanceof Date)) {
-                return dateConverter[0].valueCovnerter.fromTarget(value);
+                return dateConverter[0].valueConverter.fromTarget(value);
             }
             return value;
         }, indent);
