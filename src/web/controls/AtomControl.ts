@@ -3,13 +3,14 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
-import { IClassOf } from "../../core/types";
+import { IClassOf, UMD } from "../../core/types";
 import WebImage from "../../core/WebImage";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
+import { Atom } from "../../Atom";
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -221,8 +222,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     if (pendingPromises) {
                         const last = pendingPromises[name];
                         if (last) {
-                            // tslint:disable-next-line:no-console
-                            console.warn(`Previous promise exists for event ${name}`);
+                            if (UMD.debug) {
+                                // tslint:disable-next-line:no-console
+                                console.warn(`Previous promise exists for event ${name}`);
+                            }
                             return;
                         }
                     }

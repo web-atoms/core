@@ -96,6 +96,7 @@ export class ArrayHelper {
 }
 
 export declare class UMD {
+    public static debug: boolean;
     public static resolveViewClassAsync<T>(path: string): Promise<IClassOf<T>>;
     public static mockType(type: any, name: string): void;
     public static inject(type: any, name: string): void;
