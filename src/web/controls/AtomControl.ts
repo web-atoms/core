@@ -217,18 +217,33 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             // element.style[name] = value;
             this.bindEvent(element, name, async (...e: any[]) => {
                 try {
+                    let pendingPromises = (element as any).pendingPromises;
+                    if (pendingPromises) {
+                        const last = pendingPromises[name];
+                        if (last) {
+                            // tslint:disable-next-line:no-console
+                            console.warn(`Previous promise exists for event ${name}`);
+                            return;
+                        }
+                    }
                     const f = value as (...v: any[]) => any;
                     const pr = f.apply(this, e) as Promise<any>;
                     if (pr) {
+                        if (!pendingPromises) {
+                            (element as any).pendingPromises = pendingPromises = {};
+                        }
+                        pendingPromises[name] = pr;
                         try {
                             await pr;
                         } catch (error) {
-                            if (/cancelled/i.test(error)) {
+                            if (/canceled|cancelled/i.test(error)) {
                                 return;
                             }
 
                             const nav: NavigationService = this.app.resolve(NavigationService);
                             await nav.alert(error, "Error");
+                        } finally {
+                            delete pendingPromises[name];
                         }
                     }
                 } catch (er1) {

@@ -176,8 +176,6 @@ export class WindowService extends NavigationService {
         const element = peek.element;
         let target = this.currentTarget;
 
-        const theme = this.app.get(AtomTheme).popup;
-
         while (target) {
             if (target === element) {
                 // do not close this popup....
@@ -247,6 +245,8 @@ export class WindowService extends NavigationService {
 
     private async openPopupAsync<T>(windowId: string, p: INameValuePairs, isPopup: boolean): Promise<T> {
 
+        const lastTarget = this.currentTarget;
+
         const  url = new AtomUri(windowId);
 
         if (p) {
@@ -293,9 +293,10 @@ export class WindowService extends NavigationService {
             e.style.opacity = "0";
         }
 
-        // if (isPopup) {
+        e._logicalParent = lastTarget;
+        (e as any).sourceUrl = url;
+
         await Atom.delay(10);
-        // }
 
         return await new Promise<T>((resolve, reject) => {
 
@@ -305,8 +306,6 @@ export class WindowService extends NavigationService {
             e.style.zIndex = 10000 + this.lastPopupID + "";
 
             const disposables: IDisposable[] = [popup];
-
-            e._logicalParent = this.currentTarget;
 
             const isNotification = popup instanceof AtomNotification;
 
