@@ -652,7 +652,7 @@ export class AtomItemsControl extends AtomControl {
     }
 
     public invalidateItems(): void {
-        if (this.isUpdating) {
+        if (this.pendingInits || this.isUpdating) {
             setTimeout(() => {
                 this.invalidateItems();
             }, 5);
