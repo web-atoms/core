@@ -24,6 +24,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
         const popup = new AtomControl(this.app);
         const host = document.createElement("div");
+        host.className = "indicator-host";
         popup.element = host;
 
         const span = document.createElement("img");
