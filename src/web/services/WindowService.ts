@@ -400,7 +400,7 @@ export class WindowService extends NavigationService {
         if (parent as any === window || parent as any === document.body) {
             setTimeout(() => {
             const ew = (document.body.offsetWidth - e.offsetWidth) / 2;
-            const eh = (document.body.offsetHeight - e.offsetHeight) / 2;
+            const eh = window.scrollY + ((window.innerHeight - e.offsetHeight) / 2);
             e.style.left = `${ew}px`;
             e.style.top = `${eh}px`;
             e.style.removeProperty("opacity");
