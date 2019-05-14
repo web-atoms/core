@@ -101,10 +101,13 @@ export class WindowService extends NavigationService {
                 this.refreshScreen();
             };
 
-            window.addEventListener("resize", update);
-            window.addEventListener("scroll", update);
-            document.body.addEventListener("scroll", update);
-            document.body.addEventListener("resize", update);
+            // we don't do this in mobile..
+            if (st !== "mobile") {
+                window.addEventListener("resize", update);
+                window.addEventListener("scroll", update);
+                document.body.addEventListener("scroll", update);
+                document.body.addEventListener("resize", update);
+            }
 
             setTimeout(() => {
                 update(null);
