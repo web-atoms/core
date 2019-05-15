@@ -25,7 +25,7 @@ export interface ICacheEntry<T> {
     /**
      * Cached value
      */
-    value?: any;
+    value?: Promise<any>;
 
 }
 
@@ -62,13 +62,19 @@ export default class CacheService {
             finalTTL: 3600
         };
         if (!c.value) {
-            c.value = await task(c);
-            if (c.ttlSeconds !== undefined) {
-                if (typeof c.ttlSeconds === "number") {
-                    c.finalTTL = c.ttlSeconds;
-                } else {
-                    c.finalTTL = c.ttlSeconds(c.value);
-                }
+            c.value = task(c);
+        }
+        try {
+            await c.value;
+        } catch (e) {
+            this.clear(c);
+            throw e;
+        }
+        if (c.ttlSeconds !== undefined) {
+            if (typeof c.ttlSeconds === "number") {
+                c.finalTTL = c.ttlSeconds;
+            } else {
+                c.finalTTL = c.ttlSeconds(c.value);
             }
         }
         if (c.timeout) {
@@ -81,7 +87,7 @@ export default class CacheService {
                 this.clear(c);
             }, c.finalTTL * 1000);
         }
-        return c.value;
+        return await c.value;
     }
 
     private clear(ci: IFinalCacheEntry): void {
