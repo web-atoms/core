@@ -57,10 +57,10 @@ export default class CacheService {
     public async getOrCreate<T>(
         key: string,
         task: (cacheEntry?: ICacheEntry<T>) => Promise<T> ): Promise<T> {
-        const c = this.cache[key] || {
+        const c = this.cache[key] || (this.cache[key] = {
             key,
             finalTTL: 3600
-        };
+        });
         if (c.value) {
             return await c.value;
         }
