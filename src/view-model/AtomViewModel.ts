@@ -199,6 +199,7 @@ export class AtomViewModel {
             for (const d of this.disposables) {
                 d.dispose();
             }
+            this.disposables.length = 0;
         }
     }
 
