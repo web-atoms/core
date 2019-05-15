@@ -65,8 +65,9 @@ export default class CacheService {
             return await c.value;
         }
         c.value = task(c);
+        let v: any = null;
         try {
-            await c.value;
+            v = await c.value;
         } catch (e) {
             this.clear(c);
             throw e;
@@ -75,7 +76,7 @@ export default class CacheService {
             if (typeof c.ttlSeconds === "number") {
                 c.finalTTL = c.ttlSeconds;
             } else {
-                c.finalTTL = c.ttlSeconds(c.value);
+                c.finalTTL = c.ttlSeconds(v);
             }
         }
         if (c.timeout) {
