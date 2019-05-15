@@ -61,9 +61,10 @@ export default class CacheService {
             key,
             finalTTL: 3600
         };
-        if (!c.value) {
-            c.value = task(c);
+        if (c.value) {
+            return await c.value;
         }
+        c.value = task(c);
         try {
             await c.value;
         } catch (e) {
