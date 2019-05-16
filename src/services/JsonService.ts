@@ -5,7 +5,7 @@ import { RegisterSingleton } from "../di/RegisterSingleton";
 export const dateFormatISORegEx = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/;
 export const dateFormatMSRegEx = /^\/Date\((d|-|.*)\)[\/|\\]$/;
 
-export type JsonKeysNamingStrategy = "underscore" | "hyphen" | "none";
+export type JsonKeysNamingStrategy = "underscore" | "hyphen" | "pascal" | "none";
 
 export interface IJsonParserOptions {
     namingStrategy?: JsonKeysNamingStrategy;
@@ -108,6 +108,8 @@ export class JsonService {
                 return this.transformKeys(StringHelper.fromHyphenToCamel, result);
             case "underscore":
                 return this.transformKeys(StringHelper.fromUnderscoreToCamel, result);
+            case "pascal":
+                return this.transformKeys(StringHelper.fromPascalToCamel, result);
         }
         return result;
     }
@@ -123,6 +125,9 @@ export class JsonService {
                 break;
             case "underscore":
                 v = this.transformKeys(StringHelper.fromCamelToUnderscore, v);
+                break;
+            case "pascal":
+                v = this.transformKeys(StringHelper.fromCamelToPascal, v);
                 break;
         }
         return JSON.stringify(v, (key, value) => {
