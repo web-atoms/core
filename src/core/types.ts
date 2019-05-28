@@ -106,4 +106,4 @@ export interface IUMDClass {
 }
 
 export declare var UMD: IUMDClass;
-export declare var DI: IUMDClass;
+export const DI = UMD;
