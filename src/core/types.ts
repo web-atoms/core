@@ -95,15 +95,15 @@ export class ArrayHelper {
     }
 }
 
-export declare class UMDClass {
-    public static debug: boolean;
-    public static resolveViewClassAsync<T>(path: string): Promise<IClassOf<T>>;
-    public static mockType(type: any, name: string): void;
-    public static inject(type: any, name: string): void;
-    public static resolveType(type: any): any;
-    public static resolvePath(path: string): string;
-    public static import<T>(path: string): Promise<T>;
+export interface IUMDClass {
+    debug: boolean;
+    resolveViewClassAsync<T>(path: string): Promise<IClassOf<T>>;
+    mockType(type: any, name: string): void;
+    inject(type: any, name: string): void;
+    resolveType(type: any): any;
+    resolvePath(path: string): string;
+    import<T>(path: string): Promise<T>;
 }
 
-export const DI = UMDClass;
-export const UMD = UMDClass;
+export declare var UMD: IUMDClass;
+export declare var DI: IUMDClass;
