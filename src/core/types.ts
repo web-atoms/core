@@ -95,7 +95,7 @@ export class ArrayHelper {
     }
 }
 
-export declare class UMD {
+export declare class UMDClass {
     public static debug: boolean;
     public static resolveViewClassAsync<T>(path: string): Promise<IClassOf<T>>;
     public static mockType(type: any, name: string): void;
@@ -105,4 +105,5 @@ export declare class UMD {
     public static import<T>(path: string): Promise<T>;
 }
 
-export const DI = UMD;
+export const DI = UMDClass;
+export const UMD = UMDClass;
