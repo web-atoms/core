@@ -105,9 +105,7 @@ export default class WebApp extends App {
             ssConfig = { href: ssConfig };
         }
 
-        let location = ssConfig.href;
-
-        location = UMD.resolvePath(location);
+        ssConfig.href = UMD.resolvePath(ssConfig.href);
         const links = document.getElementsByTagName("link");
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < links.length; index++) {
