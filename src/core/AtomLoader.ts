@@ -21,7 +21,7 @@ export class AtomLoader {
             }
             return app.resolve(r.consume(), true);
         }
-        const type = await DI.resolveViewClassAsync<T>(url.path);
+        const type = await DI.resolveViewClassAsync(url.path);
         if (!type) {
             throw new Error(`Type not found for ${url}`);
         }
