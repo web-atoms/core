@@ -105,6 +105,8 @@ export default class WebApp extends App {
             ssConfig = { href: ssConfig };
         }
 
+        let location = ssConfig.href;
+
         location = UMD.resolvePath(location);
         const links = document.getElementsByTagName("link");
         // tslint:disable-next-line:prefer-for-of
