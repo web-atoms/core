@@ -101,6 +101,8 @@ export declare class UMD {
     public static mockType(type: any, name: string): void;
     public static inject(type: any, name: string): void;
     public static resolveType(type: any): any;
+    public static resolvePath(path: string): string;
+    public static import<T>(path: string): Promise<T>;
 }
 
 export const DI = UMD;
