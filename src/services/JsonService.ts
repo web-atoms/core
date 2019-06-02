@@ -95,7 +95,7 @@ export class JsonService {
             // transform date...
             if (typeof value === "string") {
                 for (const iterator of dateConverter) {
-                    const a = iterator.regex.exec(value);
+                    const a = iterator.regex.test(value);
                     if (a) {
                         return iterator.valueConverter.fromSource(value);
                     }
