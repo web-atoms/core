@@ -62,6 +62,9 @@ export class JsonService {
         if (typeof v !== "object") {
             return v;
         }
+        if (v instanceof Date) {
+            return v;
+        }
         if (typeof v === "object" && v.length !== undefined && typeof v.length === "number") {
             const a = v as any[];
             if (a.map) {
