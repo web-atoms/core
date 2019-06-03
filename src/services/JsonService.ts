@@ -97,7 +97,8 @@ export class JsonService {
                 for (const iterator of dateConverter) {
                     const a = iterator.regex.test(value);
                     if (a) {
-                        return iterator.valueConverter.fromSource(value);
+                        const dv = iterator.valueConverter.fromSource(value);
+                        return dv;
                     }
                 }
             }
