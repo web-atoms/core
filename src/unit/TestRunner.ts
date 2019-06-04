@@ -5,6 +5,8 @@ import * as colors from "colors/safe";
 
 declare var global: any;
 
+global.window = {};
+
 global.UMD = {
     resolvePath(v) {
         return v;
