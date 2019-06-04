@@ -1,4 +1,6 @@
 import { AtomBinder } from "../../core/AtomBinder";
+import { AtomStyle } from "../styles/AtomStyle";
+import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 import { AtomControl } from "./AtomControl";
 
 export class AtomContentControl extends AtomControl {
@@ -17,10 +19,34 @@ export class AtomContentControl extends AtomControl {
         if (c) {
             this.element.appendChild(c.element);
             const style = c.element.style;
-            style.position = "absolute";
-            style.top = style.left = style.right = style.bottom = "0";
             c.invalidate();
         }
         AtomBinder.refreshValue(this, "content");
     }
+
+    protected preCreate(): void {
+        super.preCreate();
+        this.defaultControlStyle = AtomContentStyle;
+        this.runAfterInit(() => {
+            this.element.classList.add(this.controlStyle.root.className);
+        });
+    }
+}
+
+export class AtomContentStyle extends AtomStyle {
+
+    public get root(): IStyleDeclaration {
+        return {
+            subclasses: {
+                " > *": {
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    right: "0",
+                    bottom: "0",
+                }
+            }
+        };
+    }
+
 }

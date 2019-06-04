@@ -5,7 +5,7 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import { AtomTheme } from "../styles/AtomTheme";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
-import { AtomControl, IAtomControlElement } from "./AtomControl";
+import { AtomControl } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
@@ -37,7 +37,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         this.titlePresenter = titlePresenter;
         this.element.appendChild(titlePresenter);
 
-        // add content presneter
+        // add content presenter
         const cp = document.createElement("div");
         this.bind(cp, "styleClass", [["templateParent", "controlStyle", "content"]]);
         // cp.classList.add(style.content.className);
@@ -152,18 +152,18 @@ export class AtomWindow extends AtomControl {
 
         // let us create frame first...
         const frame = new (this.frameTemplate)(this.app);
-        const fe = frame.element as IAtomControlElement;
+        const fe = frame.element;
 
         // setup drag and drop for the frame...
         const titleContent = new (this.titleTemplate)(this.app);
-        (titleContent.element as IAtomControlElement)._templateParent = this;
+        (titleContent.element)._templateParent = this;
         frame.titlePresenter.appendChild(titleContent.element);
 
         this.setupDragging(frame.titlePresenter);
 
         this.element.classList.add(this.controlStyle.frameHost.className);
 
-        fe._logicalParent = this.element as IAtomControlElement;
+        fe._logicalParent = this.element;
         fe._templateParent = this;
 
         if (!frame.contentPresenter) {
@@ -171,7 +171,7 @@ export class AtomWindow extends AtomControl {
         }
 
         const content = new (this.windowTemplate)(this.app);
-        (content.element as IAtomControlElement)._templateParent = this;
+        (content.element)._templateParent = this;
         frame.contentPresenter.appendChild(content.element);
 
         if (this.commandTemplate) {
@@ -180,7 +180,7 @@ export class AtomWindow extends AtomControl {
                     "before creating window if command template is present");
             }
             const command = new (this.commandTemplate)(this.app);
-            (command.element as IAtomControlElement)._templateParent = this;
+            (command.element)._templateParent = this;
             frame.commandPresenter.appendChild(command.element);
         }
         this.append(frame);
@@ -194,6 +194,9 @@ export class AtomWindow extends AtomControl {
 
     private centerFrame(e: HTMLElement): void {
         const parent = this.element.parentElement;
+        if (parent as any === window || parent as any === document.body) {
+            return;
+        }
         if (parent.offsetWidth <= 0 || parent.offsetHeight <= 0) {
             setTimeout(() => {
                 this.centerFrame(e);
@@ -213,6 +216,7 @@ export class AtomWindow extends AtomControl {
         this.x = x;
         this.y = y;
         e.style.opacity = "1";
+        this.element.style.removeProperty("opacity");
     }
 
     private setupDragging(tp: HTMLElement): void {

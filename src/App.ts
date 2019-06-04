@@ -38,6 +38,12 @@ export class App extends ServiceProvider {
 
     public readonly screen: IScreen;
 
+    /**
+     * This must be set explicitly as it can be used outside to detect
+     * if app is ready. This will not be set automatically by framework.
+     */
+    public appReady: boolean = false;
+
     private bag: any;
 
     private busyIndicators: IDisposable[] = [];

@@ -8,12 +8,13 @@ import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
-import { NavigationService } from "../../services/NavigationService";
+import { NavigationService, NotifyType } from "../../services/NavigationService";
 import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import AtomAlertWindow from "../controls/AtomAlertWindow";
-import { AtomControl, IAtomControlElement } from "../controls/AtomControl";
+import { AtomControl } from "../controls/AtomControl";
+import AtomNotification from "../controls/AtomNotification";
 import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
@@ -100,10 +101,13 @@ export class WindowService extends NavigationService {
                 this.refreshScreen();
             };
 
-            window.addEventListener("resize", update);
-            window.addEventListener("scroll", update);
-            document.body.addEventListener("scroll", update);
-            document.body.addEventListener("resize", update);
+            // we don't do this in mobile..
+            if (st !== "mobile") {
+                window.addEventListener("resize", update);
+                window.addEventListener("scroll", update);
+                document.body.addEventListener("scroll", update);
+                document.body.addEventListener("resize", update);
+            }
 
             setTimeout(() => {
                 update(null);
@@ -156,8 +160,10 @@ export class WindowService extends NavigationService {
             title,
             okTitle: "Ok",
             cancelTitle: ""
-        }).catch(() => {
+        }).catch((e) => {
             // do nothing...
+// tslint:disable-next-line: no-console
+            console.warn(e);
         });
     }
 
@@ -173,11 +179,12 @@ export class WindowService extends NavigationService {
         const element = peek.element;
         let target = this.currentTarget;
 
-        const theme = this.app.get(AtomTheme).popup;
-
         while (target) {
             if (target === element) {
                 // do not close this popup....
+                return;
+            }
+            if (element._logicalParent === target) {
                 return;
             }
             target = target.parentElement;
@@ -214,6 +221,21 @@ export class WindowService extends NavigationService {
         this.screen.orientation = width > height ? "landscape" : "portrait";
     }
 
+    public notify(
+        message: string,
+        title?: string,
+        type?: NotifyType,
+        delay?: number): void {
+        const rs = this.app.resolve(ReferenceService) as ReferenceService;
+        const k = rs.put(AtomNotification);
+        this.app.runAsync(() => this.openPage(`app://class/${k.key}`, {
+            message,
+            title,
+            type: type || NotifyType.Information,
+            timeout: delay
+        }));
+    }
+
     protected registerForPopup(): void {
 
         if (window) {
@@ -225,6 +247,8 @@ export class WindowService extends NavigationService {
     }
 
     private async openPopupAsync<T>(windowId: string, p: INameValuePairs, isPopup: boolean): Promise<T> {
+
+        const lastTarget = this.currentTarget;
 
         const  url = new AtomUri(windowId);
 
@@ -263,16 +287,19 @@ export class WindowService extends NavigationService {
 
         // const popup = this.app.resolve(windowId, true) as AtomControl;
         // const popupType = await UMD.resolveViewClassAsync(url.path);
-        const popup = await AtomLoader.loadView<AtomControl>(url, this.app);
+        const popup = await AtomLoader.loadView<AtomControl>(
+            url, this.app, () => this.app.resolve(AtomWindowViewModel, true));
         const e = popup.element;
 
         if (popup instanceof AtomWindow) {
             isPopup = false;
+            e.style.opacity = "0";
         }
 
-        // if (isPopup) {
+        e._logicalParent = lastTarget;
+        (e as any).sourceUrl = url;
+
         await Atom.delay(10);
-        // }
 
         return await new Promise<T>((resolve, reject) => {
 
@@ -283,7 +310,7 @@ export class WindowService extends NavigationService {
 
             const disposables: IDisposable[] = [popup];
 
-            e._logicalParent = this.currentTarget;
+            const isNotification = popup instanceof AtomNotification;
 
             if (isPopup) {
 
@@ -298,6 +325,10 @@ export class WindowService extends NavigationService {
                 e.classList.add(theme.host.className);
                 this.popups.push(popup);
                 document.body.appendChild(e);
+                if (isNotification) {
+                    e.style.opacity = "0";
+                    this.centerElement(popup);
+                }
             } else {
 
                 const eHost = this.getHostForElement();
@@ -361,20 +392,43 @@ export class WindowService extends NavigationService {
 
             if (wvm) {
                 wvm.windowName = e.id;
-
-                // for (const key in url.query) {
-                //     if (url.query.hasOwnProperty(key)) {
-                //         const element = url.query[key];
-                //         if (typeof element === "object") {
-                //             wvm[key] = this.jsonService.parse(this.jsonService.stringify(element));
-                //         } else {
-                //             wvm[key] = element;
-                //         }
-                //     }
-                // }
             }
 
         });
+    }
+
+    private centerElement(c: AtomControl): void {
+        const e = c.element;
+        const parent = e.parentElement;
+        if (parent as any === window || parent as any === document.body) {
+            setTimeout(() => {
+            const ew = (document.body.offsetWidth - e.offsetWidth) / 2;
+            const eh = window.scrollY + ((window.innerHeight - e.offsetHeight) / 2);
+            e.style.left = `${ew}px`;
+            e.style.top = `${eh}px`;
+            e.style.removeProperty("opacity");
+            }, 200);
+            return;
+        }
+        if (parent.offsetWidth <= 0 || parent.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerElement(c);
+            }, 100);
+            return;
+        }
+
+        if (e.offsetWidth <= 0 || e.offsetHeight <= 0) {
+            setTimeout(() => {
+                this.centerElement(c);
+            }, 100);
+            return;
+        }
+
+        const x = (parent.offsetWidth - e.offsetWidth) / 2;
+        const y = (parent.offsetHeight - e.offsetHeight) / 2;
+        e.style.left = `${x}px`;
+        e.style.top = `${y}px`;
+        e.style.removeProperty("opacity");
     }
 
 }

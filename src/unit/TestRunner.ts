@@ -5,11 +5,18 @@ import * as colors from "colors/safe";
 
 declare var global: any;
 
+global.window = {};
+
 global.UMD = {
     resolvePath(v) {
         return v;
     }
 };
+
+global.DI = global.UMD;
+
+global.window.UMD = global.UMD;
+global.window.DI = global.DI;
 
 export class TestRunner {
 
@@ -71,7 +78,7 @@ export class TestRunner {
 
     public runTest(f: any, target: any): Promise<any> {
         return new Promise((resolve, reject) => {
-            try {
+            // try {
                 const t: any = f.apply(target);
                 if (t && t.then) {
                     t.then((v) => {
@@ -83,9 +90,9 @@ export class TestRunner {
                     return;
                 }
                 resolve();
-            } catch (ex) {
-                reject(ex);
-            }
+            // } catch (ex) {
+            //     reject(ex);
+            // }
         });
     }
 

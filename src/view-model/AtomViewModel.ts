@@ -35,6 +35,9 @@ export class AtomViewModel {
 
     public get errors(): Array<{ name: string, error: string}> {
         const e: Array<{ name: string, error: string}> = [];
+        if (!this.mShouldValidate) {
+            return e;
+        }
         for (const v of this.validations) {
             if (!v.initialized) {
                 return e;
@@ -49,6 +52,7 @@ export class AtomViewModel {
 
     private mChildren: AtomViewModel[];
     private mParent: AtomViewModel;
+    private mShouldValidate: boolean = false;
     public get parent(): AtomViewModel {
         return this.mParent;
     }
@@ -70,6 +74,7 @@ export class AtomViewModel {
 
     public get isValid(): boolean {
         let valid = true;
+        this.mShouldValidate = true;
         for (const v of this.validations) {
             if (!v.initialized) {
                 v.watcher.evaluate(true);
@@ -94,6 +99,26 @@ export class AtomViewModel {
         this.app.runAsync(() => this.privateInit());
     }
 
+    /**
+     * Resets validations and all errors are removed.
+     * @param resetChildren reset child view models as well. Default is true.
+     */
+    public resetValidations(resetChildren: boolean = true): void {
+        this.mShouldValidate = false;
+        for (const v of this.validations) {
+            this.refresh(v.name);
+        }
+        if (resetChildren && this.mChildren) {
+            for (const iterator of this.mChildren) {
+                iterator.resetValidations(resetChildren);
+            }
+        }
+    }
+
+    /**
+     * Runs function after initialization is complete.
+     * @param f function to execute
+     */
     public runAfterInit(f: () => void): void {
         if (this.pendingInits) {
             this.pendingInits.push(f);
@@ -102,6 +127,11 @@ export class AtomViewModel {
         f();
     }
 
+    /**
+     * Resolves given class via app
+     * @param c class to resolve
+     * @param onlyRegistered resolve only registered types
+     */
     public resolve<T>(c: IClassOf<T>, onlyRegistered?: boolean): T {
         const create = !onlyRegistered;
         return this.app.resolve(c, create);
@@ -130,10 +160,18 @@ export class AtomViewModel {
         return this.registerDisposable(pb);
     }
 
+    /**
+     * Refreshes bindings associated with given property name
+     * @param name name of property
+     */
     public refresh(name: string): void {
         AtomBinder.refreshValue(this, name);
     }
 
+    /**
+     * Useful only for Unit testing, this function will await till initialization is
+     * complete and all pending functions are executed
+     */
     public async waitForReady(): Promise<any> {
         while (this.pendingInits) {
             await Atom.delay(100);
@@ -161,6 +199,7 @@ export class AtomViewModel {
             for (const d of this.disposables) {
                 d.dispose();
             }
+            this.disposables.length = 0;
         }
     }
 
@@ -454,7 +493,7 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
             enumerable: true,
             configurable: true,
             get() {
-                if (initialized.i) {
+                if ((vm as any).mShouldValidate && initialized.i) {
                     return getMethod.apply(this);
                 }
                 return null;

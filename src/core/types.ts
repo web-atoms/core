@@ -17,9 +17,7 @@ export interface INotifyPropertyChanged {
 
 }
 
-export interface IClassOf<T> {
-    new (...v: any[]): T;
-}
+export type IClassOf<T> = new (...v: any[]) => T;
 
 export type IAtomElement = HTMLElement | INativeComponent;
 
@@ -95,11 +93,15 @@ export class ArrayHelper {
     }
 }
 
-export declare class UMD {
-    public static resolveViewClassAsync<T>(path: string): Promise<IClassOf<T>>;
-    public static mockType(type: any, name: string): void;
-    public static inject(type: any, name: string): void;
-    public static resolveType(type: any): any;
+export interface IUMDClass {
+    debug: boolean;
+    resolveViewClassAsync(path: string): Promise<any>;
+    mockType(type: any, name: string): void;
+    inject(type: any, name: string): void;
+    resolveType(type: any): any;
+    resolvePath(path: string): string;
+    import<T>(path: string): Promise<T>;
 }
 
-export const DI = UMD;
+export const DI = (window as any).UMD;
+export const UMD = (window as any).UMD;

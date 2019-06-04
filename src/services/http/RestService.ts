@@ -599,7 +599,20 @@ export class BaseService {
                 }
             }
 
-            xhr.send(options.data);
+            try {
+                xhr.send(options.data);
+            } catch (e) {
+                options.status = xhr.status;
+                options.responseText = xhr.responseText;
+                // options.responseHeaders = (xhr.getAllResponseHeaders())
+                //     .split("\n")
+                //     .map((s) => s.trim().split(":"))
+                //     .reduce((pv, cv) => pv[cv[0]] = cv[1], {});
+                options.responseHeaders = xhr.getAllResponseHeaders();
+                const ct = xhr.getResponseHeader("content-type");
+                options.responseType = ct || xhr.responseType;
+                resolve(options);
+            }
 
         });
 

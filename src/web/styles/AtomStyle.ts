@@ -6,6 +6,7 @@ import { IClassOf, INameValuePairs } from "../../core/types";
 import WebImage from "../../core/WebImage";
 import { TypeKey } from "../../di/TypeKey";
 import { AtomControl } from "../controls/AtomControl";
+import WebApp from "../WebApp";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
@@ -15,6 +16,10 @@ const emptyPrototype = Object.getPrototypeOf({});
 export interface IAtomStyle {
     name: string;
 }
+
+declare var UMD: {
+    resolvePath(path: string): string;
+};
 
 export class AtomStyle
     implements IAtomStyle {
@@ -28,6 +33,7 @@ export class AtomStyle
         public readonly parent: AtomStyle,
         public readonly name: string
     ) {
+        this.init();
     }
 
     public getDefaultStyle(forKey: any): AtomStyle {
@@ -147,6 +153,15 @@ export class AtomStyle
 
     protected init(): void {
         // empty...
+    }
+
+    protected registerExternalStyleSheet(s: {
+        href: string,
+        integrity?: string,
+        crossOrigin?: string
+    }): void {
+        const wa = this.styleSheet.app as WebApp;
+        wa.installStyleSheet(s);
     }
 
     private createStyleText(name: string, pairs: INameValuePairs, styles: IStyleDeclaration): INameValuePairs {

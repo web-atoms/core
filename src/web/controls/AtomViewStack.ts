@@ -1,5 +1,5 @@
 import { BindableProperty } from "../../core/BindableProperty";
-import { AtomControl, IAtomControlElement } from "./AtomControl";
+import { AtomControl } from "./AtomControl";
 
 export class AtomViewStack extends AtomControl {
 
@@ -12,7 +12,7 @@ export class AtomViewStack extends AtomControl {
 
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
         const ee = e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement;
-        ((ee as any) as IAtomControlElement)._logicalParent = this.element as IAtomControlElement;
+        ((ee as any) as HTMLElement)._logicalParent = this.element;
         this.children = this.children || [];
         const index = this.children.length;
         this.children.push(e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement);

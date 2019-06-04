@@ -60,9 +60,9 @@ export class InjectedTypes {
 
 // export function Inject(target: any, name: string): void;
 export function Inject(target: any, name: string, index?: number): void {
-    const key = TypeKey.get(target);
 
     if (index !== undefined) {
+        const key = TypeKey.get(target);
         const plist = (Reflect as any).getMetadata("design:paramtypes", target, name);
         if (typeof index === "number") {
             const pSavedList = InjectedTypes.paramList[key] || (InjectedTypes.paramList[key] = []);
@@ -73,14 +73,30 @@ export function Inject(target: any, name: string, index?: number): void {
                 "parameter or a property without get/set methods");
         }
     } else {
+        const key = TypeKey.get(target.constructor);
         const plist = (Reflect as any).getMetadata("design:type", target, name);
-        const kc = target.constructor;
-        if (kc) {
-            const key2 = TypeKey.get(kc);
-            const p1 = InjectedTypes.propertyList[key2] || (InjectedTypes.propertyList[key2] = {});
-            p1[name] = plist;
-        }
         const p = InjectedTypes.propertyList[key] || (InjectedTypes.propertyList[key] = {});
         p[name] = plist;
+
+        // need to merge base properties..
+        let base = target.constructor;
+        while (true) {
+            base = Object.getPrototypeOf(base);
+            if (!base) {
+                break;
+            }
+            const baseKey = TypeKey.get(base);
+            const bp = InjectedTypes.propertyList[baseKey];
+            if (bp) {
+                for (const pKey in bp) {
+                    if (bp.hasOwnProperty(pKey)) {
+                        const element = bp[pKey];
+                        if (!p[pKey]) {
+                            p[pKey] = element;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

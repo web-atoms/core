@@ -108,6 +108,15 @@ export class MockNavigationService extends NavigationService {
         return this.openWindow(pageName, p);
     }
 
+    public notify(message: string, title?: string): void {
+        const url = `__AlertNotification_${message}`;
+        const w: any = this.windowStack.find((x) => x.windowType === message);
+        if (!w) {
+            throw new Error(`No notification registered for "${message}"`);
+        }
+        w.action({});
+    }
+
     /**
      * Internal usage
      * @template T
@@ -163,6 +172,18 @@ export class MockNavigationService extends NavigationService {
      */
     public expectAlert(msg: string): IDisposable {
         return this.expectWindow(`__AlertWindow_${msg}`, (vm) => true);
+    }
+
+    /**
+     * Call this method before any method that should expect a notification.
+     * You can add many alerts, but each expected alert will only be called
+     * once.
+     * @param {string} msg
+     * @returns {IDisposable}
+     * @memberof MockWindowService
+     */
+    public expectNotification(msg: string): IDisposable {
+        return this.expectWindow(`__AlertNotification_${msg}`, (vm) => true);
     }
 
     /**

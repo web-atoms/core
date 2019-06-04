@@ -21,21 +21,31 @@ export class AtomLoader {
             }
             return app.resolve(r.consume(), true);
         }
-        const type = await DI.resolveViewClassAsync<T>(url.path);
+        const type = await DI.resolveViewClassAsync(url.path);
+        if (!type) {
+            throw new Error(`Type not found for ${url}`);
+        }
         const obj = app.resolve(type, true);
         return obj;
     }
 
     public static async loadView<T extends { viewModel: any, element: any }>(
         url: AtomUri,
-        app: App): Promise<T> {
+        app: App,
+        vmFactory?: () => any): Promise<T> {
 
         const busyIndicator = app.createBusyIndicator();
 
         try {
             const view = await AtomLoader.load<T>(url, app);
-
-            const vm = view.viewModel;
+            let vm = view.viewModel;
+            if (!vm) {
+                if (!vmFactory) {
+                    return view;
+                }
+                vm = vmFactory();
+                view.viewModel = vm;
+            }
             if (vm) {
                 const jsonService = app.get(JsonService);
                 for (const key in url.query) {

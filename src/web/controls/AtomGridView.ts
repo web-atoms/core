@@ -1,7 +1,7 @@
 import { AtomBridge } from "../../core/AtomBridge";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IRect } from "../../core/types";
-import { AtomControl, IAtomControlElement } from "./AtomControl";
+import { AtomControl } from "./AtomControl";
 
 interface IOffsetSize {
     offset: number;
@@ -97,7 +97,7 @@ export class AtomGridView extends AtomControl {
 
     public append(e: HTMLElement | Text | AtomControl): AtomControl {
         const ee = e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement;
-        ((ee as any) as IAtomControlElement)._logicalParent = this.element as IAtomControlElement;
+        ((ee as any) as HTMLElement)._logicalParent = this.element;
         this.children = this.children || [];
         this.children.push(e instanceof AtomControl ? (e as AtomControl).element : e as HTMLElement);
         return this;

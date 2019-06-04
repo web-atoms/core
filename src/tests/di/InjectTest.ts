@@ -34,6 +34,32 @@ export default class InjectTest extends AtomTest {
         Assert.equals(first, second);
     }
 
+    @Test
+    public inheritedPropertyTest(): void {
+        const bvm = this.app.resolve(BaseVM, true) as BaseVM;
+
+        const bvm2 = this.app.resolve(BaseVM, true) as BaseVM;
+
+        const bf = bvm.service.time;
+        const bf2 = bvm.service.time;
+
+        Assert.equals(bf, bf2);
+
+        // child
+
+        const cvm = this.app.resolve(ChildVM, true) as ChildVM;
+        const cvm2 = this.app.resolve(ChildVM, true) as ChildVM;
+
+        const cf = cvm.service.time;
+        const cf2 = cvm2.service.time;
+
+        Assert.equals(cf, cf2);
+
+        const cs = cvm.propertyService.time;
+        const cs2 = cvm2.propertyService.time;
+
+        Assert.equals(cs, cs2);
+    }
 }
 
 @DISingleton()
@@ -75,5 +101,17 @@ class VM2 {
     constructor(@Inject private service: Service) {
 
     }
+
+}
+
+class BaseVM {
+
+    @Inject public service: Service;
+
+}
+
+class ChildVM extends BaseVM {
+
+    @Inject public propertyService: PropertyService;
 
 }

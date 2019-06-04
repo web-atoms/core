@@ -25,7 +25,7 @@ export interface ICacheEntry<T> {
     /**
      * Cached value
      */
-    value?: any;
+    value?: Promise<any>;
 
 }
 
@@ -57,18 +57,25 @@ export default class CacheService {
     public async getOrCreate<T>(
         key: string,
         task: (cacheEntry?: ICacheEntry<T>) => Promise<T> ): Promise<T> {
-        const c = this.cache[key] || {
+        const c = this.cache[key] || (this.cache[key] = {
             key,
             finalTTL: 3600
-        };
+        });
         if (!c.value) {
-            c.value = await task(c);
-            if (c.ttlSeconds !== undefined) {
-                if (typeof c.ttlSeconds === "number") {
-                    c.finalTTL = c.ttlSeconds;
-                } else {
-                    c.finalTTL = c.ttlSeconds(c.value);
-                }
+            c.value = task(c);
+        }
+        let v: any = null;
+        try {
+            v = await c.value;
+        } catch (e) {
+            this.clear(c);
+            throw e;
+        }
+        if (c.ttlSeconds !== undefined) {
+            if (typeof c.ttlSeconds === "number") {
+                c.finalTTL = c.ttlSeconds;
+            } else {
+                c.finalTTL = c.ttlSeconds(v);
             }
         }
         if (c.timeout) {
@@ -80,8 +87,11 @@ export default class CacheService {
                 c.timeout = 0;
                 this.clear(c);
             }, c.finalTTL * 1000);
+        } else {
+            // this is the case where we do not want to store
+            this.clear(c);
         }
-        return c.value;
+        return await c.value;
     }
 
     private clear(ci: IFinalCacheEntry): void {
