@@ -74,7 +74,7 @@ export function Inject(target: any, name: string, index?: number): void {
         }
     } else {
         const key = TypeKey.get(target.constructor);
-        const plist = { ... (Reflect as any).getMetadata("design:type", target, name) };
+        const plist = (Reflect as any).getMetadata("design:type", target, name);
         const p = InjectedTypes.propertyList[key] || (InjectedTypes.propertyList[key] = {});
         p[name] = plist;
 
@@ -91,8 +91,8 @@ export function Inject(target: any, name: string, index?: number): void {
                 for (const pKey in bp) {
                     if (bp.hasOwnProperty(pKey)) {
                         const element = bp[pKey];
-                        if (!plist[pKey]) {
-                            plist[pKey] = element;
+                        if (!p[pKey]) {
+                            p[pKey] = element;
                         }
                     }
                 }

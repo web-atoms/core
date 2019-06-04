@@ -61,10 +61,9 @@ export default class CacheService {
             key,
             finalTTL: 3600
         });
-        if (c.value) {
-            return await c.value;
+        if (!c.value) {
+            c.value = task(c);
         }
-        c.value = task(c);
         let v: any = null;
         try {
             v = await c.value;
@@ -88,6 +87,9 @@ export default class CacheService {
                 c.timeout = 0;
                 this.clear(c);
             }, c.finalTTL * 1000);
+        } else {
+            // this is the case where we do not want to store
+            this.clear(c);
         }
         return await c.value;
     }

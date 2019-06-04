@@ -13,6 +13,11 @@ global.UMD = {
     }
 };
 
+global.DI = global.UMD;
+
+global.window.UMD = global.UMD;
+global.window.DI = global.DI;
+
 export class TestRunner {
 
     // tslint:disable-next-line:variable-name
@@ -73,7 +78,7 @@ export class TestRunner {
 
     public runTest(f: any, target: any): Promise<any> {
         return new Promise((resolve, reject) => {
-            try {
+            // try {
                 const t: any = f.apply(target);
                 if (t && t.then) {
                     t.then((v) => {
@@ -85,9 +90,9 @@ export class TestRunner {
                     return;
                 }
                 resolve();
-            } catch (ex) {
-                reject(ex);
-            }
+            // } catch (ex) {
+            //     reject(ex);
+            // }
         });
     }
 

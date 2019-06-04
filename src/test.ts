@@ -47,5 +47,8 @@ instance.run().then(() => {
     process.exit();
 }).catch( (e) => {
     console.error(e.message);
-    process.abort();
+    if (e.stack) {
+        console.error(e.stack);
+    }
+    process.exit(1);
 });
