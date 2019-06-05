@@ -490,7 +490,7 @@ export class AtomItemsControl extends AtomControl {
                 break;
             }
             const index2 = ae.currentIndex;
-            const data = ae.current();
+            const data = ae.current;
             let elementChild = cache[index2];
             if (elementChild && element.atomControl.data === data) {
                 cache[index2] = null;
