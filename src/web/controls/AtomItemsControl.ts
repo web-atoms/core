@@ -517,7 +517,7 @@ export class AtomItemsControl extends AtomControl {
 
             const a = new AtomEnumerator(add);
             while (a.next()) {
-                const ec = a.current();
+                const ec = a.current;
                 ip.insertBefore(ec, ec.before.nextElementSibling);
                 ec.before = null;
             }
