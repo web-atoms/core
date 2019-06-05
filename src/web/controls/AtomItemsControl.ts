@@ -953,7 +953,7 @@ export class AtomItemsControl extends AtomControl {
 
         ip.style.overflow = "hidden";
 
-        this.validateScroller = null;
+        // this.validateScroller = null;
 
         const isTable = /tbody/i.test(ip.nodeName);
 
