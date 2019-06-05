@@ -30,9 +30,12 @@ export class AtomItemsControl extends AtomControl {
 
     public valueSeparator: string = ", ";
 
+    public uiVirtualize: any = false;
+
     private mValue: any = undefined;
 
     private mSelectedItems: any[];
+
     private mSelectedItemsWatcher: IDisposable;
 
     private itemsInvalidated: any;
@@ -56,8 +59,6 @@ export class AtomItemsControl extends AtomControl {
     private mScopes: any = null;
 
     private mVirtualContainer: any;
-
-    private mUiVirtualize: any;
 
     private mChildItemType: any;
 
@@ -586,7 +587,7 @@ export class AtomItemsControl extends AtomControl {
         //     return;
         // }
 
-        if (this.mUiVirtualize) {
+        if (this.uiVirtualize) {
 
             const index = this.selectedIndex;
             if (!this.mReady) {
@@ -713,7 +714,7 @@ export class AtomItemsControl extends AtomControl {
             return;
         }
 
-        if (this.mUiVirtualize) {
+        if (this.uiVirtualize) {
             this.onVirtualCollectionChanged();
             return;
         }
