@@ -1,5 +1,7 @@
 import { INameValues, IRect } from "../../core/types";
 
+// refer http://youmightnotneedjquery.com/
+
 export class ChildEnumerator {
 
     private item: HTMLElement;
@@ -33,19 +35,19 @@ export class AtomUI {
     }
 
     public static outerHeight(arg0: any, arg1: boolean = false): any {
-        throw new Error("Method not implemented.");
+        return jQuery(arg0).outerHeight();
     }
 
     public static outerWidth(arg0: any, arg1: boolean = false): any {
-        throw new Error("Method not implemented.");
+        return jQuery(arg0).outerWidth();
     }
 
     public static innerWidth(arg0: any): any {
-        throw new Error("Method not implemented.");
+        return jQuery(arg0).innerWidth();
     }
 
     public static innerHeight(arg0: any): any {
-        throw new Error("Method not implemented.");
+        return jQuery(arg0).innerHeight();
     }
 
     public static scrollTop(arg0: any, arg1: any): any {
