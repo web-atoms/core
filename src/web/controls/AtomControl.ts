@@ -272,6 +272,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             case "src":
                 if (value && /^http\:/i.test(value)) {
                     (element as any).src = value.substr(5);
+                } else {
+                    (element as any).src = value;
                 }
                 break;
             default:
