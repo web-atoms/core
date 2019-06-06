@@ -290,6 +290,8 @@ export class WindowService extends NavigationService {
         const popup = await AtomLoader.loadView<AtomControl>(
             url, this.app, () => this.app.resolve(AtomWindowViewModel, true));
 
+        await Atom.delay(1);
+
         const pvm = popup.viewModel;
         if (pvm) {
             let ce = this.currentTarget;
@@ -315,8 +317,6 @@ export class WindowService extends NavigationService {
 
         e._logicalParent = lastTarget;
         (e as any).sourceUrl = url;
-
-        await Atom.delay(10);
 
         return await new Promise<T>((resolve, reject) => {
 
