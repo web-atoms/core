@@ -269,6 +269,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     const ie = element as HTMLInputElement;
                     if (ie) { ie.focus(); }
                 });
+            case "src":
+                if (value && /^http\:/i.test(value)) {
+                    (element as any).src = value.substr(5);
+                }
+                break;
             default:
                 element[name] = value;
         }
