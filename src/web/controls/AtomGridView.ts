@@ -192,6 +192,9 @@ export class AtomGridView extends AtomControl {
     }
 
     protected onUpdateSize(): void {
+        if (!this.children) {
+            return;
+        }
         for (const iterator of this.children) {
             this.updateStyle(iterator);
         }
