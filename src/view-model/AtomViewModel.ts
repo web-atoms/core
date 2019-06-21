@@ -292,6 +292,25 @@ export class AtomViewModel {
         return this.registerDisposable(sub);
     }
 
+    protected setTimer(
+        fx: ((... a: any[]) => void),
+        delayInSeconds: number,
+        repeat: boolean = false): IDisposable {
+        const id = repeat
+            ? setInterval(fx, delayInSeconds * 1000)
+            : setTimeout(fx, delayInSeconds * 1000);
+        const d = {
+            dispose(){
+                if (repeat) {
+                    clearInterval(id);
+                } else {
+                    clearTimeout(id);
+                }
+            }
+        };
+        return this.registerDisposable(d);
+    }
+
     /**
      * Execute given expression whenever any bindable expression changes
      * in the expression.
