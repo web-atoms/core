@@ -6,13 +6,11 @@ export class AtomDisposableList implements IDisposable {
     private disposables: IDisposable[] = [];
 
     // tslint:disable-next-line:ban-types
-    public add(d: Function | IDisposable): IDisposable {
+    public add(d: (() => void) | IDisposable): IDisposable {
         if (typeof d === "function") {
             const fx = d;
             d = {
-                dispose: () => {
-                    fx();
-                }
+                dispose: fx
             };
         }
         this.disposables.push(d);
