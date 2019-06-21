@@ -293,12 +293,16 @@ export class AtomViewModel {
     }
 
     protected setTimer(
-        fx: ((... a: any[]) => void),
+        fx: ((... a: any[]) => any),
         delayInSeconds: number,
         repeat: boolean = false): IDisposable {
+        const afx = () => {
+            this.app.runAsync(fx);
+        };
+        const delay = delayInSeconds * 1000;
         const id = repeat
-            ? setInterval(fx, delayInSeconds * 1000)
-            : setTimeout(fx, delayInSeconds * 1000);
+            ? setInterval(afx, delay)
+            : setTimeout(afx, delay);
         const d = {
             dispose() {
                 if (repeat) {
