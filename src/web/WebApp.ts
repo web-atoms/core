@@ -97,11 +97,8 @@ export default class WebApp extends App {
             });
         });
 
-        // registering font awesome..
-
-        const script = document.createElement("script");
-        script.src = "https://kit.fontawesome.com/b62ce7480e.js";
-        document.body.appendChild(script);
+        // registering font awesome
+        this.installStyleSheet("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.9.0/css/all.css");
     }
 
     public installStyleSheet(ssConfig: string |
