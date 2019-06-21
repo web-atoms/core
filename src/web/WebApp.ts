@@ -96,6 +96,12 @@ export default class WebApp extends App {
                 this.url = new AtomUri(location.href);
             });
         });
+
+        // registering font awesome..
+
+        const script = document.createElement("script");
+        script.src = "https://kit.fontawesome.com/b62ce7480e.js";
+        document.body.appendChild(script);
     }
 
     public installStyleSheet(ssConfig: string |
