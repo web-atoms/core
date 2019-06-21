@@ -127,7 +127,7 @@ export default class WebApp extends App {
         if (ssConfig.integrity) {
             ss.integrity = ssConfig.integrity;
         }
-        document.body.appendChild(ss);
+        document.head.appendChild(ss);
     }
 
     public installScript(location: string): Promise<void> {
