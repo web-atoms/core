@@ -300,7 +300,7 @@ export class AtomViewModel {
             ? setInterval(fx, delayInSeconds * 1000)
             : setTimeout(fx, delayInSeconds * 1000);
         const d = {
-            dispose(){
+            dispose() {
                 if (repeat) {
                     clearInterval(id);
                 } else {
