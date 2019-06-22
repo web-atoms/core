@@ -495,6 +495,45 @@ export function Watch(target: AtomViewModel, key: string | symbol, descriptor: a
     });
 }
 
+/**
+ * Cached watch must be used with async getters to avoid reloading of
+ * resources unless the properties referenced are changed
+ * @param target ViewModel
+ * @param key name of property
+ * @param descriptor descriptor of property
+ */
+export function CachedWatch(target: AtomViewModel, key: string, descriptor: any): void {
+
+    const getMethod = descriptor.get;
+
+    descriptor.get = (() => null);
+
+    registerInit(target, (vm) => {
+        const ivm = (vm as any) as IAtomViewModel;
+
+        const fieldName = `_${key}`;
+
+        Object.defineProperty(ivm, key, {
+            enumerable: true,
+            configurable: true,
+            get() {
+                const c =
+                    ivm[fieldName] || (
+                        ivm[fieldName] = {
+                            value: getMethod.apply(ivm)
+                        }
+                    );
+                return c.value;
+            }
+        });
+
+        ivm.setupWatch(descriptor.get, () => {
+            ivm[fieldName] = null;
+            AtomBinder.refreshValue(ivm, key);
+        });
+    });
+}
+
 export function Validate(target: AtomViewModel, key: string | symbol, descriptor: any): void {
 
     // tslint:disable-next-line:ban-types
