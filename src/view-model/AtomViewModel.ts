@@ -285,6 +285,12 @@ export class AtomViewModel {
         return this.registerDisposable(sub);
     }
 
+    /**
+     * When you create newCancelToken, previous `CancelToken` with same key will be cancelled,
+     * this is useful to prevent multiple remote calls when watched properties change frequently,
+     * such as user typing in search field.
+     * @param key key to separate other tokens
+     */
     protected newCancelToken(key?: string): CancelToken {
         let tks = this.cancelTokens;
         if (!tks) {
@@ -309,6 +315,13 @@ export class AtomViewModel {
         return token;
     }
 
+    /**
+     * Setups a timer and disposes automatically when view model is destroyed. This will execute
+     * given function only once unless `repeat` argument is `true`.
+     * @param fx Function to execute
+     * @param delayInSeconds delay in seconds
+     * @param repeat repeat at given delay
+     */
     protected setTimer(
         fx: ((... a: any[]) => any),
         delayInSeconds: number,
