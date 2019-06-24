@@ -59,13 +59,19 @@ export class CancelToken {
 
     public cancel(): void {
         this.mCancelled = true;
-        for (const fx of this.listeners) {
+        const existing = this.listeners.slice(0);
+        this.listeners.length = 0;
+        for (const fx of existing) {
             fx();
         }
     }
 
     public reset(): void {
         this.mCancelled = false;
+        this.listeners.length = 0;
+    }
+
+    public dispose() {
         this.listeners.length = 0;
     }
 

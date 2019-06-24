@@ -8,8 +8,9 @@ import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
 import { IValueConverter } from "../core/IValueConverter";
 import { PropertyBinding } from "../core/PropertyBinding";
-import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
+import { ArrayHelper, CancelToken, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
+
 
 /**
  *
@@ -23,11 +24,13 @@ export class AtomViewModel {
     // tslint:disable-next-line:ban-types
     public postInit: Function[];
 
-    private disposables: IDisposable[];
+    private disposables: AtomDisposableList = null;
 
     private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
     private pendingInits: Array<() => void> = [];
+
+    private cancelTokens: { [key: string]: CancelToken} = null;
 
     public get isReady(): boolean {
         return this.pendingInits === null;
@@ -196,10 +199,7 @@ export class AtomViewModel {
      */
     public dispose(): void {
         if (this.disposables) {
-            for (const d of this.disposables) {
-                d.dispose();
-            }
-            this.disposables.length = 0;
+            this.disposables.dispose();
         }
     }
 
@@ -222,14 +222,8 @@ export class AtomViewModel {
      * @memberof AtomViewModel
      */
     public registerDisposable(d: IDisposable): IDisposable {
-        this.disposables = this.disposables || [];
-        this.disposables.push(d);
-        return {
-            dispose: () => {
-                ArrayHelper.remove(this.disposables, (f) => f === d);
-                d.dispose();
-            }
-        };
+        this.disposables = this.disposables || new AtomDisposableList();
+        return this.disposables.add(d);
     }
     /**
      * Broadcast given data to channel (msg)
@@ -290,6 +284,30 @@ export class AtomViewModel {
     protected subscribe(channel: string, c: (ch: string, data: any) => void): IDisposable {
         const sub: IDisposable = this.app.subscribe(channel, c);
         return this.registerDisposable(sub);
+    }
+
+    protected newCancelToken(key?: string): CancelToken {
+        let tks = this.cancelTokens;
+        if (!tks) {
+            tks = {};
+            this.registerDisposable({
+                dispose: () => {
+                    for (const k in this.cancelTokens) {
+                        if (this.cancelTokens.hasOwnProperty(k)) {
+                            const element = this.cancelTokens[k];
+                            element.dispose();
+                        }
+                    }
+                }
+            });
+        }
+        key = key || "__default";
+        let token = tks[key];
+        if (token) {
+            token.cancel();
+        }
+        tks[key] = token = new CancelToken();
+        return token;
     }
 
     protected setTimer(
