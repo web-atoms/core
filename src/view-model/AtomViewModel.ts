@@ -11,7 +11,6 @@ import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, CancelToken, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 
-
 /**
  *
  *
