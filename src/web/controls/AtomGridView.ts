@@ -192,6 +192,9 @@ export class AtomGridView extends AtomControl {
     }
 
     protected onUpdateSize(): void {
+        if (!this.children) {
+            return;
+        }
         for (const iterator of this.children) {
             this.updateStyle(iterator);
         }
@@ -207,10 +210,10 @@ export class AtomGridView extends AtomControl {
         style.overflow = "hidden";
 
         this.bindEvent(window as any, "resize", () => {
-            this.invalidate();
+            this.updateSize();
         });
         this.bindEvent(document.body, "resize", () => {
-            this.invalidate();
+            this.updateSize();
         });
     }
 

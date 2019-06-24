@@ -1,5 +1,6 @@
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
+import AtomEnumerator from "../../core/AtomEnumerator";
 import "../../core/AtomList";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
@@ -29,9 +30,12 @@ export class AtomItemsControl extends AtomControl {
 
     public valueSeparator: string = ", ";
 
+    public uiVirtualize: any = false;
+
     private mValue: any = undefined;
 
     private mSelectedItems: any[];
+
     private mSelectedItemsWatcher: IDisposable;
 
     private itemsInvalidated: any;
@@ -46,17 +50,15 @@ export class AtomItemsControl extends AtomControl {
 
     private mItemsPresenter: HTMLElement;
 
-    private mFirstChild: any = null;
+    private mFirstChild: HTMLElement = null;
 
-    private mLastChild: any = null;
+    private mLastChild: HTMLElement = null;
 
     private mScrollerSetup: any = false;
 
     private mScopes: any = null;
 
     private mVirtualContainer: any;
-
-    private mUiVirtualize: any;
 
     private mChildItemType: any;
 
@@ -138,10 +140,10 @@ export class AtomItemsControl extends AtomControl {
         if (!dataItems) {
             return;
         }
-        const sitems = this.selectedItems;
+        const sItems = this.selectedItems;
         if (v === undefined || v === null) {
             // reset...
-            AtomBinder.clear(sitems);
+            AtomBinder.clear(sItems);
             return;
         }
         if (this.allowMultipleSelection && this.valueSeparator) {
@@ -152,18 +154,18 @@ export class AtomItemsControl extends AtomControl {
         } else {
             v = [v];
         }
-        // var items = AtomArray.intersect(dataItems, this._valuePath, v);
-        sitems.length = 0;
+        // const items = AtomArray.intersect(dataItems, this._valuePath, v);
+        sItems.length = 0;
         const vp = this.valuePath;
         for (const item of v) {
             // tslint:disable-next-line:triple-equals
             const dataItem = dataItems.find( (i) => i[vp] == v);
             if (dataItem) {
-                sitems.push(dataItem);
+                sItems.push(dataItem);
             }
         }
         // this.updateSelectionBindings();
-        AtomBinder.refreshItems(sitems);
+        AtomBinder.refreshItems(sItems);
     }
 
     public get items(): any[] {
@@ -284,7 +286,7 @@ export class AtomItemsControl extends AtomControl {
         AtomBinder.refreshItems(this.mSelectedItems);
     }
 
-    public resetVirtulContainer() {
+    public resetVirtualContainer() {
         const ip = this.itemsPresenter;
         if (ip) {
             this.disposeChildren(ip);
@@ -296,269 +298,268 @@ export class AtomItemsControl extends AtomControl {
         this.unbindEvent(this.mVirtualContainer, "scroll");
     }
 
-    // public postVirtualCollectionChanged() {
-        // WebAtoms.dispatcher.callLater(() => {
-        //     this.onVirtualCollectionChanged();
-        // });
-    // }
+    public postVirtualCollectionChanged(): void {
+        this.app.callLater(() => {
+            this.onVirtualCollectionChanged();
+        });
+    }
 
-    // public onVirtualCollectionChanged(): any {
-    //     const ip = this.itemsPresenter;
-    //     const items = null;
-    //     // const items = this.get_dataItems();
-    //     // if (!items.length) {
-    //     //     this.resetVirtulContainer();
-    //     //     return;
-    //     // }
-    //     this.validateScroller();
-    //     const fc = this.mFirstChild;
-    //     const lc = this.mLastChild;
-    //     const vc = this.mVirtualContainer;
-    //     const vcHeight = AtomUI.innerHeight(vc);
-    //     const vcScrollHeight = vc.scrollHeight;
-    //     if (isNaN(vcHeight) || vcHeight <= 0 || vcScrollHeight <= 0) {
-    //         setTimeout(() => {
-    //             this.onVirtualCollectionChanged();
-    //             }, 1000);
-    //         return;
-    //     }
+    public onVirtualCollectionChanged() {
 
-    //     const vcWidth = AtomUI.innerWidth(vc);
-    //     let avgHeight = this.mAvgHeight;
-    //     let avgWidth = this.mAvgWidth;
+        const ip = this.itemsPresenter;
 
-    //     const itemsHeight = vc.scrollHeight - AtomUI.outerHeight(fc) - AtomUI.outerHeight(lc);
-    //     const itemsWidth = AtomUI.innerWidth(ip);
+        const items = this.items;
+        if (!items.length) {
+            this.resetVirtualContainer();
+            return;
+        }
 
-    //    // const parentScope = this.get_scope();
+        this.validateScroller();
 
-    //     const element = this.element;
+        const fc = this.mFirstChild;
+        const lc = this.mLastChild;
 
-    //     if (this.mTraining) {
-    //         if (vcHeight >= itemsHeight) {
-    //             // lets add item...
-    //             const pes = lc.previousElementSibling;
-    //             if (pes !== fc) {
-    //                 const dt = pes.atomControl.get_data();
-    //                 // for (const aeItem of items) {
-    //                 //     if (aeItem === dt) {
-    //                 //         break;
-    //                 //     }
-    //                 // }
-    //             }
+        const vc = this.mVirtualContainer;
 
-    //             // if (items) {
-    //             //     const dt1 = items[0];
-    //             //     const emtChild = this.createChildElement(parentScope, null, dt1, ae, null);
-    //             //     ip.insertBefore(emtChild, lc);
-    //             //     this.applyItemStyle(emtChild, dt1, items.isFirst(), items.isLast());
-    //             //     this.postVirtualCollectionChanged();
-    //             // }
-    //         } else {
+        const vcHeight = AtomUI.innerHeight(vc);
+        const vcScrollHeight = vc.scrollHeight;
 
-    //             // calculate avg height
-    //             let totalVisibleItems = 0;
-    //             let nes = fc.nextElementSibling;
-    //             let allHeight = 0;
-    //             let allWidth = 0;
-    //             while (nes !== lc) {
-    //                 totalVisibleItems++;
-    //                 allHeight += AtomUI.outerHeight(nes, true);
-    //                 allWidth += AtomUI.outerWidth(nes, true);
-    //                 nes = nes.nextElementSibling;
-    //             }
-    //             avgHeight = allHeight / totalVisibleItems;
-    //             avgWidth = allWidth / totalVisibleItems;
-    //             totalVisibleItems--;
-    //             this.mAvgHeight = avgHeight;
-    //             this.mAvgWidth = avgWidth;
+        if ( isNaN(vcHeight) || vcHeight <= 0 || vcScrollHeight <= 0) {
+            setTimeout(() => {
+                this.onVirtualCollectionChanged();
+            }, 1000);
+            return;
+        }
 
-    //             const columns = Math.floor(vcWidth / avgWidth);
-    //             const allRows = Math.ceil(items.length / columns);
-    //             const visibleRows = Math.ceil(totalVisibleItems / columns);
-    //             this.mAllRows = allRows;
-    //             this.mColumns = columns;
-    //             this.mVisibleRows = visibleRows;
-    //             this.mVisibleHeight = visibleRows * avgHeight;
-    //             AtomUI.css(lc, {
-    //                 height: ((allRows - visibleRows + 1) * avgHeight) + "px"
-    //             });
-    //             this.mTraining = false;
-    //             this.mReady = true;
-    //             this.postVirtualCollectionChanged();
-    //             }
-    //         return;
+        const vcWidth = AtomUI.innerWidth(vc);
 
-    //         }
-    //     this.lastScrollTop = vc.scrollTop;
-    //     if (this.mIsChanging) {
-    //         return;
-    //     }
-    //     this.mIsChanging = true;
-    //     const block = Math.floor(this.mVisibleHeight / avgHeight);
-    //     const itemsInBlock = this.mVisibleRows * this.mColumns;
+        let avgHeight = this.mAvgHeight;
+        let avgWidth = this.mAvgWidth;
 
-    //     // lets simply recreate the view... if we are out of the scroll bounds...
-    //     const index = Math.floor(vc.scrollTop / this.mVisibleHeight);
-    //     const itemIndex = index * itemsInBlock;
-    //     // if (itemIndex >= items.length) {
-    //     //     this.mIsChanging = false;
-    //     //     return;
-    //     // }
-    //     const lastIndex = (Math.max(index, 0) + 3) * itemsInBlock - 1;
-    //     const firstIndex = Math.max(0, (index) * itemsInBlock);
+        const itemsHeight = vc.scrollHeight - AtomUI.outerHeight(fc) - AtomUI.outerHeight(lc);
+        const itemsWidth = AtomUI.innerWidth(ip);
 
-    //     let ce = fc.nextElementSibling;
+        const element = this.element;
 
-    //     const firstItem = fc.nextElementSibling;
-    //     const lastItem = lc.previousElementSibling;
+        let ce: HTMLElement;
 
-    //     if (firstItem !== lastItem) {
-    //         const firstVisibleIndex = firstItem.atomControl.get_scope().itemIndex;
-    //         const lastVisibleIndex = lastItem.atomControl.get_scope().itemIndex;
-    //         if (firstIndex >= firstVisibleIndex && lastIndex <= lastVisibleIndex) {
-    //             // console.log("All items are visible...");
-    //             this.mIsChanging = false;
-    //             return;
-    //         }
-    //     }
+        let ae = new AtomEnumerator(items);
 
-    //     const remove = [];
-    //     const cache = {};
+        if (this.mTraining) {
+            if (vcHeight >= itemsHeight) {
+                // lets add item...
+                ce = lc.previousElementSibling as HTMLElement;
+                if (ce !== fc) {
+                    const data = (ce as HTMLElement).atomControl.data;
+                    while (ae.next()) {
+                        if (ae.current === data) { break; }
+                    }
+                }
 
-    //     while (ce !== lc) {
-    //         const c = ce;
-    //         ce = ce.nextElementSibling;
-    //         const s = c.atomControl.get_scope().itemIndex;
-    //         cache[s] = c;
-    //         remove.push(c);
-    //     }
+                if (ae.next()) {
+                    const data = ae.current;
+                    const elementChild = this.createChild(null, data);
+                    ip.insertBefore(elementChild.element, lc);
+                    this.postVirtualCollectionChanged();
+                }
+            } else {
 
-    //     // WebAtoms.dispatcher.pause();
+                // calculate avg height
+                let totalVisibleItems = 0;
+                ce = fc.nextElementSibling as HTMLElement;
+                let allHeight = 0;
+                let allWidth = 0;
+                while (ce !== lc) {
+                    totalVisibleItems++;
+                    allHeight += AtomUI.outerHeight(ce);
+                    allWidth += AtomUI.outerWidth(ce);
+                    ce = ce.nextElementSibling as HTMLElement;
+                }
+                avgHeight = allHeight / totalVisibleItems;
+                avgWidth = allWidth / totalVisibleItems;
+                totalVisibleItems--;
+                this.mAvgHeight = avgHeight;
+                this.mAvgWidth = avgWidth;
 
-    //     const ae = items;
-    //     for (let j = 0; j < firstIndex; j++) {
-    //         ae.next();
-    //     }
-    //     let after = fc;
+                const columns = Math.floor(vcWidth / avgWidth);
+                const allRows = Math.ceil(items.length / columns);
+                const visibleRows = Math.ceil(totalVisibleItems / columns);
 
-    //     let last = null;
+                // tslint:disable-next-line:no-console
+                console.log({
+                    avgWidth,
+                    avgHeight,
+                    totalVisibleItems,
+                    allRows,
+                    columns
+                });
 
-    //     const add = [];
+                this.mAllRows = allRows;
+                this.mColumns = columns;
 
-    //     for (let i = firstIndex; i <= lastIndex; i++) {
-    //         if (!ae.next()) {
-    //             break;
-    //         }
-    //         const index2 = ae.currentIndex();
-    //         const data = ae.current();
-    //         const elementChild = cache[index2];
-    //         if (elementChild && (element as IAtomControlElement).atomControl.data === data) {
-    //                     cache[index2] = null;
-    //             } else {
-    //                // elementChild = this.createChildElement(parentScope, null, data, ae, null);
-    //         }
-    //         elementChild.before = after;
-    //         add.push(elementChild);
-    //         after = elementChild;
-    //         // this.applyItemStyle(elementChild, data, ae.isFirst(), ae.isLast());
-    //         last = index2;
-    //     }
+                this.mVisibleRows = visibleRows;
+                this.mVisibleHeight = visibleRows * avgHeight;
 
-    //     const h = (this.mAllRows - block * 3) * avgHeight - index * this.mVisibleHeight;
+                // set height of last child... to increase padding
+                lc.style.height = ((allRows - visibleRows + 1) * avgHeight) + "px";
+                this.mTraining = false;
+                this.mReady = true;
+                this.postVirtualCollectionChanged();
+            }
+            return;
 
-    //     // WebAtoms.dispatcher.callLater(() => {
-    //     //     const oldHeight = $fc.height();
-    //     //     const newHeight = index * this.mVisibleHeight;
+        }
 
-    //     //     const diff = newHeight - oldHeight;
-    //     //     const oldScrollTop = vc.scrollTop;
-    //     //     for (const aItem of add) {
-    //     //         const ac = aItem.current();
-    //     //         ip.insertBefore(ac, ac.before.nextElementSibling);
-    //     //         ac.before = null;
-    //     //     }
-    //     //     AtomUI.css(fc, {
-    //     //         height: newHeight
-    //     //     });
-    //     //     for (const aItem of remove) {
-    //     //         const ec = aItem.current();
-    //     //         if (!ec.before) {
-    //     //             ec.atomControl.dispose();
-    //     //         }
-    //     //         ec.remove();
-    //     //     }
-    //     //     AtomUI.css(lc, {
-    //     //         height: h
-    //     //     });
+        const self = this;
 
-    //     //     this.mIsChanging = false;
-    //     // });
-    //     // WebAtoms.dispatcher.start();
-    // }
+        this.lastScrollTop = vc.scrollTop;
 
-    // public createChildElement(parentScope: any, parentElement: any, data: any, ae: any, before: any): any {
-    //     const elementChild = null;
-    //     // const elementChild = AtomUI.cloneNode(this.mItemTemplate);
-    //     elementChild._logicalParent = parentElement || this.itemsPresenter;
-    //     elementChild._templateParent = this;
-    //     elementChild._isDirty = true;
+        if (this.mIsChanging) {
+            // setTimeout(function () {
+            //    self.onVirtualCollectionChanged();
+            // }, 100);
+            return;
+        }
+        this.mIsChanging = true;
 
-    //     if (parentElement) {
-    //         // WebAtoms.dispatcher.callLater(() => {
-    //         // if (before) {
-    //         //     parentElement.insertBefore(elementChild, before);
-    //         //     } else {
-    //         //          parentElement.appendChild(elementChild);
-    //         //     }
-    //         // });
-    //     }
+        const block = Math.floor(this.mVisibleHeight / avgHeight);
+        const itemsInBlock = this.mVisibleRows * this.mColumns;
 
-    //     const index = ae ? ae.currentIndex() : -1;
-    //     const scope = null;
+        // lets simply recreate the view... if we are out of the scroll bounds...
+        const index = Math.floor(vc.scrollTop / this.mVisibleHeight);
+        const itemIndex = index * itemsInBlock;
+        // console.log("First block index is " + index + " item index is " + index * itemsInBlock);
 
-    //     if (this.mUiVirtualize) {
-    //         const scopes = this.mScopes || {
-    //         };
-    //         this.mScopes = scopes;
+        if (itemIndex >= items.length) {
+            this.mIsChanging = false;
+            return;
+        }
 
-    //        // scope = scopes[index] || new AtomScope(this, parentScope, parentScope.__application);
-    //         scopes[index] = scope;
-    //     } else {
-    //        // scope = new AtomScope(this, parentScope, parentScope.__application);
-    //     }
+        const lastIndex = Math.min( (Math.max(index, 0) + 3 ) * itemsInBlock - 1, items.length - 1);
+        const firstIndex =  Math.max(0, (index) * itemsInBlock);
 
-    //     if (ae) {
-    //         scope.itemIsFirst = ae.isFirst();
-    //         scope.itemIsLast = ae.isLast();
-    //         scope.itemIndex = index;
-    //         scope.itemExpanded = false;
-    //         scope.data = data;
-    //         scope.get_itemSelected = () => {
-    //                     return scope.owner.isSelected(data);
-    //             };
-    //         scope.set_itemSelected = (v) => {
-    //                     scope.owner.toggleSelection(data, true);
-    //             };
-    //     }
+        ce = fc.nextElementSibling as HTMLElement;
 
-    //     const ac = AtomUI.createControl(elementChild, this.mChildItemType, data, scope);
-    //     return elementChild;
-    // }
+        const firstItem = fc.nextElementSibling as HTMLElement;
+        const lastItem = lc.previousElementSibling as HTMLElement;
 
-    // public applyItemStyle(arg0: any, arg1: any, arg2: any, arg3: any): any {
-    //     throw new Error("Method not implemented.");
-    // }
+        if (firstItem !== lastItem) {
+            const firstVisibleIndex = items.indexOf(firstItem.atomControl.data);
+            const lastVisibleIndex = items.indexOf(lastItem.atomControl.data);
+            // tslint:disable-next-line:no-console
+            console.log({
+                firstVisibleIndex,
+                firstIndex,
+                lastVisibleIndex,
+                lastIndex
+            });
+            if (firstIndex >= firstVisibleIndex && lastIndex <= lastVisibleIndex) {
+                // tslint:disable-next-line:no-console
+                console.log("All items are visible...");
+                this.mIsChanging = false;
+                return;
+            }
+        }
 
-    // public updateChildSelections(type: any, index: any, item: any): any {
-    //     throw new Error("Method not implemented.");
-    // }
+        const remove = [];
+        const cache = {};
+
+        while (ce !== lc) {
+            const c = ce;
+            ce = ce.nextElementSibling as HTMLElement;
+            const s = items.indexOf(c.atomControl.data);
+            cache[s] = c;
+            remove.push(c);
+        }
+
+        this.app.dispatcher.pause();
+
+        ae = new AtomEnumerator(items);
+        for (let i = 0; i < firstIndex; i++) {
+            ae.next();
+        }
+
+        let after = fc;
+
+        let last = null;
+
+        const add = [];
+
+        for (let i = firstIndex; i <= lastIndex; i++) {
+            if (!ae.next()) {
+                break;
+            }
+            const index2 = ae.currentIndex;
+            const data = ae.current;
+            let elementChild = cache[index2];
+            if (elementChild && element.atomControl.data === data) {
+                cache[index2] = null;
+            } else {
+                elementChild = this.createChild(null, data).element;
+            }
+            elementChild.before = after;
+            add.push(elementChild);
+            after = elementChild;
+            last = index2;
+        }
+
+        const h = (this.mAllRows - block * 3) * avgHeight -  index * this.mVisibleHeight;
+        // tslint:disable-next-line:no-console
+        console.log("last child height = " + h);
+
+        this.app.callLater(() => {
+
+            const oldHeight = AtomUI.outerHeight(fc);
+            const newHeight = index * this.mVisibleHeight;
+
+            const diff = newHeight - oldHeight;
+            const oldScrollTop = vc.scrollTop;
+
+            const a = new AtomEnumerator(add);
+            while (a.next()) {
+                const ec = a.current;
+                ip.insertBefore(ec, ec.before.nextElementSibling);
+                ec.before = null;
+            }
+
+            fc.style.height = newHeight + "px";
+
+            for (const iterator of remove) {
+                if (!iterator.before) {
+                    iterator.atomControl.dispose();
+                }
+                iterator.remove();
+            }
+            // const a = new AtomEnumerator(remove);
+            // while (a.next()) {
+            //     const ec = a.current();
+            //     if (!ec.before) {
+            //         ec.atomControl.dispose();
+            //     }
+            //     ec.remove();
+            // }
+
+            // vc.scrollTop = oldScrollTop - diff;
+
+            lc.style.height = h + "px";
+
+            // tslint:disable-next-line:no-console
+            console.log(`Old: ${oldScrollTop} Diff: ${diff} Old Height: ${oldHeight} Height: ${newHeight}`);
+
+            this.mIsChanging = false;
+
+        });
+
+        this.app.dispatcher.start();
+
+        AtomBinder.refreshValue(this, "childAtomControls");
+    }
 
     public isSelected(item: any) {
-        let sitem = null;
-        for (const msitem of this.mSelectedItems) {
-            sitem = msitem;
-            if (sitem === item) {
+        let selectedItem = null;
+        for (const iterator of this.mSelectedItems) {
+            selectedItem = iterator;
+            if (selectedItem === item) {
                 return true;
             }
         }
@@ -586,9 +587,9 @@ export class AtomItemsControl extends AtomControl {
         //     return;
         // }
 
-        if (this.mUiVirtualize) {
-            const index = 0;
-           // const index = this.get_selectedIndex();
+        if (this.uiVirtualize) {
+
+            const index = this.selectedIndex;
             if (!this.mReady) {
                 setTimeout(() => {
                     this.bringSelectionIntoView();
@@ -692,7 +693,7 @@ export class AtomItemsControl extends AtomControl {
         this.version = this.version + 1;
 
         if (/reset|refresh/i.test(key)) {
-            this.resetVirtulContainer();
+            this.resetVirtualContainer();
         }
 
         if (/remove/gi.test(key)) {
@@ -713,15 +714,15 @@ export class AtomItemsControl extends AtomControl {
             return;
         }
 
-        // if (this.mUiVirtualize) {
-        //     this.onVirtualCollectionChanged();
-        //     return;
-        // }
+        if (this.uiVirtualize) {
+            this.onVirtualCollectionChanged();
+            return;
+        }
         // AtomUIComponent
         const parentScope = undefined;
-        // var parentScope = this.get_scope();
+        // const parentScope = this.get_scope();
 
-        // var et = this.getTemplate("itemTemplate");
+        // const et = this.getTemplate("itemTemplate");
         // if (et) {
         //     et = AtomUI.getAtomType(et);
         //     if (et) {
@@ -768,14 +769,14 @@ export class AtomItemsControl extends AtomControl {
 
             const lastItem = items[index];
             let last: HTMLElement = null;
-            let cindex: number = 0;
+            let cIndex: number = 0;
             const en = new ChildEnumerator(this.itemsPresenter);
             while (en.next()) {
-                if (cindex === index) {
+                if (cIndex === index) {
                     last = en.current;
                     break;
                 }
-                cindex++;
+                cIndex++;
             }
             const df2 = document.createDocumentFragment();
             this.createChild(df2, lastItem);
@@ -898,15 +899,15 @@ export class AtomItemsControl extends AtomControl {
         AtomBinder.refreshValue(this, "filter");
     }
 
-    // protected onScroll() {
-    //     if (this.scrollTimeout) {
-    //         clearTimeout(this.scrollTimeout);
-    //     }
-    //     this.scrollTimeout = setTimeout(() => {
-    //         this.scrollTimeout = 0;
-    //         this.onVirtualCollectionChanged();
-    //     }, 10);
-    // }
+    protected onScroll() {
+        if (this.scrollTimeout) {
+            clearTimeout(this.scrollTimeout);
+        }
+        this.scrollTimeout = setTimeout(() => {
+            this.scrollTimeout = 0;
+            this.onVirtualCollectionChanged();
+        }, 10);
+    }
 
     protected toggleSelection(data: any) {
         this.mOnUIChanged = true;
@@ -925,65 +926,74 @@ export class AtomItemsControl extends AtomControl {
         this.mOnUIChanged = false;
     }
 
-    // protected validateScroller() {
+    protected validateScroller(): void {
 
-    //     if (this.mScrollerSetup) {
-    //         return;
-    //     }
-    //     const ip = this.itemsPresenter;
-    //     const e = this.element as HTMLElement;
+        if (this.mScrollerSetup) {
+            return;
+        }
 
-    //     let vc = this.mVirtualContainer;
-    //     if (!vc) {
-    //         if (ip === e || /table/i.test(e.nodeName)) {
-    //             throw new Error("virtualContainer presenter not found, you must put itemsPresenter "
-    //                     + "inside a virtualContainer in order for Virtualization to work");
-    //         } else {
-    //             vc = this.mVirtualContainer = this.element;
-    //         }
-    //     }
-    //     AtomUI.css(vc, {
-    //         overflow: "auto"
-    //     } );
-    //     // this.bindEvent(vc, "scroll", () => {
-    //     //     this.onScroll();
-    //     // });
-    //     AtomUI.css(ip, {
-    //         overflow: "hidden"
-    //     } );
+        const ip = this.itemsPresenter;
+        const e = this.element;
 
-    //     const isTable = /tbody/i.test(ip.nodeName);
+        let vc: HTMLElement = this.mVirtualContainer;
+        if (!vc) {
+            if (ip === e || /table/i.test(e.nodeName)) {
+                throw new Error("virtualContainer presenter not found,"
+                + "you must put itemsPresenter inside a virtualContainer in order for Virtualization to work");
+            } else {
+                vc = this.mVirtualContainer = this.element;
+            }
+        }
 
-    //     let fc;
-    //     let lc;
+        vc.style.overflow = "auto";
 
-    //     if (isTable) {
-    //         fc = document.createElement("TR");
-    //         lc = document.createElement("TR");
-    //     } else {
-    //         fc = document.createElement("DIV");
-    //         lc = document.createElement("DIV");
-    //     }
+        this.bindEvent(vc, "scroll", () => {
+            this.onScroll();
+        });
 
-    //     // $(fc).addClass("sticky first-child").css({
-    //    posiiton: "relative", height: 0, width: "100%", clear: "both" });
-    //     AtomUI.addClass(fc, "sticky first-child");
+        ip.style.overflow = "hidden";
 
-    //     // $(lc).addClass("sticky last-child").css({
-    //    posiiton: "relative", height: 0, width: "100%", clear: "both" });
-    //     AtomUI.addClass(fc, "sticky first-child");
+        // this.validateScroller = null;
 
-    //     this.mFirstChild = fc;
-    //     this.mLastChild = lc;
+        const isTable = /tbody/i.test(ip.nodeName);
 
-    //     ip.appendChild(fc);
-    //     ip.appendChild(lc);
+        let fc: HTMLElement;
+        let lc: HTMLElement;
 
-    //     // let us train ourselves to find average height/width
-    //     this.mTraining = true;
-    //     this.mScrollerSetup = true;
+        if (isTable) {
+            fc = document.createElement("TR");
+            lc = document.createElement("TR");
+        } else {
+            fc = document.createElement("DIV");
+            lc = document.createElement("DIV");
+        }
 
-    // }
+        fc.classList.add("sticky");
+        fc.classList.add("first-child");
+
+        lc.classList.add("sticky");
+        lc.classList.add("last-child");
+
+        fc.style.position = "relative";
+        fc.style.height = "0";
+        fc.style.width = "100%";
+        fc.style.clear = "both";
+
+        lc.style.position = "relative";
+        lc.style.height = "0";
+        lc.style.width = "100%";
+        lc.style.clear = "both";
+
+        this.mFirstChild = fc;
+        this.mLastChild = lc;
+
+        ip.appendChild(fc);
+        ip.appendChild(lc);
+
+        // let us train ourselves to find average height/width
+        this.mTraining = true;
+        this.mScrollerSetup = true;
+    }
 
     protected createChild(df: DocumentFragment, data: any): AtomControl {
         const t = this.itemTemplate;

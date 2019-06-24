@@ -96,6 +96,9 @@ export default class WebApp extends App {
                 this.url = new AtomUri(location.href);
             });
         });
+
+        // registering font awesome
+        this.installStyleSheet("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.9.0/css/all.css");
     }
 
     public installStyleSheet(ssConfig: string |
@@ -124,7 +127,7 @@ export default class WebApp extends App {
         if (ssConfig.integrity) {
             ss.integrity = ssConfig.integrity;
         }
-        document.body.appendChild(ss);
+        document.head.appendChild(ss);
     }
 
     public installScript(location: string): Promise<void> {

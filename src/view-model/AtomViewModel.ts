@@ -8,7 +8,7 @@ import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
 import { IValueConverter } from "../core/IValueConverter";
 import { PropertyBinding } from "../core/PropertyBinding";
-import { ArrayHelper, IClassOf, IDisposable } from "../core/types";
+import { ArrayHelper, CancelToken, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 
 /**
@@ -23,11 +23,13 @@ export class AtomViewModel {
     // tslint:disable-next-line:ban-types
     public postInit: Function[];
 
-    private disposables: IDisposable[];
+    private disposables: AtomDisposableList = null;
 
     private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
     private pendingInits: Array<() => void> = [];
+
+    private cancelTokens: { [key: string]: CancelToken} = null;
 
     public get isReady(): boolean {
         return this.pendingInits === null;
@@ -196,10 +198,7 @@ export class AtomViewModel {
      */
     public dispose(): void {
         if (this.disposables) {
-            for (const d of this.disposables) {
-                d.dispose();
-            }
-            this.disposables.length = 0;
+            this.disposables.dispose();
         }
     }
 
@@ -222,14 +221,8 @@ export class AtomViewModel {
      * @memberof AtomViewModel
      */
     public registerDisposable(d: IDisposable): IDisposable {
-        this.disposables = this.disposables || [];
-        this.disposables.push(d);
-        return {
-            dispose: () => {
-                ArrayHelper.remove(this.disposables, (f) => f === d);
-                d.dispose();
-            }
-        };
+        this.disposables = this.disposables || new AtomDisposableList();
+        return this.disposables.add(d);
     }
     /**
      * Broadcast given data to channel (msg)
@@ -290,6 +283,66 @@ export class AtomViewModel {
     protected subscribe(channel: string, c: (ch: string, data: any) => void): IDisposable {
         const sub: IDisposable = this.app.subscribe(channel, c);
         return this.registerDisposable(sub);
+    }
+
+    /**
+     * When you create newCancelToken, previous `CancelToken` with same key will be cancelled,
+     * this is useful to prevent multiple remote calls when watched properties change frequently,
+     * such as user typing in search field.
+     * @param key key to separate other tokens
+     */
+    protected newCancelToken(key?: string): CancelToken {
+        let tks = this.cancelTokens;
+        if (!tks) {
+            tks = {};
+            this.registerDisposable({
+                dispose: () => {
+                    for (const k in this.cancelTokens) {
+                        if (this.cancelTokens.hasOwnProperty(k)) {
+                            const element = this.cancelTokens[k];
+                            element.dispose();
+                        }
+                    }
+                }
+            });
+        }
+        key = key || "__default";
+        let token = tks[key];
+        if (token) {
+            token.cancel();
+        }
+        tks[key] = token = new CancelToken();
+        return token;
+    }
+
+    /**
+     * Setups a timer and disposes automatically when view model is destroyed. This will execute
+     * given function only once unless `repeat` argument is `true`.
+     * @param fx Function to execute
+     * @param delayInSeconds delay in seconds
+     * @param repeat repeat at given delay
+     */
+    protected setTimer(
+        fx: ((... a: any[]) => any),
+        delayInSeconds: number,
+        repeat: boolean = false): IDisposable {
+        const afx = () => {
+            this.app.runAsync(fx);
+        };
+        const delay = delayInSeconds * 1000;
+        const id = repeat
+            ? setInterval(afx, delay)
+            : setTimeout(afx, delay);
+        const d = {
+            dispose() {
+                if (repeat) {
+                    clearInterval(id);
+                } else {
+                    clearTimeout(id);
+                }
+            }
+        };
+        return this.registerDisposable(d);
     }
 
     /**
@@ -469,6 +522,45 @@ export function Watch(target: AtomViewModel, key: string | symbol, descriptor: a
         }
 
         ivm.setupWatch(vm[key]);
+    });
+}
+
+/**
+ * Cached watch must be used with async getters to avoid reloading of
+ * resources unless the properties referenced are changed
+ * @param target ViewModel
+ * @param key name of property
+ * @param descriptor descriptor of property
+ */
+export function CachedWatch(target: AtomViewModel, key: string, descriptor: any): void {
+
+    const getMethod = descriptor.get;
+
+    descriptor.get = (() => null);
+
+    registerInit(target, (vm) => {
+        const ivm = (vm as any) as IAtomViewModel;
+
+        const fieldName = `_${key}`;
+
+        Object.defineProperty(ivm, key, {
+            enumerable: true,
+            configurable: true,
+            get() {
+                const c =
+                    ivm[fieldName] || (
+                        ivm[fieldName] = {
+                            value: getMethod.apply(ivm)
+                        }
+                    );
+                return c.value;
+            }
+        });
+
+        ivm.setupWatch(descriptor.get, () => {
+            ivm[fieldName] = null;
+            AtomBinder.refreshValue(ivm, key);
+        });
     });
 }
 

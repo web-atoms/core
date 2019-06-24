@@ -289,6 +289,7 @@ export class WindowService extends NavigationService {
         // const popupType = await UMD.resolveViewClassAsync(url.path);
         const popup = await AtomLoader.loadView<AtomControl>(
             url, this.app, () => this.app.resolve(AtomWindowViewModel, true));
+
         const e = popup.element;
 
         if (popup instanceof AtomWindow) {
@@ -299,7 +300,23 @@ export class WindowService extends NavigationService {
         e._logicalParent = lastTarget;
         (e as any).sourceUrl = url;
 
-        await Atom.delay(10);
+        await Atom.delay(1);
+
+        const pvm = popup.viewModel;
+        if (pvm) {
+            let ce = this.currentTarget;
+            if (ce) {
+                while (!ce.atomControl) {
+                    ce = ce.parentElement;
+                    if (!ce) {
+                        break;
+                    }
+                }
+                if (ce && ce.atomControl && ce.atomControl.viewModel) {
+                    pvm.parent = ce.atomControl.viewModel;
+                }
+            }
+        }
 
         return await new Promise<T>((resolve, reject) => {
 

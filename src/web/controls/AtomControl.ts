@@ -1,3 +1,4 @@
+import { Atom } from "../../Atom";
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
@@ -10,7 +11,6 @@ import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
-import { Atom } from "../../Atom";
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -269,6 +269,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     const ie = element as HTMLInputElement;
                     if (ie) { ie.focus(); }
                 });
+            case "src":
+                if (value && /^http\:/i.test(value)) {
+                    (element as any).src = value.substr(5);
+                } else {
+                    (element as any).src = value;
+                }
+                break;
             default:
                 element[name] = value;
         }

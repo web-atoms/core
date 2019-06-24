@@ -1,5 +1,7 @@
 import { INameValues, IRect } from "../../core/types";
 
+// refer http://youmightnotneedjquery.com/
+
 export class ChildEnumerator {
 
     private item: HTMLElement;
@@ -32,24 +34,32 @@ export class AtomUI {
         throw new Error("Method not implemented.");
     }
 
-    public static outerHeight(arg0: any, arg1: boolean = false): any {
-        throw new Error("Method not implemented.");
+    public static outerHeight(el: HTMLElement, margin: boolean = false): number {
+        let height = el.offsetHeight;
+        if (!margin) { return height; }
+        const style = getComputedStyle(el);
+        height += parseInt(style.marginTop, 10) + parseInt(style.marginBottom, 10);
+        return height;
     }
 
-    public static outerWidth(arg0: any, arg1: boolean = false): any {
-        throw new Error("Method not implemented.");
+    public static outerWidth(el: HTMLElement, margin: boolean = false): number {
+        let width = el.offsetWidth;
+        if (!margin) { return width; }
+        const style = getComputedStyle(el);
+        width += parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+        return width;
     }
 
-    public static innerWidth(arg0: any): any {
-        throw new Error("Method not implemented.");
+    public static innerWidth(el: HTMLElement): number {
+        return el.clientWidth;
     }
 
-    public static innerHeight(arg0: any): any {
-        throw new Error("Method not implemented.");
+    public static innerHeight(el: HTMLElement): number {
+        return el.clientHeight;
     }
 
-    public static scrollTop(arg0: any, arg1: any): any {
-        throw new Error("Method not implemented.");
+    public static scrollTop(el: HTMLElement, y: number): any {
+        el.scrollTo(0, y);
     }
 
     public static screenOffset(e: HTMLElement): IRect {
