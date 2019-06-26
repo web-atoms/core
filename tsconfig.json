@@ -4,6 +4,7 @@
         "module":"umd",
         "sourceMap": true,
         "declaration": true,
+        "declarationMap": true,
         "moduleResolution": "node",
         "outDir": "dist",
         "downlevelIteration": false,

@@ -557,7 +557,7 @@ export function CachedWatch(target: AtomViewModel, key: string, descriptor: any)
             }
         });
 
-        ivm.setupWatch(descriptor.get, () => {
+        ivm.setupWatch(getMethod, () => {
             ivm[fieldName] = null;
             AtomBinder.refreshValue(ivm, key);
         });

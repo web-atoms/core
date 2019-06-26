@@ -26,6 +26,8 @@ export class AtomItemsControl extends AtomControl {
     @BindableProperty
     public version: number = 1;
 
+    public autoScrollToSelection: any = false;
+
     public sort: string | ((a: any, b: any) => number) = null;
 
     public valueSeparator: string = ", ";
@@ -83,8 +85,6 @@ export class AtomItemsControl extends AtomControl {
     private mIsChanging: any;
 
     private mOnUIChanged: any;
-
-    private mAutoScrollToSelection: any;
 
     private lastScrollTop: any;
 
@@ -609,8 +609,8 @@ export class AtomItemsControl extends AtomControl {
         }
         const en = new ChildEnumerator(this.itemsPresenter || this.element);
         while (en.next()) {
-            const item: any = en.current;
-            const dataItem = item.atomControl ? item.atomControl.get_data() : item;
+            const item = en.current;
+            const dataItem = item.atomControl ? item.atomControl.data : item;
             if (this.isSelected(dataItem)) {
                 item.scrollIntoView();
                 return;
@@ -638,7 +638,7 @@ export class AtomItemsControl extends AtomControl {
     public onSelectedItemsChanged(type: any, index: any, item: any) {
         if (!this.mOnUIChanged) {
             // this.updateChildSelections(type, index, item);
-            if (this.mAutoScrollToSelection) {
+            if (this.autoScrollToSelection) {
                 this.bringSelectionIntoView();
             }
         }

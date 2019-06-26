@@ -1,6 +1,6 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.709",
+  "version": "1.0.716",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
@@ -35,8 +35,6 @@
     "web-atoms-amd-loader": "^1.0.333"
   },
   "dependencies": {
-    "golden-layout": "^1.5.9",
-    "jquery": "^3.4.1",
     "reflect-metadata": "^0.1.13"
   }
 }
