@@ -609,8 +609,8 @@ export class AtomItemsControl extends AtomControl {
         }
         const en = new ChildEnumerator(this.itemsPresenter || this.element);
         while (en.next()) {
-            const item: any = en.current;
-            const dataItem = item.atomControl ? item.atomControl.get_data() : item;
+            const item = en.current;
+            const dataItem = item.atomControl ? item.atomControl.data : item;
             if (this.isSelected(dataItem)) {
                 item.scrollIntoView();
                 return;
