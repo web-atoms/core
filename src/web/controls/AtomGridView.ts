@@ -201,9 +201,6 @@ export class AtomGridView extends AtomControl {
     }
 
     protected preCreate(): void {
-        if (!this.element) {
-            this.element = document.createElement("section");
-        }
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";
