@@ -612,7 +612,9 @@ export class AtomItemsControl extends AtomControl {
             const item = en.current;
             const dataItem = item.atomControl ? item.atomControl.data : item;
             if (this.isSelected(dataItem)) {
-                item.scrollIntoView();
+                setTimeout(() => {
+                    item.scrollIntoView();
+                }, 1000);
                 return;
             }
         }
