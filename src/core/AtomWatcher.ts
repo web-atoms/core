@@ -44,7 +44,7 @@ export class AtomWatcher<T> implements IDisposable {
 
     public target: any;
 
-    public runEvaluate: () => any;
+    private runEvaluate: () => any;
 
     private forValidation: boolean;
 
@@ -56,7 +56,7 @@ export class AtomWatcher<T> implements IDisposable {
      *      let w = new AtomWatcher(this, x => x.data.fullName = `${x.data.firstName} ${x.data.lastName}`);
      *
      * You must dispose `w` in order to avoid memory leaks.
-     * Above method will set fullName whenver, data or its firstName,lastName property is modified.
+     * Above method will set fullName whenever, data or its firstName,lastName property is modified.
      *
      * AtomWatcher will assign null if any expression results in null in single property path.
      *
@@ -73,30 +73,24 @@ export class AtomWatcher<T> implements IDisposable {
      * @param {(PathList[] | ((x:T) => any))} path - Path is either lambda expression or array of
      *                      property path to watch, if path was lambda, it will be executed when any of
      *                      members will modify
-     * @param {boolean} [forValidation] forValidtion - Ignore, used for internal purpose
+     * @param {Function} onChanged - This function will be executed when any member in path is updated
      * @memberof AtomWatcher
      */
     constructor(
         target: T,
         path: PathList[] | (() => any) ,
-        runAfterSetup: boolean,
-        forValidation?: boolean,
-        proxy?: (...v: any[]) => any,
+        onChanged: (...v: any[]) => any,
         private source?: any
     ) {
         this.target = target;
-        let e: boolean = false;
-        if (forValidation === true) {
-            this.forValidation = true;
-        }
+        this.forValidation = true;
         if (path instanceof Function) {
             const f: () => any = path;
             path = parsePath(path);
-            e = true;
-            this.func = proxy || f;
+            this.func = onChanged || f;
             this.funcText = f.toString();
         } else {
-            this.func = proxy;
+            this.func = onChanged;
         }
 
         this.runEvaluate = () => {
@@ -114,81 +108,6 @@ export class AtomWatcher<T> implements IDisposable {
             console.warn("There is nothing to watch, do not use one way binding without any binding expression");
         }
 
-        if (e) {
-            if (runAfterSetup) {
-                this.evaluate();
-            }
-            // else {
-            //     // setup watcher...
-            //     for(let p of this.path) {
-            //         this.evaluatePath(this.target,p);
-            //     }
-            // }
-        }
-
-    }
-
-    /**
-     *
-     *
-     * @param {boolean} [force]
-     * @returns {*}
-     * @memberof AtomWatcher
-     */
-    public evaluate(force?: boolean): any {
-
-        if (!this.path) {
-            // this watcher may have been disposed...
-            // tslint:disable-next-line:no-console
-            console.warn(`Watcher is not disposed properly, please watch for any memory leak`);
-            return;
-        }
-
-        if (this.isExecuting) {
-            return;
-        }
-
-        const disposeWatchers: IDisposable[] = [];
-
-        this.isExecuting = true;
-
-        try {
-
-            const values: any[] = [];
-
-            const logs: string[][] = [];
-
-            for (const p of this.path) {
-
-                values.push(this.evaluatePath(this.target, p));
-            }
-
-            if (force === true) {
-                this.forValidation = false;
-            }
-
-            if (this.forValidation) {
-                const x: boolean = true;
-                if (values.find( (x1) => x1 ? true : false)) {
-                    this.forValidation = false;
-                } else {
-                    return;
-                }
-            }
-
-            try {
-                this.func.apply(this.target, values);
-            } catch (e) {
-                // tslint:disable-next-line:no-console
-                console.warn(e);
-            }
-        } finally {
-            this.isExecuting = false;
-
-            for (const d of disposeWatchers) {
-                d.dispose();
-            }
-        }
     }
 
     public toString(): string {
@@ -218,7 +137,21 @@ export class AtomWatcher<T> implements IDisposable {
         this.source = null;
     }
 
-    public evaluatePath(target: any, path: ObjectProperty[]): any {
+    /**
+     * Initialize the path targets
+     * @param evaluate if true, evaluate entire watch expression and run onChange method
+     */
+    public init(evaluate?: boolean): void {
+        if (evaluate) {
+            this.evaluate(true);
+        } else {
+            for (const iterator of this.path) {
+                this.evaluatePath(this.target, iterator);
+            }
+        }
+    }
+
+    private evaluatePath(target: any, path: ObjectProperty[]): any {
 
         // console.log(`\tevaluatePath: ${path.map(op=>op.name).join(", ")}`);
 
@@ -249,6 +182,69 @@ export class AtomWatcher<T> implements IDisposable {
             }
         }
         return newTarget;
+    }
+
+    /**
+     *
+     *
+     * @param {boolean} [force]
+     * @returns {*}
+     * @memberof AtomWatcher
+     */
+    private evaluate(force?: boolean): any {
+
+        if (!this.path) {
+            // this watcher may have been disposed...
+            // tslint:disable-next-line:no-console
+            console.warn(`Watcher is not disposed properly, please watch for any memory leak`);
+            return;
+        }
+
+        if (this.isExecuting) {
+            return;
+        }
+
+        const disposeWatchers: IDisposable[] = [];
+
+        this.isExecuting = true;
+
+        try {
+
+            const values: any[] = [];
+
+            const logs: string[][] = [];
+
+            for (const p of this.path) {
+
+                values.push(this.evaluatePath(this.target, p));
+            }
+
+            // if (force === true) {
+            //     this.forValidation = false;
+            // }
+
+            // if (this.forValidation) {
+            //     const x: boolean = true;
+            //     if (values.find( (x1) => x1 ? true : false)) {
+            //         this.forValidation = false;
+            //     } else {
+            //         return;
+            //     }
+            // }
+
+            try {
+                this.func.apply(this.target, values);
+            } catch (e) {
+                // tslint:disable-next-line:no-console
+                console.warn(e);
+            }
+        } finally {
+            this.isExecuting = false;
+
+            for (const d of disposeWatchers) {
+                d.dispose();
+            }
+        }
     }
 
 }

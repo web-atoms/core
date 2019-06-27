@@ -79,7 +79,7 @@ export class AtomViewModel {
         this.mShouldValidate = true;
         for (const v of this.validations) {
             if (!v.initialized) {
-                v.watcher.evaluate(true);
+                v.watcher.init(true);
                 v.initialized = true;
             }
             if (this[v.name]) {
@@ -370,17 +370,12 @@ export class AtomViewModel {
         name?: string): IDisposable {
 
         const d: AtomWatcher<any> = new AtomWatcher<any>(
-            this, ft, !forValidation && this.isReady, forValidation, proxy );
-
-        if (!forValidation) {
-            if (proxy) {
-                const op = proxy as () => any;
-                proxy = () => this.app.runAsync( () => op() );
-            }
-            this.runAfterInit(() => d.runEvaluate());
-        } else {
+            this, ft, proxy );
+        if (forValidation) {
             this.validations = this.validations || [];
             this.validations.push({ name, watcher: d, initialized: false});
+        } else {
+            d.init();
         }
         return this.registerDisposable(d);
     }
@@ -494,12 +489,8 @@ export function BindableBroadcast(...channel: string[]): viewModelInitFunc {
                     vm.broadcast(c, v);
                 }
             };
-            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], false );
-            d.func = fx;
-
-            for (const p of d.path) {
-                d.evaluatePath(vm, p);
-            }
+            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], fx );
+            d.init();
 
             vm.registerDisposable(d);
         });

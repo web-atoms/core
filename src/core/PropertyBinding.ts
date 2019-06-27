@@ -39,7 +39,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
                 this.fromSourceToTarget = valueFunc;
             }
         }
-        this.watcher = new AtomWatcher(target, path, true, false,
+        this.watcher = new AtomWatcher(target, path,
             (...v: any[]) => {
                 this.updaterOnce.run(() => {
                     if (this.disposed) {
@@ -68,13 +68,13 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
                     // this is disposed ...
                     return;
                 }
-                this.watcher.evaluate();
+                this.watcher.init(true);
                 if (twoWays) {
                     this.setupTwoWayBinding();
                 }
             });
         } else {
-            this.watcher.evaluate();
+            this.watcher.init(true);
             if (twoWays) {
                 this.setupTwoWayBinding();
             }
@@ -103,13 +103,13 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             }
         }
 
-        const watcher = new AtomWatcher(this.target, [[this.name]], false, false,
+        const watcher = new AtomWatcher(this.target, [[this.name]],
             (...values: any[]) => {
                 if (this.isTwoWaySetup) {
                     this.setInverseValue(values[0]);
             }
         });
-        watcher.evaluate();
+        watcher.init(true);
         this.isTwoWaySetup = true;
         this.twoWaysDisposable = watcher;
     }
