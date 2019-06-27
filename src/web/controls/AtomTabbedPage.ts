@@ -203,8 +203,7 @@ class AtomTabViewModel extends AtomViewModel {
             }
         });
 
-        this.watchTabChannel();
-        // this.watchSelectedPage();
+        this.app.callLater(() => this.watchTabChannel());
     }
 
     public async init(): Promise<any> {
