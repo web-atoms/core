@@ -1,5 +1,6 @@
 // tslint:disable:ban-types no-console
 import { Atom } from "../../Atom";
+import { AtomBinder } from "../../core/AtomBinder";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
@@ -11,6 +12,11 @@ import { AtomUI } from "../core/AtomUI";
 import AtomFrameStyle from "../styles/AtomFrameStyle";
 import { AtomControl } from "./AtomControl";
 
+export interface IPageItem {
+    url: string;
+    page: AtomControl;
+}
+
 /**
  * Creates and hosts an instance of AtomControl available at given URL. Query string parameters
  * from the url will be passed to view model as initial property values.
@@ -21,10 +27,7 @@ export class AtomFrame
     extends AtomControl
     implements INotifyPropertyChanged {
 
-    public stack: AtomControl[] = [];
-
-    @BindableProperty
-    public url: string;
+    public stack: IPageItem[] = [];
 
     @BindableProperty
     public keepStack: boolean = false;
@@ -32,17 +35,34 @@ export class AtomFrame
     @BindableProperty
     public current: AtomControl = null;
 
+    public pagePresenter: HTMLElement;
+
     public currentDisposable: IDisposable = null;
 
     public backCommand: Function;
 
+    private mUrl: string;
+    public get url(): string {
+        return this.mUrl;
+    }
+    public set url(value: string) {
+        if (this.mUrl === value) {
+            return;
+        }
+        this.runAfterInit(() => {
+            this.app.runAsync(() => this.load(value));
+        });
+    }
+
     private navigationService: NavigationService;
 
-    private lastUrl: string;
-
-    public onBackCommand(): void {
+    public async onBackCommand(): Promise<void> {
         if (!this.stack.length) {
             console.warn(`FrameStack is empty !!`);
+            return;
+        }
+
+        if (!await this.canChange()) {
             return;
         }
 
@@ -52,8 +72,11 @@ export class AtomFrame
         ctrl.dispose();
         e.remove();
 
-        this.current = this.stack.pop();
+        const last = this.stack.pop();
+        this.mUrl = last.url;
+        this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
+        AtomBinder.refreshValue(this, "url");
     }
 
     public async canChange(): Promise<boolean> {
@@ -76,43 +99,44 @@ export class AtomFrame
         if (this.current) {
             if (this.keepStack) {
                 (this.current.element as HTMLElement).style.display = "none";
-                this.stack.push(this.current);
+                this.stack.push({ url: (this.current as any)._$_url , page: this.current });
             } else {
                 if (this.current === ctrl) {
                     return;
                 }
                 const c1: AtomControl = this.current;
-                const e: HTMLElement = c1.element as HTMLElement;
+                const e1: HTMLElement = c1.element as HTMLElement;
                 c1.dispose();
-                e.remove();
+                e1.remove();
             }
         }
 
         const element: HTMLElement = ctrl.element as HTMLElement;
-        (this.element as HTMLElement).appendChild(element);
+        const e = this.pagePresenter || this.element;
+        (e).appendChild(element);
 
         this.current = ctrl;
     }
 
-    public createControl(ctrl: AtomControl, q?: any): AtomControl {
+    // public createControl(ctrl: AtomControl, q?: any): AtomControl {
 
-        const div: HTMLElement = ctrl.element;
-        div.id = `${this.element.id}_${this.stack.length + 1}`;
+    //     const div: HTMLElement = ctrl.element;
+    //     div.id = `${this.element.id}_${this.stack.length + 1}`;
 
-        AtomDispatcher.call(() => {
-            const vm: any = ctrl.viewModel;
-            if (q) {
-                for (const key in q) {
-                    if (q.hasOwnProperty(key)) {
-                        const value = q[key];
-                        vm[key] = value;
-                    }
-                }
-            }
-        });
+    //     AtomDispatcher.call(() => {
+    //         const vm: any = ctrl.viewModel;
+    //         if (q) {
+    //             for (const key in q) {
+    //                 if (q.hasOwnProperty(key)) {
+    //                     const value = q[key];
+    //                     vm[key] = value;
+    //                 }
+    //             }
+    //         }
+    //     });
 
-        return ctrl;
-    }
+    //     return ctrl;
+    // }
 
     public async load(url: string): Promise<any> {
 
@@ -124,7 +148,12 @@ export class AtomFrame
 
         const ctrl = await AtomLoader.loadView<AtomControl>(uri, this.app);
 
+        (ctrl as any)._$_url = url;
+
         this.push(ctrl);
+
+        this.mUrl = url;
+        AtomBinder.refreshValue(this, "url");
 
         await Atom.postAsync(this.app, async () => {
             const vm = ctrl.viewModel;
@@ -144,28 +173,9 @@ export class AtomFrame
             .join("");
     }
 
-    public onUpdateUI(): void {
-        super.onUpdateUI();
-        if (this.url === this.lastUrl) {
-            return;
-        }
-
-        this.lastUrl = this.url;
-        this.load(this.lastUrl);
-    }
-
-    public onPropertyChanged(name: string): void {
-        super.onPropertyChanged(name);
-
-        switch (name) {
-            case "url":
-                this.invalidate();
-                break;
-        }
-    }
-
     protected preCreate(): void {
         this.defaultControlStyle = AtomFrameStyle;
+        this.pagePresenter = null;
         if (!this.element) {
             this.element = document.createElement("section");
         }
