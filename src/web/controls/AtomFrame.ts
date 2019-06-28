@@ -15,6 +15,7 @@ import { AtomControl } from "./AtomControl";
 export interface IPageItem {
     url: string;
     page: AtomControl;
+    scrollY: number;
 }
 
 /**
@@ -40,6 +41,8 @@ export class AtomFrame
     public currentDisposable: IDisposable = null;
 
     public backCommand: Function;
+
+    public saveScrollPosition: boolean = false;
 
     private mUrl: string;
     public get url(): string {
@@ -77,6 +80,11 @@ export class AtomFrame
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
         AtomBinder.refreshValue(this, "url");
+        if (this.saveScrollPosition) {
+            setTimeout(() => {
+                window.scrollTo(0, last.scrollY);
+            }, 200);
+        }
     }
 
     public async canChange(): Promise<boolean> {
@@ -99,7 +107,11 @@ export class AtomFrame
         if (this.current) {
             if (this.keepStack) {
                 (this.current.element as HTMLElement).style.display = "none";
-                this.stack.push({ url: (this.current as any)._$_url , page: this.current });
+                this.stack.push({
+                    url: (this.current as any)._$_url ,
+                    page: this.current,
+                    scrollY: window.scrollY
+                });
             } else {
                 if (this.current === ctrl) {
                     return;
@@ -116,6 +128,10 @@ export class AtomFrame
         (e).appendChild(element);
 
         this.current = ctrl;
+
+        if (this.saveScrollPosition) {
+            window.scrollTo(0, 0);
+        }
     }
 
     // public createControl(ctrl: AtomControl, q?: any): AtomControl {
