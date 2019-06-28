@@ -183,8 +183,6 @@ export class AtomFrame
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
         });
-        this.backCommand = () => {
-            this.onBackCommand();
-        };
+        this.backCommand = () => this.onBackCommand();
     }
 }
