@@ -170,6 +170,7 @@ export class AtomFrame
     }
 
     protected preCreate(): void {
+        this.navigationService = this.app.resolve(NavigationService);
         this.defaultControlStyle = AtomFrameStyle;
         this.pagePresenter = null;
         if (!this.element) {
