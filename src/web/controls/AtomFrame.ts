@@ -83,6 +83,10 @@ export class AtomFrame
     }
 
     public canChange(): Promise<boolean> {
+        const c = this.current;
+        if (!c) {
+            return Promise.resolve(true);
+        }
         return this.navigationService.remove(this.current);
     }
 
