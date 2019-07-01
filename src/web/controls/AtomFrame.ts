@@ -1,4 +1,3 @@
-// tslint:disable:ban-types no-console
 import { Atom } from "../../Atom";
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
@@ -40,7 +39,7 @@ export class AtomFrame
 
     public currentDisposable: IDisposable = null;
 
-    public backCommand: Function;
+    public backCommand: () => void;
 
     public saveScrollPosition: boolean = false;
 
@@ -61,6 +60,7 @@ export class AtomFrame
 
     public async onBackCommand(): Promise<void> {
         if (!this.stack.length) {
+            // tslint:disable-next-line: no-console
             console.warn(`FrameStack is empty !!`);
             return;
         }
@@ -197,7 +197,18 @@ export class AtomFrame
                 this.stack.length = 0;
             }
         }
-        return await (page as any).returnPromise;
+        try {
+            return await (page as any).returnPromise;
+        } catch (ex) {
+            // this will prevent warning in chrome for unhandled exception
+            if ((ex.message ? ex.message : ex) === "cancelled") {
+                // tslint:disable-next-line: no-console
+                console.warn(ex);
+                return;
+            }
+            // throw new Error( ex.stack ? (ex + "\r\n" + ex.stack ) : ex);
+            throw ex;
+        }
     }
 
     protected preCreate(): void {

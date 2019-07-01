@@ -263,7 +263,17 @@ class AtomTabViewModel extends AtomViewModel {
 
     protected async loadPageForReturn(url: AtomUri): Promise<any> {
         const p = await this.loadPage(url, false);
-        return await (p as any).returnPromise;
+        try {
+            return await (p as any).returnPromise;
+        } catch (ex) {
+            // this will prevent warning in chrome for unhandled exception
+            if ((ex.message ? ex.message : ex) === "cancelled") {
+                // tslint:disable-next-line: no-console
+                console.warn(ex);
+                return;
+            }
+            throw ex;
+        }
     }
 
     protected async loadPage(
