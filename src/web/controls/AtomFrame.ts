@@ -166,6 +166,7 @@ export class AtomFrame
 
     protected async loadForReturn(url: AtomUri): Promise<any> {
         const page = await this.load(url);
+        return await (page as any).returnPromise;
     }
 
     protected preCreate(): void {
@@ -182,8 +183,8 @@ export class AtomFrame
 
         // hook navigation...
 
-        const d = this.navigationService.registerNavigationHook((url) => {
-            if (url.protocol !== "frame") {
+        const d = this.navigationService.registerNavigationHook((url, target) => {
+            if (target !== "frame" && url.protocol !== "frame:") {
                 return undefined;
             }
             return this.loadForReturn(url);

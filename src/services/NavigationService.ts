@@ -19,7 +19,7 @@ export enum NotifyType {
     Error = "error"
 }
 
-export type hookCallback = (url: AtomUri) => Promise<any>;
+export type hookCallback = (url: AtomUri, target?: string) => Promise<any>;
 
 export abstract class NavigationService {
 
@@ -32,7 +32,7 @@ export abstract class NavigationService {
     public abstract alert(message: string, title?: string): Promise<any>;
     public abstract confirm(message: string, title?: string): Promise<boolean>;
 
-    public openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
+    public openPage<T>(pageName: string, p?: INameValuePairs, target?: string): Promise<T> {
         const url = new AtomUri(pageName);
         if (p) {
             for (const key in p) {
@@ -62,12 +62,12 @@ export abstract class NavigationService {
             }
         }
         for (const iterator of this.callbacks) {
-            const r = iterator(url);
+            const r = iterator(url, target);
             if (r) {
                 return r;
             }
         }
-        return this.openWindow(url);
+        return this.openWindow(url, target);
     }
 
     public abstract notify(message: string, title?: string, type?: NotifyType, delay?: number): void;
@@ -101,7 +101,7 @@ export abstract class NavigationService {
         return true;
     }
 
-    public registerNavigationHook(callback: (uri: AtomUri) => Promise<any>): IDisposable {
+    public registerNavigationHook(callback: (uri: AtomUri, target?: string) => Promise<any>): IDisposable {
         this.callbacks.push(callback);
         return {
             dispose: () => {
@@ -110,7 +110,7 @@ export abstract class NavigationService {
         };
     }
 
-    protected abstract openWindow<T>(url: AtomUri): Promise<T>;
+    protected abstract openWindow<T>(url: AtomUri, target?: string): Promise<T>;
 
 }
 
