@@ -340,6 +340,7 @@ export class WindowService extends NavigationService {
 
         disposables.add({
             dispose: () => {
+                e.innerHTML = "";
                 e.remove();
             }
         });

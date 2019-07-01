@@ -160,7 +160,10 @@ export class AtomFrame
         AtomBinder.refreshValue(this, "canGoBack");
         disposables.add(view);
         disposables.add({
-            dispose: () => e.remove()
+            dispose: () => {
+                e.innerHTML = "";
+                e.remove();
+            }
         });
         return view;
     }
@@ -183,6 +186,7 @@ export class AtomFrame
                     const e = iterator.page.element;
                     if (e) {
                         iterator.page.dispose();
+                        e.innerHTML = "";
                         e.remove();
                     }
                 }

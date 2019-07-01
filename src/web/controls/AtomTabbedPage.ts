@@ -334,6 +334,7 @@ class AtomTabViewModel extends AtomViewModel {
             if (pe) {
                 pe.remove();
             }
+            e.innerHTML = "";
             e.remove();
             if (this.selectedPage === page) {
                 this.selectedPage = this.pages[index - 1];
