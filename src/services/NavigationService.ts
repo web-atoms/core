@@ -97,7 +97,7 @@ export abstract class NavigationService {
             const a = await vm.cancel();
             return a;
         }
-        this.forceRemove(view);
+        this.app.broadcast(`atom-window-cancel:${(view as any).id}`, "cancelled");
         return true;
     }
 
@@ -109,8 +109,6 @@ export abstract class NavigationService {
             }
         };
     }
-
-    protected abstract forceRemove(view: any): void;
 
     protected abstract openWindow<T>(url: AtomUri): Promise<T>;
 

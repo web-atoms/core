@@ -152,16 +152,6 @@ export class AtomFrame
 
         this.mUrl = urlString;
         AtomBinder.refreshValue(this, "url");
-
-        await Atom.postAsync(this.app, async () => {
-            const vm = view.viewModel;
-            if (vm) {
-                if (vm instanceof AtomWindowViewModel) {
-                    const pvm: AtomWindowViewModel = vm as AtomWindowViewModel;
-                    pvm.windowName = (view.element as HTMLElement).id;
-                }
-            }
-        });
         return view;
     }
 

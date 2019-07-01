@@ -2,12 +2,13 @@ import { App } from "../App";
 import { JsonService } from "../services/JsonService";
 import ReferenceService from "../services/ReferenceService";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import { AtomUI } from "../web/core/AtomUI";
 import { AtomDisposableList } from "./AtomDisposableList";
 import { AtomUri } from "./AtomUri";
 import { DI, IClassOf } from "./types";
 
 export class AtomLoader {
+
+    public static id: number = 1;
 
     public static async load<T>(url: AtomUri, app: App): Promise<T> {
         if (url.host === "reference") {
@@ -38,7 +39,8 @@ export class AtomLoader {
         vmFactory?: () => any): Promise<{
             view: T,
             disposables?: AtomDisposableList,
-            returnPromise?: Promise<any>}> {
+            returnPromise?: Promise<any>,
+            id?: string}> {
 
         const busyIndicator = app.createBusyIndicator();
 
@@ -80,9 +82,10 @@ export class AtomLoader {
             // register hooks !! if it is a window !!
             if (vm instanceof AtomWindowViewModel) {
 
-                // assign element id...
-                const id = AtomUI.assignID(view.element);
                 const disposables = new AtomDisposableList();
+
+                const id = (AtomLoader.id++).toString();
+                (view as any).id = id;
 
                 const returnPromise = new Promise((resolve, reject) => {
                     disposables.add( app.subscribe(`atom-window-close:${id}`, (r) => {
@@ -94,8 +97,12 @@ export class AtomLoader {
                         disposables.dispose();
                     }));
                 });
+
+                vm.windowName = id;
+
                 (view as any).returnPromise = returnPromise;
-                return { view, disposables, returnPromise };
+
+                return { view, disposables, returnPromise, id };
             }
 
             return { view };

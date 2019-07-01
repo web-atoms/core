@@ -334,10 +334,6 @@ export class WindowService extends NavigationService {
         return await returnPromise;
     }
 
-    protected forceRemove(view: AtomControl): void {
-        this.app.broadcast(`atom-window-cancel:${view.element.id}`, "cancelled");
-    }
-
     private centerElement(c: AtomControl): void {
         const e = c.element;
         const parent = e.parentElement;

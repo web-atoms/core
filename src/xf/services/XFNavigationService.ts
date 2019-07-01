@@ -88,7 +88,7 @@ export default class XFNavigationService extends NavigationService {
         const  uri = new AtomUri(url);
         this.stack.push(url);
         this.app.runAsync(async () => {
-            const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
+            const { view: popup } = await AtomLoader.loadView<AtomControl>(uri, this.app);
             bridge.setRoot(popup.element);
         });
     }
@@ -98,7 +98,7 @@ export default class XFNavigationService extends NavigationService {
             const url = this.stack.pop();
             this.app.runAsync(async () => {
                 const uri = new AtomUri(url);
-                const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
+                const { view: popup } = await AtomLoader.loadView<AtomControl>(uri, this.app);
                 bridge.setRoot(popup.element);
             });
         }
@@ -110,57 +110,18 @@ export default class XFNavigationService extends NavigationService {
 
     protected async openWindow<T>(url: AtomUri): Promise<T> {
 
-        const popup = await AtomLoader.loadView(url, this.app);
+        const { view: popup, disposables, returnPromise, id } = await AtomLoader.loadView(url, this.app);
 
-        const id = `AtomWindow_${this.windowId++}`;
+        AtomBridge.instance.setValue(popup.element, "name", id);
 
-        if (popup.viewModel) {
-            popup.viewModel.windowName = id;
-        }
-
-        return await new Promise<T>((resolve, reject) => {
-
-            const disposables = new AtomDisposableList();
-            // we will not dispose popup or window
-            // because page should be disposed when they are out of the navigation stack
-            // disposables.add(popup);
-
-            const done = (success: boolean, r?: any, e?: any) => {
-                disposables.dispose();
-                if (success) {
-                    resolve(r);
-                } else {
-                    reject(e || "cancelled");
-                }
-            };
-
-            disposables.add(this.app.subscribe(`atom-window-close:${id}`, (g, i) => {
-                AtomBridge.instance.close(popup.element, () => {
-                    done(true, i);
-                }, (e) => {
-                    done(false, null, e);
-                });
-            }));
-
-            disposables.add(this.app.subscribe(`atom-window-cancel:${id}`, (g, i) => {
-                AtomBridge.instance.close(popup.element, () => {
-                    done(false, null, i);
-                }, (e) => {
-                    done(false, null, e);
-                });
-            }));
-
-            AtomBridge.instance.setValue(popup.element, "name", id);
-
-            bridge.pushPage(popup.element, () => {
-                // reject("cancelled");
-                // do nothing...
-            }, (e) => {
-                disposables.dispose();
-                reject(e || "cancelled");
-            });
+        bridge.pushPage(popup.element, () => {
+            // reject("cancelled");
+            // do nothing...
+        }, (e) => {
+            disposables.dispose();
         });
 
+        return returnPromise;
     }
 
 }
