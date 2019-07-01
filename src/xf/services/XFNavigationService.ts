@@ -52,8 +52,8 @@ export default class XFNavigationService extends NavigationService {
 
     private windowId: number = 1;
 
-    constructor(@Inject private app: App, @Inject private jsonService: JsonService) {
-        super();
+    constructor(app: App, @Inject private jsonService: JsonService) {
+        super(app);
     }
 
     public alert(message: string | any, title?: string): Promise<any> {
@@ -84,42 +84,31 @@ export default class XFNavigationService extends NavigationService {
         console.warn("Display toast not yet implemented");
     }
 
-    public async openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
-        const  url = new AtomUri(pageName);
+    public navigate(url: string): void {
+        const  uri = new AtomUri(url);
+        this.stack.push(url);
+        this.app.runAsync(async () => {
+            const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
+            bridge.setRoot(popup.element);
+        });
+    }
 
-        if (p) {
-            for (const key in p) {
-                if (p.hasOwnProperty(key)) {
-                    const element = p[key];
-                    if (element === undefined) {
-                        continue;
-                    }
-                    if (element === null) {
-                        url.query["json:" + key] = "null";
-                        continue;
-                    }
-                    if (key.startsWith("ref:")) {
-                        const r = element instanceof ObjectReference ?
-                            element :
-                            this.app.get(ReferenceService).put(element);
-                        url.query[key] = r.key;
-                        continue;
-                    }
-                    if (typeof element !== "string" &&
-                        (typeof element === "object" || Array.isArray(element))) {
-                        url.query["json:" + key] = JSON.stringify(element);
-                    } else {
-                        url.query[key] = element;
-                    }
-                }
-            }
+    public back(): void {
+        if (this.stack.length) {
+            const url = this.stack.pop();
+            this.app.runAsync(async () => {
+                const uri = new AtomUri(url);
+                const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
+                bridge.setRoot(popup.element);
+            });
         }
+    }
 
-        // not supported
-        // if (url.protocol && /^tab\:$/i.test(url.protocol)) {
-        //     this.app.broadcast(url.host, url.toString());
-        //     return;
-        // }
+    public refresh(): void {
+        AtomBridge.instance.reset();
+    }
+
+    protected async openWindow<T>(url: AtomUri): Promise<T> {
 
         const popup = await AtomLoader.loadView(url, this.app);
 
@@ -174,27 +163,4 @@ export default class XFNavigationService extends NavigationService {
 
     }
 
-    public navigate(url: string): void {
-        const  uri = new AtomUri(url);
-        this.stack.push(url);
-        this.app.runAsync(async () => {
-            const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
-            bridge.setRoot(popup.element);
-        });
-    }
-
-    public back(): void {
-        if (this.stack.length) {
-            const url = this.stack.pop();
-            this.app.runAsync(async () => {
-                const uri = new AtomUri(url);
-                const popup = await AtomLoader.loadView<AtomControl>(uri, this.app);
-                bridge.setRoot(popup.element);
-            });
-        }
-    }
-
-    public refresh(): void {
-        AtomBridge.instance.reset();
-    }
 }

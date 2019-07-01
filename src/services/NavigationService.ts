@@ -1,5 +1,8 @@
+import { App } from "../App";
+import { AtomComponent } from "../core/AtomComponent";
 import { AtomUri } from "../core/AtomUri";
-import { INameValuePairs } from "../core/types";
+import { ArrayHelper, IDisposable, INameValuePairs } from "../core/types";
+import ReferenceService, { ObjectReference } from "./ReferenceService";
 
 // export interface ILocation {
 //     href?: string;
@@ -16,10 +19,56 @@ export enum NotifyType {
     Error = "error"
 }
 
+export type hookCallback = (url: AtomUri) => Promise<any>;
+
 export abstract class NavigationService {
+
+    private callbacks: hookCallback[] = [];
+
+    constructor(public readonly app: App) {
+
+    }
+
     public abstract alert(message: string, title?: string): Promise<any>;
     public abstract confirm(message: string, title?: string): Promise<boolean>;
-    public abstract openPage<T>(pageName: string, p?: INameValuePairs): Promise<T>;
+
+    public openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
+        const url = new AtomUri(pageName);
+        if (p) {
+            for (const key in p) {
+                if (p.hasOwnProperty(key)) {
+                    const element = p[key];
+                    if (element === undefined) {
+                        continue;
+                    }
+                    if (element === null) {
+                        url.query["json:" + key] = "null";
+                        continue;
+                    }
+                    if (key.startsWith("ref:")) {
+                        const r = element instanceof ObjectReference ?
+                            element :
+                            (this.app.resolve(ReferenceService) as ReferenceService).put(element);
+                        url.query[key] = r.key;
+                        continue;
+                    }
+                    if (typeof element !== "string" &&
+                        (typeof element === "object" || Array.isArray(element))) {
+                        url.query["json:" + key] = JSON.stringify(element);
+                    } else {
+                        url.query[key] = element;
+                    }
+                }
+            }
+        }
+        for (const iterator of this.callbacks) {
+            const r = iterator(url);
+            if (r) {
+                return r;
+            }
+        }
+        return this.openWindow(url);
+    }
 
     public abstract notify(message: string, title?: string, type?: NotifyType, delay?: number): void;
 
@@ -34,6 +83,37 @@ export abstract class NavigationService {
     public abstract back(): void;
 
     public abstract refresh(): void;
+
+    /**
+     * Sends signal to remove window/popup/frame, it will not immediately remove, because
+     * it will identify whether it can remove or not by displaying cancellation warning. Only
+     * if there is no cancellation warning or user chooses to force close, it will not remove.
+     * @param id id of an element
+     * @returns true if view was removed successfully
+     */
+    public async remove(view: { element: any, viewModel: any }): Promise<boolean> {
+        const vm = view.viewModel;
+        if (vm && vm.cancel) {
+            const a = await vm.cancel();
+            return a;
+        }
+        this.forceRemove(view);
+        return true;
+    }
+
+    public registerNavigationHook(callback: (uri: AtomUri) => Promise<any>): IDisposable {
+        this.callbacks.push(callback);
+        return {
+            dispose: () => {
+                ArrayHelper.remove(this.callbacks, (a) => a === callback);
+            }
+        };
+    }
+
+    protected abstract forceRemove(view: any): void;
+
+    protected abstract openWindow<T>(url: AtomUri): Promise<T>;
+
 }
 
 // Do not mock Navigation unless you want it in design time..

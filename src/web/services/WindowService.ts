@@ -75,8 +75,8 @@ export class WindowService extends NavigationService {
         location.href = v.toString();
     }
 
-    constructor(@Inject private app: App, @Inject private jsonService: JsonService) {
-        super();
+    constructor(app: App, @Inject private jsonService: JsonService) {
+        super(app);
 
         this.screen = app.screen;
 
@@ -167,10 +167,6 @@ export class WindowService extends NavigationService {
         });
     }
 
-    public openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
-        return this.openPopupAsync(pageName, p, true);
-    }
-
     public closePopup(): void {
         if (!this.popups.length) {
             return;
@@ -190,9 +186,7 @@ export class WindowService extends NavigationService {
             target = target.parentElement;
         }
 
-        const message = `atom-window-cancel:${peek.element.id}`;
-        const device = this.app.get(App);
-        device.broadcast(message, "cancelled");
+        this.remove(peek);
     }
 
     public refresh(): void {
@@ -246,51 +240,16 @@ export class WindowService extends NavigationService {
         }
     }
 
-    private async openPopupAsync<T>(windowId: string, p: INameValuePairs, isPopup: boolean): Promise<T> {
+    protected async openWindow<T>(url: AtomUri): Promise<T> {
 
         const lastTarget = this.currentTarget;
 
-        const  url = new AtomUri(windowId);
-
-        if (p) {
-            for (const key in p) {
-                if (p.hasOwnProperty(key)) {
-                    const element = p[key];
-                    if (element === undefined) {
-                        continue;
-                    }
-                    if (element === null) {
-                        url.query["json:" + key] = "null";
-                        continue;
-                    }
-                    if (key.startsWith("ref:")) {
-                        const r = element instanceof ObjectReference ?
-                            element :
-                            (this.app.resolve(ReferenceService) as ReferenceService).put(element);
-                        url.query[key] = r.key;
-                        continue;
-                    }
-                    if (typeof element !== "string" &&
-                        (typeof element === "object" || Array.isArray(element))) {
-                        url.query["json:" + key] = JSON.stringify(element);
-                    } else {
-                        url.query[key] = element;
-                    }
-                }
-            }
-        }
-
-        if (url.protocol && /^tab\:$/i.test(url.protocol)) {
-            this.app.broadcast(url.host, url.toString());
-            return;
-        }
-
-        // const popup = this.app.resolve(windowId, true) as AtomControl;
-        // const popupType = await UMD.resolveViewClassAsync(url.path);
-        const popup = await AtomLoader.loadView<AtomControl>(
+        const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
             url, this.app, () => this.app.resolve(AtomWindowViewModel, true));
 
         const e = popup.element;
+
+        let isPopup = true;
 
         if (popup instanceof AtomWindow) {
             isPopup = false;
@@ -318,100 +277,65 @@ export class WindowService extends NavigationService {
             }
         }
 
-        return await new Promise<T>((resolve, reject) => {
+        const theme = this.app.get(AtomStyleSheet).popup;
 
-            const theme = this.app.get(AtomStyleSheet).popup;
+        e.style.zIndex = 10000 + this.lastPopupID + "";
 
-            e.id = `atom_popup_${this.lastPopupID++}`;
-            e.style.zIndex = 10000 + this.lastPopupID + "";
+        const isNotification = popup instanceof AtomNotification;
 
-            const disposables: IDisposable[] = [popup];
+        if (isPopup) {
 
-            const isNotification = popup instanceof AtomNotification;
+            const sr = AtomUI.screenOffset(this.currentTarget);
 
-            if (isPopup) {
+            const x = sr.x;
+            const y = sr.y;
+            const h = sr.height;
+            e.style.position = "absolute";
+            e.style.left = x + "px";
+            e.style.top = (y + h) + "px";
+            e.classList.add(theme.host.className);
+            this.popups.push(popup);
+            document.body.appendChild(e);
+            if (isNotification) {
+                e.style.opacity = "0";
+                this.centerElement(popup);
+            }
+        } else {
 
-                const sr = AtomUI.screenOffset(this.currentTarget);
-
-                const x = sr.x;
-                const y = sr.y;
-                const h = sr.height;
-                e.style.position = "absolute";
-                e.style.left = x + "px";
-                e.style.top = (y + h) + "px";
-                e.classList.add(theme.host.className);
-                this.popups.push(popup);
-                document.body.appendChild(e);
-                if (isNotification) {
-                    e.style.opacity = "0";
-                    this.centerElement(popup);
-                }
+            const eHost = this.getHostForElement();
+            if (eHost) {
+                eHost.appendChild(e);
             } else {
-
-                const eHost = this.getHostForElement();
-                if (eHost) {
-                    eHost.appendChild(e);
-                } else {
-                    const host = document.createElement("div");
-                    document.body.appendChild(host);
-                    host.style.position = "absolute";
-                    host.appendChild(e);
-                    disposables.push({
-                        dispose() {
-                            host.remove();
-                        }
-                    });
-                    this.refreshScreen();
-                    popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
-                    popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
-                    popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
-                    popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
-                }
-            }
-
-            this.currentTarget = e;
-
-            const closeFunction = () => {
-                for (const iterator of disposables) {
-                    iterator.dispose();
-                }
-                e.remove();
-                ArrayHelper.remove(this.popups, (a) => a === popup);
-            };
-
-            const wvm = popup.viewModel;
-            popup.bindEvent(document.body, "keyup", (keyboardEvent: KeyboardEvent) => {
-                if (keyboardEvent.key === "Escape") {
-                    if (isPopup) {
-                        closeFunction();
-                    } else {
-                        // check if cancel is supported
-                        if (wvm.cancel) {
-                            this.app.runAsync(() => wvm.cancel());
-                        } else {
-                            closeFunction();
-                        }
+                const host = document.createElement("div");
+                document.body.appendChild(host);
+                host.style.position = "absolute";
+                host.appendChild(e);
+                disposables.add({
+                    dispose() {
+                        host.remove();
                     }
-                }
-            });
-
-            const device = this.app.get(App);
-
-            disposables.push(device.subscribe(`atom-window-close:${e.id}`, (g, i) => {
-                closeFunction();
-                resolve(i);
-            }));
-
-            disposables.push(device.subscribe(`atom-window-cancel:${e.id}`, (g, i) => {
-                closeFunction();
-                reject(i || "cancelled");
-            }));
-
-            if (wvm) {
-                wvm.windowName = e.id;
+                });
+                this.refreshScreen();
+                popup.bind(host, "styleLeft", [["this", "scrollLeft"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleTop", [["this", "scrollTop"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleWidth", [["this", "width"]], false, cssNumberToString, this.screen);
+                popup.bind(host, "styleHeight", [["this", "height"]], false, cssNumberToString, this.screen);
             }
+        }
 
+        this.currentTarget = e;
+
+        popup.bindEvent(document.body, "keyup", (keyboardEvent: KeyboardEvent) => {
+            if (keyboardEvent.key === "Escape") {
+                this.app.runAsync(() => this.remove(popup));
+            }
         });
+
+        return await returnPromise;
+    }
+
+    protected forceRemove(view: AtomControl): void {
+        this.app.broadcast(`atom-window-cancel:${view.element.id}`, "cancelled");
     }
 
     private centerElement(c: AtomControl): void {

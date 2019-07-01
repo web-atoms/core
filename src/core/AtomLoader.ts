@@ -1,6 +1,9 @@
 import { App } from "../App";
 import { JsonService } from "../services/JsonService";
 import ReferenceService from "../services/ReferenceService";
+import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
+import { AtomUI } from "../web/core/AtomUI";
+import { AtomDisposableList } from "./AtomDisposableList";
 import { AtomUri } from "./AtomUri";
 import { DI, IClassOf } from "./types";
 
@@ -32,7 +35,10 @@ export class AtomLoader {
     public static async loadView<T extends { viewModel: any, element: any }>(
         url: AtomUri,
         app: App,
-        vmFactory?: () => any): Promise<T> {
+        vmFactory?: () => any): Promise<{
+            view: T,
+            disposables?: AtomDisposableList,
+            returnPromise?: Promise<any>}> {
 
         const busyIndicator = app.createBusyIndicator();
 
@@ -41,7 +47,7 @@ export class AtomLoader {
             let vm = view.viewModel;
             if (!vm) {
                 if (!vmFactory) {
-                    return view;
+                    return { view };
                 }
                 vm = vmFactory();
                 view.viewModel = vm;
@@ -71,7 +77,28 @@ export class AtomLoader {
                 }
             }
 
-            return view;
+            // register hooks !! if it is a window !!
+            if (vm instanceof AtomWindowViewModel) {
+
+                // assign element id...
+                const id = AtomUI.assignID(view.element);
+                const disposables = new AtomDisposableList();
+
+                const returnPromise = new Promise((resolve, reject) => {
+                    disposables.add( app.subscribe(`atom-window-close:${id}`, (r) => {
+                        resolve(r);
+                        disposables.dispose();
+                    }));
+                    disposables.add( app.subscribe(`atom-window-cancel:${id}`, () => {
+                        reject("cancelled");
+                        disposables.dispose();
+                    }));
+                });
+                (view as any).returnPromise = returnPromise;
+                return { view, disposables, returnPromise };
+            }
+
+            return { view };
         } finally {
             busyIndicator.dispose();
         }

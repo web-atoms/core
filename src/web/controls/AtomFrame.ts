@@ -53,7 +53,7 @@ export class AtomFrame
             return;
         }
         this.runAfterInit(() => {
-            this.app.runAsync(() => this.load(value));
+            this.app.runAsync(() => this.load(new AtomUri(value)));
         });
     }
 
@@ -65,15 +65,10 @@ export class AtomFrame
             return;
         }
 
-        if (!await this.canChange()) {
+        const ctrl: AtomControl = this.current;
+        if (!await this.navigationService.remove(ctrl)) {
             return;
         }
-
-        const ctrl: AtomControl = this.current;
-        const e: HTMLElement = ctrl.element as HTMLElement;
-
-        ctrl.dispose();
-        e.remove();
 
         const last = this.stack.pop();
         this.mUrl = last.url;
@@ -87,19 +82,8 @@ export class AtomFrame
         }
     }
 
-    public async canChange(): Promise<boolean> {
-        if (!this.current) {
-            return true;
-        }
-        const ctrl: AtomControl = this.current;
-        const vm: AtomWindowViewModel = ctrl.viewModel;
-        if (vm && vm.closeWarning) {
-            if ( await this.navigationService.confirm(vm.closeWarning, "Are you sure?")) {
-                return true;
-            }
-            return false;
-        }
-        return true;
+    public canChange(): Promise<boolean> {
+        return this.navigationService.remove(this.current);
     }
 
     public push(ctrl: AtomControl): void {
@@ -154,32 +138,31 @@ export class AtomFrame
     //     return ctrl;
     // }
 
-    public async load(url: string): Promise<any> {
+    public async load(url: AtomUri): Promise<AtomControl> {
 
         if (! await this.canChange()) {
             return;
         }
 
-        const uri: AtomUri = new AtomUri(url);
+        const { view } = await AtomLoader.loadView<AtomControl>(url, this.app, () => new AtomWindowViewModel(this.app));
+        const urlString = url.toString();
+        (view as any)._$_url = urlString;
 
-        const ctrl = await AtomLoader.loadView<AtomControl>(uri, this.app);
+        this.push(view);
 
-        (ctrl as any)._$_url = url;
-
-        this.push(ctrl);
-
-        this.mUrl = url;
+        this.mUrl = urlString;
         AtomBinder.refreshValue(this, "url");
 
         await Atom.postAsync(this.app, async () => {
-            const vm = ctrl.viewModel;
+            const vm = view.viewModel;
             if (vm) {
                 if (vm instanceof AtomWindowViewModel) {
                     const pvm: AtomWindowViewModel = vm as AtomWindowViewModel;
-                    pvm.windowName = (ctrl.element as HTMLElement).id;
+                    pvm.windowName = (view.element as HTMLElement).id;
                 }
             }
         });
+        return view;
     }
 
     public toUpperCase(s: string): string {
@@ -187,6 +170,10 @@ export class AtomFrame
             .filter((t) => t)
             .map((t) => t.substr(0, 1).toUpperCase() + t.substr(1))
             .join("");
+    }
+
+    protected async loadForReturn(url: AtomUri): Promise<any> {
+        const page = await this.load(url);
     }
 
     protected preCreate(): void {
@@ -200,5 +187,15 @@ export class AtomFrame
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
         });
         this.backCommand = () => this.onBackCommand();
+
+        // hook navigation...
+
+        const d = this.navigationService.registerNavigationHook((url) => {
+            if (url.protocol !== "frame") {
+                return undefined;
+            }
+            return this.loadForReturn(url);
+        });
+        this.registerDisposable(d);
     }
 }
