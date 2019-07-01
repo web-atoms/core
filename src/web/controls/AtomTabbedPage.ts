@@ -74,7 +74,7 @@ export class AtomTabbedPage extends AtomGridView
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
         });
-        this.localViewModel = new AtomTabViewModel(this.app, this);
+        this.localViewModel = this.resolve(AtomTabViewModel, () => ({ owner: this }));
         this.titleTemplate = TitleItemTemplateCreator(this);
         this.columns = "*";
         this.rows = "30,*";
@@ -181,8 +181,6 @@ class AtomTabViewModel extends AtomViewModel {
 
     @BindableProperty
     public tabState: ITabState;
-
-    private oldDisposable: IDisposable;
 
     private pageUpdater = new AtomOnce();
 
