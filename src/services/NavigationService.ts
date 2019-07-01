@@ -32,7 +32,11 @@ export abstract class NavigationService {
     public abstract alert(message: string, title?: string): Promise<any>;
     public abstract confirm(message: string, title?: string): Promise<boolean>;
 
-    public openPage<T>(pageName: string, p?: INameValuePairs, target?: string): Promise<T> {
+    public openPage<T>(
+        pageName: string,
+        p?: INameValuePairs,
+        target?: string,
+        keepHistory?: boolean): Promise<T> {
         const url = new AtomUri(pageName);
         if (p) {
             for (const key in p) {
@@ -62,7 +66,7 @@ export abstract class NavigationService {
             }
         }
         for (const iterator of this.callbacks) {
-            const r = iterator(url, target);
+            const r = iterator(url, target, keepHistory);
             if (r) {
                 return r;
             }
