@@ -50,9 +50,9 @@ export default class XFNavigationService extends NavigationService {
         bridge.navigationService.setLocation(v.toString());
     }
 
-    private windowId: number = 1;
-
-    constructor(app: App, @Inject private jsonService: JsonService) {
+    constructor(
+        @Inject app: App,
+        @Inject private jsonService: JsonService) {
         super(app);
     }
 
@@ -120,6 +120,8 @@ export default class XFNavigationService extends NavigationService {
         }, (e) => {
             disposables.dispose();
         });
+
+        disposables.add(popup);
 
         return returnPromise;
     }

@@ -75,7 +75,9 @@ export class WindowService extends NavigationService {
         location.href = v.toString();
     }
 
-    constructor(app: App, @Inject private jsonService: JsonService) {
+    constructor(
+        @Inject app: App,
+        @Inject private jsonService: JsonService) {
         super(app);
 
         this.screen = app.screen;
@@ -246,6 +248,8 @@ export class WindowService extends NavigationService {
 
         const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
             url, this.app, () => this.app.resolve(AtomWindowViewModel, true));
+
+        disposables.add(popup);
 
         const e = popup.element;
 

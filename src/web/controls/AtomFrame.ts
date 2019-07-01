@@ -144,7 +144,8 @@ export class AtomFrame
             return;
         }
 
-        const { view } = await AtomLoader.loadView<AtomControl>(url, this.app, () => new AtomWindowViewModel(this.app));
+        const { view, disposables } =
+            await AtomLoader.loadView<AtomControl>(url, this.app, () => new AtomWindowViewModel(this.app));
         const urlString = url.toString();
         (view as any)._$_url = urlString;
 
@@ -152,6 +153,7 @@ export class AtomFrame
 
         this.mUrl = urlString;
         AtomBinder.refreshValue(this, "url");
+        disposables.add(view);
         return view;
     }
 

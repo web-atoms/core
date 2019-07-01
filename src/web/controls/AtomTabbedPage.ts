@@ -320,7 +320,6 @@ class AtomTabViewModel extends AtomViewModel {
             }
             this.pages.remove(page);
             const pe = page.element.parentElement;
-            page.dispose();
             if (pe) {
                 pe.remove();
             }
@@ -328,6 +327,8 @@ class AtomTabViewModel extends AtomViewModel {
                 this.selectedPage = this.pages[index - 1];
             }
         });
+
+        disposables.add(page);
 
         this.saveState();
         return page;

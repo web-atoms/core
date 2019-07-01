@@ -4,7 +4,7 @@ import ReferenceService from "../services/ReferenceService";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
 import { AtomDisposableList } from "./AtomDisposableList";
 import { AtomUri } from "./AtomUri";
-import { DI, IClassOf } from "./types";
+import { DI, IClassOf, IDisposable } from "./types";
 
 export class AtomLoader {
 
@@ -97,6 +97,9 @@ export class AtomLoader {
                         disposables.dispose();
                     }));
                 });
+
+                // it is responsibility of view holder to dispose the view
+                // disposables.add((view as any));
 
                 vm.windowName = id;
 
