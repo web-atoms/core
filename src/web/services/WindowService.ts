@@ -299,6 +299,9 @@ export class WindowService extends NavigationService {
             e.style.top = (y + h) + "px";
             e.classList.add(theme.host.className);
             this.popups.push(popup);
+            disposables.add(() => {
+                this.popups.remove(popup);
+            });
             document.body.appendChild(e);
             if (isNotification) {
                 e.style.opacity = "0";
