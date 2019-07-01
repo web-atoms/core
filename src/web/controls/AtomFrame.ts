@@ -56,7 +56,7 @@ export class AtomFrame
             return;
         }
         this.runAfterInit(() => {
-            this.app.runAsync(() => this.load(new AtomUri(value)));
+            this.app.runAsync(() => this.loadForReturn(new AtomUri(value), true));
         });
     }
 
