@@ -36,7 +36,7 @@ export abstract class NavigationService {
         pageName: string,
         p?: INameValuePairs,
         target?: string,
-        keepHistory?: boolean): Promise<T> {
+        clearHistory?: boolean): Promise<T> {
         const url = new AtomUri(pageName);
         if (p) {
             for (const key in p) {
@@ -66,7 +66,7 @@ export abstract class NavigationService {
             }
         }
         for (const iterator of this.callbacks) {
-            const r = iterator(url, target, keepHistory);
+            const r = iterator(url, target, clearHistory);
             if (r) {
                 return r;
             }
