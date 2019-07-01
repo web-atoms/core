@@ -29,6 +29,10 @@ export class AtomFrame
 
     public stack: IPageItem[] = [];
 
+    public get canGoBack(): boolean {
+        return this.stack.length ? true : false;
+    }
+
     @BindableProperty
     public keepStack: boolean = false;
 
@@ -81,6 +85,7 @@ export class AtomFrame
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
         AtomBinder.refreshValue(this, "url");
+        AtomBinder.refreshValue(this, "canGoBack");
         if (this.saveScrollPosition) {
             setTimeout(() => {
                 window.scrollTo(0, last.scrollY);
@@ -152,6 +157,7 @@ export class AtomFrame
 
         this.mUrl = urlString;
         AtomBinder.refreshValue(this, "url");
+        AtomBinder.refreshValue(this, "canGoBack");
         disposables.add(view);
         disposables.add({
             dispose: () => e.remove()
