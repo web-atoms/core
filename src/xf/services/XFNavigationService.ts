@@ -9,6 +9,7 @@ import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { JsonService } from "../../services/JsonService";
 import { NavigationService, NotifyType } from "../../services/NavigationService";
 import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomControl } from "../../web/controls/AtomControl";
 import { AtomUI } from "../../web/core/AtomUI";
 
@@ -88,7 +89,7 @@ export default class XFNavigationService extends NavigationService {
         const  uri = new AtomUri(url);
         this.stack.push(url);
         this.app.runAsync(async () => {
-            const { view: popup } = await AtomLoader.loadView<AtomControl>(uri, this.app);
+            const { view: popup } = await AtomLoader.loadView<AtomControl>(uri, this.app, true);
             bridge.setRoot(popup.element);
         });
     }
@@ -98,7 +99,7 @@ export default class XFNavigationService extends NavigationService {
             const url = this.stack.pop();
             this.app.runAsync(async () => {
                 const uri = new AtomUri(url);
-                const { view: popup } = await AtomLoader.loadView<AtomControl>(uri, this.app);
+                const { view: popup } = await AtomLoader.loadView<AtomControl>(uri, this.app, true);
                 bridge.setRoot(popup.element);
             });
         }
@@ -110,7 +111,8 @@ export default class XFNavigationService extends NavigationService {
 
     protected async openWindow<T>(url: AtomUri): Promise<T> {
 
-        const { view: popup, disposables, returnPromise, id } = await AtomLoader.loadView(url, this.app);
+        const { view: popup, disposables, returnPromise, id } =
+            await AtomLoader.loadView(url, this.app, true, () => new AtomWindowViewModel(this.app));
 
         AtomBridge.instance.setValue(popup.element, "name", id);
 

@@ -145,7 +145,7 @@ export class AtomFrame
         }
 
         const { view, disposables } =
-            await AtomLoader.loadView<AtomControl>(url, this.app, () => new AtomWindowViewModel(this.app));
+            await AtomLoader.loadView<AtomControl>(url, this.app, true, () => new AtomWindowViewModel(this.app));
         const urlString = url.toString();
         (view as any)._$_url = urlString;
 

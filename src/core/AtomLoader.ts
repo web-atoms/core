@@ -36,6 +36,7 @@ export class AtomLoader {
     public static async loadView<T extends { viewModel: any, element: any }>(
         url: AtomUri,
         app: App,
+        hookCloseEvents: boolean,
         vmFactory?: () => any): Promise<{
             view: T,
             disposables?: AtomDisposableList,
@@ -80,7 +81,7 @@ export class AtomLoader {
             }
 
             // register hooks !! if it is a window !!
-            if (vm instanceof AtomWindowViewModel) {
+            if (hookCloseEvents && vm) {
 
                 const disposables = new AtomDisposableList();
 

@@ -247,7 +247,7 @@ export class WindowService extends NavigationService {
         const lastTarget = this.currentTarget;
 
         const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
-            url, this.app, () => this.app.resolve(AtomWindowViewModel, true));
+            url, this.app, true, () => this.app.resolve(AtomWindowViewModel, true));
 
         disposables.add(popup);
 

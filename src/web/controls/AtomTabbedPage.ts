@@ -286,7 +286,7 @@ class AtomTabViewModel extends AtomViewModel {
         // const popupType = await UMD.resolveViewClassAsync(url.path);
         // const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         const { view: page, disposables } =
-            await AtomLoader.loadView<AtomPage>(url, this.app, () => new AtomWindowViewModel(this.app));
+            await AtomLoader.loadView<AtomPage>(url, this.app, true, () => new AtomWindowViewModel(this.app));
         AtomUI.assignID(page.element);
         page.title = "Title";
         page.tag = uriString;
