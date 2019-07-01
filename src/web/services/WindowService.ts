@@ -335,6 +335,12 @@ export class WindowService extends NavigationService {
             }
         });
 
+        disposables.add({
+            dispose: () => {
+                e.remove();
+            }
+        });
+
         return await returnPromise;
     }
 

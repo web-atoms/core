@@ -66,8 +66,14 @@ export class AtomFrame
         }
 
         const ctrl: AtomControl = this.current;
-        if (!await this.navigationService.remove(ctrl)) {
-            return;
+        if (ctrl) {
+            if (!await this.navigationService.remove(ctrl)) {
+                return;
+            }
+            const e = ctrl.element;
+            if (e) {
+                e.style.display = "none";
+            }
         }
 
         const last = this.stack.pop();
@@ -83,10 +89,6 @@ export class AtomFrame
     }
 
     public canChange(): Promise<boolean> {
-        const c = this.current;
-        if (!c) {
-            return Promise.resolve(true);
-        }
         return this.navigationService.remove(this.current);
     }
 
@@ -160,6 +162,12 @@ export class AtomFrame
         this.mUrl = urlString;
         AtomBinder.refreshValue(this, "url");
         disposables.add(view);
+        disposables.add({
+            dispose: () => {
+                const e = view.element;
+                if (e) { e.remove(); }
+            }
+        });
         return view;
     }
 
