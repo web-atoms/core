@@ -113,8 +113,7 @@ export class AtomFrame
                 const c1: AtomControl = this.current;
                 const e1: HTMLElement = c1.element as HTMLElement;
                 if (e1) {
-                    c1.dispose();
-                    e1.remove();
+                    this.navigationService.remove(c1);
                 }
             }
         }
@@ -163,14 +162,13 @@ export class AtomFrame
 
         this.push(view);
 
+        const e = view.element;
+
         this.mUrl = urlString;
         AtomBinder.refreshValue(this, "url");
         disposables.add(view);
         disposables.add({
-            dispose: () => {
-                const e = view.element;
-                if (e) { e.remove(); }
-            }
+            dispose: () => e.remove()
         });
         return view;
     }

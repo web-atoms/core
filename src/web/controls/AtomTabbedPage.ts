@@ -312,16 +312,19 @@ class AtomTabViewModel extends AtomViewModel {
             this.selectedPage = page;
         }
 
+        const e = page.element;
+
         disposables.add(() => {
             const index = this.pages.indexOf(page);
             if (this.pages.length <= 1 && index <= 0) {
                 return;
             }
             this.pages.remove(page);
-            const pe = page.element.parentElement;
+            const pe = e.parentElement;
             if (pe) {
                 pe.remove();
             }
+            e.remove();
             if (this.selectedPage === page) {
                 this.selectedPage = this.pages[index - 1];
             }
