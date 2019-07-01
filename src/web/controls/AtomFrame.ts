@@ -106,8 +106,10 @@ export class AtomFrame
                 }
                 const c1: AtomControl = this.current;
                 const e1: HTMLElement = c1.element as HTMLElement;
-                c1.dispose();
-                e1.remove();
+                if (e1) {
+                    c1.dispose();
+                    e1.remove();
+                }
             }
         }
 
@@ -168,8 +170,23 @@ export class AtomFrame
             .join("");
     }
 
-    protected async loadForReturn(url: AtomUri): Promise<any> {
+    protected async loadForReturn(url: AtomUri, keepHistory?: boolean): Promise<any> {
+        const hasHistory = this.keepStack;
+        this.keepStack = keepHistory;
         const page = await this.load(url);
+        if (hasHistory) {
+            if (!keepHistory) {
+                // clear stack... irrespective of cancellation !!
+                for (const iterator of this.stack) {
+                    const e = iterator.page.element;
+                    if (e) {
+                        iterator.page.dispose();
+                        e.remove();
+                    }
+                }
+                this.stack.length = 0;
+            }
+        }
         return await (page as any).returnPromise;
     }
 
@@ -188,11 +205,11 @@ export class AtomFrame
 
         // hook navigation...
 
-        const d = this.navigationService.registerNavigationHook((url, target) => {
+        const d = this.navigationService.registerNavigationHook((url, target, keepHistory) => {
             if (target !== "frame" && url.protocol !== "frame:") {
                 return undefined;
             }
-            return this.loadForReturn(url);
+            return this.loadForReturn(url, keepHistory);
         });
         this.registerDisposable(d);
     }

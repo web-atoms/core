@@ -19,11 +19,11 @@ export enum NotifyType {
     Error = "error"
 }
 
-export type hookCallback = (url: AtomUri, target?: string) => Promise<any>;
+export type navigateCallback = (url: AtomUri, target?: string, keepHistory?: boolean) => Promise<any>;
 
 export abstract class NavigationService {
 
-    private callbacks: hookCallback[] = [];
+    private callbacks: navigateCallback[] = [];
 
     constructor(public readonly app: App) {
 
@@ -101,7 +101,7 @@ export abstract class NavigationService {
         return true;
     }
 
-    public registerNavigationHook(callback: (uri: AtomUri, target?: string) => Promise<any>): IDisposable {
+    public registerNavigationHook(callback: navigateCallback): IDisposable {
         this.callbacks.push(callback);
         return {
             dispose: () => {
