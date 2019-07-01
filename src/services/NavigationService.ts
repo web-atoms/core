@@ -19,7 +19,7 @@ export enum NotifyType {
     Error = "error"
 }
 
-export type navigateCallback = (url: AtomUri, target?: string, keepHistory?: boolean) => Promise<any>;
+export type navigateCallback = (url: AtomUri, target?: string, clearHistory?: boolean) => Promise<any>;
 
 export abstract class NavigationService {
 

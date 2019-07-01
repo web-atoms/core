@@ -129,30 +129,16 @@ export class AtomFrame
         }
     }
 
-    // public createControl(ctrl: AtomControl, q?: any): AtomControl {
+    public async load(url: AtomUri, clearHistory?: boolean): Promise<AtomControl> {
 
-    //     const div: HTMLElement = ctrl.element;
-    //     div.id = `${this.element.id}_${this.stack.length + 1}`;
+        // we will not worry if we cannot close the page or not
+        // as we are moving in detail view, we will come back to page
+        // without loosing anything
 
-    //     AtomDispatcher.call(() => {
-    //         const vm: any = ctrl.viewModel;
-    //         if (q) {
-    //             for (const key in q) {
-    //                 if (q.hasOwnProperty(key)) {
-    //                     const value = q[key];
-    //                     vm[key] = value;
-    //                 }
-    //             }
-    //         }
-    //     });
-
-    //     return ctrl;
-    // }
-
-    public async load(url: AtomUri): Promise<AtomControl> {
-
-        if (! await this.canChange()) {
-            return;
+        if (clearHistory) {
+            if (! await this.canChange()) {
+                return;
+            }
         }
 
         const { view, disposables } =
@@ -180,12 +166,12 @@ export class AtomFrame
             .join("");
     }
 
-    protected async loadForReturn(url: AtomUri, keepHistory?: boolean): Promise<any> {
+    protected async loadForReturn(url: AtomUri, clearHistory?: boolean): Promise<any> {
         const hasHistory = this.keepStack;
-        this.keepStack = keepHistory;
-        const page = await this.load(url);
+        this.keepStack = !clearHistory;
+        const page = await this.load(url, clearHistory);
         if (hasHistory) {
-            if (!keepHistory) {
+            if (clearHistory) {
                 // clear stack... irrespective of cancellation !!
                 for (const iterator of this.stack) {
                     const e = iterator.page.element;
@@ -226,11 +212,11 @@ export class AtomFrame
 
         // hook navigation...
 
-        const d = this.navigationService.registerNavigationHook((url, target, keepHistory) => {
+        const d = this.navigationService.registerNavigationHook((url, target, clearHistory) => {
             if (target !== "frame" && url.protocol !== "frame:") {
                 return undefined;
             }
-            return this.loadForReturn(url, keepHistory);
+            return this.loadForReturn(url, clearHistory);
         });
         this.registerDisposable(d);
     }
