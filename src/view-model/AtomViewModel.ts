@@ -10,6 +10,7 @@ import { IValueConverter } from "../core/IValueConverter";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, CancelToken, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
+import { NavigationService, NotifyType } from "../services/NavigationService";
 
 /**
  *
@@ -283,6 +284,32 @@ export class AtomViewModel {
     protected subscribe(channel: string, c: (ch: string, data: any) => void): IDisposable {
         const sub: IDisposable = this.app.subscribe(channel, c);
         return this.registerDisposable(sub);
+    }
+
+    protected bindPromise<T extends any | any[]>(
+        value: T,
+        p: Promise<T>,
+        displayError: boolean = true): T {
+        p.then((v) => {
+            if (Array.isArray(v)) {
+                const a = value as any;
+                (a as any[]).reduce(v as any);
+            } else {
+                for (const key in v) {
+                    if (v.hasOwnProperty(key)) {
+                        const element = v[key];
+                        value[key] = element;
+                        AtomBinder.refreshValue(value, key);
+                    }
+                }
+            }
+        }).catch((e) => {
+            if (displayError) {
+                const n = this.app.resolve(NavigationService) as NavigationService;
+                n.notify(e, "Error", NotifyType.Error);
+            }
+        });
+        return value;
     }
 
     /**
