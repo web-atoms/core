@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
@@ -11,7 +12,6 @@ import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
-import { App } from "../../App";
 
 declare global {
     // tslint:disable-next-line:interface-name
