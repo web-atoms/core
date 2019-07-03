@@ -410,6 +410,13 @@ export class BaseService {
                 options.dataType = methodOptions.accept;
             }
 
+            const headers = options.headers = options.headers || {};
+
+            // this is necessary to support IsAjaxRequest in ASP.NET MVC
+            if (!headers["X-Requested-With"]) {
+                headers["X-Requested-With"] = "XMLHttpRequest";
+            }
+
             options.dataType = options.dataType || "application/json";
 
             const jsonOptions = {
@@ -469,8 +476,7 @@ export class BaseService {
                             if (v === undefined) {
                                 continue;
                             }
-                            options.headers = options.headers || {};
-                            options.headers[p.key] = v;
+                            headers[p.key] = v;
                             break;
                     }
                 }
