@@ -286,10 +286,14 @@ export class AtomViewModel {
         return this.registerDisposable(sub);
     }
 
+    /**
+     * Use this method to create an object/array that will refresh
+     * when promise is resolved
+     */
     protected bindPromise<T extends any | any[]>(
-        value: T,
         p: Promise<T>,
-        displayError: boolean = true): T {
+        value: T,
+        displayError: boolean | ((e) => void) = true): T {
         p.then((v) => {
             if (Array.isArray(v)) {
                 const a = value as any;
@@ -305,8 +309,12 @@ export class AtomViewModel {
             }
         }).catch((e) => {
             if (displayError) {
-                const n = this.app.resolve(NavigationService) as NavigationService;
-                n.notify(e, "Error", NotifyType.Error);
+                if (typeof displayError === "function") {
+                    displayError(e);
+                } else {
+                    const n = this.app.resolve(NavigationService) as NavigationService;
+                    n.notify(e, "Error", NotifyType.Error);
+                }
             }
         });
         return value;
