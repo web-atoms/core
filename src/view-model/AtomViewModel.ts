@@ -292,7 +292,7 @@ export class AtomViewModel {
      */
     protected bindPromise<T extends any | any[]>(
         p: Promise<T>,
-        value: T,
+        value: any,
         displayError: boolean | ((e) => void) = true): T {
         p.then((v) => {
             if (Array.isArray(v)) {
