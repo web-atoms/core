@@ -89,7 +89,7 @@ export class AtomLoader {
                 (view as any).id = id;
 
                 const returnPromise = new Promise((resolve, reject) => {
-                    disposables.add( app.subscribe(`atom-window-close:${id}`, (r) => {
+                    disposables.add( app.subscribe(`atom-window-close:${id}`, (m, r) => {
                         resolve(r);
                         disposables.dispose();
                     }));
