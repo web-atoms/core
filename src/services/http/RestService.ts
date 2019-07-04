@@ -8,6 +8,7 @@ import { Inject } from "../../di/Inject";
 import CacheService, { CacheSeconds } from "../CacheService";
 import { IJsonParserOptions, JsonService } from "../JsonService";
 import JsonError from "./JsonError";
+import { TypeKey } from "../../di/TypeKey";
 
 declare var UMD: any;
 
@@ -338,6 +339,13 @@ export class ServiceParameter {
     }
 }
 
+export default function BaseUrl(baseUrl: string): ((target: any) => void) {
+    return (target: any): void => {
+        const key = TypeKey.get(target);
+        BaseService.baseUrls[key] = baseUrl;
+    };
+}
+
 /**
  *
  *
@@ -345,6 +353,10 @@ export class ServiceParameter {
  * @class BaseService
  */
 export class BaseService {
+
+    public static baseUrls: {[key: string]: string } = {};
+
+    public baseUrl: string;
 
     public testMode: boolean = false;
 
@@ -395,6 +407,24 @@ export class BaseService {
         method: string,
         bag: ServiceParameter[],
         values: any[], methodOptions: IMethodOptions): Promise<any> {
+
+        if (this.baseUrl === undefined) {
+            let p = Object.getPrototypeOf(this);
+            while (p) {
+                const t = TypeKey.get(p);
+                const bu = BaseService.baseUrls[t];
+                if (bu) {
+                    this.baseUrl = bu;
+                    break;
+                }
+                p = Object.getPrototypeOf(p);
+            }
+            this.baseUrl = null;
+        }
+
+        if (this.baseUrl) {
+            url = `${this.baseUrl}${url}`;
+        }
 
         const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
 
