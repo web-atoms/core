@@ -244,6 +244,9 @@ export class WindowService extends NavigationService {
 
     protected async openWindow<T>(url: AtomUri): Promise<T> {
 
+        // this is because current target is not yet set
+        await Atom.delay(1);
+
         const lastTarget = this.currentTarget;
 
         const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
@@ -262,8 +265,6 @@ export class WindowService extends NavigationService {
 
         e._logicalParent = lastTarget;
         (e as any).sourceUrl = url;
-
-        await Atom.delay(1);
 
         const pvm = popup.viewModel;
         if (pvm) {
