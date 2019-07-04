@@ -5,10 +5,10 @@ import { Atom } from "../../Atom";
 import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
+import { TypeKey } from "../../di/TypeKey";
 import CacheService, { CacheSeconds } from "../CacheService";
 import { IJsonParserOptions, JsonService } from "../JsonService";
 import JsonError from "./JsonError";
-import { TypeKey } from "../../di/TypeKey";
 
 declare var UMD: any;
 
