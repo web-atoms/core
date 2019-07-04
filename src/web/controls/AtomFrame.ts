@@ -80,6 +80,15 @@ export class AtomFrame
             }
         }
 
+        this.popStack();
+    }
+
+    public popStack(): void {
+        if (!this.stack.length) {
+            // tslint:disable-next-line: no-console
+            console.warn(`FrameStack is empty !!`);
+            return;
+        }
         const last = this.stack.pop();
         this.mUrl = last.url;
         this.current = last.page;
@@ -163,6 +172,7 @@ export class AtomFrame
             dispose: () => {
                 e.innerHTML = "";
                 e.remove();
+                this.popStack();
             }
         });
         return view;
