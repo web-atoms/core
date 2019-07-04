@@ -411,7 +411,7 @@ export class BaseService {
         if (this.baseUrl === undefined) {
             let p = Object.getPrototypeOf(this);
             while (p) {
-                const t = TypeKey.get(p.constructor);
+                const t = TypeKey.get(p);
                 const bu = BaseService.baseUrls[t];
                 if (bu) {
                     this.baseUrl = bu;
@@ -419,7 +419,9 @@ export class BaseService {
                 }
                 p = Object.getPrototypeOf(p);
             }
-            this.baseUrl = null;
+            if (this.baseUrl === undefined) {
+                this.baseUrl = null;
+            }
         }
 
         if (this.baseUrl) {
