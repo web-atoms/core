@@ -297,7 +297,7 @@ export class AtomViewModel {
         p.then((v) => {
             if (Array.isArray(v)) {
                 const a = value as any;
-                (a as any[]).reduce(v as any);
+                (a as any[]).replace(v as any);
             } else {
                 for (const key in v) {
                     if (v.hasOwnProperty(key)) {
