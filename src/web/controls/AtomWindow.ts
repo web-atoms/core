@@ -134,7 +134,7 @@ export class AtomWindow extends AtomControl {
             return;
         }
 
-        const message = `atom-window-cancel:${this.element.id}`;
+        const message = `atom-window-cancel:${(this as any).id}`;
         const device = this.app.resolve(App);
         device.broadcast(message, "cancelled");
     }
