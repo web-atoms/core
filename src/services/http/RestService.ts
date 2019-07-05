@@ -425,7 +425,9 @@ export class BaseService {
         }
 
         if (this.baseUrl) {
-            url = `${this.baseUrl}${url}`;
+            if (!/^\//.test(url)) {
+                url = `${this.baseUrl}${url}`;
+            }
         }
 
         const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
