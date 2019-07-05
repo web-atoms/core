@@ -33,7 +33,7 @@ export class AtomFrame
         return this.stack.length ? true : false;
     }
 
-    public name: string = null;
+    public name: string;
 
     @BindableProperty
     public keepStack: boolean = false;
@@ -220,6 +220,7 @@ export class AtomFrame
     }
 
     protected preCreate(): void {
+        this.name = null;
         this.navigationService = this.app.resolve(NavigationService);
         this.defaultControlStyle = AtomFrameStyle;
         this.pagePresenter = null;
