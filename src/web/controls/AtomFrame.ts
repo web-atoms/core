@@ -33,6 +33,8 @@ export class AtomFrame
         return this.stack.length ? true : false;
     }
 
+    public name: string = null;
+
     @BindableProperty
     public keepStack: boolean = false;
 
@@ -233,7 +235,10 @@ export class AtomFrame
         // hook navigation...
 
         const d = this.navigationService.registerNavigationHook((url, target, clearHistory) => {
-            if (target !== "frame" && url.protocol !== "frame:") {
+            if (
+                target !== this.name
+                && target !== "frame"
+                && url.protocol !== "frame:") {
                 return undefined;
             }
             return this.loadForReturn(url, clearHistory);
