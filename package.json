@@ -24,14 +24,14 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@types/jquery": "^3.3.29",
+    "@types/jquery": "^3.3.30",
     "colors": "^1.3.3",
     "istanbul": "^0.4.5",
     "jsdom": "^11.12.0",
     "path": "^0.12.7",
     "remap-istanbul": "^0.11.1",
     "test-dom": "^1.0.0",
-    "web-atoms-amd-loader": "^1.0.333"
+    "web-atoms-amd-loader": "^1.0.359"
   },
   "dependencies": {
     "reflect-metadata": "^0.1.13"
