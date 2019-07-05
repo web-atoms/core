@@ -523,7 +523,10 @@ export class BaseService {
                 const response = this.jsonService.parse(xhr.responseText, jsonOptions );
 
                 if (xhr.status >= 400) {
-                    throw new JsonError("Json Server Error", response);
+                    throw new JsonError(
+                        response.exceptionMessage ||
+                        response.message ||
+                        "Json Server Error", response);
                 }
                 if (methodOptions && methodOptions.returnHeaders) {
                     return {
