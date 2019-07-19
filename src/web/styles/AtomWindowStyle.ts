@@ -49,7 +49,7 @@ export class AtomWindowStyle extends AtomStyle {
             left: 0,
             right: 0,
             padding: "7px",
-            minHeight: "20px",
+            minHeight: "32px",
             backgroundColor: "#404040",
             color: "white",
             top: 0,
