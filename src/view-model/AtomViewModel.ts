@@ -485,7 +485,13 @@ export function Receive(...channel: string[]): viewModelInitFunc {
             // tslint:disable-next-line:ban-types
             const fx: Function = (vm as any)[key];
             const a: AtomAction = (ch: string, d: any): void => {
-                fx.call(vm, ch, d );
+                const p = fx.call(vm, ch, d );
+                if (p && p.then && p.catch) {
+                    p.catch((e) => {
+                        // tslint:disable-next-line: no-console
+                        console.warn(e);
+                    });
+                }
             };
             const ivm = (vm as any) as IAtomViewModel;
             for (const c of channel) {
