@@ -73,16 +73,10 @@ export class AtomFrame
 
         const ctrl: AtomControl = this.current;
         if (ctrl) {
-            if (!await this.navigationService.remove(ctrl)) {
-                return;
-            }
-            const e = ctrl.element;
-            if (e) {
-                e.style.display = "none";
-            }
+            await this.navigationService.remove(ctrl);
         }
 
-        this.popStack();
+        // this.popStack();
     }
 
     public popStack(): void {
