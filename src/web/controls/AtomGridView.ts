@@ -126,6 +126,17 @@ export class AtomGridView extends AtomControl {
             1;
 
         if (!(width && height)) {
+
+            if (this.childrenReady) {
+
+                // this is the time parent is hidden
+
+                setTimeout(() => {
+                    this.invalidate();
+                }, 5000);
+                return;
+            }
+
             if (this.attempt > 100) {
                 // tslint:disable-next-line:no-console
                 console.error(`AtomDockPanel (${width}, ${height}) must both have non zero width and height`);
