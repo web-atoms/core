@@ -3,12 +3,12 @@ import { Atom } from "../../Atom";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
 import { IScreen, IScreenType } from "../../core/IScreen";
-import { ArrayHelper, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
+import { ArrayHelper, CancelToken, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { Scope, ServiceCollection } from "../../di/ServiceCollection";
 import { JsonService } from "../../services/JsonService";
-import { NavigationService, NotifyType } from "../../services/NavigationService";
+import { IPageOptions, NavigationService, NotifyType } from "../../services/NavigationService";
 import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
@@ -242,7 +242,7 @@ export class WindowService extends NavigationService {
         }
     }
 
-    protected async openWindow<T>(url: AtomUri): Promise<T> {
+    protected async openWindow<T>(url: AtomUri, options?: IPageOptions): Promise<T> {
 
         // this is because current target is not yet set
         await Atom.delay(1);
@@ -251,6 +251,18 @@ export class WindowService extends NavigationService {
 
         const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
             url, this.app, true, () => this.app.resolve(AtomWindowViewModel, true));
+
+        const cancelToken = options.cancelToken;
+
+        if (cancelToken) {
+            if (cancelToken.cancelled) {
+                throw new Error("cancelled");
+            }
+
+            cancelToken.registerForCancel(() => {
+                this.remove(popup);
+            });
+        }
 
         disposables.add(popup);
 

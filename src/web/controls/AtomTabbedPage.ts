@@ -233,7 +233,7 @@ class AtomTabViewModel extends AtomViewModel {
         }
 
         const d = this.navigationService.registerNavigationHook(
-            (uri, target) => {
+            (uri, { target }) => {
                 if (
                     target === this.owner.tabChannelName ||
                     (uri.protocol === "tab:" && uri.host === this.owner.tabChannelName)) {

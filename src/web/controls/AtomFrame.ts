@@ -229,12 +229,20 @@ export class AtomFrame
 
         // hook navigation...
 
-        const d = this.navigationService.registerNavigationHook((url, target, clearHistory) => {
+        const d = this.navigationService.registerNavigationHook((url, {
+            target,
+            clearHistory,
+            cancelToken }) => {
             if (
                 target !== this.name
                 && target !== "frame"
                 && url.protocol !== "frame:") {
                 return undefined;
+            }
+            if (cancelToken) {
+                cancelToken.registerForCancel(() => {
+                    this.backCommand();
+                });
             }
             return this.loadForReturn(url, clearHistory);
         });

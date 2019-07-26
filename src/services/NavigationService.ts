@@ -1,7 +1,7 @@
 import { App } from "../App";
 import { AtomComponent } from "../core/AtomComponent";
 import { AtomUri } from "../core/AtomUri";
-import { ArrayHelper, IDisposable, INameValuePairs } from "../core/types";
+import { ArrayHelper, CancelToken, IDisposable, INameValuePairs } from "../core/types";
 import ReferenceService, { ObjectReference } from "./ReferenceService";
 
 // export interface ILocation {
@@ -19,7 +19,15 @@ export enum NotifyType {
     Error = "error"
 }
 
-export type navigateCallback = (url: AtomUri, target?: string, clearHistory?: boolean) => Promise<any>;
+export type navigateCallback = (
+    url: AtomUri,
+    options?: IPageOptions) => Promise<any>;
+
+export interface IPageOptions {
+    target?: string;
+    clearHistory?: boolean;
+    cancelToken?: CancelToken;
+}
 
 export abstract class NavigationService {
 
@@ -32,11 +40,16 @@ export abstract class NavigationService {
     public abstract alert(message: string, title?: string): Promise<any>;
     public abstract confirm(message: string, title?: string): Promise<boolean>;
 
+    /**
+     *
+     * @param pageName url
+     * @param p parameters
+     * @param options target, clearHistory, cancelToken
+     */
     public openPage<T>(
         pageName: string,
         p?: INameValuePairs,
-        target?: string,
-        clearHistory?: boolean): Promise<T> {
+        options?: IPageOptions): Promise<T> {
         const url = new AtomUri(pageName);
         if (p) {
             for (const key in p) {
@@ -66,12 +79,12 @@ export abstract class NavigationService {
             }
         }
         for (const iterator of this.callbacks) {
-            const r = iterator(url, target, clearHistory);
+            const r = iterator(url, options);
             if (r) {
                 return r;
             }
         }
-        return this.openWindow(url, target);
+        return this.openWindow(url, options);
     }
 
     public abstract notify(message: string, title?: string, type?: NotifyType, delay?: number): void;
@@ -114,7 +127,7 @@ export abstract class NavigationService {
         };
     }
 
-    protected abstract openWindow<T>(url: AtomUri, target?: string): Promise<T>;
+    protected abstract openWindow<T>(url: AtomUri, options: IPageOptions): Promise<T>;
 
 }
 
