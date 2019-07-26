@@ -119,11 +119,11 @@ export class AtomGridView extends AtomControl {
         const width =  this.element.offsetWidth ||
             this.element.clientWidth ||
             parseFloat(this.element.style.width) ||
-            1;
+            0;
         const height = this.element.offsetHeight ||
             this.element.clientHeight ||
             parseFloat(this.element.style.height) ||
-            1;
+            0;
 
         if (!(width && height)) {
 
