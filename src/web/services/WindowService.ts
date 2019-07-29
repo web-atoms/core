@@ -260,7 +260,7 @@ export class WindowService extends NavigationService {
             }
 
             cancelToken.registerForCancel(() => {
-                this.remove(popup);
+                this.remove(popup, true);
             });
         }
 

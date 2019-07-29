@@ -108,7 +108,11 @@ export abstract class NavigationService {
      * @param id id of an element
      * @returns true if view was removed successfully
      */
-    public async remove(view: { element: any, viewModel: any }): Promise<boolean> {
+    public async remove(view: { element: any, viewModel: any }, force?: boolean): Promise<boolean> {
+        if (force) {
+            this.app.broadcast(`atom-window-cancel:${(view as any).id}`, "cancelled");
+            return true;
+        }
         const vm = view.viewModel;
         if (vm && vm.cancel) {
             const a = await vm.cancel();
