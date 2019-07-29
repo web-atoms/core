@@ -50,6 +50,9 @@ export abstract class NavigationService {
         pageName: string,
         p?: INameValuePairs,
         options?: IPageOptions): Promise<T> {
+
+        options = options || {};
+
         const url = new AtomUri(pageName);
         if (p) {
             for (const key in p) {
