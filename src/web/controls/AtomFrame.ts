@@ -8,6 +8,7 @@ import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types"
 import { NavigationService } from "../../services/NavigationService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../core/AtomUI";
+import { WindowService } from "../services/WindowService";
 import AtomFrameStyle from "../styles/AtomFrameStyle";
 import { AtomControl } from "./AtomControl";
 
@@ -62,7 +63,7 @@ export class AtomFrame
         });
     }
 
-    private navigationService: NavigationService;
+    private navigationService: WindowService;
 
     public async onBackCommand(): Promise<void> {
         if (!this.stack.length) {
@@ -114,7 +115,7 @@ export class AtomFrame
                 this.stack.push({
                     url: (this.current as any)._$_url ,
                     page: this.current,
-                    scrollY: window.scrollY
+                    scrollY: this.navigationService.screen.scrollTop
                 });
             } else {
                 if (this.current === ctrl) {
