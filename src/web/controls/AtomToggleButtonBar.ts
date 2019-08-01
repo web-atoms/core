@@ -15,6 +15,7 @@ export class AtomToggleButtonBar extends AtomListBox {
         this.allowSelectFirst = true;
         this.itemTemplate = AtomToggleButtonBarItemTemplate;
         this.defaultControlStyle = AtomToggleButtonBarStyle;
+        this.registerItemClick();
     }
 }
 

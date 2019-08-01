@@ -11,7 +11,10 @@ export class AtomListBox extends AtomItemsControl {
     protected preCreate(): void {
         super.preCreate();
         this.defaultControlStyle = AtomListBoxStyle;
+        this.registerItemClick();
+    }
 
+    protected registerItemClick(): void {
         this.bindEvent(this.element, "click", (e) => {
             const p = this.atomParent(e.target as HTMLElement);
             if (p === this) {
