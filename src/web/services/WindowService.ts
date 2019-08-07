@@ -256,7 +256,9 @@ export class WindowService extends NavigationService {
 
         if (cancelToken) {
             if (cancelToken.cancelled) {
-                throw new Error("cancelled");
+                this.app.callLater(() => {
+                    this.remove(popup, true);
+                });
             }
 
             cancelToken.registerForCancel(() => {
