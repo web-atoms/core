@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { AtomToggleButtonBarStyle } from "../styles/AtomToggleButtonBarStyle";
 import { AtomControl } from "./AtomControl";
 import { AtomItemsControl } from "./AtomItemsControl";
@@ -5,14 +6,16 @@ import { AtomListBox } from "./AtomListBox";
 
 export class AtomToggleButtonBar extends AtomListBox {
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("ul"));
+    }
+
     protected preCreate(): void {
-        if (!this.element) {
-            this.element = document.createElement("ul");
-        }
         this.allowMultipleSelection = false;
         this.allowSelectFirst = true;
         this.itemTemplate = AtomToggleButtonBarItemTemplate;
         this.defaultControlStyle = AtomToggleButtonBarStyle;
+        this.registerItemClick();
     }
 }
 

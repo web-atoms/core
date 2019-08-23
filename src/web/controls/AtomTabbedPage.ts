@@ -74,7 +74,7 @@ export class AtomTabbedPage extends AtomGridView
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
         });
-        this.localViewModel = new AtomTabViewModel(this.app, this);
+        this.localViewModel = this.resolve(AtomTabViewModel, () => ({ owner: this }));
         this.titleTemplate = TitleItemTemplateCreator(this);
         this.columns = "*";
         this.rows = "30,*";
@@ -182,9 +182,10 @@ class AtomTabViewModel extends AtomViewModel {
     @BindableProperty
     public tabState: ITabState;
 
-    private oldDisposable: IDisposable;
-
     private pageUpdater = new AtomOnce();
+
+    @Inject
+    private navigationService: NavigationService;
 
     constructor(@Inject app: App, private owner: AtomTabbedPage) {
         super(app);
@@ -203,8 +204,8 @@ class AtomTabViewModel extends AtomViewModel {
             }
         });
 
-        this.watchTabChannel();
-        // this.watchSelectedPage();
+        this.bindUrlParameter("selectedUrl", "url");
+
     }
 
     public async init(): Promise<any> {
@@ -219,7 +220,7 @@ class AtomTabViewModel extends AtomViewModel {
             selectedUrl: null
         };
         for (const iterator of urlState.urls) {
-            const page = await this.loadPage(iterator, true);
+            const page = await this.loadPage(new AtomUri(iterator), true);
             if (page.tag === urlState.selectedUrl) {
                 this.pageUpdater.run(() => {
                     this.selectedPage = page;
@@ -230,11 +231,17 @@ class AtomTabViewModel extends AtomViewModel {
         if (!this.selectedPage) {
             this.selectedPage = this.pages[0];
         }
-    }
 
-    @Watch
-    public watchTabChannel(): void {
-        this.watchName(this.owner.tabChannelName);
+        const d = this.navigationService.registerNavigationHook(
+            (uri, { target }) => {
+                if (
+                    target === this.owner.tabChannelName ||
+                    (uri.protocol === "tab:" && uri.host === this.owner.tabChannelName)) {
+                    return this.loadPageForReturn(uri);
+                }
+            }
+        );
+        this.registerDisposable(d);
     }
 
     @Watch
@@ -243,14 +250,7 @@ class AtomTabViewModel extends AtomViewModel {
     }
 
     public closePage(page: AtomPage): void {
-        this.app.runAsync(async () => {
-            const vm = page.viewModel as AtomWindowViewModel;
-            if (vm && vm.cancel) {
-                await vm.cancel();
-            } else {
-                this.app.broadcast(`atom-window-cancel:${page.element.id}`, null);
-            }
-        });
+        this.app.runAsync(() => this.navigationService.remove(page));
     }
 
     protected saveState(a?: any): void {
@@ -261,25 +261,28 @@ class AtomTabViewModel extends AtomViewModel {
         sessionStorage.setItem(this.storageKey, JSON.stringify(state));
     }
 
-    protected watchName(name: string): void {
-        this.bindUrlParameter("selectedUrl", name);
-        if (this.oldDisposable) {
-            this.oldDisposable.dispose();
-            this.oldDisposable = null;
+    protected async loadPageForReturn(url: AtomUri): Promise<any> {
+        const p = await this.loadPage(url, false);
+        try {
+            return await (p as any).returnPromise;
+        } catch (ex) {
+            // this will prevent warning in chrome for unhandled exception
+            if ((ex.message ? ex.message : ex) === "cancelled") {
+                // tslint:disable-next-line: no-console
+                console.warn(ex);
+                return;
+            }
+            throw ex;
         }
-        this.oldDisposable = this.registerDisposable(
-            this.app.subscribe(name, (channel, message) => {
-                this.app.runAsync(async () => {
-                    await this.loadPage(message, false);
-                });
-        }));
     }
 
     protected async loadPage(
-        message: string,
+        url: AtomUri,
         doNotSetSelected: boolean): Promise<AtomPage> {
 
-        const existing = this.pages.find((x) => x.tag === message);
+        const uriString = url.toString();
+
+        const existing = this.pages.find((x) => x.tag === uriString);
         if (existing) {
             if (!doNotSetSelected) {
                 if (this.selectedPage !== existing) {
@@ -289,14 +292,13 @@ class AtomTabViewModel extends AtomViewModel {
             return existing;
         }
 
-        const url = new AtomUri(message);
-
         // const popupType = await UMD.resolveViewClassAsync(url.path);
         // const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
-        const page = await AtomLoader.loadView<AtomPage>(url, this.app);
+        const { view: page, disposables } =
+            await AtomLoader.loadView<AtomPage>(url, this.app, true, () => new AtomWindowViewModel(this.app));
         AtomUI.assignID(page.element);
         page.title = "Title";
-        page.tag = message;
+        page.tag = uriString;
         const vm = page.viewModel;
         if (vm) {
             vm.windowName = page.element.id;
@@ -320,14 +322,7 @@ class AtomTabViewModel extends AtomViewModel {
             this.selectedPage = page;
         }
 
-        const disposables = new AtomDisposableList();
-
-        disposables.add( this.app.subscribe(`atom-window-close:${page.element.id}`, () => {
-            disposables.dispose();
-        }));
-        disposables.add( this.app.subscribe(`atom-window-cancel:${page.element.id}`, () => {
-            disposables.dispose();
-        }));
+        const e = page.element;
 
         disposables.add(() => {
             const index = this.pages.indexOf(page);
@@ -335,15 +330,18 @@ class AtomTabViewModel extends AtomViewModel {
                 return;
             }
             this.pages.remove(page);
-            const pe = page.element.parentElement;
-            page.dispose();
+            const pe = e.parentElement;
             if (pe) {
                 pe.remove();
             }
+            e.innerHTML = "";
+            e.remove();
             if (this.selectedPage === page) {
                 this.selectedPage = this.pages[index - 1];
             }
         });
+
+        disposables.add(page);
 
         this.saveState();
         return page;

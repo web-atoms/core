@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
@@ -132,6 +133,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
     }
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("div"));
+    }
+
     public onPropertyChanged(name: string): void {
         super.onPropertyChanged(name);
         switch (name) {
@@ -178,9 +183,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected preCreate(): void {
-        if (!this.element) {
-            this.element = document.createElement("div");
-        }
+        // if (!this.element) {
+        //     this.element = document.createElement("div");
+        // }
     }
 
     protected setElementValue(element: HTMLElement, name: string, value: any): void {

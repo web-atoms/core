@@ -1,10 +1,14 @@
 import { App } from "../App";
 import { JsonService } from "../services/JsonService";
 import ReferenceService from "../services/ReferenceService";
+import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
+import { AtomDisposableList } from "./AtomDisposableList";
 import { AtomUri } from "./AtomUri";
-import { DI, IClassOf } from "./types";
+import { DI, IClassOf, IDisposable } from "./types";
 
 export class AtomLoader {
+
+    public static id: number = 1;
 
     public static async load<T>(url: AtomUri, app: App): Promise<T> {
         if (url.host === "reference") {
@@ -32,7 +36,12 @@ export class AtomLoader {
     public static async loadView<T extends { viewModel: any, element: any }>(
         url: AtomUri,
         app: App,
-        vmFactory?: () => any): Promise<T> {
+        hookCloseEvents: boolean,
+        vmFactory?: () => any): Promise<{
+            view: T,
+            disposables?: AtomDisposableList,
+            returnPromise?: Promise<any>,
+            id?: string}> {
 
         const busyIndicator = app.createBusyIndicator();
 
@@ -41,7 +50,7 @@ export class AtomLoader {
             let vm = view.viewModel;
             if (!vm) {
                 if (!vmFactory) {
-                    return view;
+                    return { view };
                 }
                 vm = vmFactory();
                 view.viewModel = vm;
@@ -71,7 +80,36 @@ export class AtomLoader {
                 }
             }
 
-            return view;
+            // register hooks !! if it is a window !!
+            if (hookCloseEvents && vm) {
+
+                const disposables = new AtomDisposableList();
+
+                const id = (AtomLoader.id++).toString();
+                (view as any).id = id;
+
+                const returnPromise = new Promise((resolve, reject) => {
+                    disposables.add( app.subscribe(`atom-window-close:${id}`, (m, r) => {
+                        resolve(r);
+                        disposables.dispose();
+                    }));
+                    disposables.add( app.subscribe(`atom-window-cancel:${id}`, () => {
+                        reject("cancelled");
+                        disposables.dispose();
+                    }));
+                });
+
+                // it is responsibility of view holder to dispose the view
+                // disposables.add((view as any));
+
+                vm.windowName = id;
+
+                (view as any).returnPromise = returnPromise;
+
+                return { view, disposables, returnPromise, id };
+            }
+
+            return { view };
         } finally {
             busyIndicator.dispose();
         }

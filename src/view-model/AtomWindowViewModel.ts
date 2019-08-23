@@ -78,22 +78,17 @@ export class AtomWindowViewModel extends AtomViewModel {
     }
 
     /**
-     * This will broadcast `atom-window-cancel:windowName`
-     * WindowService will cancel the window on receipt of such message and
-     * it will reject the promise with "cancelled" message.
-     *
-     *      this.cancel();
-     *
-     * @memberof AtomWindowViewModel
+     * This will return true if this view model is safe to cancel and close
      */
-    public async cancel(): Promise<any> {
+    public async cancel(): Promise<boolean> {
         if (this.closeWarning) {
             const navigationService = this.app.resolve(NavigationService);
             if (! await navigationService.confirm(this.closeWarning, "Are you sure?")) {
-                return;
+                return false;
             }
         }
         this.broadcast(`atom-window-cancel:${this.windowName}`, "cancelled");
+        return true;
     }
 
 }

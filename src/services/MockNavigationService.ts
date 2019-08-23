@@ -57,8 +57,8 @@ export class MockNavigationService extends NavigationService {
         this.mLocation = v;
     }
 
-    constructor(@Inject private app: App) {
-        super();
+    constructor(app: App) {
+        super(app);
     }
 
     public refresh(): void {
@@ -90,7 +90,7 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public alert(msg: string, title?: string): Promise<any> {
-        return this.openWindow(`__AlertWindow_${msg}`, { message: msg, title });
+        return this.openTestWindow(`__AlertWindow_${msg}`, { message: msg, title });
     }
 
     /**
@@ -101,11 +101,11 @@ export class MockNavigationService extends NavigationService {
      * @memberof MockWindowService
      */
     public confirm(msg: string, title?: string): Promise<boolean> {
-        return this.openWindow(`__ConfirmWindow_${msg}`, { message: msg, title });
+        return this.openTestWindow(`__ConfirmWindow_${msg}`, { message: msg, title });
     }
 
     public openPage<T>(pageName: string, p?: INameValuePairs): Promise<T> {
-        return this.openWindow(pageName, p);
+        return this.openTestWindow(pageName, p);
     }
 
     public notify(message: string, title?: string): void {
@@ -125,9 +125,9 @@ export class MockNavigationService extends NavigationService {
      * @returns {Promise<T>}
      * @memberof MockWindowService
      */
-    public openWindow<T>(c: string, p?: INameValues): Promise<T> {
+    public openTestWindow<T>(c: string | AtomUri, p?: INameValues): Promise<T> {
 
-        const url = new AtomUri(c);
+        const url = c instanceof AtomUri ? c : new AtomUri(c);
 
         if (p) {
             for (const key in p) {
@@ -261,6 +261,14 @@ export class MockNavigationService extends NavigationService {
 
     protected registerForPopup(): void {
         // nothing
+    }
+
+    protected forceRemove(view: any): void {
+        throw new Error("Method not implemented.");
+    }
+
+    protected openWindow<T>(url: AtomUri): Promise<T> {
+        return this.openTestWindow(url);
     }
 
 }

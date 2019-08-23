@@ -99,6 +99,11 @@ export default class WebApp extends App {
 
         // registering font awesome
         this.installStyleSheet("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.9.0/css/all.css");
+        this.installStyleSheet({
+            href: "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css",
+            integrity: "sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T",
+            crossOrigin: "anonymous"
+        });
     }
 
     public installStyleSheet(ssConfig: string |
@@ -203,3 +208,24 @@ export default class WebApp extends App {
     }
 
 }
+
+declare global {
+    // tslint:disable-next-line: interface-name
+    interface Window {
+        // tslint:disable-next-line: ban-types
+        CustomEvent?: Function;
+    }
+}
+
+// tslint:disable-next-line: only-arrow-functions
+(function() {
+
+    if ( typeof window.CustomEvent === "function" ) { return false; }
+    function CustomEvent( event, params ) {
+        params = params || { bubbles: false, cancelable: false, detail: null };
+        const evt = document.createEvent( "CustomEvent" );
+        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+        return evt;
+    }
+    window.CustomEvent = CustomEvent;
+  })();

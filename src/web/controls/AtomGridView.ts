@@ -119,13 +119,24 @@ export class AtomGridView extends AtomControl {
         const width =  this.element.offsetWidth ||
             this.element.clientWidth ||
             parseFloat(this.element.style.width) ||
-            1;
+            0;
         const height = this.element.offsetHeight ||
             this.element.clientHeight ||
             parseFloat(this.element.style.height) ||
-            1;
+            0;
 
         if (!(width && height)) {
+
+            if (this.childrenReady) {
+
+                // this is the time parent is hidden
+
+                setTimeout(() => {
+                    this.invalidate();
+                }, 5000);
+                return;
+            }
+
             if (this.attempt > 100) {
                 // tslint:disable-next-line:no-console
                 console.error(`AtomDockPanel (${width}, ${height}) must both have non zero width and height`);
@@ -201,9 +212,6 @@ export class AtomGridView extends AtomControl {
     }
 
     protected preCreate(): void {
-        if (!this.element) {
-            this.element = document.createElement("section");
-        }
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";

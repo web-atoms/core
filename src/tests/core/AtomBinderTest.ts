@@ -82,11 +82,11 @@ export class AtomBinderTest extends AtomTest {
 
         Assert.isTrue(!ba);
 
-        const w = new AtomWatcher(c, [["firstName"], ["lastName"]], true, false, (firstName, lastName) => {
+        const w = new AtomWatcher(c, [["firstName"], ["lastName"]], (firstName, lastName) => {
             c.name = `${firstName} ${lastName}`;
         });
 
-        w.evaluate(true);
+        w.init(true);
 
         Assert.equals("Akash Kava", c.name);
 

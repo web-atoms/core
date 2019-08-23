@@ -5,6 +5,7 @@ import { Atom } from "../../Atom";
 import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
+import { TypeKey } from "../../di/TypeKey";
 import CacheService, { CacheSeconds } from "../CacheService";
 import { IJsonParserOptions, JsonService } from "../JsonService";
 import JsonError from "./JsonError";
@@ -338,6 +339,13 @@ export class ServiceParameter {
     }
 }
 
+export default function BaseUrl(baseUrl: string): ((target: any) => void) {
+    return (target: any): void => {
+        const key = TypeKey.get(target);
+        BaseService.baseUrls[key] = baseUrl;
+    };
+}
+
 /**
  *
  *
@@ -345,6 +353,10 @@ export class ServiceParameter {
  * @class BaseService
  */
 export class BaseService {
+
+    public static baseUrls: {[key: string]: string } = {};
+
+    public baseUrl: string;
 
     public testMode: boolean = false;
 
@@ -396,6 +408,28 @@ export class BaseService {
         bag: ServiceParameter[],
         values: any[], methodOptions: IMethodOptions): Promise<any> {
 
+        if (this.baseUrl === undefined) {
+            let p = Object.getPrototypeOf(this);
+            while (p) {
+                const t = TypeKey.get(p.constructor || p);
+                const bu = BaseService.baseUrls[t];
+                if (bu) {
+                    this.baseUrl = bu;
+                    break;
+                }
+                p = Object.getPrototypeOf(p);
+            }
+            if (this.baseUrl === undefined) {
+                this.baseUrl = null;
+            }
+        }
+
+        if (this.baseUrl) {
+            if (!/^\//.test(url)) {
+                url = `${this.baseUrl}${url}`;
+            }
+        }
+
         const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
 
         try {
@@ -408,6 +442,13 @@ export class BaseService {
             if (methodOptions) {
                 options.headers = methodOptions.headers;
                 options.dataType = methodOptions.accept;
+            }
+
+            const headers = options.headers = options.headers || {};
+
+            // this is necessary to support IsAjaxRequest in ASP.NET MVC
+            if (!headers["X-Requested-With"]) {
+                headers["X-Requested-With"] = "XMLHttpRequest";
             }
 
             options.dataType = options.dataType || "application/json";
@@ -469,8 +510,7 @@ export class BaseService {
                             if (v === undefined) {
                                 continue;
                             }
-                            options.headers = options.headers || {};
-                            options.headers[p.key] = v;
+                            headers[p.key] = v;
                             break;
                     }
                 }
@@ -483,7 +523,10 @@ export class BaseService {
                 const response = this.jsonService.parse(xhr.responseText, jsonOptions );
 
                 if (xhr.status >= 400) {
-                    throw new JsonError("Json Server Error", response);
+                    throw new JsonError(
+                        response.exceptionMessage ||
+                        response.message ||
+                        "Json Server Error", response);
                 }
                 if (methodOptions && methodOptions.returnHeaders) {
                     return {

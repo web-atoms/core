@@ -10,6 +10,7 @@ import { IValueConverter } from "../core/IValueConverter";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, CancelToken, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
+import { NavigationService, NotifyType } from "../services/NavigationService";
 
 /**
  *
@@ -79,7 +80,7 @@ export class AtomViewModel {
         this.mShouldValidate = true;
         for (const v of this.validations) {
             if (!v.initialized) {
-                v.watcher.evaluate(true);
+                v.watcher.init(true);
                 v.initialized = true;
             }
             if (this[v.name]) {
@@ -286,6 +287,40 @@ export class AtomViewModel {
     }
 
     /**
+     * Use this method to create an object/array that will refresh
+     * when promise is resolved
+     */
+    protected bindPromise<T extends any | any[]>(
+        p: Promise<T>,
+        value: any,
+        displayError: boolean | ((e) => void) = true): T {
+        p.then((v) => {
+            if (Array.isArray(v)) {
+                const a = value as any;
+                (a as any[]).replace(v as any);
+            } else {
+                for (const key in v) {
+                    if (v.hasOwnProperty(key)) {
+                        const element = v[key];
+                        value[key] = element;
+                        AtomBinder.refreshValue(value, key);
+                    }
+                }
+            }
+        }).catch((e) => {
+            if (displayError) {
+                if (typeof displayError === "function") {
+                    displayError(e);
+                } else {
+                    const n = this.app.resolve(NavigationService) as NavigationService;
+                    n.notify(e, "Error", NotifyType.Error);
+                }
+            }
+        });
+        return value;
+    }
+
+    /**
      * When you create newCancelToken, previous `CancelToken` with same key will be cancelled,
      * this is useful to prevent multiple remote calls when watched properties change frequently,
      * such as user typing in search field.
@@ -370,17 +405,12 @@ export class AtomViewModel {
         name?: string): IDisposable {
 
         const d: AtomWatcher<any> = new AtomWatcher<any>(
-            this, ft, !forValidation && this.isReady, forValidation, proxy );
-
-        if (!forValidation) {
-            if (proxy) {
-                const op = proxy as () => any;
-                proxy = () => this.app.runAsync( () => op() );
-            }
-            this.runAfterInit(() => d.runEvaluate());
-        } else {
+            this, ft, proxy );
+        if (forValidation) {
             this.validations = this.validations || [];
             this.validations.push({ name, watcher: d, initialized: false});
+        } else {
+            d.init();
         }
         return this.registerDisposable(d);
     }
@@ -455,7 +485,13 @@ export function Receive(...channel: string[]): viewModelInitFunc {
             // tslint:disable-next-line:ban-types
             const fx: Function = (vm as any)[key];
             const a: AtomAction = (ch: string, d: any): void => {
-                fx.call(vm, ch, d );
+                const p = fx.call(vm, ch, d );
+                if (p && p.then && p.catch) {
+                    p.catch((e) => {
+                        // tslint:disable-next-line: no-console
+                        console.warn(e);
+                    });
+                }
             };
             const ivm = (vm as any) as IAtomViewModel;
             for (const c of channel) {
@@ -494,12 +530,8 @@ export function BindableBroadcast(...channel: string[]): viewModelInitFunc {
                     vm.broadcast(c, v);
                 }
             };
-            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], false );
-            d.func = fx;
-
-            for (const p of d.path) {
-                d.evaluatePath(vm, p);
-            }
+            const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], fx );
+            d.init();
 
             vm.registerDisposable(d);
         });

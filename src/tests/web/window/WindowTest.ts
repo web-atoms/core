@@ -12,7 +12,7 @@ export class TestCase extends AtomWebTest {
         const nav = this.navigationService;
 
         try {
-            await nav.openWindow("WinA");
+            await nav.openPage("WinA");
             Assert.throw("Should not reach here");
         } catch (e) {
             Assert.isTrue(/no window registered for/i.test(e));
@@ -52,7 +52,7 @@ export class TestCase extends AtomWebTest {
         });
 
         try {
-            await nav.openWindow("WinA");
+            await nav.openPage("WinA");
             Assert.throw("Should not reach here");
         } catch (e) {
             Assert.isTrue(e.message === "Error");

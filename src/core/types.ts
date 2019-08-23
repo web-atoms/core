@@ -109,5 +109,9 @@ export interface IUMDClass {
     import<T>(path: string): Promise<T>;
 }
 
-export const DI = (window as any).UMD;
-export const UMD = (window as any).UMD;
+declare var global: any;
+
+const globalNS = (typeof window !== "undefined" ? window : (global as any)) as any;
+
+export const DI = (globalNS).UMD;
+export const UMD = (globalNS).UMD;
