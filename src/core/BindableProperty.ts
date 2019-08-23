@@ -20,7 +20,7 @@ export function BindableProperty(target: any, key: string): any {
         // console.log(`Set: ${key} => ${newVal}`);
         const oldValue = this[keyName];
         // tslint:disable-next-line:triple-equals
-        if (oldValue == newVal) {
+        if (oldValue === undefined ? oldValue === newVal : oldValue == newVal) {
             return;
         }
 
