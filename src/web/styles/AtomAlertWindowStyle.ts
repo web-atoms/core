@@ -4,27 +4,12 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export default class AtomAlertWindowStyle extends AtomWindowStyle {
 
-    public get frame(): IStyleDeclaration {
-        return {
-        // tslint:disable-next-line:no-string-literal
-            ... this.getBaseProperty(AtomAlertWindowStyle, "frame"),
-            color: Colors.black,
-            backgroundColor: Colors.white
-        };
-    }
-
     public get titleHost(): IStyleDeclaration {
         return {
             // tslint:disable-next-line:no-string-literal
                 ... this.getBaseProperty(AtomAlertWindowStyle, "titleHost"),
-            backgroundColor: "white",
-            color: "#2e2e2e",
-            fontSize: "25px",
-            fontWeight: "500",
-            borderTopRightRadius: "3px",
-            borderTopLeftRadius: "3px",
-            textAlign: "center",
-            padding: "25px"
+                color: Colors.black,
+                backgroundColor: Colors.white
         };
     }
 
@@ -43,21 +28,18 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
             ... this.getBaseProperty(AtomAlertWindowStyle, "content"),
             padding: "0px",
             textAlign: "center",
-            backgroundColor: Colors.white
-        };
-    }
+            backgroundColor: Colors.white,
+            subclasses: {
+                " div > .yes-button": {
+                    ...this.buttonStyle,
+                    backgroundColor: Colors.rgba(0, 255, 0, 0.5)
+                },
+                " div > .no-button": {
+                    ...this.buttonStyle,
+                    backgroundColor: Colors.rgba(252, 113, 106, 1)
+                }
 
-    public get yesButtonStyle(): IStyleDeclaration {
-        return {
-            ...this.buttonStyle,
-            backgroundColor: Colors.rgba(0, 255, 0, 0.5)
-        };
-    }
-
-    public get noButtonStyle(): IStyleDeclaration {
-        return {
-            ...this.buttonStyle,
-            backgroundColor: Colors.rgba(252, 113, 106, 1)
+            }
         };
     }
 

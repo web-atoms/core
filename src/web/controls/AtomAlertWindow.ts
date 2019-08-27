@@ -39,10 +39,10 @@ class AtomAlertWindowCommandBar extends AtomControl {
         const okButton = document.createElement("button");
 
         const cancelButton = document.createElement("button");
-        this.bind(okButton, "styleClass",  [["this", "controlStyle", "yesButtonStyle"]], false , null);
-        this.bind(cancelButton, "styleClass",  [["this", "controlStyle", "noButtonStyle"]], false , null);
         this.append(okButton);
         this.append(cancelButton);
+        this.setPrimitiveValue(okButton, "class", "yes-button" );
+        this.setPrimitiveValue(cancelButton, "class", "no-button" );
 
         this.bind(okButton, "text", [["viewModel", "okTitle"]]);
         this.bind(cancelButton, "text", [["viewModel", "cancelTitle"]]);
