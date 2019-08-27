@@ -58,8 +58,11 @@ export class AtomFrame
         if (this.mUrl === value) {
             return;
         }
+        if (value === undefined) {
+            return;
+        }
         this.runAfterInit(() => {
-            this.app.runAsync(() => this.loadForReturn(new AtomUri(value), true));
+            this.app.runAsync(() => this.loadForReturn(value === null ? null : new AtomUri(value), true));
         });
     }
 
@@ -185,19 +188,16 @@ export class AtomFrame
     protected async loadForReturn(url: AtomUri, clearHistory?: boolean): Promise<any> {
         const hasHistory = this.keepStack;
         this.keepStack = !clearHistory;
+
+        if (hasHistory && clearHistory && url === null) {
+            this.clearStack();
+            return;
+        }
+
         const page = await this.load(url, clearHistory);
         if (hasHistory) {
             if (clearHistory) {
-                // clear stack... irrespective of cancellation !!
-                for (const iterator of this.stack) {
-                    const e = iterator.page.element;
-                    if (e) {
-                        iterator.page.dispose();
-                        e.innerHTML = "";
-                        e.remove();
-                    }
-                }
-                this.stack.length = 0;
+                this.clearStack();
             }
         }
         try {
@@ -212,6 +212,19 @@ export class AtomFrame
             // throw new Error( ex.stack ? (ex + "\r\n" + ex.stack ) : ex);
             throw ex;
         }
+    }
+
+    protected clearStack(): void {
+        // clear stack... irrespective of cancellation !!
+        for (const iterator of this.stack) {
+            const e = iterator.page.element;
+            if (e) {
+                iterator.page.dispose();
+                e.innerHTML = "";
+                e.remove();
+            }
+        }
+        this.stack.length = 0;
     }
 
     protected preCreate(): void {
