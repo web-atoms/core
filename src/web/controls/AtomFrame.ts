@@ -189,8 +189,10 @@ export class AtomFrame
         const hasHistory = this.keepStack;
         this.keepStack = !clearHistory;
 
-        if (hasHistory && clearHistory && url === null) {
-            this.clearStack();
+        if (url === null) {
+            if (hasHistory && clearHistory) {
+                this.clearStack();
+            }
             return;
         }
 
