@@ -1,5 +1,6 @@
 import { BindableProperty } from "../../core/BindableProperty";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
+import AtomAlertWindowStyle from "../styles/AtomAlertWindowStyle";
 import { AtomControl } from "./AtomControl";
 import { AtomWindow } from "./AtomWindow";
 
@@ -7,7 +8,7 @@ export default class AtomAlertWindow extends AtomWindow {
 
     protected create(): void {
         this.element = document.createElement("div");
-
+        this.defaultControlStyle =  AtomAlertWindowStyle ;
         this.viewModel = this.resolve(AtomAlertViewModel);
 
         this.windowTemplate = AtomAlertWindowTemplate;
@@ -38,7 +39,8 @@ class AtomAlertWindowCommandBar extends AtomControl {
         const okButton = document.createElement("button");
 
         const cancelButton = document.createElement("button");
-
+        this.bind(okButton, "styleClass",  [["this", "controlStyle", "yesButtonStyle"]], false , null);
+        this.bind(cancelButton, "styleClass",  [["this", "controlStyle", "noButtonStyle"]], false , null);
         this.append(okButton);
         this.append(cancelButton);
 
@@ -46,6 +48,7 @@ class AtomAlertWindowCommandBar extends AtomControl {
         this.bind(cancelButton, "text", [["viewModel", "cancelTitle"]]);
 
         this.bind(okButton, "styleDisplay", [["viewModel", "okTitle"]], false, (v) => v ? "" : "none");
+        this.bind(okButton, "styleMarginBottom", [["viewModel", "cancelTitle"]], false, (v) => v ? "0" : "10px");
         this.bind(cancelButton, "styleDisplay", [["viewModel", "cancelTitle"]], false, (v) => v ? "" : "none");
 
         this.bindEvent(okButton, "click", (e) => {
