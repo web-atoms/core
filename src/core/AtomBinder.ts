@@ -6,7 +6,7 @@ export interface IWatchFunctionCollection {
 }
 export interface IWatchableObject {
     _$_handlers?: IWatchFunctionCollection;
-    _$_bindable?: string[];
+    _$_bindable?: { [key: string]: 0 | 1 };
 }
 
 export class AtomBinder {
@@ -78,12 +78,26 @@ export class AtomBinder {
         const handlers = AtomBinder.get_WatchHandler(target, key);
         handlers.push(handler);
 
+        if (Array.isArray(target)) {
+            return;
+        }
+
+        // get existing property definition if it ha any
+        const pv = AtomBinder.getPropertyDescriptor(target, key);
+
+        // return if it has a getter
+        // in case of getter/setter, it is responsibility of setter to refresh
+        // object
+        if (pv && pv.get) {
+            return;
+        }
+
         const tw = target as IWatchableObject;
         if (!tw._$_bindable) {
-            tw._$_bindable = [];
+            tw._$_bindable = {};
         }
-        if (!Array.isArray(tw) && tw._$_bindable.indexOf(key) === -1) {
-            tw._$_bindable.push(key);
+        if (!tw._$_bindable[key]) {
+            tw._$_bindable[key] = 1;
 
             const keyName = `_$_${key}`;
 
@@ -102,19 +116,15 @@ export class AtomBinder {
                 return this[keyName];
             };
 
-            // change definition...
-            const pv = AtomBinder.getPropertyDescriptor(target, key);
             if (pv) {
-                if (!pv.get) {
-                    target[keyName] = target[key];
-                    delete target[key];
-                    Object.defineProperty(target, key, {
-                        get,
-                        set,
-                        configurable: true,
-                        enumerable: true
-                    });
-                }
+                target[keyName] = target[key];
+                delete target[key];
+                Object.defineProperty(target, key, {
+                    get,
+                    set,
+                    configurable: true,
+                    enumerable: true
+                });
             } else {
                 Object.defineProperty(target, key, {
                     get, set, enumerable: true, configurable: true

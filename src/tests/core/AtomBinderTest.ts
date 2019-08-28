@@ -93,8 +93,8 @@ export class AtomBinderTest extends AtomTest {
         ba =  bindable._$_bindable;
         Assert.isTrue(ba ? true : false);
 
-        const i = ba.indexOf("firstName");
-        Assert.doesNotEqual(-1, i);
+        const i = ba.firstName;
+        Assert.equals(1, i);
 
         c.firstName = "Simmi";
         Assert.equals("Simmi Kava", c.name);
