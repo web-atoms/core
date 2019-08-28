@@ -99,25 +99,26 @@ export class AtomBinder {
         if (!tw._$_bindable[key]) {
             tw._$_bindable[key] = 1;
 
-            const keyName = `_$_${key}`;
+            const o = target[key];
 
-            target[keyName] = target[key];
+            const nk = `_$_${key}`;
+            target[nk] = o;
 
             const set = function(v: any) {
+                const ov = this[nk];
                 // tslint:disable-next-line:triple-equals
-                if (this[keyName] == v) {
+                if (ov === undefined ? ov === v : ov == v) {
                     return;
                 }
-                this[keyName] = v;
+                this[nk] = v;
                 AtomBinder.refreshValue(this, key);
             };
 
-            const get = function(): any {
-                return this[keyName];
+            const get = function() {
+                return this[nk];
             };
 
             if (pv) {
-                target[keyName] = target[key];
                 delete target[key];
                 Object.defineProperty(target, key, {
                     get,
