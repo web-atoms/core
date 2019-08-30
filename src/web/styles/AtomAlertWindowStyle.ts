@@ -19,7 +19,7 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
             ... this.getBaseProperty(AtomAlertWindowStyle, "content"),
             padding: "0px 10px 30px 10px",
             textAlign: "center",
-            color: Colors.rgba(102, 102, 102)
+            color: Colors.rgba(51, 51, 51)
         };
     }
     public get commandBar(): IStyleDeclaration {
@@ -32,11 +32,11 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
             subclasses: {
                 " div > .yes-button": {
                     ...this.buttonStyle,
-                    backgroundColor: Colors.rgba(0, 255, 0, 0.5)
+                    backgroundColor: Colors.rgba(0, 128, 0)
                 },
                 " div > .no-button": {
                     ...this.buttonStyle,
-                    backgroundColor: Colors.rgba(252, 113, 106, 1)
+                    backgroundColor: Colors.rgba(255, 0, 0)
                 }
 
             }
