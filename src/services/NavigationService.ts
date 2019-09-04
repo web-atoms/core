@@ -47,11 +47,18 @@ export abstract class NavigationService {
      * @param options target, clearHistory, cancelToken
      */
     public openPage<T>(
-        pageName: string,
+        pageName: string | any,
         p?: INameValuePairs,
         options?: IPageOptions): Promise<T> {
 
         options = options || {};
+
+        if (typeof pageName !== "string") {
+            const rs = this.app.resolve(ReferenceService) as ReferenceService;
+            const host = pageName instanceof AtomComponent ? "reference" : "class";
+            const r = rs.put(pageName);
+            pageName = `ref://${host}/${r.key}`;
+        }
 
         const url = new AtomUri(pageName);
         if (p) {
