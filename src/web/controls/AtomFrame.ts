@@ -251,11 +251,16 @@ export class AtomFrame
             target,
             clearHistory,
             cancelToken }) => {
-            if (
-                target !== this.name
-                && target !== "frame"
-                && url.protocol !== "frame:") {
-                return undefined;
+            if (this.name) {
+                if (target !== this.name) {
+                    return undefined;
+                }
+            } else {
+                if (
+                    target !== "frame"
+                    && url.protocol !== "frame:") {
+                    return undefined;
+                }
             }
             if (cancelToken) {
                 cancelToken.registerForCancel(() => {
