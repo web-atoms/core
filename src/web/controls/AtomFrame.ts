@@ -90,11 +90,9 @@ export class AtomFrame
             return;
         }
         const last = this.stack.pop();
-        this.mUrl = last.url;
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
-        AtomBinder.refreshValue(this, "url");
-        AtomBinder.refreshValue(this, "canGoBack");
+        this.setUrl(last.url);
         if (this.saveScrollPosition) {
             setTimeout(() => {
                 window.scrollTo(0, last.scrollY);
@@ -164,9 +162,7 @@ export class AtomFrame
 
         const e = view.element;
 
-        this.mUrl = urlString;
-        AtomBinder.refreshValue(this, "url");
-        AtomBinder.refreshValue(this, "canGoBack");
+        this.setUrl(urlString);
         disposables.add(view);
         disposables.add({
             dispose: () => {
@@ -183,6 +179,12 @@ export class AtomFrame
             .filter((t) => t)
             .map((t) => t.substr(0, 1).toUpperCase() + t.substr(1))
             .join("");
+    }
+
+    protected setUrl(urlString: string) {
+        this.mUrl = urlString;
+        AtomBinder.refreshValue(this, "url");
+        AtomBinder.refreshValue(this, "canGoBack");
     }
 
     protected async loadForReturn(url: AtomUri, clearHistory?: boolean): Promise<any> {
