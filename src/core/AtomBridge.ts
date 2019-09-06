@@ -1,6 +1,7 @@
 import { AjaxOptions } from "../services/http/AjaxOptions";
 import { AtomControl } from "../web/controls/AtomControl";
 import { AtomUI, ChildEnumerator } from "../web/core/AtomUI";
+import { AtomBinder } from "./AtomBinder";
 import { IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
@@ -52,6 +53,23 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
     public abstract findChild(element: T, name: string): T;
 
     public abstract close(element: T, success: () => void, error: (e) => void): void;
+
+    public refreshInherited(target: { element: T }, name: string, fieldName?: string): void {
+        AtomBinder.refreshValue(target, name);
+        if (!fieldName) {
+            fieldName = "m" + name[0].toUpperCase() + name.substr(1);
+        }
+        this.visitDescendents(target.element, (e, ac) => {
+            if (ac) {
+                if (ac[fieldName] === undefined) {
+                    this.refreshInherited(ac as any, name, fieldName);
+                }
+                return false;
+            }
+            return true;
+        });
+
+    }
 
 }
 

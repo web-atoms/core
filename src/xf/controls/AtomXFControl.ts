@@ -31,16 +31,16 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         AtomBridge.instance.dispose(el);
     }
 
-    protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
-        AtomBinder.refreshValue(this, name);
-        AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-            if (ac) {
-                ((ac as any) as AtomXFControl).refreshInherited(name, fx);
-                return false;
-            }
-            return true;
-        });
-    }
+    // protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
+    //     AtomBinder.refreshValue(this, name);
+    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
+    //         if (ac) {
+    //             ((ac as any) as AtomXFControl).refreshInherited(name, fx);
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }
 
     protected loadXaml(content: string): void {
         const bridge = AtomBridge.instance as any;

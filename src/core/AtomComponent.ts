@@ -62,7 +62,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public set data(v: any) {
         this.mData = v;
-        this.refreshInherited("data", (a) => a.mData === undefined);
+        AtomBridge.instance.refreshInherited(this, "data");
     }
 
     private mViewModel: any = undefined;
@@ -83,7 +83,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             old.dispose();
         }
         this.mViewModel = v;
-        this.refreshInherited("viewModel", (a) => a.mViewModel === undefined);
+        AtomBridge.instance.refreshInherited(this, "viewModel");
     }
 
     private mLocalViewModel: any = undefined;
@@ -104,7 +104,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             old.dispose();
         }
         this.mLocalViewModel = v;
-        this.refreshInherited("localViewModel", (a) => a.mLocalViewModel === undefined);
+        AtomBridge.instance.refreshInherited(this, "localViewModel");
     }
 
     public abstract get parent(): TC;
@@ -503,7 +503,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     //     });
     // }
 
-    protected abstract refreshInherited(name: string, fx: (ac: AtomComponent<T, TC>) => boolean): void;
+    // protected abstract refreshInherited(name: string, fx: (ac: AtomComponent<T, TC>) => boolean): void;
     // {
     //     AtomBinder.refreshValue(this, name);
     //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
