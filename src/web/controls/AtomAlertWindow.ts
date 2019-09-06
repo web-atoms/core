@@ -7,10 +7,6 @@ import { AtomWindow } from "./AtomWindow";
 
 export default class AtomAlertWindow extends AtomWindow {
 
-    constructor(app: App, e?: HTMLElement) {
-        super(app, e || document.createElement("div"));
-    }
-
     protected create(): void {
         this.defaultControlStyle =  AtomAlertWindowStyle ;
         this.viewModel = this.resolve(AtomAlertViewModel);
@@ -24,8 +20,6 @@ export default class AtomAlertWindow extends AtomWindow {
 class AtomAlertWindowTemplate extends AtomControl {
 
     protected create(): void {
-        this.element = document.createElement("div");
-
         const span = document.createElement("span");
 
         this.append(span);
@@ -38,7 +32,6 @@ class AtomAlertWindowTemplate extends AtomControl {
 class AtomAlertWindowCommandBar extends AtomControl {
 
     protected create(): void {
-        this.element = document.createElement("div");
 
         const okButton = document.createElement("button");
 
