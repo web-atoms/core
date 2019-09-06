@@ -475,7 +475,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const result = this.app.resolve(c, true);
         if (selfName) {
             if (typeof selfName === "function") {
-                this.runAfterInit(() => {
+                // this.runAfterInit(() => {
                     const v = selfName();
                     if (v) {
                         for (const key in v) {
@@ -485,7 +485,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                             }
                         }
                     }
-                });
+                // });
             } else {
                 result[selfName] = this;
             }
