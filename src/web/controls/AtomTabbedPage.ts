@@ -125,7 +125,6 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
 
         protected create(): void {
 
-            this.element = document.createElement("div");
             // this.bind(this.element, "text", [["data", "title"]]);
             this.bind(this.element, "styleClass", [
                     ["data"],
