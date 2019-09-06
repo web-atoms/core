@@ -2,15 +2,63 @@ import { App, AtomAction } from "../App";
 import { Atom } from "../Atom";
 import { AtomBinder } from "../core/AtomBinder";
 import { AtomDisposableList } from "../core/AtomDisposableList";
-import { AtomOnce } from "../core/AtomOnce";
-import { AtomUri } from "../core/AtomUri";
 import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
 import { IValueConverter } from "../core/IValueConverter";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { ArrayHelper, CancelToken, IClassOf, IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
-import { NavigationService, NotifyType } from "../services/NavigationService";
+import { IAtomViewModel, registerInit, viewModelInitFunc } from "./baseTypes";
+import { bindUrlParameter } from "./bindUrlParameter";
+
+function runDecoratorInits(): void {
+    const v: any = this.constructor.prototype;
+    if (!v) {
+        return;
+    }
+    const ris: Array<(a: any, b: any) => void> = v._$_inits;
+    if (ris) {
+        for (const ri of ris) {
+            ri.call(this, this);
+        }
+    }
+}
+
+async function privateInit(): Promise<any> {
+    try {
+        await Atom.postAsync(this.app, async () => {
+            runDecoratorInits.apply(this);
+            // this.registerWatchers();
+        });
+        await Atom.postAsync(this.app, async () => {
+            await this.init();
+            this.onReady();
+        });
+
+        if (this.postInit) {
+            for (const i of this.postInit) {
+                i();
+            }
+            this.postInit = null;
+        }
+    } finally {
+        const pi = this.pendingInits;
+        this.pendingInits = null;
+        for (const iterator of pi) {
+            iterator();
+        }
+    }
+}
+
+/**
+ * Useful only for Unit testing, this function will await till initialization is
+ * complete and all pending functions are executed
+ */
+export async function waitForReady(vm: AtomViewModel): Promise<any> {
+    while ((vm as any).pendingInits) {
+        await Atom.delay(100);
+    }
+}
 
 /**
  *
@@ -29,8 +77,6 @@ export class AtomViewModel {
     private validations: Array<{ name: string, initialized: boolean, watcher: AtomWatcher<AtomViewModel>}> = [];
 
     private pendingInits: Array<() => void> = [];
-
-    private cancelTokens: { [key: string]: CancelToken} = null;
 
     public get isReady(): boolean {
         return this.pendingInits === null;
@@ -99,7 +145,7 @@ export class AtomViewModel {
     }
 
     constructor(@Inject public readonly app: App) {
-        this.app.runAsync(() => this.privateInit());
+        this.app.runAsync(() => privateInit.apply(this));
     }
 
     /**
@@ -131,16 +177,6 @@ export class AtomViewModel {
     }
 
     /**
-     * Resolves given class via app
-     * @param c class to resolve
-     * @param onlyRegistered resolve only registered types
-     */
-    public resolve<T>(c: IClassOf<T>, onlyRegistered?: boolean): T {
-        const create = !onlyRegistered;
-        return this.app.resolve(c, create);
-    }
-
-    /**
      * Binds source property to target property with optional two ways
      * @param target target whose property will be set
      * @param propertyName name of target property
@@ -169,16 +205,6 @@ export class AtomViewModel {
      */
     public refresh(name: string): void {
         AtomBinder.refreshValue(this, name);
-    }
-
-    /**
-     * Useful only for Unit testing, this function will await till initialization is
-     * complete and all pending functions are executed
-     */
-    public async waitForReady(): Promise<any> {
-        while (this.pendingInits) {
-            await Atom.delay(100);
-        }
     }
 
     /**
@@ -225,160 +251,9 @@ export class AtomViewModel {
         this.disposables = this.disposables || new AtomDisposableList();
         return this.disposables.add(d);
     }
-    /**
-     * Broadcast given data to channel (msg)
-     *
-     * @param {string} msg
-     * @param {*} data
-     * @memberof AtomViewModel
-     */
-    public broadcast(msg: string, data: any): void {
-        this.app.broadcast(msg, data);
-    }
-
-    public bindUrlParameter(name: string, urlParameter: string): IDisposable {
-        if (!name) {
-            return;
-        }
-        if (!urlParameter) {
-            return;
-        }
-        const a = this as any;
-        const paramDisposables = (a.mUrlParameters || (a.mUrlParameters = {}));
-        const old = paramDisposables[name];
-        if (old) {
-            old.dispose();
-            paramDisposables[name] = null;
-        }
-        const disposables = new AtomDisposableList();
-        const updater = new AtomOnce();
-        disposables.add(this.setupWatch(
-            [
-                ["app", "url", "hash", urlParameter],
-                ["app", "url", "query", urlParameter]
-            ], (hash, query) => {
-            updater.run(() => {
-                const value = hash || query;
-                if (value) {
-                    // tslint:disable-next-line:triple-equals
-                    if (value != this[name]) {
-                        this[name] = value;
-                    }
-                }
-            });
-        }));
-        disposables.add(this.setupWatch([[name]], (value) => {
-            updater.run(() => {
-                const url = this.app.url || (this.app.url = new AtomUri(""));
-                url.hash[urlParameter] = value;
-                this.app.syncUrl();
-            });
-        }));
-        paramDisposables[name] = disposables;
-        return disposables;
-    }
 
     // tslint:disable-next-line:no-empty
     protected onReady(): void {}
-
-    protected subscribe(channel: string, c: (ch: string, data: any) => void): IDisposable {
-        const sub: IDisposable = this.app.subscribe(channel, c);
-        return this.registerDisposable(sub);
-    }
-
-    /**
-     * Use this method to create an object/array that will refresh
-     * when promise is resolved
-     */
-    protected bindPromise<T extends any | any[]>(
-        p: Promise<T>,
-        value: any,
-        displayError: boolean | ((e) => void) = true): T {
-        p.then((v) => {
-            if (Array.isArray(v)) {
-                const a = value as any;
-                (a as any[]).replace(v as any);
-            } else {
-                for (const key in v) {
-                    if (v.hasOwnProperty(key)) {
-                        const element = v[key];
-                        value[key] = element;
-                        AtomBinder.refreshValue(value, key);
-                    }
-                }
-            }
-        }).catch((e) => {
-            if (displayError) {
-                if (typeof displayError === "function") {
-                    displayError(e);
-                } else {
-                    const n = this.app.resolve(NavigationService) as NavigationService;
-                    n.notify(e, "Error", NotifyType.Error);
-                }
-            }
-        });
-        return value;
-    }
-
-    /**
-     * When you create newCancelToken, previous `CancelToken` with same key will be cancelled,
-     * this is useful to prevent multiple remote calls when watched properties change frequently,
-     * such as user typing in search field.
-     * @param key key to separate other tokens
-     */
-    protected newCancelToken(key?: string): CancelToken {
-        let tks = this.cancelTokens;
-        if (!tks) {
-            tks = {};
-            this.registerDisposable({
-                dispose: () => {
-                    for (const k in this.cancelTokens) {
-                        if (this.cancelTokens.hasOwnProperty(k)) {
-                            const element = this.cancelTokens[k];
-                            element.dispose();
-                        }
-                    }
-                }
-            });
-        }
-        key = key || "__default";
-        let token = tks[key];
-        if (token) {
-            token.cancel();
-        }
-        tks[key] = token = new CancelToken();
-        return token;
-    }
-
-    /**
-     * Setups a timer and disposes automatically when view model is destroyed. This will execute
-     * given function only once unless `repeat` argument is `true`.
-     * @param fx Function to execute
-     * @param delayInSeconds delay in seconds
-     * @param repeat repeat at given delay
-     */
-    protected setTimer(
-        fx: ((... a: any[]) => any),
-        delayInSeconds: number,
-        repeat: boolean = false): IDisposable {
-        const afx = () => {
-            this.app.runAsync(fx);
-        };
-        const delay = delayInSeconds * 1000;
-        const id = repeat
-            ? setInterval(afx, delay)
-            : setTimeout(afx, delay);
-        const d = {
-            dispose() {
-                if (repeat) {
-                    clearInterval(id);
-                } else {
-                    clearTimeout(id);
-                }
-            }
-        };
-        return this.registerDisposable(d);
-    }
 
     /**
      * Execute given expression whenever any bindable expression changes
@@ -418,60 +293,6 @@ export class AtomViewModel {
     // tslint:disable-next-line:no-empty
     protected onPropertyChanged(name: string): void {}
 
-    private async privateInit(): Promise<any> {
-        try {
-            await Atom.postAsync(this.app, async () => {
-                this.runDecoratorInits();
-                // this.registerWatchers();
-            });
-            await Atom.postAsync(this.app, async () => {
-                await this.init();
-                this.onReady();
-            });
-
-            if (this.postInit) {
-                for (const i of this.postInit) {
-                    i();
-                }
-                this.postInit = null;
-            }
-        } finally {
-            const pi = this.pendingInits;
-            this.pendingInits = null;
-            for (const iterator of pi) {
-                iterator();
-            }
-        }
-    }
-
-    private runDecoratorInits(): void {
-        const v: any = this.constructor.prototype;
-        if (!v) {
-            return;
-        }
-        const ris: Array<(a: any, b: any) => void> = v._$_inits;
-        if (ris) {
-            for (const ri of ris) {
-                ri.call(this, this);
-            }
-        }
-    }
-
-}
-
-interface IAtomViewModel {
-    setupWatch(ft: () => any, proxy?: () => any, forValidation?: boolean, name?: string): IDisposable ;
-    subscribe(channel: string, c: (ch: string, data: any) => void): void;
-}
-
-type viewModelInit = (vm: AtomViewModel) => void;
-
-export type viewModelInitFunc = (target: AtomViewModel, key: string | symbol) => void;
-
-function registerInit(target: AtomViewModel, fx: viewModelInit ): void {
-    const t: any = target as any;
-    const inits: viewModelInit[] = t._$_inits = t._$_inits || [];
-    inits.push(fx);
 }
 
 /**
@@ -493,9 +314,9 @@ export function Receive(...channel: string[]): viewModelInitFunc {
                     });
                 }
             };
-            const ivm = (vm as any) as IAtomViewModel;
+            const ivm = vm as AtomViewModel;
             for (const c of channel) {
-                ivm.subscribe(c, a);
+                ivm.registerDisposable(ivm.app.subscribe(c, a));
             }
         });
     };
@@ -509,9 +330,9 @@ export function BindableReceive(...channel: string[]): viewModelInitFunc {
             const fx: AtomAction = (cx: string, m: any) => {
                 vm[key] = m;
             };
-            const ivm = (vm as any) as IAtomViewModel;
+            const ivm = vm as AtomViewModel;
             for (const c of channel) {
-                ivm.subscribe(c, fx);
+                ivm.registerDisposable(ivm.app.subscribe(c, fx));
             }
         });
 
@@ -527,7 +348,7 @@ export function BindableBroadcast(...channel: string[]): viewModelInitFunc {
             const fx: (t: any) => any = (t: any): any => {
                 const v: any = vm[key];
                 for (const c of channel) {
-                    vm.broadcast(c, v);
+                    vm.app.broadcast(c, v);
                 }
             };
             const d: AtomWatcher<any> = new AtomWatcher<any>(vm, [key.split(".")], fx );
@@ -639,7 +460,7 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
 export function BindableUrlParameter(name: string): any {
     return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
         registerInit(target, (vm) => {
-            vm.bindUrlParameter(key, name);
+            bindUrlParameter(vm, key, name);
         } );
         return BindableProperty(target, key);
     };

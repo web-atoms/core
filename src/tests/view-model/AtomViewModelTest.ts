@@ -2,7 +2,8 @@ import { AtomUri } from "../../core/AtomUri";
 import { Assert } from "../../unit/Assert";
 import { Test } from "../../unit/Test";
 import { AtomViewModel, BindableBroadcast,
-    BindableReceive, BindableUrlParameter, Receive, Validate, Watch } from "../../view-model/AtomViewModel";
+    BindableReceive, BindableUrlParameter,
+    Receive, Validate, waitForReady, Watch } from "../../view-model/AtomViewModel";
 import AtomWebTest from "../web/AtomWebTest";
 
 declare var global: any;
@@ -19,7 +20,7 @@ export class AtomViewModelTest extends AtomWebTest {
 
         const vm = new BindableUrlViewModel(this.app);
 
-        await vm.waitForReady();
+        await waitForReady(vm);
 
         Assert.equals("start", vm.url);
 
@@ -35,13 +36,13 @@ export class AtomViewModelTest extends AtomWebTest {
         const b = new BroadcastViewModel(this.app);
         const r = new ReceiveViewModel(this.app);
 
-        await Promise.all([b.waitForReady(), r.waitForReady()]);
+        await Promise.all([waitForReady(b), waitForReady(r)]);
 
         b.channel1 = "a";
 
         Assert.equals("a", r.channel1);
 
-        b.broadcast("channel2", "b");
+        b.app.broadcast("channel2", "b");
 
         Assert.equals("b", r.channel2);
     }
@@ -51,7 +52,7 @@ export class AtomViewModelTest extends AtomWebTest {
 
         let vm = new TestViewModel(this.app);
 
-        await vm.waitForReady();
+        await waitForReady(vm);
 
         vm.dispose();
 
@@ -93,7 +94,7 @@ export class AtomViewModelTest extends AtomWebTest {
 
         const vm = new TestViewModel(this.app);
 
-        await vm.waitForReady();
+        await waitForReady(vm);
 
         vm.model.firstName = "Akash";
 
@@ -117,7 +118,7 @@ export class AtomViewModelTest extends AtomWebTest {
 
         const vm = new TestViewModel(this.app);
 
-        await vm.waitForReady();
+        await waitForReady(vm);
 
         Assert.isEmpty(vm.errorFirstName);
 

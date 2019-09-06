@@ -17,9 +17,6 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     public atomParent(e: IAtomElement): AtomXFControl {
         return AtomBridge.instance.atomParent(e, false) as any;
     }
-    public attachControl(): void {
-        AtomBridge.instance.attachControl(this.element, this as any);
-    }
 
     public append(element: IAtomElement | AtomXFControl): AtomXFControl {
         return this;

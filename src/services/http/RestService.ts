@@ -595,14 +595,14 @@ export class BaseService {
         return await new Promise<AjaxOptions>((resolve, reject) => {
 
             if (options.cancel && options.cancel.cancelled) {
-                reject("cancelled");
+                reject(options.cancel.cancelled);
                 return;
             }
 
             if (options.cancel) {
-                options.cancel.registerForCancel(() => {
+                options.cancel.registerForCancel((r) => {
                     xhr.abort();
-                    reject("cancelled");
+                    reject(r);
                     return;
                 });
             }

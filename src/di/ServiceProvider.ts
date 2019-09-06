@@ -2,6 +2,7 @@ import { DI, IClassOf, IDisposable } from "../core/types";
 import { InjectedTypes } from "./Inject";
 import { Scope, ServiceCollection, ServiceDescription } from "./ServiceCollection";
 import { TypeKey } from "./TypeKey";
+import TransientDisposable from "../core/TransientDisposable";
 
 export class ServiceProvider implements IDisposable {
 
@@ -117,6 +118,11 @@ export class ServiceProvider implements IDisposable {
             const pv = plist.map( (x) => x ? this.resolve(x) : (void 0) );
             pv.unshift(null);
             value = new (key.bind.apply(key, pv))();
+            for (const iterator of pv) {
+                if (iterator && iterator instanceof TransientDisposable) {
+                    iterator.registerIn(value);
+                }
+            }
         } else {
             value = new (key)();
         }

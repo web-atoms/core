@@ -42,42 +42,59 @@ export interface IRect {
     height?: number;
 }
 
+export type CancelReason = "cancelled" | "timeout";
+
 /**
  *
  *
  * @export
  * @class CancelToken
  */
-export class CancelToken {
+export class CancelToken implements IDisposable {
 
-    private listeners: Array<() => void> = [];
+    private listeners: Array<(r: CancelReason) => void> = [];
 
-    private mCancelled: boolean;
-    get cancelled(): boolean {
+    private mCancelled: (CancelReason | null | undefined) = null;
+    public get cancelled(): (CancelReason | null | undefined) {
         return this.mCancelled;
     }
 
-    public cancel(): void {
-        this.mCancelled = true;
-        const existing = this.listeners.slice(0);
-        this.listeners.length = 0;
-        for (const fx of existing) {
-            fx();
+    private cancelTimeout = null;
+
+    constructor(timeout: number = -1) {
+        if (timeout > 0) {
+            this.cancelTimeout = setTimeout(() => {
+                this.cancelTimeout = null;
+                this.cancel("timeout");
+            }, timeout);
         }
     }
 
-    public reset(): void {
-        this.mCancelled = false;
+    public cancel(r: CancelReason = "cancelled"): void {
+        this.mCancelled = r;
+        const existing = this.listeners.slice(0);
         this.listeners.length = 0;
+        for (const fx of existing) {
+            fx(r);
+        }
+        this.dispose();
+    }
+
+    public reset(): void {
+        this.mCancelled = null;
+        this.dispose();
     }
 
     public dispose() {
         this.listeners.length = 0;
+        if (this.cancelTimeout) {
+            clearTimeout(this.cancelTimeout);
+        }
     }
 
-    public registerForCancel(f: () => void): void {
+    public registerForCancel(f: (r: CancelReason) => void): void {
         if (this.mCancelled) {
-            f();
+            f(this.mCancelled);
             this.cancel();
             return;
         }

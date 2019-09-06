@@ -158,10 +158,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         return this.atomParent(ep._logicalParent || ep.parentElement as HTMLElement);
     }
 
-    public attachControl(): void {
-        this.element.atomControl = this;
-    }
-
     public append(element: AtomControl | HTMLElement | Text): AtomControl {
         if (element instanceof AtomControl) {
             this.element.appendChild(element.element);
