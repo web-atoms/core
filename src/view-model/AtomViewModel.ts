@@ -6,10 +6,9 @@ import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
 import { IValueConverter } from "../core/IValueConverter";
 import { PropertyBinding } from "../core/PropertyBinding";
-import { ArrayHelper, CancelToken, IClassOf, IDisposable } from "../core/types";
+import { IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 import { IAtomViewModel, registerInit, viewModelInitFunc } from "./baseTypes";
-import { bindUrlParameter } from "./bindUrlParameter";
 
 function runDecoratorInits(): void {
     const v: any = this.constructor.prototype;
@@ -455,13 +454,4 @@ export function Validate(target: AtomViewModel, key: string | symbol, descriptor
         return;
     });
 
-}
-
-export function BindableUrlParameter(name: string): any {
-    return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {
-        registerInit(target, (vm) => {
-            bindUrlParameter(vm, key, name);
-        } );
-        return BindableProperty(target, key);
-    };
 }

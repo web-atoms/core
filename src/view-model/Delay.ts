@@ -6,7 +6,7 @@ import { registerInit, viewModelInitFunc } from "./baseTypes";
  * @param delayInSeconds delay in seconds
  * @param repeat repeat at given delay
  */
-export function Delay(delayInSeconds: number, repeat: boolean = false): viewModelInitFunc {
+export default function Delay(delayInSeconds: number, repeat: boolean = false): viewModelInitFunc {
     return (target: AtomViewModel, key: string | symbol): void => {
         registerInit(target, (vm) => {
             // tslint:disable-next-line: ban-types

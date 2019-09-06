@@ -11,7 +11,7 @@ import { Inject } from "../../di/Inject";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
-import { bindUrlParameter } from "../../view-model/bindUrlParameter";
+import bindUrlParameter from "../../view-model/bindUrlParameter";
 import { AtomUI } from "../core/AtomUI";
 import { WindowService } from "../services/WindowService";
 import { AtomTabbedPageStyle } from "../styles/AtomTabbedPageStyle";

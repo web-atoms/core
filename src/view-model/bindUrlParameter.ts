@@ -10,7 +10,7 @@ import { AtomViewModel } from "./AtomViewModel";
  * @param name property name of View Model
  * @param urlParameter url parameter name
  */
-export function bindUrlParameter(vm: AtomViewModel, name: string, urlParameter: string): IDisposable {
+export default function bindUrlParameter(vm: AtomViewModel, name: string, urlParameter: string): IDisposable {
     if (!name) {
         return;
     }

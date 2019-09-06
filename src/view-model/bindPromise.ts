@@ -5,7 +5,7 @@ import { AtomViewModel } from "./AtomViewModel";
  * Use this method to create an object/array that will refresh
  * when promise is resolved
  */
-export function bindPromise<T extends any | any[]>(
+export default function bindPromise<T extends any | any[]>(
     vm: AtomViewModel,
     p: Promise<T>,
     value: any,
