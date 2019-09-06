@@ -68,10 +68,13 @@ export class AtomTabbedPage extends AtomGridView
         AtomBinder.refreshValue(this, "selectedPage");
     }
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("section"));
+    }
+
     protected preCreate(): void {
 
         this.defaultControlStyle = AtomTabbedPageStyle;
-        this.element = document.createElement("section");
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
         });

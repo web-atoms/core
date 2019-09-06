@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomControl } from "./AtomControl";
@@ -8,8 +9,11 @@ export class AtomPageLink extends AtomControl {
 
     public parameters: any;
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("span"));
+    }
+
     protected preCreate(): void {
-        this.element = document.createElement("span");
 
         const navigationService: NavigationService = this.app.resolve(NavigationService);
 
