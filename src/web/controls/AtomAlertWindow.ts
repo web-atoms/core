@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import AtomAlertWindowStyle from "../styles/AtomAlertWindowStyle";
@@ -6,8 +7,11 @@ import { AtomWindow } from "./AtomWindow";
 
 export default class AtomAlertWindow extends AtomWindow {
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("div"));
+    }
+
     protected create(): void {
-        this.element = document.createElement("div");
         this.defaultControlStyle =  AtomAlertWindowStyle ;
         this.viewModel = this.resolve(AtomAlertViewModel);
 
