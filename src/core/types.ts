@@ -17,7 +17,10 @@ export interface INotifyPropertyChanged {
 
 }
 
-export type IClassOf<T> = new (...v: any[]) => T;
+export interface IClassOf<T> extends Function {
+    // tslint:disable-next-line: callable-types
+    new (... v: any[]): T;
+}
 
 export type IAtomElement = HTMLElement | INativeComponent;
 

@@ -1,12 +1,12 @@
 import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
-import { CancelToken } from "../../core/types";
+import { CancelToken, IClassOf } from "../../core/types";
 import { IPageOptions, NavigationService } from "../../services/NavigationService";
 import { AtomControl } from "./AtomControl";
 
 export class AtomPageLink extends AtomControl {
 
-    public page: string | (new () => AtomControl);
+    public page: string | IClassOf<AtomControl>;
 
     public parameters: any;
 
