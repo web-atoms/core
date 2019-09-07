@@ -6,7 +6,7 @@ import { AtomControl } from "./AtomControl";
 
 export class AtomPageLink extends AtomControl {
 
-    public page: string;
+    public page: string | (new () => AtomControl);
 
     public parameters: any;
 
