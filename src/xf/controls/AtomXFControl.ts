@@ -17,9 +17,6 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     public atomParent(e: IAtomElement): AtomXFControl {
         return AtomBridge.instance.atomParent(e, false) as any;
     }
-    public attachControl(): void {
-        AtomBridge.instance.attachControl(this.element, this as any);
-    }
 
     public append(element: IAtomElement | AtomXFControl): AtomXFControl {
         return this;
@@ -31,16 +28,16 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         AtomBridge.instance.dispose(el);
     }
 
-    protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
-        AtomBinder.refreshValue(this, name);
-        AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-            if (ac) {
-                ((ac as any) as AtomXFControl).refreshInherited(name, fx);
-                return false;
-            }
-            return true;
-        });
-    }
+    // protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
+    //     AtomBinder.refreshValue(this, name);
+    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
+    //         if (ac) {
+    //             ((ac as any) as AtomXFControl).refreshInherited(name, fx);
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }
 
     protected loadXaml(content: string): void {
         const bridge = AtomBridge.instance as any;

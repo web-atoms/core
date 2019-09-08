@@ -21,8 +21,11 @@ export class AtomToggleButtonBar extends AtomListBox {
 
 class AtomToggleButtonBarItemTemplate extends AtomControl {
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("li"));
+    }
+
     protected create(): void {
-        this.element = document.createElement("li");
         this.bind(this.element, "text", [["data"]], false, (v) => {
             const p = this.parent as AtomItemsControl;
             return v[p.labelPath];

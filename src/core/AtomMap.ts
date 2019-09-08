@@ -66,7 +66,7 @@ if (typeof Map === "undefined") {
     }
 
     // tslint:disable-next-line:no-string-literal
-    window["Map"] = AtomMap;
+    (window as any)["Map"] = AtomMap;
 
 }
 

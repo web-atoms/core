@@ -11,6 +11,7 @@ import { Inject } from "../../di/Inject";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
+import bindUrlParameter from "../../view-model/bindUrlParameter";
 import { AtomUI } from "../core/AtomUI";
 import { WindowService } from "../services/WindowService";
 import { AtomTabbedPageStyle } from "../styles/AtomTabbedPageStyle";
@@ -67,10 +68,13 @@ export class AtomTabbedPage extends AtomGridView
         AtomBinder.refreshValue(this, "selectedPage");
     }
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("section"));
+    }
+
     protected preCreate(): void {
 
         this.defaultControlStyle = AtomTabbedPageStyle;
-        this.element = document.createElement("section");
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
         });
@@ -121,7 +125,6 @@ function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
 
         protected create(): void {
 
-            this.element = document.createElement("div");
             // this.bind(this.element, "text", [["data", "title"]]);
             this.bind(this.element, "styleClass", [
                     ["data"],
@@ -204,7 +207,7 @@ class AtomTabViewModel extends AtomViewModel {
             }
         });
 
-        this.bindUrlParameter("selectedUrl", "url");
+        bindUrlParameter(this, "selectedUrl", "url");
 
     }
 
@@ -296,14 +299,8 @@ class AtomTabViewModel extends AtomViewModel {
         // const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         const { view: page, disposables } =
             await AtomLoader.loadView<AtomPage>(url, this.app, true, () => new AtomWindowViewModel(this.app));
-        AtomUI.assignID(page.element);
         page.title = "Title";
         page.tag = uriString;
-        const vm = page.viewModel;
-        if (vm) {
-            vm.windowName = page.element.id;
-        }
-
         if (url.query && url.query.title) {
             page.title = url.query.title.toString();
         }

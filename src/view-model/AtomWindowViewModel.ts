@@ -74,7 +74,7 @@ export class AtomWindowViewModel extends AtomViewModel {
      * @memberof AtomWindowViewModel
      */
     public close(result?: any): void {
-        this.broadcast(`atom-window-close:${this.windowName}`, result);
+        this.app.broadcast(`atom-window-close:${this.windowName}`, result);
     }
 
     /**
@@ -87,7 +87,7 @@ export class AtomWindowViewModel extends AtomViewModel {
                 return false;
             }
         }
-        this.broadcast(`atom-window-cancel:${this.windowName}`, "cancelled");
+        this.app.broadcast(`atom-window-cancel:${this.windowName}`, "cancelled");
         return true;
     }
 

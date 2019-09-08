@@ -15,8 +15,6 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
     protected create(): void {
 
-        this.element = document.createElement("div");
-
         // remember, if you do not wish to use dynamic themes
         // then use one time binding
         this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
@@ -56,9 +54,9 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 }
 
 class AtomWindowTitleTemplate extends AtomControl {
+
     protected create(): void {
 
-        this.element = document.createElement("div");
         this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "titleHost"]]);
 
         // add title

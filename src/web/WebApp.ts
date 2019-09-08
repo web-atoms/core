@@ -227,5 +227,5 @@ declare global {
         evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
         return evt;
     }
-    window.CustomEvent = CustomEvent;
+    (window as any).CustomEvent = CustomEvent;
   })();

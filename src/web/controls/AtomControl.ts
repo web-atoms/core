@@ -105,7 +105,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
     public set theme(v: AtomStyleSheet) {
         this.mTheme = v;
-        this.refreshInherited("theme", (ac) => ac.mTheme === undefined);
+        AtomBridge.instance.refreshInherited(this, "theme");
     }
 
     /**
@@ -156,10 +156,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return ep.atomControl;
         }
         return this.atomParent(ep._logicalParent || ep.parentElement as HTMLElement);
-    }
-
-    public attachControl(): void {
-        this.element.atomControl = this;
     }
 
     public append(element: AtomControl | HTMLElement | Text): AtomControl {
@@ -315,18 +311,18 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         // pending !!
     }
 
-    protected refreshInherited(name: string, fx: (ac: AtomControl) => boolean): void {
-        AtomBinder.refreshValue(this, name);
-        AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-            if (ac) {
-                if (fx(ac)) {
-                    ac.refreshInherited(name, fx);
-                }
-                return false;
-            }
-            return true;
-        });
-    }
+    // protected refreshInherited(name: string, fx: (ac: AtomControl) => boolean): void {
+    //     AtomBinder.refreshValue(this, name);
+    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
+    //         if (ac) {
+    //             if (fx(ac)) {
+    //                 ac.refreshInherited(name, fx);
+    //             }
+    //             return false;
+    //         }
+    //         return true;
+    //     });
+    // }
 
     protected removeAllChildren(e: HTMLElement): void {
         let child = e.firstElementChild as HTMLElement;

@@ -5,7 +5,7 @@ import { Assert } from "../../../unit/Assert";
 import { AtomTest } from "../../../unit/AtomTest";
 import { Category } from "../../../unit/Category";
 import { Test } from "../../../unit/Test";
-import { AtomViewModel } from "../../../view-model/AtomViewModel";
+import { AtomViewModel, waitForReady } from "../../../view-model/AtomViewModel";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";
 
@@ -66,7 +66,7 @@ export class TestCase extends AtomTest {
 
         ic.bind(null, "items", [["viewModel", "movies"]]);
 
-        await vm.waitForReady();
+        await waitForReady(vm);
 
         await this.app.waitForPendingCalls();
 
@@ -91,7 +91,7 @@ export class TestCase extends AtomTest {
         ic.valuePath = "value";
         const vm = new TestViewModel(this.app);
 
-        await vm.waitForReady();
+        await waitForReady(vm);
 
         ic.viewModel = vm;
 
@@ -119,7 +119,7 @@ export class TestCase extends AtomTest {
         ic.valuePath = "value";
         const vm = new TestViewModel(this.app);
 
-        await vm.waitForReady();
+        await waitForReady(vm);
 
         ic.viewModel = vm;
 

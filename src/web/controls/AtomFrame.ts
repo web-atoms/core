@@ -58,8 +58,11 @@ export class AtomFrame
         if (this.mUrl === value) {
             return;
         }
+        if (value === undefined) {
+            return;
+        }
         this.runAfterInit(() => {
-            this.app.runAsync(() => this.loadForReturn(new AtomUri(value), true));
+            this.app.runAsync(() => this.loadForReturn(value === null ? null : new AtomUri(value), true));
         });
     }
 
@@ -87,11 +90,9 @@ export class AtomFrame
             return;
         }
         const last = this.stack.pop();
-        this.mUrl = last.url;
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
-        AtomBinder.refreshValue(this, "url");
-        AtomBinder.refreshValue(this, "canGoBack");
+        this.setUrl(last.url);
         if (this.saveScrollPosition) {
             setTimeout(() => {
                 window.scrollTo(0, last.scrollY);
@@ -161,9 +162,7 @@ export class AtomFrame
 
         const e = view.element;
 
-        this.mUrl = urlString;
-        AtomBinder.refreshValue(this, "url");
-        AtomBinder.refreshValue(this, "canGoBack");
+        this.setUrl(urlString);
         disposables.add(view);
         disposables.add({
             dispose: () => {
@@ -182,22 +181,27 @@ export class AtomFrame
             .join("");
     }
 
+    protected setUrl(urlString: string) {
+        this.mUrl = urlString;
+        AtomBinder.refreshValue(this, "url");
+        AtomBinder.refreshValue(this, "canGoBack");
+    }
+
     protected async loadForReturn(url: AtomUri, clearHistory?: boolean): Promise<any> {
         const hasHistory = this.keepStack;
         this.keepStack = !clearHistory;
+
+        if (url === null) {
+            if (hasHistory && clearHistory) {
+                this.clearStack();
+            }
+            return;
+        }
+
         const page = await this.load(url, clearHistory);
         if (hasHistory) {
             if (clearHistory) {
-                // clear stack... irrespective of cancellation !!
-                for (const iterator of this.stack) {
-                    const e = iterator.page.element;
-                    if (e) {
-                        iterator.page.dispose();
-                        e.innerHTML = "";
-                        e.remove();
-                    }
-                }
-                this.stack.length = 0;
+                this.clearStack();
             }
         }
         try {
@@ -212,6 +216,19 @@ export class AtomFrame
             // throw new Error( ex.stack ? (ex + "\r\n" + ex.stack ) : ex);
             throw ex;
         }
+    }
+
+    protected clearStack(): void {
+        // clear stack... irrespective of cancellation !!
+        for (const iterator of this.stack) {
+            const e = iterator.page.element;
+            if (e) {
+                iterator.page.dispose();
+                e.innerHTML = "";
+                e.remove();
+            }
+        }
+        this.stack.length = 0;
     }
 
     protected preCreate(): void {
@@ -234,11 +251,16 @@ export class AtomFrame
             target,
             clearHistory,
             cancelToken }) => {
-            if (
-                target !== this.name
-                && target !== "frame"
-                && url.protocol !== "frame:") {
-                return undefined;
+            if (this.name) {
+                if (target !== this.name) {
+                    return undefined;
+                }
+            } else {
+                if (
+                    target !== "frame"
+                    && url.protocol !== "frame:") {
+                    return undefined;
+                }
             }
             if (cancelToken) {
                 cancelToken.registerForCancel(() => {

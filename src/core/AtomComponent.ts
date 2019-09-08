@@ -62,7 +62,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public set data(v: any) {
         this.mData = v;
-        this.refreshInherited("data", (a) => a.mData === undefined);
+        AtomBridge.instance.refreshInherited(this, "data");
     }
 
     private mViewModel: any = undefined;
@@ -83,7 +83,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             old.dispose();
         }
         this.mViewModel = v;
-        this.refreshInherited("viewModel", (a) => a.mViewModel === undefined);
+        AtomBridge.instance.refreshInherited(this, "viewModel");
     }
 
     private mLocalViewModel: any = undefined;
@@ -104,7 +104,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             old.dispose();
         }
         this.mLocalViewModel = v;
-        this.refreshInherited("localViewModel", (a) => a.mLocalViewModel === undefined);
+        AtomBridge.instance.refreshInherited(this, "localViewModel");
     }
 
     public abstract get parent(): TC;
@@ -128,25 +128,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const a = this.beginEdit();
         this.preCreate();
         this.create();
-        this.attachControl();
+        AtomBridge.instance.attachControl(e, this as any);
         app.callLater(() => a.dispose());
     }
 
     public abstract atomParent(e: T): TC;
-    // {
-    //     const ep = AtomBridge.instance.elementParent(this.element);
-    //     if (!ep) {
-    //         return null;
-    //     }
-    //     return AtomBridge.instance.atomParent(ep) as TC;
-    // }
-
-    public abstract attachControl(): void;
-    // {
-    //     // AtomBridge.instance.attachControl(this.element, this);
-    // }
-
-    // [key: string]: any;
 
     public bind(
         element: T,
@@ -371,28 +357,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public abstract append(element: T | TC): TC;
-    // {
-    //     const ac = element instanceof TC ? element : null;
-    //     const e = ac ? ac.element : element;
-    //     AtomBridge.instance.appendChild(this.element, e);
-    //     if (ac) {
-    //         ac.refreshInherited("viewModel", (a) => a.mViewModel === undefined);
-    //         ac.refreshInherited("localViewModel", (a) => a.mLocalViewModel === undefined);
-    //         ac.refreshInherited("data", (a) => a.mData === undefined);
-    //     }
-    //     return this;
-    // }
-
-    // init is no longer needed !!!
-    // public init(): void {
-    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-    //         if (ac) {
-    //             ac.init();
-    //             return false;
-    //         }
-    //         return true;
-    //     });
-    // }
 
     // tslint:disable-next-line:no-empty
     public onPropertyChanged(name: string): void {
@@ -453,8 +417,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         };
     }
 
-    // public abstract init(): void;
-
     // tslint:disable-next-line:no-empty
     protected create(): void {
 
@@ -475,7 +437,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const result = this.app.resolve(c, true);
         if (selfName) {
             if (typeof selfName === "function") {
-                this.runAfterInit(() => {
+                // this.runAfterInit(() => {
                     const v = selfName();
                     if (v) {
                         for (const key in v) {
@@ -485,51 +447,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                             }
                         }
                     }
-                });
+                // });
             } else {
                 result[selfName] = this;
             }
         }
         return result;
     }
-
-    protected getValue(path: string) {
-        return Atom.get(this, path);
-    }
-
-    // protected postInit(): void {
-    //     AtomDispatcher.instance.callLater(()=>{
-    //         this.init();
-    //     });
-    // }
-
-    protected abstract refreshInherited(name: string, fx: (ac: AtomComponent<T, TC>) => boolean): void;
-    // {
-    //     AtomBinder.refreshValue(this, name);
-    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-    //         if (ac) {
-    //             if (fx(ac)) {
-    //                 ac.refreshInherited(name, fx);
-    //             }
-    //             return false;
-    //         }
-    //         return true;
-    //     });
-    // }
-
-    // tslint:disable-next-line:member-ordering
-    // public static updateUI(): any {
-    //     throw new Error("Method not implemented.");
-    // }
-
-    // tslint:disable-next-line:member-ordering
-    // public static disposeChildren(arg0: any): any {
-    //     throw new Error("Method not implemented.");
-    // }
-
-    // tslint:disable-next-line:member-ordering
-    // public static invokeAction(arg0: any): any {
-    //     throw new Error("Method not implemented.");
-    // }
 
 }

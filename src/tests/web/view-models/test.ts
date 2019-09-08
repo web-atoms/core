@@ -4,7 +4,7 @@ import { Assert } from "../../../unit/Assert";
 import { Category } from "../../../unit/Category";
 import { Test } from "../../../unit/Test";
 import { TestItem } from "../../../unit/TestItem";
-import { AtomViewModel, Watch } from "../../../view-model/AtomViewModel";
+import { AtomViewModel, waitForReady, Watch } from "../../../view-model/AtomViewModel";
 
 interface ICustomer {
     firstName: string;
@@ -46,7 +46,7 @@ export class ViewModelTestCase extends TestItem {
         const app = new App();
 
         const tvm = new TestViewModel(app);
-        await tvm.waitForReady();
+        await waitForReady(tvm);
 
         tvm.customer = { firstName: "", lastName: "Tss"};
 
