@@ -91,8 +91,12 @@ export class AtomComboBox extends AtomItemsControl {
 }
 
 class AtomComboBoxItemTemplate extends AtomControl {
+
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("option"));
+    }
+
     protected create(): void {
-        this.element = document.createElement("option");
         this.bind(this.element, "text", [["data"]], false ,
         (v) => {
             const ip = this.templateParent as AtomItemsControl;

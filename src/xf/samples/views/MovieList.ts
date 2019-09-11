@@ -1,3 +1,4 @@
+import { App } from "../../../App";
 import { AtomBridge } from "../../../core/AtomBridge";
 import { AtomXFControl } from "../../controls/AtomXFControl";
 import MovieListViewModel from "./MovieListViewModel";
@@ -5,8 +6,11 @@ import TitlePage from "./TitlePage";
 
 export default class MovieList extends AtomXFControl {
 
+    constructor(app: App, e?: any) {
+        super(app, e || AtomBridge.instance.create("Xamarin.Forms.ContentPage"));
+    }
+
     protected create(): void {
-        this.element = this.createControl("Xamarin.Forms.ContentPage");
         this.setImport(this.element, "TitlePage", () => new TitlePage(this.app));
 
         this.loadXaml(`<ContentPage
@@ -38,9 +42,11 @@ export default class MovieList extends AtomXFControl {
 
 class MovieListItemTemplate extends AtomXFControl {
 
-    protected create(): void {
-        this.element = this.createControl("Xamarin.Forms.Grid");
+    constructor(app: App, e?: any) {
+        super(app, AtomBridge.instance.create("Xamarin.Forms.Grid"));
+    }
 
+    protected create(): void {
         this.loadXaml(`<Grid
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         xmlns="http://xamarin.com/schemas/2014/forms">

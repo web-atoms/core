@@ -1026,7 +1026,6 @@ export class AtomItemsControl extends AtomControl {
 class AtomItemsControlItemTemplate extends AtomControl {
 
     protected create(): void {
-        this.element = document.createElement("div");
         this.runAfterInit(() => {
             const tp = this.templateParent as AtomItemsControl;
             this.element.textContent = this.data[tp.valuePath];

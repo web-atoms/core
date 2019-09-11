@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
@@ -67,6 +68,10 @@ export class AtomFrame
     }
 
     private navigationService: WindowService;
+
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("section"));
+    }
 
     public async onBackCommand(): Promise<void> {
         if (!this.stack.length) {
@@ -236,9 +241,6 @@ export class AtomFrame
         this.navigationService = this.app.resolve(NavigationService);
         this.defaultControlStyle = AtomFrameStyle;
         this.pagePresenter = null;
-        if (!this.element) {
-            this.element = document.createElement("section");
-        }
         AtomUI.assignID(this.element);
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);

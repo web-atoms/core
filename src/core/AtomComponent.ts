@@ -38,7 +38,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
 
-    public element: T;
+    // public element: T;
 
     protected pendingInits: Array<() => void>;
 
@@ -118,17 +118,19 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     private bindings: Array<PropertyBinding<T>> = [];
 
-    constructor(@Inject public readonly app: App, e?: T) {
+    constructor(
+        @Inject public readonly app: App,
+        public readonly element: T = null) {
         // if (!app) {
         //     // tslint:disable-next-line:no-console
         //     console.error("app cannot be null while creating control");
         // }
         this.disposables = [];
-        this.element = e;
+        // this.element = e;
         const a = this.beginEdit();
         this.preCreate();
         this.create();
-        AtomBridge.instance.attachControl(e, this as any);
+        AtomBridge.instance.attachControl(element, this as any);
         app.callLater(() => a.dispose());
     }
 
@@ -334,7 +336,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             this.bindings.length = 0;
             this.bindings = null;
             AtomBridge.instance.dispose(this.element);
-            this.element = null;
+            (this as any).element = null;
 
             const lvm = this.mLocalViewModel;
             if (lvm && lvm.dispose) {

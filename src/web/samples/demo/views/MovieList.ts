@@ -1,3 +1,4 @@
+import { App } from "../../../../App";
 import { AtomControl } from "../../../controls/AtomControl";
 import { AtomGridSplitter } from "../../../controls/AtomGridSplitter";
 import { AtomGridView } from "../../../controls/AtomGridView";
@@ -6,7 +7,6 @@ import { AtomItemsControl } from "../../../controls/AtomItemsControl";
 export class MovieList extends AtomGridView {
 
     protected create(): void {
-        this.element = document.createElement("div");
 
         const style = this.element.style;
         style.position = "absolute";
@@ -47,8 +47,11 @@ export class MovieList extends AtomGridView {
 
 class MovieListItemTemplate extends AtomControl {
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("li"));
+    }
+
     protected create(): void {
-        this.element = document.createElement("li");
         this.element.style.margin = "2px";
         const span = document.createElement("span");
         this.append(span);

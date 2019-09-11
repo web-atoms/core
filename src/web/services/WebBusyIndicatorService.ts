@@ -22,10 +22,9 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
     public createIndicator(): IDisposable {
 
-        const popup = new AtomControl(this.app);
         const host = document.createElement("div");
+        const popup = new AtomControl(this.app, host);
         host.className = "indicator-host";
-        popup.element = host;
 
         const span = document.createElement("img");
 
