@@ -120,6 +120,9 @@ export class AtomWatcher<T> implements IDisposable {
      * @memberof AtomWatcher
      */
     public dispose(): void {
+        if (!this.path) {
+            return;
+        }
         for (const p of this.path) {
             for (const op of p) {
                 if (op.watcher) {

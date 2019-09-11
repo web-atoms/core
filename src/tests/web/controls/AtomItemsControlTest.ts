@@ -1,4 +1,5 @@
 import "test-dom";
+import { App } from "../../../App";
 import { Atom } from "../../../Atom";
 import { BindableProperty } from "../../../core/BindableProperty";
 import { Assert } from "../../../unit/Assert";
@@ -39,10 +40,12 @@ class TestViewModel extends AtomViewModel {
 
 class TestItemTemplate extends AtomControl {
 
+    constructor(app: App, e?: HTMLElement) {
+        super(app, e || document.createElement("span"));
+    }
+
     public create(): void {
         super.create();
-
-        this.element = document.createElement("span");
         this.bind(this.element, "text", [["data", "label"]]);
     }
 

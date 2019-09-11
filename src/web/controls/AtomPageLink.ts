@@ -10,17 +10,23 @@ export class AtomPageLink extends AtomControl {
 
     public parameters: any;
 
-    public allowMultiple: boolean;
-
     public isOpen: boolean;
 
     public cancelToken: CancelToken;
 
     public options: IPageOptions;
 
+    /**
+     * Block opening Popup/Page again till the opened page is closed or cancelled.
+     * If set true, toggle will not work. Default is false.
+     */
     public modal: boolean;
 
-    public cancelIfOpen: boolean;
+    /**
+     * Setting Toggle (default true) true will close the already opened Popup/window, otherwise it will
+     * open a new window if Modal is false.
+     */
+    public toggle: boolean;
 
     constructor(app: App, e?: HTMLElement) {
         super(app, e || document.createElement("span"));
@@ -35,6 +41,10 @@ export class AtomPageLink extends AtomControl {
         this.isOpen = false;
 
         this.options = null;
+
+        this.modal = false;
+
+        this.toggle = true;
 
         super.preCreate();
 
@@ -63,7 +73,7 @@ export class AtomPageLink extends AtomControl {
     protected async openPopup(): Promise<void> {
 
         if (this.cancelToken) {
-            if (this.cancelIfOpen) {
+            if (this.toggle) {
                 this.cancelToken.cancel();
                 this.cancelToken = null;
                 this.isOpen = false;

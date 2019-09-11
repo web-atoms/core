@@ -27,8 +27,6 @@ export class AtomWindowTest extends AtomWebTest {
 class SampleWindow extends AtomWindow {
 
     protected create(): void {
-        this.element = document.createElement("div");
-
         this.windowTemplate = SampleWindowTemplate;
     }
 
@@ -37,7 +35,6 @@ class SampleWindow extends AtomWindow {
 class SampleWindowTemplate extends AtomControl {
 
     protected create(): void {
-        this.element = document.createElement("div");
         this.element.textContent = "sample";
     }
 }
