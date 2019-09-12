@@ -48,19 +48,19 @@ export class Assert {
 
     public static isTrue(b: boolean, msg?: string) {
         if (b !== true) {
-            Assert.throw(msg || "Expected isTrue");
+            Assert.throw(msg || `Expected isTrue, found ${b}`);
         }
     }
 
     public static isFalse(b: boolean, msg?: string) {
         if (b !== false) {
-            Assert.throw(msg || "Expected isFalse");
+            Assert.throw(msg || `Expected isFalse, found ${b}`);
         }
     }
 
     public static isNull(a: any, msg?: string): void {
         if (a !== null) {
-            Assert.throw(msg || `Expected null found ${a}`);
+            Assert.throw(msg || `Expected null, found ${a}`);
         }
     }
 
