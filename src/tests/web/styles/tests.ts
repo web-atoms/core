@@ -21,8 +21,6 @@ export class TestCase extends TestItem {
         Assert.isTrue(theme.styleElement ? true : false);
 
         const a = theme.window.frameHost;
-        // tslint:disable-next-line:no-debugger
-        debugger;
         Assert.isTrue(a.className ? true : false);
 
         // tslint:disable-next-line:no-console
