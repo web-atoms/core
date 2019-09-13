@@ -26,14 +26,6 @@ export class ChildEnumerator {
 
 export class AtomUI {
 
-    public static addClass(e: HTMLElement, names: string): void {
-        throw new Error("Method not implemented.");
-    }
-
-    public static css(e: HTMLElement, names: {[key: string]: any}): void {
-        throw new Error("Method not implemented.");
-    }
-
     public static outerHeight(el: HTMLElement, margin: boolean = false): number {
         let height = el.offsetHeight;
         if (!margin) { return height; }

@@ -132,7 +132,11 @@ export class ServiceProvider implements IDisposable {
             for (const key1 in propList) {
                 if (propList.hasOwnProperty(key1)) {
                     const element = propList[key1];
-                    value[key1] = this.resolve(element);
+                    const d = this.resolve(element);
+                    value[key1] = d;
+                    if (d && d instanceof TransientDisposable) {
+                        d.registerIn(value);
+                    }
                 }
             }
         }

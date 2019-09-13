@@ -4,6 +4,7 @@ import { AtomWatcher } from "../../core/AtomWatcher";
 import { Assert } from "../../unit/Assert";
 import { AtomTest } from "../../unit/AtomTest";
 import { Test } from "../../unit/Test";
+import { AtomButtonStyle } from "../../web/styles/AtomButtonStyle";
 
 interface ICustomer {
     firstName: string;
@@ -18,6 +19,38 @@ export class AtomBinderTest extends AtomTest {
     public refreshValue(): void {
         AtomBinder.refreshValue(undefined, "key");
         AtomBinder.refreshValue(null, "key");
+    }
+
+    @Test
+    public emptyReturns(): void {
+        AtomBinder.add_WatchHandler(null, "", null);
+        AtomBinder.invokeItemsEvent([], "", 0, {});
+        AtomBinder.remove_WatchHandler(null, "", null);
+        AtomBinder.remove_WatchHandler({}, "a", null);
+
+        // tslint:disable-next-line: no-empty
+        const f = () => {};
+        const a = {};
+        AtomBinder.add_WatchHandler(a, "a", f);
+        AtomBinder.remove_WatchHandler(a, "b", f);
+        AtomBinder.remove_WatchHandler(a, "a", f);
+
+        AtomBinder.remove_CollectionChanged(null, null);
+        AtomBinder.remove_CollectionChanged([], null);
+
+        const ar = [];
+        AtomBinder.invokeItemsEvent(null, "", 0, {});
+        AtomBinder.add_WatchHandler(ar, "length", f);
+        AtomBinder.invokeItemsEvent(ar, "", 0, {});
+        AtomBinder.remove_CollectionChanged(ar, null);
+    }
+
+    @Test
+    public nullExceptions(): void {
+        Assert.throws("Target Array to watch cannot be null", () =>
+            AtomBinder.add_CollectionChanged(null, null));
+        Assert.throws("Target handle to watch an Array cannot be null", () =>
+            AtomBinder.add_CollectionChanged([], null));
     }
 
     @Test

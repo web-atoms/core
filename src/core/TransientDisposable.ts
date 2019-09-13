@@ -9,8 +9,8 @@ export default abstract class TransientDisposable implements IDisposable {
         if (v) {
             v.push(this);
         } else {
-            if (v.registerDisposable) {
-                v.registerDisposable(this);
+            if (value.registerDisposable) {
+                value.registerDisposable(this);
             }
         }
     }

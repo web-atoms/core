@@ -10,52 +10,6 @@ export interface IWatchableObject {
 }
 
 export class AtomBinder {
-    public static setValue(arg0: any, arg1: any, arg2: any): any {
-        throw new Error("Method not implemented.");
-    }
-    // public static getClone(dupeObj): any {
-    //     let retObj = {};
-    //     if (typeof (dupeObj) === "object") {
-    //         if (typeof (dupeObj.length) !== "undefined") {
-    //             retObj = new Array();
-    //         }
-    //         for (const objInd in dupeObj) {
-    //             if (dupeObj.hasOwnProperty()) {
-    //                 const val = dupeObj[objInd];
-    //                 if (val === undefined) {
-    //                     continue;
-    //                 }
-    //                 if (val === null) {
-    //                     retObj[objInd] = null;
-    //                     continue;
-    //                 }
-    //                 if (/^\_\$\_/gi.test(objInd)) {
-    //                     continue;
-    //                 }
-    //                 const type = typeof (val);
-    //                 if (type === "object") {
-    //                     if (val.constructor === Date) {
-    //                         // retObj[objInd] = "/DateISO(" + AtomDate.toLocalTime(val) + ")/";
-    //                     } else {
-    //                         retObj[objInd] = AtomBinder.getClone(val);
-    //                     }
-    //                 } else if (type === "string") {
-    //                     retObj[objInd] = val;
-    //                 } else if (type === "number") {
-    //                     retObj[objInd] = val;
-    //                 } else if (type === "boolean") {
-    //                     ((val === true) ? retObj[objInd] = true : retObj[objInd] = false);
-    //                 } else if (type === "date") {
-    //                     retObj[objInd] = val.getTime();
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return retObj;
-    // }
-    public static getClone(arg0: any): any {
-        throw new Error("Method not implemented.");
-    }
 
     public static refreshValue(target, key) {
         const handlers = AtomBinder.get_WatchHandler(target, key);
@@ -204,7 +158,7 @@ export class AtomBinder {
         if (target == null) {
             throw new Error("Target Array to watch cannot be null");
         }
-        if (target == null) {
+        if (handler == null) {
             throw new Error("Target handle to watch an Array cannot be null");
         }
         const handlers = AtomBinder.get_WatchHandler(target as IWatchableObject, "_items");
