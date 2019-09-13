@@ -35,8 +35,8 @@ export class AtomClassTest extends AtomTest {
         url = Atom.encodeParameters({ a: null, d: undefined, c: 1 });
         Assert.equals(`c=1`, url);
 
-        url = Atom.encodeParameters({ a: null, d: undefined, c: new Date(2001, 0, 1, 0, 0, 9, 0) });
-        Assert.equals(`c=2000-12-31T18%3A30%3A09.000Z`, url);
+        url = Atom.encodeParameters({ a: null, d: undefined, c: new Date(Date.UTC(2001, 0, 1, 0, 0, 0, 0))});
+        Assert.equals(`c=2001-01-01T00%3A00%3A00.000Z`, url);
     }
 
     @Test
