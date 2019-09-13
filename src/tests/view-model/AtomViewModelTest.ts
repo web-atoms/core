@@ -1,6 +1,6 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomUri } from "../../core/AtomUri";
-import { Assert } from "../../unit/Assert";
-import { Test } from "../../unit/Test";
 import { AtomViewModel, BindableBroadcast,
     BindableReceive, Receive, Validate, waitForReady, Watch } from "../../view-model/AtomViewModel";
 import BindableUrlParameter from "../../view-model/BindableUrlParameter";

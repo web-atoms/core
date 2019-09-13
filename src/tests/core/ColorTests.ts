@@ -1,7 +1,7 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import Colors, { ColorItem } from "../../core/Colors";
-import { Assert } from "../../unit/Assert";
-import { Test } from "../../unit/Test";
-import { TestItem } from "../../unit/TestItem";
 
 export class TestCase extends TestItem {
 

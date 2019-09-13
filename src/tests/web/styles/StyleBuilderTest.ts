@@ -1,6 +1,6 @@
-import { Assert } from "../../../unit/Assert";
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomTest } from "../../../unit/AtomTest";
-import { Test } from "../../../unit/Test";
 import StyleBuilder from "../../../web/styles/StyleBuilder";
 
 export default class StyleBuilderTest extends AtomTest {

@@ -1,7 +1,7 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomUri } from "../../core/AtomUri";
-import { Assert } from "../../unit/Assert";
 import { AtomTest } from "../../unit/AtomTest";
-import { Test } from "../../unit/Test";
 
 export class AtomUriTest extends AtomTest {
 

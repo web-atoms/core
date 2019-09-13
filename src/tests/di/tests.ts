@@ -1,11 +1,11 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Category from "@web-atoms/unit-test/dist/Category";
+import Test from "@web-atoms/unit-test/dist/Test";
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { App } from "../../App";
 import { Inject } from "../../di/Inject";
 import { ServiceCollection } from "../../di/ServiceCollection";
 import { ServiceProvider } from "../../di/ServiceProvider";
-import { Assert } from "../../unit/Assert";
-import { Category } from "../../unit/Category";
-import { Test } from "../../unit/Test";
-import { TestItem } from "../../unit/TestItem";
 
 class GlobalClass {
 

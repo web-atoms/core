@@ -1,7 +1,7 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
-import { Assert } from "../../unit/Assert";
-import { Test } from "../../unit/Test";
-import { TestItem } from "../../unit/TestItem";
 
 export class AtomDisposableListTest extends TestItem {
 

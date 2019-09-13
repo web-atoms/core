@@ -1,3 +1,6 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Category from "@web-atoms/unit-test/dist/Category";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { Atom } from "../../../Atom";
 import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder";
 import { AtomComponent } from "../../../core/AtomComponent";
@@ -5,10 +8,7 @@ import { AtomDispatcher } from "../../../core/AtomDispatcher";
 import { AtomWatcher } from "../../../core/AtomWatcher";
 import { BindableProperty } from "../../../core/BindableProperty";
 import WebImage from "../../../core/WebImage";
-import { Assert } from "../../../unit/Assert";
 import { AtomTest } from "../../../unit/AtomTest";
-import { Category } from "../../../unit/Category";
-import { Test } from "../../../unit/Test";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";
 import AtomWebTest from "../AtomWebTest";

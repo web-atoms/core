@@ -1,5 +1,5 @@
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { MockApp } from "../MockApp";
-import { TestItem } from "./TestItem";
 
 export class AtomTest extends TestItem {
 

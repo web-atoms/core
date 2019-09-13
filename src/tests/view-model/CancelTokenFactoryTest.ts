@@ -1,11 +1,11 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Category from "@web-atoms/unit-test/dist/Category";
+import Test from "@web-atoms/unit-test/dist/Test";
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { Atom } from "../../Atom";
 import CancelTokenFactory from "../../core/CancelTokenFactory";
 import { Inject } from "../../di/Inject";
-import { Assert } from "../../unit/Assert";
 import { AtomTest } from "../../unit/AtomTest";
-import { Category } from "../../unit/Category";
-import { Test } from "../../unit/Test";
-import { TestItem } from "../../unit/TestItem";
 import { AtomViewModel, waitForReady } from "../../view-model/AtomViewModel";
 
 class CVM extends AtomViewModel {

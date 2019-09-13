@@ -1,6 +1,6 @@
+import Test from "@web-atoms/unit-test/dist/Test";
 import { Atom } from "../../../Atom";
 import { AtomTest } from "../../../unit/AtomTest";
-import { Test } from "../../../unit/Test";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomWindow } from "../../../web/controls/AtomWindow";
 import AtomWebTest from "../AtomWebTest";
