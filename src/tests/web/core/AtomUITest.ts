@@ -59,4 +59,12 @@ export class AtomUITest extends AtomWebTest {
         Assert.equals(20, ap.x);
     }
 
+    @Test
+    public toNumber(): void {
+        Assert.equals(0, AtomUI.toNumber(""));
+        Assert.equals(0, AtomUI.toNumber(null));
+        Assert.equals(0, AtomUI.toNumber("0"));
+        // Assert.equals(1, AtomUI.toNumber(1 as any));
+    }
+
 }
