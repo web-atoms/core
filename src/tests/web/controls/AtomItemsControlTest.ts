@@ -1,11 +1,11 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Category from "@web-atoms/unit-test/dist/Category";
+import Test from "@web-atoms/unit-test/dist/Test";
 import "test-dom";
 import { App } from "../../../App";
 import { Atom } from "../../../Atom";
 import { BindableProperty } from "../../../core/BindableProperty";
-import { Assert } from "../../../unit/Assert";
 import { AtomTest } from "../../../unit/AtomTest";
-import { Category } from "../../../unit/Category";
-import { Test } from "../../../unit/Test";
 import { AtomViewModel, waitForReady } from "../../../view-model/AtomViewModel";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";

@@ -1,6 +1,6 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder";
-import { Assert } from "../../../unit/Assert";
-import { Test } from "../../../unit/Test";
 import { AtomViewModel } from "../../../view-model/AtomViewModel";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import AtomWebTest from "../AtomWebTest";

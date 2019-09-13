@@ -5,7 +5,7 @@ declare var require: any;
 declare var __dirname: any;
 
 // import unit test modules here
-import { TestRunner } from "./unit/TestRunner";
+import TestRunner from "@web-atoms/unit-test/dist/TestRunner";
 // tslint:disable-next-line:no-var-requires
 const { statSync, readdirSync } = require("fs") as any;
 // tslint:disable-next-line:no-var-requires

@@ -1,9 +1,9 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomBinder, IWatchableObject } from "../../core/AtomBinder";
 import { AtomList } from "../../core/AtomList";
 import { AtomWatcher } from "../../core/AtomWatcher";
-import { Assert } from "../../unit/Assert";
 import { AtomTest } from "../../unit/AtomTest";
-import { Test } from "../../unit/Test";
 import { AtomButtonStyle } from "../../web/styles/AtomButtonStyle";
 
 interface ICustomer {

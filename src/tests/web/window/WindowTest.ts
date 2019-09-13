@@ -1,8 +1,8 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { MockNavigationService } from "../../../services/MockNavigationService";
 import { NavigationService } from "../../../services/NavigationService";
-import { Assert } from "../../../unit/Assert";
-import { Test } from "../../../unit/Test";
-import { TestItem } from "../../../unit/TestItem";
 import AtomWebTest from "../AtomWebTest";
 
 export class TestCase extends AtomWebTest {

@@ -1,10 +1,10 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Category from "@web-atoms/unit-test/dist/Category";
+import Test from "@web-atoms/unit-test/dist/Test";
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { App } from "../../../App";
 import { Atom } from "../../../Atom";
-import { Assert } from "../../../unit/Assert";
 import { AtomTest } from "../../../unit/AtomTest";
-import { Category } from "../../../unit/Category";
-import { Test } from "../../../unit/Test";
-import { TestItem } from "../../../unit/TestItem";
 import { AtomGridView } from "../../../web/controls/AtomGridView";
 import AtomWebTest from "../AtomWebTest";
 

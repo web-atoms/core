@@ -1,9 +1,9 @@
 import { App } from "../../../App";
 import { BindableProperty } from "../../../core/BindableProperty";
-import { Assert } from "../../../unit/Assert";
-import { Category } from "../../../unit/Category";
-import { Test } from "../../../unit/Test";
-import { TestItem } from "../../../unit/TestItem";
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Category from "@web-atoms/unit-test/dist/Category";
+import Test from "@web-atoms/unit-test/dist/Test";
+import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { AtomViewModel, waitForReady, Watch } from "../../../view-model/AtomViewModel";
 
 interface ICustomer {

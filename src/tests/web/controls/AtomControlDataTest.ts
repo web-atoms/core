@@ -1,5 +1,5 @@
-import { Assert } from "../../../unit/Assert";
-import { Test } from "../../../unit/Test";
+import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import AtomWebTest from "../AtomWebTest";
 
