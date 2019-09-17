@@ -1,0 +1,24 @@
+name: Build
+
+on: 
+  push: 
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/          
+      - run: npm install
+      - run: npm install typescript typedoc
+      - run: tsc
+      - run: node ./typedoc.js --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
+      # - run: npm run test
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
