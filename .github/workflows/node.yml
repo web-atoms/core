@@ -17,7 +17,7 @@ jobs:
       - run: npm install
       - run: npm install typescript typedoc
       - run: tsc
-      - run: typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
+      - run: node typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
       # - run: npm run test
       - run: npm publish
         env:
