@@ -1007,6 +1007,11 @@ export class AtomItemsControl extends AtomControl {
             df.appendChild(ac.element as HTMLElement);
         }
         ac.data = data;
+        this.element.dispatchEvent(new CustomEvent("item-created", {
+            bubbles: false,
+            cancelable: false,
+            detail: data
+        }));
         return ac;
     }
 

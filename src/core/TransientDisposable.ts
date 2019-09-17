@@ -2,6 +2,12 @@ import { IDisposable } from "./types";
 
 export default abstract class TransientDisposable implements IDisposable {
 
+    constructor(owner?: any) {
+        if (owner) {
+            this.registerIn(owner);
+        }
+    }
+
     public abstract dispose();
 
     public registerIn(value: any) {
