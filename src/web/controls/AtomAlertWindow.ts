@@ -20,11 +20,11 @@ export default class AtomAlertWindow extends AtomWindow {
 class AtomAlertWindowTemplate extends AtomControl {
 
     protected create(): void {
-        const span = document.createElement("span");
+        const div = document.createElement("div");
 
-        this.append(span);
+        this.append(div);
 
-        this.bind(span, "text", [["viewModel", "message"]]);
+        this.bind(div, "innerHTML", [["viewModel"], ["viewModel", "message"]], false, (vm, m) => vm.markdownToHTML(m) );
 
     }
 }
@@ -78,5 +78,9 @@ class AtomAlertViewModel extends AtomWindowViewModel {
 
     public onCancelClicked(): void {
         this.cancel();
+    }
+
+    public markdownToHTML(text: string): string {
+        return text.replace(/\\n/, "<br/>");
     }
 }
