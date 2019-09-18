@@ -3,45 +3,38 @@ import DISingleton from "../../di/DISingleton";
 type Processor = [string, string, (s: string, e: string, t: string) => string ];
 
 type Exp = [ RegExp, Processor?, Processor?, Processor?, Processor?, Processor?, Processor? ] |
-    [ RegExp , (t) => string ];
+    [ RegExp , (t: string) => string ] |
+    [ RegExp , string ];
 
 const regExps: Exp[] = [
-    [
-        /(?<s>(_)+)(?<m>[^\_]+)(?<e>(_)+)/gmi,
-        ["___", null, (m) => `<strong><em>${m}</em></strong>`],
-        ["__", null, (m) => `<strong>${m}</strong>`],
-        ["_", null, (m) => `<em>${m}</em>`]
-    ],
-    [
-        /(?<s>(\*)+)(?<m>[^\*]+)(?<e>(\*)+)/gmi,
-        ["***", null, (m) => `<strong><em>${m}</em></strong>`],
-        ["**", null, (m) => `<strong>${m}</strong>`],
-        ["*", null, (m) => `<em>${m}</em>`]
-    ],
-    [
-        /(?<s>(\#)+)(\s)(?<m>[^\n]+)/gmi,
-        ["#", null, (m) => `<h1>${m}</h1>`],
-        ["##", null, (m) => `<h2>${m}</h2>`],
-        ["###", null, (m) => `<h3>${m}</h3>`],
-        ["####", null, (m) => `<h4>${m}</h4>`],
-        ["#####", null, (m) => `<h5>${m}</h5>`]
-    ],
-    [
-        /\n+/gmi,
-        (t) => `<br/>`
-    ]
+    [ /(\_{3})(?<m>[^\_]+)(\_{3})/gmi, "<strong><em>$<m></em></strong>" ],
+    [ /(\_{2})(?<m>[^\_]+)(\_{2})/gmi, "<strong>$<m></strong>" ],
+    [ /(\_{1})(?<m>[^\_]+)(\_{1})/gmi, "<em>$<m></em>" ],
+    [ /(\*{3})(?<m>[^\*]+)(\*{3})/gmi, "<strong><em>$<m></em></strong>" ],
+    [ /(\*{2})(?<m>[^\*]+)(\*{2})/gmi, "<strong>$<m></strong>" ],
+    [ /(\*{1})(?<m>[^\*]+)(\*{1})/gmi, "<em>$<m></em>" ],
+    [ /(\#{5})(\s)(?<m>[^\n]+)/gmi, "<h5>$<m></h5>"],
+    [ /(\#{4})(\s)(?<m>[^\n]+)/gmi, "<h4>$<m></h4>"],
+    [ /(\#{3})(\s)(?<m>[^\n]+)/gmi, "<h3>$<m></h3>"],
+    [ /(\#{2})(\s)(?<m>[^\n]+)/gmi, "<h2>$<m></h2>"],
+    [ /(\#{1})(\s)(?<m>[^\n]+)/gmi, "<h1>$<m></h1>"],
+    [ /\n+/gmi, (t) => `<br/>` ]
 ];
 
 @DISingleton()
-export default class Markdown {
+export default class MarkdownService {
 
     public toHtml(text: string): string {
         for (const iterator of regExps) {
-            const r = iterator[0];
+            const reg = iterator[0];
             if (iterator.length === 2) {
-                const gs = r.exec(text) as any;
+                const re = iterator[1];
+                if (typeof re === "string" || typeof re === "function") {
+                    text = text.replace(reg, re as any);
+                }
             }
         }
+        return text;
     }
 
 }
