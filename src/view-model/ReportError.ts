@@ -4,7 +4,7 @@ import { registerInit } from "./baseTypes";
 
 function report(app, e) {
     const ns = app.resolve(NavigationService) as NavigationService;
-    ns.alert(e, "Error").catch((ex) => {
+    return ns.alert(e, "Error").catch((ex) => {
         // tslint:disable-next-line: no-console
         console.error(ex);
     });
@@ -21,6 +21,7 @@ export default function ReportError(target: AtomViewModel, key: string | symbol)
                     pe.catch((ex) => {
                         report(vm.app, ex);
                     });
+                    return pe;
                 }
             } catch (e) {
                 report(vm.app, e);

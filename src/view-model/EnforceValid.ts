@@ -4,7 +4,7 @@ import { registerInit } from "./baseTypes";
 
 function report(app, e) {
     const ns = app.resolve(NavigationService) as NavigationService;
-    ns.alert(e, "Error").catch((ex) => {
+    return ns.alert(e, "Error").catch((ex) => {
         // tslint:disable-next-line: no-console
         console.error(ex);
     });
@@ -17,14 +17,14 @@ export default function EnforceValid(target: AtomViewModel, key: string | symbol
         vm[key] = function() {
             try {
                 if (!vm.isValid) {
-                    report(vm.app, "Please enter correct information");
-                    return;
+                    return report(vm.app, "Please enter correct information");
                 }
                 const pe = oldMethod.call(this);
                 if (pe && pe.catch) {
                     pe.catch((ex) => {
                         report(vm.app, ex);
                     });
+                    return pe;
                 }
             } catch (e) {
                 report(vm.app, e);
