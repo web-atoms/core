@@ -2,6 +2,7 @@ import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
+import FormattedString from "../../core/FormattedString";
 import { IScreen, IScreenType } from "../../core/IScreen";
 import { ArrayHelper, CancelToken, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
@@ -144,8 +145,8 @@ export class WindowService extends NavigationService {
         ServiceCollection.instance.register(type, null, Scope.Transient, id);
     }
 
-    public confirm(message: string, title: string): Promise<any> {
-        return this.openPage("web-atoms-core/dist/{platform}/controls/AtomAlertWindow", {
+    public confirm(message: string | FormattedString, title: string): Promise<any> {
+        return this.openPage(AtomAlertWindow, {
             okTitle: "Yes",
             cancelTitle: "No",
             title,
@@ -153,11 +154,11 @@ export class WindowService extends NavigationService {
         });
     }
 
-    public alert(message: string | any, title?: string): Promise<any> {
-        if (typeof message !== "string") {
+    public alert(message: string | FormattedString | any, title?: string): Promise<any> {
+        if (!(message instanceof FormattedString || typeof message === "string")) {
             message = message.toString();
         }
-        return this.openPage("web-atoms-core/dist/{platform}/controls/AtomAlertWindow", {
+        return this.openPage(AtomAlertWindow, {
             message,
             title,
             okTitle: "Ok",

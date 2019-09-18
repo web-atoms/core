@@ -19,6 +19,14 @@ const path = require("path");
 // import "./tests/services/JsonServiceTest";
 // import "./tests/web/window/WindowTest";
 
+declare var global: any;
+(global as any).CustomEvent = function CustomEvent(type: string, p?: any) {
+    const e = document.createEvent("CustomEvent");
+    const pe = p ? { ... p } : {};
+    e.initCustomEvent(type, pe.bubble, pe.cancelable, pe.detail);
+    return e;
+};
+
 function loadScripts(start) {
     for (const item of readdirSync(start)) {
         const file = `${start}/${item}`;

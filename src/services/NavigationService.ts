@@ -1,6 +1,7 @@
 import { App } from "../App";
 import { AtomComponent } from "../core/AtomComponent";
 import { AtomUri } from "../core/AtomUri";
+import FormattedString from "../core/FormattedString";
 import { ArrayHelper, CancelToken, IDisposable, INameValuePairs } from "../core/types";
 import ReferenceService, { ObjectReference } from "./ReferenceService";
 
@@ -37,8 +38,8 @@ export abstract class NavigationService {
 
     }
 
-    public abstract alert(message: string, title?: string): Promise<any>;
-    public abstract confirm(message: string, title?: string): Promise<boolean>;
+    public abstract alert(message: string | FormattedString, title?: string): Promise<any>;
+    public abstract confirm(message: string | FormattedString, title?: string): Promise<boolean>;
 
     /**
      *
@@ -72,11 +73,12 @@ export abstract class NavigationService {
                         url.query["json:" + key] = "null";
                         continue;
                     }
-                    if (key.startsWith("ref:")) {
+                    if (key.startsWith("ref:") || element instanceof FormattedString) {
                         const r = element instanceof ObjectReference ?
                             element :
                             (this.app.resolve(ReferenceService) as ReferenceService).put(element);
-                        url.query[key] = r.key;
+                        url.query[key.startsWith("ref:") ? key : `ref:${key}`] =
+                            r.key;
                         continue;
                     }
                     if (typeof element !== "string" &&

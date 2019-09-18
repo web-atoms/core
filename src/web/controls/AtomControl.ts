@@ -5,6 +5,7 @@ import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
+import FormattedString from "../../core/FormattedString";
 import { IClassOf, UMD } from "../../core/types";
 import WebImage from "../../core/WebImage";
 import { TypeKey } from "../../di/TypeKey";
@@ -261,6 +262,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         switch (name) {
             case "text":
                 element.textContent = value;
+                break;
+            case "formattedText":
+                if (value instanceof FormattedString) {
+                    (value as FormattedString).applyTo(this.app, element);
+                } else {
+                    element.textContent = (value || "").toString();
+                }
                 break;
             case "class":
                 this.setElementClass(element, value);

@@ -88,7 +88,11 @@ export class AtomFrame
         // this.popStack();
     }
 
-    public popStack(): void {
+    /**
+     * This will pop page from the stack and set as current
+     * @param windowClosed true if current page was closed by User Action
+     */
+    public popStack(windowClosed?: boolean): void {
         if (!this.stack.length) {
             // tslint:disable-next-line: no-console
             console.warn(`FrameStack is empty !!`);
@@ -173,7 +177,7 @@ export class AtomFrame
             dispose: () => {
                 e.innerHTML = "";
                 e.remove();
-                this.popStack();
+                this.popStack(true);
             }
         });
         return view;

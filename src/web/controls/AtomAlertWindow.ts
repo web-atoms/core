@@ -1,6 +1,9 @@
 import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
+import FormattedString from "../../core/FormattedString";
+import { Inject } from "../../di/Inject";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
+import MarkdownService from "../services/MarkdownService";
 import AtomAlertWindowStyle from "../styles/AtomAlertWindowStyle";
 import { AtomControl } from "./AtomControl";
 import { AtomWindow } from "./AtomWindow";
@@ -20,11 +23,11 @@ export default class AtomAlertWindow extends AtomWindow {
 class AtomAlertWindowTemplate extends AtomControl {
 
     protected create(): void {
-        const span = document.createElement("span");
+        const div = document.createElement("div");
 
-        this.append(span);
+        this.append(div);
 
-        this.bind(span, "text", [["viewModel", "message"]]);
+        this.bind(div, "formattedText", [["viewModel", "message"]]);
 
     }
 }
