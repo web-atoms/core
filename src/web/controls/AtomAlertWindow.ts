@@ -1,5 +1,6 @@
 import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
+import FormattedString from "../../core/FormattedString";
 import { Inject } from "../../di/Inject";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import MarkdownService from "../services/MarkdownService";
@@ -26,7 +27,7 @@ class AtomAlertWindowTemplate extends AtomControl {
 
         this.append(div);
 
-        this.bind(div, "innerHTML", [["viewModel"], ["viewModel", "message"]], false, (vm, m) => vm.markdownToHTML(m) );
+        this.bind(div, "formattedText", [["viewModel", "message"]]);
 
     }
 }
@@ -74,18 +75,11 @@ class AtomAlertViewModel extends AtomWindowViewModel {
     @BindableProperty
     public cancelTitle: string;
 
-    @Inject
-    private ms: MarkdownService;
-
     public onOkClicked(): void {
         this.close(true);
     }
 
     public onCancelClicked(): void {
         this.cancel();
-    }
-
-    public markdownToHTML(text: string): string {
-        return this.ms.toHtml(text);
     }
 }
