@@ -15,7 +15,7 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/          
       - run: npm install
-      - run: npm install -d typescript typedoc
+      - run: npm install -D typescript typedoc
       - run: tsc
       - run: node ./typedoc.js --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
       # - run: npm run test
