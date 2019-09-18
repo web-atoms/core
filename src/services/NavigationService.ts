@@ -77,7 +77,8 @@ export abstract class NavigationService {
                         const r = element instanceof ObjectReference ?
                             element :
                             (this.app.resolve(ReferenceService) as ReferenceService).put(element);
-                        url.query[key] = key.startsWith("ref:") ? r.key : `ref:${key}`;
+                        url.query[key.startsWith("ref:") ? key : `ref:${key}`] =
+                            r.key;
                         continue;
                     }
                     if (typeof element !== "string" &&
