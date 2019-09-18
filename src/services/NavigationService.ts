@@ -73,11 +73,11 @@ export abstract class NavigationService {
                         url.query["json:" + key] = "null";
                         continue;
                     }
-                    if (key.startsWith("ref:")) {
+                    if (key.startsWith("ref:") || element instanceof FormattedString) {
                         const r = element instanceof ObjectReference ?
                             element :
                             (this.app.resolve(ReferenceService) as ReferenceService).put(element);
-                        url.query[key] = r.key;
+                        url.query[key] = key.startsWith("ref:") ? r.key : `ref:${key}`;
                         continue;
                     }
                     if (typeof element !== "string" &&
