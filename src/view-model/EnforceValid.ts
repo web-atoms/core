@@ -3,6 +3,10 @@ import { AtomViewModel } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
 function report(app, e) {
+    const s = "" + e;
+    if (/^(cancelled|canceled)$/i.test(s.trim())) {
+        return;
+    }
     const ns = app.resolve(NavigationService) as NavigationService;
     return ns.alert(e, "Error").catch((ex) => {
         // tslint:disable-next-line: no-console
