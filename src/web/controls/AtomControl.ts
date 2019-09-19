@@ -271,7 +271,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 }
                 break;
             case "class":
-                this.setElementClass(element, value);
+                this.setElementClass(element, value, true);
                 break;
             case "autofocus":
                 this.app.callLater(() => {
@@ -290,10 +290,23 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
     }
 
-    protected setElementClass(element: HTMLElement, value: any): void {
+    protected setElementClass(element: HTMLElement, value: any, clear?: boolean): void {
         const s = value as IStyleDeclaration;
         if (s && typeof s === "object") {
             if (!s.className) {
+                if (clear) {
+                    let sr = "";
+                    for (const key in s) {
+                        if (s.hasOwnProperty(key)) {
+                            const sv = s[key];
+                            if (sv) {
+                                sr = sr ? (" " + sv) : sv;
+                            }
+                        }
+                    }
+                    element.className = sr;
+                    return;
+                }
                 for (const key in s) {
                     if (s.hasOwnProperty(key)) {
                         const sv = s[key];
