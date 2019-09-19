@@ -300,7 +300,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                         if (s.hasOwnProperty(key)) {
                             const sv = s[key];
                             if (sv) {
-                                sr += sr ? (" " + sv) : sv;
+                                sr += (sr ? (" " + key) : key);
                             }
                         }
                     }

@@ -149,7 +149,7 @@ export class WindowService extends NavigationService {
         return this.openPage(AtomAlertWindow, {
             okTitle: "Yes",
             cancelTitle: "No",
-            title,
+            title: title || "Confirm",
             message
         });
     }
