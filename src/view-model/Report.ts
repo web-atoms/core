@@ -21,6 +21,11 @@ export interface IReportOptions {
      * Ask for confirmation before invoking this method
      */
     confirm?: string;
+
+    /**
+     * Title for confirm message
+     */
+    confirmTitle?: string;
 }
 
 /**
@@ -31,7 +36,8 @@ export default function Report(
     {
         success = "Operation completed successfully",
         successTitle = "Done",
-        confirm = null
+        confirm = null,
+        confirmTitle = null
     }: IReportOptions = {}) {
     // tslint:disable-next-line: only-arrow-functions
     return function(target: AtomViewModel, key: string | symbol): void {
@@ -43,7 +49,7 @@ export default function Report(
                 try {
 
                     if (confirm) {
-                        if (! await ns.confirm(confirm)) {
+                        if (! await ns.confirm(confirm, confirmTitle)) {
                             return;
                         }
                     }
