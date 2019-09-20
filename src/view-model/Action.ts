@@ -1,9 +1,10 @@
+import { App } from "../App";
 import FormattedString from "../core/FormattedString";
 import { NavigationService } from "../services/NavigationService";
-import { AtomViewModel } from "./AtomViewModel";
+import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
-export interface IReportOptions {
+export interface IActionOptions {
 
     /**
      * Display success message after method successfully executes,
@@ -42,6 +43,23 @@ export interface IReportOptions {
      * @default Error
      */
     validateTitle?: string;
+
+    /**
+     * Watch, executes this action whenever any of `this`'s properties updates,
+     * this does not refresh when any property is assigned within this method.
+     * Any subsequent update is ignored while the async operation is still in process.
+     *
+     * An automatic delay of 100 milliseconds (you can change this with watchDelayMS)
+     * is applied before execution to accumulate
+     * all updates and event is executed later on.
+     */
+    watch?: boolean;
+
+    /**
+     * Delay in milliseconds before invoking the watched expression.
+     * @default 100
+     */
+    watchDelayMS?: number;
 }
 
 /**
@@ -50,22 +68,25 @@ export interface IReportOptions {
  * alerts.
  * @param reportOptions
  */
-export default function Report(
+export default function Action(
     {
         success = "Operation completed successfully",
         successTitle = "Done",
         confirm = null,
         confirmTitle = null,
         validate = false,
-        validateTitle = null
-    }: IReportOptions = {}) {
+        validateTitle = null,
+        watch = false,
+        watchDelayMS = 100
+    }: IActionOptions = {}) {
     // tslint:disable-next-line: only-arrow-functions
     return function(target: AtomViewModel, key: string | symbol): void {
         registerInit(target, (vm) => {
             // tslint:disable-next-line: ban-types
             const oldMethod = vm[key] as Function;
-            vm[key] = async function() {
-                const ns = vm.app.resolve(NavigationService) as NavigationService;
+            const app = vm.app as App;
+            const m = async () => {
+                const ns = app.resolve(NavigationService) as NavigationService;
                 try {
 
                     if (validate) {
@@ -100,6 +121,35 @@ export default function Report(
                     await ns.alert(s, "Error");
                 }
             };
+
+            if (watch) {
+                let executing = false;
+                const fx = () => app.runAsync(async () => {
+                    if (executing) {
+                        return;
+                    }
+                    executing = true;
+                    try {
+                        return await m.call(vm);
+                    } finally {
+                        executing = false;
+                    }
+                });
+                let timeout = null;
+                vm.setupWatch(oldMethod, () => {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                    }
+                    timeout = setTimeout(() => {
+                        timeout = null;
+                        fx();
+                    }, watchDelayMS);
+                });
+                vm[key] = fx;
+
+            } else {
+                vm[key] = () => app.runAsync(() => m.call(vm));
+            }
         });
     };
 }
