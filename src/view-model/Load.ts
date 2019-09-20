@@ -114,6 +114,9 @@ export default function Load(
                     throw new Error("Nothing to watch !!");
                 }
                 vm.setupWatch(pathList, () => {
+                    if (executing) {
+                        return;
+                    }
                     if (timeout) {
                         clearTimeout(timeout);
                     }
