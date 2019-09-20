@@ -7,10 +7,24 @@ import { registerInit } from "./baseTypes";
 export interface IActionOptions {
 
     /**
+     * Initializes this action as soon as view model has been created.
+     * If set true, success will be set to null as default.
+     * @default false
+     */
+    init?: boolean;
+
+    /**
+     * Displays an error if error occurs during initialization, to turn it off
+     * you can set to false
+     * @default true
+     */
+    showErrorOnInit?: boolean;
+
+    /**
      * Display success message after method successfully executes,
      * if method returns promise, success will display after promise
      * has finished, pass null to not display message.
-     * @default Operation completed successfully
+     * @default null if init is true, otherwise 'Operation completed successfully'
      */
     success?: string | FormattedString;
 
@@ -70,7 +84,9 @@ export interface IActionOptions {
  */
 export default function Action(
     {
-        success = "Operation completed successfully",
+        init = false,
+        showErrorOnInit = true,
+        success = init ? null : "Operation completed successfully",
         successTitle = "Done",
         confirm = null,
         confirmTitle = null,
@@ -85,6 +101,7 @@ export default function Action(
             // tslint:disable-next-line: ban-types
             const oldMethod = vm[key] as Function;
             const app = vm.app as App;
+            let showError = init ? (showErrorOnInit ? true : false) : false;
             const m = async () => {
                 const ns = app.resolve(NavigationService) as NavigationService;
                 try {
@@ -94,6 +111,11 @@ export default function Action(
                             const vMsg = typeof validate === "boolean"
                                 ? "Please enter correct information"
                                 : validate;
+                            if (!showError) {
+                                // tslint:disable-next-line: no-console
+                                console.error(vMsg);
+                                return;
+                            }
                             await ns.alert(vMsg, validateTitle || "Error");
                             return;
                         }
@@ -116,9 +138,18 @@ export default function Action(
                 } catch (e) {
                     const s = "" + e;
                     if (/^(cancelled|canceled)$/i.test(s.trim())) {
+                        // tslint:disable-next-line: no-console
+                        console.warn(e);
+                        return;
+                    }
+                    if (!showError) {
+                        // tslint:disable-next-line: no-console
+                        console.error(e);
                         return;
                     }
                     await ns.alert(s, "Error");
+                } finally {
+                    showError = true;
                 }
             };
 
@@ -149,6 +180,10 @@ export default function Action(
 
             } else {
                 vm[key] = () => app.runAsync(() => m.call(vm));
+            }
+
+            if (init) {
+                app.runAsync(() => m.apply(vm));
             }
         });
     };
