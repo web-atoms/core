@@ -109,9 +109,7 @@ export class App extends ServiceProvider {
         try {
             const p = tf();
             if (p && p.then && p.catch) {
-                p.then((): void => {
-                    // nothing
-                }).catch((error) => {
+                p.catch((error) => {
                     this.onError("runAsync");
                     this.onError(error);
                 });

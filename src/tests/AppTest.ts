@@ -64,9 +64,7 @@ export class AppTest extends AtomTest {
         const ct = new CancelToken();
         ct.cancel();
 
-        app.runAsync( async () => {
-            await Atom.delay(10, ct);
-        });
+        app.runAsync( async () => await Atom.delay(10, ct));
 
         await Atom.delay(100);
     }
