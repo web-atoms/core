@@ -141,7 +141,8 @@ export class MockNavigationService extends NavigationService {
         return new Promise((resolve, reject) => {
             const w: any = this.windowStack.find((x) => x.windowType === url.path);
             if (!w) {
-                const ex: Error = new Error(`No window registered for "${c}"`);
+                const ex: Error = new Error(
+                    `No window registered for "${c} with ${(p ? JSON.stringify(p, undefined, 2) : "")}"`);
                 reject(ex);
                 return;
             }

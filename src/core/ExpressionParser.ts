@@ -2,7 +2,7 @@ import { PathList } from "./types";
 
 const viewModelParseWatchCache: {[key: string]: PathList[] } = {};
 
-export function parsePath(f: any): PathList[] {
+export function parsePath(f: any, parseThis?: boolean): PathList[] {
     let str: string = f.toString().trim();
 
     str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
@@ -30,7 +30,7 @@ export function parsePath(f: any): PathList[] {
 
     const index: number = str.indexOf(")");
 
-    const isThis: boolean = index === 0;
+    const isThis: boolean = index === 0 || parseThis;
 
     const p: string = isThis ? "\\_this|this" : str.substr(0, index);
 
