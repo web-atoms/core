@@ -21,7 +21,9 @@ export default class  AtomWebTest extends AtomTest {
     }
 
     public async dispose(): Promise<any> {
-        this.navigationService.assert();
+        if (this.navigationService.assert) {
+            this.navigationService.assert();
+        }
         await this.app.waitForPendingCalls();
     }
 

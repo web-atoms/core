@@ -25,16 +25,6 @@ declare global {
 
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
 
-function selfEvent(name: string) {
-    return function(this: AtomControl, element: HTMLElement, eventName: string, value: any) {
-        this.bindEvent(element, name, (e) => {
-            if (e.target === element) {
-                return value(e);
-            }
-        } );
-    };
-}
-
 /**
  * AtomControl class represents UI Component for a web browser.
  */
@@ -118,20 +108,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return null;
         }
         return this.atomParent(ep);
-    }
-
-    /**
-     * Gets Template Parent, from where the current template was loaded.
-     */
-    public get templateParent(): AtomControl {
-        let e = this.element;
-        while (e) {
-            const tp = e._templateParent;
-            if (tp) {
-                return tp;
-            }
-            e = e._logicalParent || e.parentElement;
-        }
     }
 
     constructor(app: App, e?: HTMLElement) {

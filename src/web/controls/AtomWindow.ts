@@ -72,7 +72,7 @@ class AtomWindowTitleTemplate extends AtomControl {
         // closeButton.textContent = "x";
 
         this.bindEvent(closeButton, "click", (e) => {
-            const w = this.templateParent as AtomWindow;
+            const w = this.element._templateParent as AtomWindow;
             w.close();
         });
 
@@ -191,6 +191,10 @@ export class AtomWindow extends AtomControl {
     }
 
     private centerFrame(e: HTMLElement): void {
+        /// window is destroyed probably..
+        if (!this.element) {
+            return;
+        }
         const parent = this.element.parentElement;
         if (parent as any === window || parent as any === document.body) {
             return;

@@ -1,25 +1,66 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
 import Test from "@web-atoms/unit-test/dist/Test";
 import { Atom } from "../../../Atom";
+import { CancelToken } from "../../../core/types";
+import { JsonService } from "../../../services/JsonService";
+import { NavigationService } from "../../../services/NavigationService";
 import { AtomTest } from "../../../unit/AtomTest";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomWindow } from "../../../web/controls/AtomWindow";
+import { WindowService } from "../../../web/services/WindowService";
 import AtomWebTest from "../AtomWebTest";
 
+function createEvent<T extends Event>(name, ... a: any[]): T {
+    const e = document.createEvent(name);
+    e.initEvent.apply(e, a);
+    return e as any as T;
+}
+
 export class AtomWindowTest extends AtomWebTest {
+
+    constructor() {
+        super();
+        this.app.put(NavigationService, new WindowService(this.app, this.app.resolve(JsonService)));
+    }
 
     @Test
     public async drag(): Promise<any> {
 
-        const win = new SampleWindow(this.app);
+        const ns = this.app.resolve(NavigationService) as NavigationService;
+
+        const ct = new CancelToken();
+        const p = ns.openPage(SampleWindow, null, { cancelToken: ct });
 
         await this.app.waitForPendingCalls();
 
-        // window.dispatchEvent(new MouseEvent("mousedown"));
-        // window.dispatchEvent(new MouseEvent("mousemove"));
-        // window.dispatchEvent(new MouseEvent("mouseup"));
+        window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mousedown", true, false));
+        window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mousemove", true, false));
+        window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mouseup", true, false));
 
-        win.dispose();
+        ct.cancel();
 
+        Assert.throwsAsync("cancelled", () => p);
+    }
+
+    @Test
+    public async alert(): Promise<void> {
+        const ns = this.app.resolve(NavigationService) as NavigationService;
+        const p = ns.alert("Test");
+
+        await this.app.waitForPendingCalls();
+
+        await Atom.delay(100);
+
+        await this.app.waitForPendingCalls();
+        // get yes button...
+        const e = document.getElementsByClassName("yes-button")[0] as any;
+
+        setTimeout(() => {
+            e.click();
+        }, (100));
+        // e.click();
+
+        await p;
     }
 
 }
@@ -35,6 +76,7 @@ class SampleWindow extends AtomWindow {
 class SampleWindowTemplate extends AtomControl {
 
     protected create(): void {
+        this.element.className = "sample_window";
         this.element.textContent = "sample";
     }
 }
