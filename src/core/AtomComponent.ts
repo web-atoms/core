@@ -109,7 +109,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public abstract get parent(): TC;
 
-    public abstract get templateParent(): TC;
+    // public abstract get templateParent(): TC;
     // {
     //     return AtomBridge.instance.templateParent(this.element);
     // }

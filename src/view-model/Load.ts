@@ -6,14 +6,14 @@ import { NavigationService } from "../services/NavigationService";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
-export interface ILoadOptions {
+export type ILoadOptions = {
 
     /**
      * Initializes this action as soon as view model has been created.
      * If set true, success will be set to null as default.
      * @default true
      */
-    init?: boolean;
+    init: true;
 
     /**
      * Displays an error if error occurs during initialization, to turn it off
@@ -21,6 +21,16 @@ export interface ILoadOptions {
      * @default true
      */
     showErrorOnInit?: boolean;
+
+    watch?: false;
+
+    watchDelayMS?: never;
+
+} | {
+
+    init?: false;
+
+    showErrorOnInit?: false;
 
     /**
      * Watch, executes this action whenever any of `this`'s properties updates,
@@ -31,14 +41,19 @@ export interface ILoadOptions {
      * is applied before execution to accumulate
      * all updates and event is executed later on.
      */
-    watch?: boolean;
+    watch: true;
 
     /**
      * Delay in milliseconds before invoking the watched expression.
      * @default 100
      */
     watchDelayMS?: number;
-}
+} | {
+    init: true;
+    showErrorOnInit?: boolean;
+    watch: true;
+    watchDelayMS?: number;
+} | never;
 
 /**
  * Reports an alert to user when method is successful, or an error has occurred
@@ -48,11 +63,11 @@ export interface ILoadOptions {
  */
 export default function Load(
     {
-        init = false,
-        showErrorOnInit = true,
-        watch = false,
-        watchDelayMS = 100
-    }: ILoadOptions = {}) {
+        init,
+        showErrorOnInit,
+        watch,
+        watchDelayMS
+    }: ILoadOptions) {
     // tslint:disable-next-line: only-arrow-functions
     return function(target: AtomViewModel, key: string | symbol): void {
         registerInit(target, (vm) => {
@@ -90,9 +105,7 @@ export default function Load(
                 let executing = false;
                 const fx = () =>
                     app.runAsync(async () => {
-                        if (ct) {
-                            ct.cancel();
-                        }
+                        ct.cancel();
                         const ct2 = ct = new CancelToken();
                         if (executing) {
                             return;
@@ -114,18 +127,19 @@ export default function Load(
                     throw new Error("Nothing to watch !!");
                 }
                 vm.setupWatch(pathList, () => {
+                    if (executing) {
+                        return;
+                    }
                     if (timeout) {
                         clearTimeout(timeout);
                     }
                     timeout = setTimeout(() => {
                         timeout = null;
                         fx();
-                    }, watchDelayMS);
+                    }, watchDelayMS || 100);
                 });
                 vm[key] = fx;
 
-            } else {
-                vm[key] = () => app.runAsync(() => m.call(vm));
             }
 
             if (init) {

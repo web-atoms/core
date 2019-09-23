@@ -39,6 +39,8 @@ class ActionViewModel extends AtomViewModel {
 
     public list: any;
 
+    public loaded: boolean;
+
     @Inject
     private remoteService: RemoteService;
 
@@ -46,6 +48,21 @@ class ActionViewModel extends AtomViewModel {
     public async loadList(ct: CancelToken): Promise<void> {
         const s = this.search;
         this.list = await this.remoteService.list(s, ct);
+    }
+
+    @Load({ init: true})
+    public async load(): Promise<void> {
+        await Atom.delay(10);
+        this.loaded = true;
+    }
+
+}
+
+class ErrorViewModel extends AtomViewModel {
+
+    @Load({ watch: true })
+    public async nothingToWatch() {
+        await Atom.delay(1);
     }
 
 }
@@ -66,6 +83,7 @@ export default class LoadTest extends AtomWebTest {
         await waitForReady(vm);
         await Atom.delay(120);
         Assert.equals("Success ", vm.list);
+        Assert.equals(true, vm.loaded);
     }
 
     @Test
@@ -119,4 +137,16 @@ export default class LoadTest extends AtomWebTest {
         Assert.equals("Success c", vm.list);
     }
 
+    @Test
+    public async error(): Promise<void> {
+        try {
+            const vm = this.app.resolve(ErrorViewModel, true) as ErrorViewModel;
+            await waitForReady(vm);
+                // throw new Error("failed");
+        } catch (e) {
+            // do nothing...
+            // tslint:disable-next-line: no-console
+            console.error(e);
+        }
+    }
 }

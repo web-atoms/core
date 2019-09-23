@@ -10,9 +10,9 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return AtomBridge.instance.atomParent(this.element, true) as any;
     }
 
-    public get templateParent(): AtomXFControl {
-        return AtomBridge.instance.templateParent(this.element) as any;
-    }
+    // public get templateParent(): AtomXFControl {
+    //     return AtomBridge.instance.templateParent(this.element) as any;
+    // }
 
     public atomParent(e: IAtomElement): AtomXFControl {
         return AtomBridge.instance.atomParent(e, false) as any;

@@ -1032,7 +1032,7 @@ class AtomItemsControlItemTemplate extends AtomControl {
 
     protected create(): void {
         this.runAfterInit(() => {
-            const tp = this.templateParent as AtomItemsControl;
+            const tp = this.element._templateParent as AtomItemsControl;
             this.element.textContent = this.data[tp.valuePath];
         });
     }
