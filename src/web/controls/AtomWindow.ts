@@ -21,6 +21,10 @@ export function getTemplateParent(e: HTMLElement) {
 
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
+    public get templateParent() {
+        return getTemplateParent(this.element);
+    }
+
     public commandPresenter: HTMLElement;
 
     public titlePresenter: HTMLElement;
@@ -67,6 +71,10 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
 class AtomWindowTitleTemplate extends AtomControl {
 
+    public get templateParent() {
+        return getTemplateParent(this.element);
+    }
+
     protected create(): void {
 
         this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "titleHost"]]);
@@ -96,6 +104,10 @@ class AtomWindowTitleTemplate extends AtomControl {
 }
 
 export class AtomWindow extends AtomControl {
+
+    public get templateParent() {
+        return getTemplateParent(this.element);
+    }
 
     @BindableProperty
     public title: string = "";
