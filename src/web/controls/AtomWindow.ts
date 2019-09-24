@@ -7,6 +7,18 @@ import { AtomTheme } from "../styles/AtomTheme";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomControl } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
+
+export function getTemplateParent(e: HTMLElement) {
+    const tp = e._templateParent;
+    if (tp) {
+        return tp;
+    }
+    const p = e._logicalParent || e.parentElement;
+    if (p) {
+        return getTemplateParent(p);
+    }
+}
+
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
     public commandPresenter: HTMLElement;
@@ -72,7 +84,7 @@ class AtomWindowTitleTemplate extends AtomControl {
         // closeButton.textContent = "x";
 
         this.bindEvent(closeButton, "click", (e) => {
-            const w = this.element._templateParent as AtomWindow;
+            const w = getTemplateParent(this.element) as AtomWindow;
             w.close();
         });
 
