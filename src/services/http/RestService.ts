@@ -346,6 +346,17 @@ export default function BaseUrl(baseUrl: string): ((target: any) => void) {
     };
 }
 
+declare var global: any;
+declare var window: any;
+declare var require: any;
+
+const globalNS = (typeof global !== "undefined") ? global : window;
+
+if (!globalNS.XMLHttpRequest) {
+    // tslint:disable-next-line: no-var-requires
+    globalNS.XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+}
+
 /**
  *
  *

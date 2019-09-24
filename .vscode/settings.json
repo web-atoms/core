@@ -12,6 +12,7 @@
         "downlevel",
         "lightgray",
         "rawbody",
-        "xmlbody"
+        "xmlbody",
+        "xmlhttprequest"
     ]
 }
