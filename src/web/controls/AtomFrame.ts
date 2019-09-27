@@ -29,7 +29,7 @@ export class AtomFrame
     extends AtomControl
     implements INotifyPropertyChanged {
 
-    public stack: IPageItem[] = [];
+    public stack: IPageItem[];
 
     public get canGoBack(): boolean {
         return this.stack.length ? true : false;
@@ -38,18 +38,18 @@ export class AtomFrame
     public name: string;
 
     @BindableProperty
-    public keepStack: boolean = false;
+    public keepStack: boolean;
 
     @BindableProperty
-    public current: AtomControl = null;
+    public current: AtomControl;
 
     public pagePresenter: HTMLElement;
 
-    public currentDisposable: IDisposable = null;
+    public currentDisposable: IDisposable;
 
     public backCommand: () => void;
 
-    public saveScrollPosition: boolean = false;
+    public saveScrollPosition: boolean;
 
     private mUrl: string;
     public get url(): string {
@@ -99,6 +99,7 @@ export class AtomFrame
             return;
         }
         const last = this.stack.pop();
+        AtomBinder.refreshItems(this.stack);
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
         this.setUrl(last.url);
@@ -122,7 +123,7 @@ export class AtomFrame
         if (this.current) {
             if (this.keepStack) {
                 (this.current.element as HTMLElement).style.display = "none";
-                this.stack.push({
+                this.stack.add({
                     url: (this.current as any)._$_url ,
                     page: this.current,
                     scrollY: this.navigationService.screen.scrollTop
@@ -237,11 +238,16 @@ export class AtomFrame
                 e.remove();
             }
         }
-        this.stack.length = 0;
+        this.stack.clear();
     }
 
     protected preCreate(): void {
         this.name = null;
+        this.stack = [];
+        this.keepStack = false;
+        this.current = null;
+        this.currentDisposable = null;
+        this.saveScrollPosition = false;
         this.navigationService = this.app.resolve(NavigationService);
         this.defaultControlStyle = AtomFrameStyle;
         this.pagePresenter = null;

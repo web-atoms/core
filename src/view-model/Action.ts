@@ -66,7 +66,8 @@ export default function Action(
             // tslint:disable-next-line: ban-types
             const oldMethod = vm[key] as Function;
             const app = vm.app as App;
-            vm[key] = async () => {
+            // tslint:disable-next-line:only-arrow-functions
+            vm[key] = async function( ... a: any[]) {
                 const ns = app.resolve(NavigationService) as NavigationService;
                 try {
 
@@ -86,7 +87,7 @@ export default function Action(
                         }
                     }
 
-                    const pe = oldMethod.call(vm);
+                    const pe = oldMethod.apply(vm, a);
                     if (pe && pe.then) {
                         const result = await pe;
                         if (success) {
