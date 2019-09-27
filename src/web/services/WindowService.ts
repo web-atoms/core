@@ -2,6 +2,7 @@ import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
+import FormattedError from "../../core/FormattedError";
 import FormattedString from "../../core/FormattedString";
 import { IScreen, IScreenType } from "../../core/IScreen";
 import { ArrayHelper, CancelToken, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
@@ -20,7 +21,6 @@ import { AtomWindow } from "../controls/AtomWindow";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 import { cssNumberToString } from "../styles/StyleBuilder";
-import FormattedError from "../../core/FormattedError";
 
 export type HostForElementFunc = ((e: HTMLElement) => HTMLElement);
 
