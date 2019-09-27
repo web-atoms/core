@@ -99,6 +99,7 @@ export class AtomFrame
             return;
         }
         const last = this.stack.pop();
+        AtomBinder.refreshItems(this.stack);
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
         this.setUrl(last.url);
@@ -122,7 +123,7 @@ export class AtomFrame
         if (this.current) {
             if (this.keepStack) {
                 (this.current.element as HTMLElement).style.display = "none";
-                this.stack.push({
+                this.stack.add({
                     url: (this.current as any)._$_url ,
                     page: this.current,
                     scrollY: this.navigationService.screen.scrollTop
@@ -237,7 +238,7 @@ export class AtomFrame
                 e.remove();
             }
         }
-        this.stack.length = 0;
+        this.stack.clear();
     }
 
     protected preCreate(): void {
