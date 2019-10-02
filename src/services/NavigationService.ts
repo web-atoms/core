@@ -55,10 +55,14 @@ export abstract class NavigationService {
         options = options || {};
 
         if (typeof pageName !== "string") {
-            const rs = this.app.resolve(ReferenceService) as ReferenceService;
-            const host = pageName instanceof AtomComponent ? "reference" : "class";
-            const r = rs.put(pageName);
-            pageName = `ref://${host}/${r.key}`;
+            if (pageName._$_url) {
+                pageName = pageName._$_url as string;
+            } else {
+                const rs = this.app.resolve(ReferenceService) as ReferenceService;
+                const host = pageName instanceof AtomComponent ? "reference" : "class";
+                const r = rs.put(pageName);
+                pageName = `ref://${host}/${r.key}`;
+            }
         }
 
         const url = new AtomUri(pageName);
