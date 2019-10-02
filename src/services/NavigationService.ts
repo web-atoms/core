@@ -30,6 +30,19 @@ export interface IPageOptions {
     cancelToken?: CancelToken;
 }
 
+function hasPageUrl(target: any): boolean {
+    const url = target._$_url;
+    if (!url) {
+        return false;
+    }
+    const baseClass = Object.getPrototypeOf(target);
+    if (!baseClass) {
+        // this is not possible...
+        return false;
+    }
+    return baseClass._$_url !== url;
+}
+
 export abstract class NavigationService {
 
     private callbacks: navigateCallback[] = [];
@@ -55,7 +68,7 @@ export abstract class NavigationService {
         options = options || {};
 
         if (typeof pageName !== "string") {
-            if (pageName._$_url) {
+            if (hasPageUrl(pageName)) {
                 pageName = pageName._$_url as string;
             } else {
                 const rs = this.app.resolve(ReferenceService) as ReferenceService;
