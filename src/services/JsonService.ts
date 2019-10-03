@@ -2,6 +2,8 @@ import { IValueConverter } from "../core/IValueConverter";
 import { StringHelper } from "../core/StringHelper";
 import { RegisterSingleton } from "../di/RegisterSingleton";
 
+import DateTime from "@web-atoms/date-time/dist/DateTime";
+
 export const dateFormatISORegEx = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/;
 export const dateFormatMSRegEx = /^\/Date\((d|-|.*)\)[\/|\\]$/;
 
@@ -28,8 +30,8 @@ export class JsonService {
             {
                 regex: dateFormatISORegEx,
                 valueConverter: {
-                    fromSource(v: string): Date {
-                        const d = new Date(v);
+                    fromSource(v: string): DateTime {
+                        const d = new DateTime(v);
                         // if (/z$/i.test(v)) {
                         //     d.setMinutes( d.getMinutes() - timeZoneDiff );
                         // }
@@ -42,10 +44,10 @@ export class JsonService {
             }, {
                 regex: dateFormatMSRegEx,
                 valueConverter: {
-                    fromSource(v: string): Date {
+                    fromSource(v: string): DateTime {
                         const a = dateFormatMSRegEx.exec(v);
                         const b = a[1].split(/[-+,.]/);
-                        return new Date(b[0] ? +b[0] : 0 - +b[1]);
+                        return new DateTime(b[0] ? +b[0] : 0 - +b[1]);
                     },
                     fromTarget(v: Date): any {
                         return v.toISOString();
