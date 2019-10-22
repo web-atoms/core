@@ -2,6 +2,7 @@ import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomUri } from "../../core/AtomUri";
+import FormattedError from "../../core/FormattedError";
 import FormattedString from "../../core/FormattedString";
 import { IScreen, IScreenType } from "../../core/IScreen";
 import { ArrayHelper, CancelToken, IClassOf, IDisposable, INameValuePairs } from "../../core/types";
@@ -156,7 +157,11 @@ export class WindowService extends NavigationService {
 
     public alert(message: string | FormattedString | any, title?: string): Promise<any> {
         if (!(message instanceof FormattedString || typeof message === "string")) {
-            message = message.toString();
+            if (message instanceof FormattedError) {
+                message = message.formattedMessage;
+            } else {
+                message = message.message ? message.message : message.toString();
+            }
         }
         return this.openPage(AtomAlertWindow, {
             message,
@@ -219,13 +224,11 @@ export class WindowService extends NavigationService {
     }
 
     public notify(
-        message: string,
+        message: string | FormattedString,
         title?: string,
         type?: NotifyType,
         delay?: number): void {
-        const rs = this.app.resolve(ReferenceService) as ReferenceService;
-        const k = rs.put(AtomNotification);
-        this.app.runAsync(() => this.openPage(`app://class/${k.key}`, {
+        this.app.runAsync(() => this.openPage(AtomNotification, {
             message,
             title,
             type: type || NotifyType.Information,

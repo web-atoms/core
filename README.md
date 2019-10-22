@@ -45,36 +45,47 @@ src
 
 export class UserListViewModel extends AtomViewModel {
 
-    /// @bindableProperty will create accessor and mutator
-    /// for the given field name and it will automatically
-    /// refresh bindings
-    @bindableProperty
     public user: any;
+
+    public list: IUser[];
+
+    public search: string = null;
+
+    /// Dependency Injection
+    @Inject
+    private listService: ListService;
 
     /// @validate decorator will process this accessor
     /// in a way that it will always return null till
     /// you call this.isValid. After this.isValid is 
     /// called, it will display an error if data is invalid
-    @validate
+    @Validate
     public get errorName(): string {
         return this.user.name ? "" : "Name cannot be empty";
     }
 
     /// You can bind UI element to this field, @watch decorator
     /// will process this accessor in a way that UI element bound
-    /// to this field will automatically update whenver any of
+    /// to this field will automatically update whenever any of
     /// fields referenced in this method is updated anywhere else
-    @watch
+    @Watch
     public get name(): string {
         return `${this.user.firstName} ${this.user.lastName}`;
     }
 
+    /// this will be called immediately after the view model 
+    /// has been initialized
+    /// this will refresh automatically when `this.search` is updated
+    /// refresh will work for all (this.*.*.*) properties at any level
+    @Load({ init: true, watch: true })
+    public async loadItems(ct: CancelToken): Promise<void> {
+        this.list = await this.listService.loadItems(this.search, ct);
+    }
+
+    /// this will validate all accessors before executing the action
+    /// and display success message if action was successful
+    @Action({ validate: true, success: "Added successfully" })
     public async addNew(): Promise<any> {
-        // this will validate all accessors
-        // marked with @validate
-        if (!this.isValid) {
-            await this.windowService.alert("Please complete all required fields");
-        }
         ... 
     }
 
@@ -91,7 +102,7 @@ export class UserListViewModel extends AtomViewModel {
 6. AtomWindow
 
 ## Services
-1. WindowService - to host AtomWindow and retrive result
+1. WindowService - to host AtomWindow and retrieve result
 2. RestService - RetroFit kind of service for simple ajax
 3. BrowserService - An abstract navigation service for Web and Xamarin
 

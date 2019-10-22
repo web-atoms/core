@@ -105,7 +105,7 @@ export default function Load(
                 let executing = false;
                 const fx = () =>
                     app.runAsync(async () => {
-                        ct.cancel();
+                        if (ct) { ct.cancel(); }
                         const ct2 = ct = new CancelToken();
                         if (executing) {
                             return;

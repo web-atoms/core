@@ -19,7 +19,7 @@ export default class AtomNotification extends AtomControl {
 
     public create(): void {
         this.defaultControlStyle = AtomNotificationStyle;
-        this.bind(this.element, "text", [["this", "viewModel", "message"]], false, null, this);
+        this.bind(this.element, "formttedText", [["this", "viewModel", "message"]], false, null, this);
         this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 5000 , this);
         this.bind(this.element,
             "styleClass",

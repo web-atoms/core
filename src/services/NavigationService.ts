@@ -30,6 +30,19 @@ export interface IPageOptions {
     cancelToken?: CancelToken;
 }
 
+function hasPageUrl(target: any): boolean {
+    const url = target._$_url;
+    if (!url) {
+        return false;
+    }
+    const baseClass = Object.getPrototypeOf(target);
+    if (!baseClass) {
+        // this is not possible...
+        return false;
+    }
+    return baseClass._$_url !== url;
+}
+
 export abstract class NavigationService {
 
     private callbacks: navigateCallback[] = [];
@@ -55,10 +68,14 @@ export abstract class NavigationService {
         options = options || {};
 
         if (typeof pageName !== "string") {
-            const rs = this.app.resolve(ReferenceService) as ReferenceService;
-            const host = pageName instanceof AtomComponent ? "reference" : "class";
-            const r = rs.put(pageName);
-            pageName = `ref://${host}/${r.key}`;
+            if (hasPageUrl(pageName)) {
+                pageName = pageName._$_url as string;
+            } else {
+                const rs = this.app.resolve(ReferenceService) as ReferenceService;
+                const host = pageName instanceof AtomComponent ? "reference" : "class";
+                const r = rs.put(pageName);
+                pageName = `ref://${host}/${r.key}`;
+            }
         }
 
         const url = new AtomUri(pageName);
@@ -99,7 +116,7 @@ export abstract class NavigationService {
         return this.openWindow(url, options);
     }
 
-    public abstract notify(message: string, title?: string, type?: NotifyType, delay?: number): void;
+    public abstract notify(message: string | FormattedString, title?: string, type?: NotifyType, delay?: number): void;
 
     public abstract get title(): string;
     public abstract set title(v: string);
