@@ -2,7 +2,16 @@ import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import { CancelToken, IClassOf } from "../../core/types";
 import { IPageOptions, NavigationService } from "../../services/NavigationService";
+import { AtomStyle } from "../styles/AtomStyle";
+import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 import { AtomControl } from "./AtomControl";
+
+class EmptyStyle extends AtomStyle {
+
+    public get root(): IStyleDeclaration {
+        return {};
+    }
+}
 
 export class AtomPageLink extends AtomControl {
 
@@ -45,6 +54,8 @@ export class AtomPageLink extends AtomControl {
         this.modal = false;
 
         this.toggle = true;
+
+        this.defaultControlStyle = EmptyStyle;
 
         super.preCreate();
 

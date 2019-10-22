@@ -25,9 +25,35 @@ export type navigateCallback = (
     options?: IPageOptions) => Promise<any>;
 
 export interface IPageOptions {
+
+    /**
+     * target is name of a Frame or AtomTabbedPage component
+     * where this window/frame should be loaded.
+     */
     target?: string;
+
+    /**
+     * If set to true, it will clear the history of the frame
+     */
     clearHistory?: boolean;
+
+    /**
+     * If you want to cancel the window/frame, you can remove the window by calling cancel on given CancelToken
+     */
     cancelToken?: CancelToken;
+}
+
+function hasPageUrl(target: any): boolean {
+    const url = target._$_url;
+    if (!url) {
+        return false;
+    }
+    const baseClass = Object.getPrototypeOf(target);
+    if (!baseClass) {
+        // this is not possible...
+        return false;
+    }
+    return baseClass._$_url !== url;
 }
 
 export abstract class NavigationService {
@@ -45,7 +71,7 @@ export abstract class NavigationService {
      *
      * @param pageName url
      * @param p parameters
-     * @param options target, clearHistory, cancelToken
+     * @param options {@link IPageOptions}
      */
     public openPage<T>(
         pageName: string | any,
@@ -55,10 +81,14 @@ export abstract class NavigationService {
         options = options || {};
 
         if (typeof pageName !== "string") {
-            const rs = this.app.resolve(ReferenceService) as ReferenceService;
-            const host = pageName instanceof AtomComponent ? "reference" : "class";
-            const r = rs.put(pageName);
-            pageName = `ref://${host}/${r.key}`;
+            if (hasPageUrl(pageName)) {
+                pageName = pageName._$_url as string;
+            } else {
+                const rs = this.app.resolve(ReferenceService) as ReferenceService;
+                const host = pageName instanceof AtomComponent ? "reference" : "class";
+                const r = rs.put(pageName);
+                pageName = `ref://${host}/${r.key}`;
+            }
         }
 
         const url = new AtomUri(pageName);

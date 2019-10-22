@@ -4,8 +4,6 @@ import { AtomBinder } from "../core/AtomBinder";
 import { AtomDisposableList } from "../core/AtomDisposableList";
 import { AtomWatcher } from "../core/AtomWatcher";
 import { BindableProperty } from "../core/BindableProperty";
-import { IValueConverter } from "../core/IValueConverter";
-import { PropertyBinding } from "../core/PropertyBinding";
 import { IDisposable } from "../core/types";
 import { Inject } from "../di/Inject";
 import { IAtomViewModel, registerInit, viewModelInitFunc } from "./baseTypes";
@@ -60,11 +58,9 @@ export async function waitForReady(vm: AtomViewModel): Promise<any> {
 }
 
 /**
- *
- *
+ * ViewModel class supports initialization and supports {@link IDisposable} dispose pattern.
  * @export
  * @class AtomViewModel
- * @extends {AtomModel}
  */
 export class AtomViewModel {
 
@@ -77,6 +73,9 @@ export class AtomViewModel {
 
     private pendingInits: Array<() => void> = [];
 
+    /**
+     * If it returns true, it means all pending initializations have finished
+     */
     public get isReady(): boolean {
         return this.pendingInits === null;
     }
@@ -101,6 +100,13 @@ export class AtomViewModel {
     private mChildren: AtomViewModel[];
     private mParent: AtomViewModel;
     private mShouldValidate: boolean = false;
+
+    /**
+     * Returns parent AtomViewModel if it was initialized with one. This property is also
+     * useful when you open an popup or window. Whenever a popup/window is opened, ViewModel
+     * associated with the UI element that opened this popup/window becomes parent of ViewModel
+     * of popup/window.
+     */
     public get parent(): AtomViewModel {
         return this.mParent;
     }
@@ -120,6 +126,10 @@ export class AtomViewModel {
         }
     }
 
+    /**
+     * Returns true if all validations didn't return any error. All validations
+     * are decorated with @{@link Validate} decorator.
+     */
     public get isValid(): boolean {
         let valid = true;
         this.mShouldValidate = true;
@@ -175,28 +185,28 @@ export class AtomViewModel {
         f();
     }
 
-    /**
-     * Binds source property to target property with optional two ways
-     * @param target target whose property will be set
-     * @param propertyName name of target property
-     * @param source source to read property from
-     * @param path property path of source
-     * @param twoWays optional, two ways IValueConverter
-     */
-    public bind(
-        target: any,
-        propertyName: string,
-        source: any,
-        path: string[][],
-        twoWays?: IValueConverter | ((v: any) => any) ): IDisposable {
-        const pb = new PropertyBinding(
-            target,
-            null,
-            propertyName,
-            path,
-            (twoWays && typeof twoWays !== "function") ? true : false , twoWays, source);
-        return this.registerDisposable(pb);
-    }
+    // /**
+    //  * Binds source property to target property with optional two ways
+    //  * @param target target whose property will be set
+    //  * @param propertyName name of target property
+    //  * @param source source to read property from
+    //  * @param path property path of source
+    //  * @param twoWays optional, two ways {@link IValueConverter}
+    //  */
+    // public bind(
+    //     target: any,
+    //     propertyName: string,
+    //     source: any,
+    //     path: string[][],
+    //     twoWays?: IValueConverter | ((v: any) => any) ): IDisposable {
+    //     const pb = new PropertyBinding(
+    //         target,
+    //         null,
+    //         propertyName,
+    //         path,
+    //         (twoWays && typeof twoWays !== "function") ? true : false , twoWays, source);
+    //     return this.registerDisposable(pb);
+    // }
 
     /**
      * Refreshes bindings associated with given property name

@@ -19,6 +19,8 @@ import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
 import { AtomPage } from "./AtomPage";
+import { PropertyBinding } from "../../core/PropertyBinding";
+import bindProperty from "../../view-model/bindProperty";
 
 export class AtomTabbedPage extends AtomGridView
     implements INotifyPropertyChanged {
@@ -195,7 +197,12 @@ class AtomTabViewModel extends AtomViewModel {
 
         this.pages = new AtomList();
 
-        this.bind(this, "selectedUrl", this, [["selectedPage"]], {
+        bindProperty(
+            this,
+            this,
+            "selectedUrl",
+            this,
+            [["selectedPage"]], {
             fromSource: (v: any): any => {
                 return v.tag;
             },

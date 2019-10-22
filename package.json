@@ -1,6 +1,6 @@
 {
   "name": "web-atoms-core",
-  "version": "1.0.867",
+  "version": "1.0.879",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
@@ -26,17 +26,18 @@
   "devDependencies": {
     "@types/jquery": "^3.3.30",
     "@web-atoms/unit-test": "^1.0.12",
-    "colors": "^1.3.3",
+    "colors": "^1.4.0",
     "istanbul": "^0.4.5",
     "jsdom": "^15.1.1",
     "path": "^0.12.7",
     "remap-istanbul": "^0.11.1",
     "test-dom": "^1.0.0",
     "typedoc": "^0.15.0",
-    "web-atoms-amd-loader": "^1.0.371",
+    "web-atoms-amd-loader": "^1.0.372",
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
+    "@web-atoms/date-time": "^1.0.21",
     "reflect-metadata": "^0.1.13"
   }
 }

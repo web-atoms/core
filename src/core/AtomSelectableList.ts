@@ -194,10 +194,10 @@ export default class AtomSelectableList<T> {
                 }
                 AtomBinder.refreshValue(self, "value");
                 AtomBinder.refreshValue(self, "label");
-                AtomBinder.refreshValue(this, "selectAll");
-                AtomBinder.refreshValue(this, "selected");
-                AtomBinder.refreshValue(this, "selectedItem");
-                AtomBinder.refreshValue(this, "selectedIndex");
+                AtomBinder.refreshValue(self, "selectAll");
+                AtomBinder.refreshValue(self, "selected");
+                AtomBinder.refreshValue(self, "selectedItem");
+                AtomBinder.refreshValue(self, "selectedIndex");
             }
         };
         newItem.select = () => {

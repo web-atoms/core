@@ -26,7 +26,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
         const popup = new AtomControl(this.app, host);
         host.className = "indicator-host";
 
-        const span = document.createElement("img");
+        const span = document.createElement("i");
 
         const divStyle = host.style;
         divStyle.position = "absolute";
@@ -35,12 +35,13 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
         const spanStyle = span.style;
         spanStyle.position = "absolute";
         spanStyle.margin = "auto";
-        spanStyle.width = "66px";
-        spanStyle.height = "66px";
+        spanStyle.width = "16px";
+        spanStyle.height = "16px";
         spanStyle.maxHeight = "100%";
         spanStyle.maxWidth = "100%";
         spanStyle.left = spanStyle.right = spanStyle.bottom = spanStyle.top = "0";
-        span.src = ModuleFiles.src.web.images.busy_gif;
+        // span.src = ModuleFiles.src.web.images.busy_gif;
+        span.className = "fas fa-spinner fa-spin";
 
         host.appendChild(span);
 
