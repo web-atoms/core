@@ -1,4 +1,6 @@
+import Assert from "@web-atoms/unit-test/dist/Assert";
 import Category from "@web-atoms/unit-test/dist/Category";
+import Test from "@web-atoms/unit-test/dist/Test";
 import { Atom } from "../../Atom";
 import { CancelToken } from "../../core/types";
 import DISingleton from "../../di/DISingleton";
@@ -6,8 +8,6 @@ import { Inject, InjectedTypes } from "../../di/Inject";
 import Action from "../../view-model/Action";
 import { AtomViewModel, Validate } from "../../view-model/AtomViewModel";
 import AtomWebTest from "../web/AtomWebTest";
-import Test from "@web-atoms/unit-test/dist/Test";
-import Assert from "@web-atoms/unit-test/dist/Assert";
 
 interface IUser {
     name?: string;
@@ -16,7 +16,7 @@ interface IUser {
 
 @DISingleton()
 class RemoteService {
-    public async signup(user: IUser): Promise<any> {
+    public async signUp(user: IUser): Promise<any> {
         await Atom.delay(100);
         if (!/\@/i.test(user.email)) {
             throw new Error("Invalid email address");
@@ -42,16 +42,16 @@ class ActionViewModel extends AtomViewModel {
     @Inject
     private remoteService: RemoteService;
 
-    @Action({ confirm: "Are you sure you want to cancel", success: null })
+    @Action({ confirm: "Are you sure you want to cancel"})
     public async cancel(): Promise<void> {
         await Atom.delay(10);
         this.model.name = "";
         this.model.email = "";
     }
 
-    @Action({ validate: true })
-    public async signup(): Promise<void> {
-        this.result = await this.remoteService.signup(this.model);
+    @Action({ success: "Operation completed successfully", validate: true })
+    public async signUp(): Promise<void> {
+        this.result = await this.remoteService.signUp(this.model);
     }
 
 }
@@ -64,7 +64,7 @@ export default class ActionTest extends AtomWebTest {
         const vm = await this.createViewModel(ActionViewModel);
         this.navigationService.expectAlert("Please enter correct information");
 
-        await vm.signup();
+        await vm.signUp();
     }
 
     @Test
@@ -74,7 +74,7 @@ export default class ActionTest extends AtomWebTest {
         vm.model.email = "a";
         this.navigationService.expectAlert("Error: Invalid email address");
 
-        await vm.signup();
+        await vm.signUp();
     }
 
     @Test
@@ -83,7 +83,7 @@ export default class ActionTest extends AtomWebTest {
         vm.model.name = "a";
         vm.model.email = "a@a";
         this.navigationService.expectAlert("Operation completed successfully");
-        await vm.signup();
+        await vm.signUp();
         Assert.equals("Success a", vm.result);
     }
 

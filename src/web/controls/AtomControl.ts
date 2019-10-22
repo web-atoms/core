@@ -308,19 +308,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         // pending !!
     }
 
-    // protected refreshInherited(name: string, fx: (ac: AtomControl) => boolean): void {
-    //     AtomBinder.refreshValue(this, name);
-    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-    //         if (ac) {
-    //             if (fx(ac)) {
-    //                 ac.refreshInherited(name, fx);
-    //             }
-    //             return false;
-    //         }
-    //         return true;
-    //     });
-    // }
-
     protected removeAllChildren(e: HTMLElement): void {
         let child = e.firstElementChild as HTMLElement;
         while (child) {

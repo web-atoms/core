@@ -10,7 +10,7 @@ export interface IActionOptions {
      * Display success message after method successfully executes,
      * if method returns promise, success will display after promise
      * has finished, pass null to not display message.
-     * @default 'Operation completed successfully'
+     * @default null
      */
     success?: string | FormattedString;
 
