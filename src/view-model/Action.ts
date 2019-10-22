@@ -46,14 +46,17 @@ export interface IActionOptions {
 }
 
 /**
- * Reports an alert to user when method is successful, or an error has occurred
- * or validation has failed. You can configure options to enable/disable certain
+ * Reports an alert to user when an error has occurred
+ * or validation has failed.
+ * If you set success message, it will display an alert with success message.
+ * If you set confirm message, it will ask form confirmation before executing this method.
+ * You can configure options to enable/disable certain
  * alerts.
  * @param reportOptions
  */
 export default function Action(
     {
-        success = "Operation completed successfully",
+        success = null,
         successTitle = "Done",
         confirm = null,
         confirmTitle = null,

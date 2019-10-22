@@ -20,7 +20,7 @@ export default function Defer(n: number = 100) {
                 this[k] = 0;
                 old.apply(this, a);
             }, n);
-        }
+        };
     };
 
 }
