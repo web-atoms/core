@@ -134,7 +134,7 @@ export default class XFNavigationService extends NavigationService {
             // reject("cancelled");
             // do nothing...
         }, (e) => {
-            disposables.dispose();
+            this.remove(popup, true);
         });
 
         disposables.add(popup);
