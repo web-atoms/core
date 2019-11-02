@@ -7,7 +7,7 @@ import { INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
 import { JsonService } from "../../services/JsonService";
-import { NavigationService, NotifyType } from "../../services/NavigationService";
+import { IPageOptions, NavigationService, NotifyType } from "../../services/NavigationService";
 import ReferenceService, { ObjectReference } from "../../services/ReferenceService";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomControl } from "../../web/controls/AtomControl";
@@ -109,11 +109,25 @@ export default class XFNavigationService extends NavigationService {
         AtomBridge.instance.reset();
     }
 
-    protected async openWindow<T>(url: AtomUri): Promise<T> {
+    protected async openWindow<T>(
+        url: AtomUri,
+        options?: IPageOptions): Promise<T> {
 
         const { view: popup, disposables, returnPromise, id } =
-            await AtomLoader.loadView(url, this.app, true, () => new AtomWindowViewModel(this.app));
+            await AtomLoader.loadView(url, this.app, true,
+                () => this.app.resolve(AtomWindowViewModel, true));
 
+        const cancelToken = options.cancelToken;
+        if (cancelToken) {
+            if (cancelToken.cancelled) {
+                this.app.callLater(() => {
+                    this.remove(popup, true);
+                });
+            }
+            cancelToken.registerForCancel(() => {
+                this.remove(popup, true);
+            });
+        }
         AtomBridge.instance.setValue(popup.element, "name", id);
 
         bridge.pushPage(popup.element, () => {
