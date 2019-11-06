@@ -56,10 +56,21 @@ export type ILoadOptions = {
 } | never;
 
 /**
- * Reports an alert to user when method is successful, or an error has occurred
- * or validation has failed. You can configure options to enable/disable certain
- * alerts.
- * @param reportOptions
+ * Loads given method on based on init/watch properties.
+ * If init is true, method will be executed when view model is initialized.
+ * If watch is true, method will be executed when any of `this.*.*` properties are
+ * modified. This method can be asynchronous. Watch will ignore all assignment
+ * changes within the method.
+ *
+ * Every execution will be delayed by parameter specified in {@link ILoadOptions#watchDelayMS},
+ * so multiple calls can be accumulated and only one final execution will proceed. This is useful
+ * when you want to load items from API when user is continuously typing in search box.
+ *
+ * Method will have an input parameter for cancelToken {@link CancelToken} which you
+ * can pass it to any REST Api call, before executing next method, cancelToken will
+ * cancel previous execution.
+ *
+ * Either init or watch has to be true, or both can be true as well.
  */
 export default function Load(
     {
