@@ -20,5 +20,8 @@ jobs:
       - run: typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
       # - run: npm run test
       - run: npm publish
+      - run: node ./old/change-name.js
+      - run: npm publish
+      - run: node ./old/undo.js
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
