@@ -11,7 +11,10 @@
         "bodyformmodel",
         "downlevel",
         "lightgray",
+        "posttest",
+        "postversion",
         "rawbody",
+        "typedoc",
         "xmlbody",
         "xmlhttprequest"
     ]
