@@ -109,11 +109,11 @@ export class AtomPageLink extends AtomControl {
                 { ... this.options, cancelToken: this.cancelToken } :
                 { cancelToken: this.cancelToken };
 
-            const getParametersEvent = new CustomEvent("getParameters", { detail: {} });
+            const getParametersEvent = new CustomEvent("getParameters", { detail: {} as any});
 
             this.element.dispatchEvent(getParametersEvent);
 
-            const p =  { ... this.parameters, ... getParametersEvent.detail };
+            const p =  getParametersEvent.detail.parameters || this.parameters;
 
             const result = await navigationService.openPage(pt, p, o);
 
