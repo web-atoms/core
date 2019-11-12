@@ -37,7 +37,7 @@ export default class AtomSelectableList<T> {
     }
 
     public set selectedItem(item: T) {
-        this.clearSelection();
+        this.clearSelected();
         const si = this.items.find((s) => s.item === item);
         si.select();
     }
@@ -86,12 +86,7 @@ export default class AtomSelectableList<T> {
             v = [v];
         }
         const va = v as any;
-        const values = this.items.filter((x) => {
-            const vp = this.valuePath(x.item);
-            const existing = va.find((y) => y === vp );
-            return existing ? true : false;
-        });
-        this.selectedItems.replace(values);
+        this.replaceSelectedInternal(va, false);
     }
 
     constructor(
@@ -171,6 +166,36 @@ export default class AtomSelectableList<T> {
         si.toggle();
     }
 
+    public replaceSeleted(va: T[]): void {
+        this.replaceSelectedInternal(va, true);
+    }
+
+    private replaceSelectedInternal(va: T[] = [], refreshValue: boolean = true): void {
+
+        const newItems = !va ? [] : this.items.filter((x) => {
+            const vp = this.valuePath(x.item);
+            const existing = va.find((y) => y === vp );
+            return existing ? true : false;
+        });
+        const s = this.selectedItems.slice();
+        this.selectedItems.clear();
+        for (const iterator of s) {
+            AtomBinder.refreshValue(iterator, "selected");
+        }
+        if (newItems.length) {
+            this.selectedItems.replace(newItems);
+        }
+
+        // to prevent recursive updates...
+        if (refreshValue) {
+            AtomBinder.refreshValue(this, "value");
+        }
+        AtomBinder.refreshValue(this, "label");
+        AtomBinder.refreshValue(this, "selectAll");
+        AtomBinder.refreshValue(this, "selectedItem");
+        AtomBinder.refreshValue(this, "selectedIndex");
+    }
+
     private newItem(item: T): ISelectableItem<T> {
         const self = this;
         const newItem: ISelectableItem<T> = {
@@ -187,7 +212,7 @@ export default class AtomSelectableList<T> {
                     if (this.selected) {
                         return;
                     }
-                    self.clearSelection();
+                    self.clearSelected();
                     self.selectedItems.add(this);
                 } else {
                     self.selectedItems.remove(this);
@@ -213,7 +238,7 @@ export default class AtomSelectableList<T> {
         return newItem;
     }
 
-    private clearSelection() {
+    private clearSelected() {
         if (!this.allowMultipleSelection) {
             const items = this.selectedItems.map((s) => s);
             this.selectedItems.clear();
