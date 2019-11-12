@@ -109,7 +109,7 @@ export class AtomPageLink extends AtomControl {
                 { ... this.options, cancelToken: this.cancelToken } :
                 { cancelToken: this.cancelToken };
 
-            const getParametersEvent = new CustomEvent("beforeStart", { detail: undefined });
+            const getParametersEvent = new CustomEvent("getParameters", { detail: undefined });
 
             this.element.dispatchEvent(getParametersEvent);
 
