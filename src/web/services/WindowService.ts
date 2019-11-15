@@ -207,6 +207,7 @@ export class WindowService extends NavigationService {
             if (!/html/i.test(et.tagName)) {
                 return;
             }
+            target = et;
         }
 
         this.currentTarget = e.target as HTMLElement;
