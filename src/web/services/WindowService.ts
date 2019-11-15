@@ -242,8 +242,7 @@ export class WindowService extends NavigationService {
 
         if (window) {
             window.addEventListener("click", (e) => {
-                this.currentTarget = e.target as HTMLElement;
-                this.closePopup();
+                this.closePopup(e);
             });
         }
     }
