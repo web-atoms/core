@@ -53,7 +53,7 @@ export class WindowService extends NavigationService {
             return;
         }
 
-        if (ts.length === 0 || ts[ts.length - 1] === v) {
+        if (ts.length === 0 && ts[ts.length - 1] === v) {
             return;
         }
         ts.push(v);
