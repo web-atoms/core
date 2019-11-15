@@ -97,8 +97,8 @@ export class WindowService extends NavigationService {
 
         if (window) {
             window.addEventListener("click", (e) => {
-                this.currentTarget = e.target as HTMLElement;
-                this.closePopup();
+                // this.currentTarget = e.target as HTMLElement;
+                this.closePopup(e);
             });
 
             const update = (e) => {
@@ -175,13 +175,15 @@ export class WindowService extends NavigationService {
         });
     }
 
-    public closePopup(): void {
+    public closePopup(e: MouseEvent): void {
+        let target = this.currentTarget;
+        this.currentTarget = e.target as HTMLElement;
         if (!this.popups.length) {
             return;
         }
+
         const peek = this.popups[this.popups.length - 1];
         const element = peek.element;
-        let target = this.currentTarget;
 
         while (target) {
             if (target === element) {
