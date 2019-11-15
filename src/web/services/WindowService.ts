@@ -177,6 +177,13 @@ export class WindowService extends NavigationService {
 
     public closePopup(e: MouseEvent): void {
         let target = this.currentTarget;
+
+        if (!(e.target as HTMLElement).parentElement) {
+            // probably the window/popup was just disposed..
+            // ignore it...
+            return;
+        }
+
         this.currentTarget = e.target as HTMLElement;
         if (!this.popups.length) {
             return;
