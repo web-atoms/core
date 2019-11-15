@@ -11,6 +11,7 @@ import { Inject } from "../../di/Inject";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
+import bindProperty from "../../view-model/bindProperty";
 import bindUrlParameter from "../../view-model/bindUrlParameter";
 import { AtomUI } from "../core/AtomUI";
 import { WindowService } from "../services/WindowService";
@@ -19,8 +20,6 @@ import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
 import { AtomPage } from "./AtomPage";
-import { PropertyBinding } from "../../core/PropertyBinding";
-import bindProperty from "../../view-model/bindProperty";
 
 export class AtomTabbedPage extends AtomGridView
     implements INotifyPropertyChanged {
@@ -328,6 +327,10 @@ class AtomTabViewModel extends AtomViewModel {
 
         const e = page.element;
 
+        const ws = this.navigationService as WindowService;
+
+        ws.currentTarget = e;
+
         disposables.add(() => {
             const index = this.pages.indexOf(page);
             if (this.pages.length <= 1 && index <= 0) {
@@ -340,12 +343,11 @@ class AtomTabViewModel extends AtomViewModel {
             }
             e.innerHTML = "";
             e.remove();
+            ws.currentTarget = null;
             if (this.selectedPage === page) {
                 this.selectedPage = this.pages[index - 1];
             }
         });
-
-        disposables.add(page);
 
         this.saveState();
         return page;

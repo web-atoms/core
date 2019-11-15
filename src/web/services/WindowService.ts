@@ -39,6 +39,25 @@ export class WindowService extends NavigationService {
         const ts = this.targetStack;
         return ts.length > 0 ? ts[ts.length - 1] : undefined;
     }
+    public set currentTarget(v: HTMLElement) {
+        const ts = this.targetStack;
+        const nts = [];
+        if (v === null) {
+            // special case... remove all non existent elements...
+            for (const iterator of ts) {
+                if (iterator.parentElement) {
+                    nts.push(iterator);
+                }
+            }
+            this.targetStack = nts;
+            return;
+        }
+
+        if (ts.length === 0 || ts[ts.length - 1] === v) {
+            return;
+        }
+        ts.push(v);
+    }
 
     private popups: AtomControl[] = [];
 
@@ -188,7 +207,7 @@ export class WindowService extends NavigationService {
             return;
         }
 
-        this.targetStack.push(e.target as HTMLElement);
+        this.currentTarget = e.target as HTMLElement;
         if (!this.popups.length) {
             return;
         }
@@ -282,8 +301,6 @@ export class WindowService extends NavigationService {
             });
         }
 
-        disposables.add(popup);
-
         const e = popup.element;
 
         let isPopup = true;
@@ -361,8 +378,7 @@ export class WindowService extends NavigationService {
             }
         }
 
-        // this.currentTarget = e;
-        this.targetStack.push(e);
+        this.currentTarget = e;
 
         popup.bindEvent(document.body, "keyup", (keyboardEvent: KeyboardEvent) => {
             if (keyboardEvent.key === "Escape") {
@@ -374,9 +390,7 @@ export class WindowService extends NavigationService {
             dispose: () => {
                 e.innerHTML = "";
                 e.remove();
-                while ( e !== this.targetStack.pop()) {
-                    // do nothing...
-                }
+                this.currentTarget = null;
             }
         });
 

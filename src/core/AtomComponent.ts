@@ -8,6 +8,7 @@ import { PropertyMap } from "../core/PropertyMap";
 import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { Inject } from "../di/Inject";
+import { AtomDisposableList } from "./AtomDisposableList";
 
 interface IEventObject<T> {
 
@@ -39,12 +40,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     INotifyPropertyChanged {
 
     // public element: T;
+    public readonly disposables: AtomDisposableList;
 
     protected pendingInits: Array<() => void>;
 
     private mInvalidated: any = 0;
-
-    private disposables: IDisposable[];
 
     private mPendingPromises: { [key: string]: Promise<any> } = {};
 
@@ -125,7 +125,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         //     // tslint:disable-next-line:no-console
         //     console.error("app cannot be null while creating control");
         // }
-        this.disposables = [];
+        this.disposables = new AtomDisposableList();
         // this.element = e;
         const a = this.beginEdit();
         this.preCreate();
@@ -350,9 +350,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 this.mViewModel = null;
             }
 
-            for (const iterator of this.disposables) {
-                iterator.dispose();
-            }
+            this.disposables.dispose();
 
             this.pendingInits = null;
         }
@@ -410,13 +408,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public registerDisposable(d: IDisposable): IDisposable {
-        this.disposables.add(d);
-        return {
-            dispose: () => {
-                ArrayHelper.remove(this.disposables, (f) => f === d);
-                d.dispose();
-            }
-        };
+        return this.disposables.add(d);
     }
 
     // tslint:disable-next-line:no-empty
