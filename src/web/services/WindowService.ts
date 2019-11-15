@@ -204,9 +204,15 @@ export class WindowService extends NavigationService {
         if (!et.parentElement) {
             // probably the window/popup was just disposed..
             // ignore it...
+
+            // if mouse click was outside body and within the window
+            // target element will be HTML
+            // in that case we have to dispose the top popup
             if (!/html/i.test(et.tagName)) {
                 return;
             }
+
+            // we need to manually override target so popup will be disposed
             target = et;
         }
 
