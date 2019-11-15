@@ -144,6 +144,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
     public dispose(element: HTMLElement): void {
         const eAny = element as any;
         eAny.atomControl = undefined;
+        eAny.innerHTML = "";
         delete eAny.atomControl;
     }
 
