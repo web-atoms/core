@@ -48,8 +48,8 @@ export default function bindUrlParameter(vm: AtomViewModel, name: string, urlPar
         });
     }));
     paramDisposables[name] = disposables;
-    if (this.app.url) {
-        vm[name] = this.app.url.hash[urlParameter] || this.app.url.query[urlParameter];
+    if (vm.app.url) {
+        vm[name] = vm.app.url.hash[urlParameter] || vm.app.url.query[urlParameter];
     }
     return vm.registerDisposable(disposables);
 }
