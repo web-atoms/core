@@ -34,7 +34,11 @@ export class WindowService extends NavigationService {
 
     public readonly screen: IScreen;
 
-    public currentTarget: HTMLElement = null;
+    private targetStack: HTMLElement[] = [];
+    public get currentTarget(): HTMLElement {
+        const ts = this.targetStack;
+        return ts.length > 0 ? ts[ts.length - 1] : undefined;
+    }
 
     private popups: AtomControl[] = [];
 
@@ -184,7 +188,7 @@ export class WindowService extends NavigationService {
             return;
         }
 
-        this.currentTarget = e.target as HTMLElement;
+        this.targetStack.push(e.target as HTMLElement);
         if (!this.popups.length) {
             return;
         }
@@ -357,7 +361,8 @@ export class WindowService extends NavigationService {
             }
         }
 
-        this.currentTarget = e;
+        // this.currentTarget = e;
+        this.targetStack.push(e);
 
         popup.bindEvent(document.body, "keyup", (keyboardEvent: KeyboardEvent) => {
             if (keyboardEvent.key === "Escape") {
@@ -369,6 +374,9 @@ export class WindowService extends NavigationService {
             dispose: () => {
                 e.innerHTML = "";
                 e.remove();
+                while ( e !== this.targetStack.pop()) {
+                    // do nothing...
+                }
             }
         });
 
