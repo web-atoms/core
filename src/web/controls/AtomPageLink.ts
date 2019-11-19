@@ -129,7 +129,10 @@ export class AtomPageLink extends AtomControl {
             this.element.dispatchEvent(new CustomEvent("result", { detail: result }));
 
         } catch (e) {
-            this.element.dispatchEvent(new CustomEvent("error", { detail: e }));
+            // if element is disposed or null, ignore
+            if (this.element) {
+                this.element.dispatchEvent(new CustomEvent("error", { detail: e }));
+            }
         } finally {
             this.cancelToken = null;
             this.isOpen = false;
