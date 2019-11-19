@@ -84,7 +84,7 @@ export class AtomPageLink extends AtomControl {
             dispose: () => {
                 const ct = this.cancelToken;
                 if (ct) {
-                    ct.dispose();
+                    ct.cancel();
                 }
             }
         });
