@@ -79,6 +79,15 @@ export class AtomPageLink extends AtomControl {
                 "is-open": v
             }),
             this);
+
+        this.registerDisposable({
+            dispose: () => {
+                const ct = this.cancelToken;
+                if (ct) {
+                    ct.dispose();
+                }
+            }
+        });
     }
 
     protected async openPopup(): Promise<void> {
