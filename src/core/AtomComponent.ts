@@ -130,7 +130,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const a = this.beginEdit();
         this.preCreate();
         this.create();
-        AtomBridge.instance.attachControl(element ? element : this.element, this as any);
+        AtomBridge.instance.attachControl(this.element, this as any);
         app.callLater(() => a.dispose());
     }
 
