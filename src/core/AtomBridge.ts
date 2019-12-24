@@ -213,4 +213,25 @@ export class AtomBridge {
         return this.instance.create(name);
     }
 
+    public static refreshInherited(target: { element: any }, name: string, fieldName?: string): void {
+        if (AtomBridge.instance.refreshInherited) {
+            AtomBridge.instance.refreshInherited(target, name, fieldName);
+            return;
+        }
+        AtomBinder.refreshValue(target, name);
+        if (!fieldName) {
+            fieldName = "m" + name[0].toUpperCase() + name.substr(1);
+        }
+        AtomBridge.instance.visitDescendents(target.element, (e, ac) => {
+            if (ac) {
+                if (ac[fieldName] === undefined) {
+                    AtomBridge.refreshInherited(ac as any, name, fieldName);
+                }
+                return false;
+            }
+            return true;
+        });
+
+    }
+
 }
