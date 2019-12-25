@@ -216,6 +216,74 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
     public close(element: HTMLElement, success: () => void, error: (e) => void): void {
         throw new Error("Not supported");
     }
+
+    public createNode(
+        target: any,
+        node: XNode,
+        // tslint:disable-next-line: ban-types
+        binder: Function,
+        // tslint:disable-next-line: ban-types
+        xNodeClass: Function,
+        // tslint:disable-next-line: ban-types
+        creator: Function): any {
+
+        const app = target.app;
+        let e: HTMLElement = null;
+        if (typeof node.name === "string") {
+            // it is simple node..
+            e = document.createElement(node.name);
+        } else {
+            target = new (node.name as any)(app);
+            e = target.element;
+        }
+
+        const a = node.attributes;
+        if (a) {
+            for (const key in a) {
+                if (a.hasOwnProperty(key)) {
+                    let element = a[key] as any;
+                    if (element instanceof binder) {
+                        (element as any).setupFunction(key, element, target, e);
+                    } else {
+
+                        // this is template...
+                        if (element instanceof xNodeClass) {
+                            const templateNode = element as any;
+                            const name = templateNode.name;
+                            if (typeof name === "string") {
+                                element = ((bx, n) => class extends bx {
+
+                                    public create(): void {
+                                        this.render(n);
+                                    }
+
+                                })(creator as any, templateNode.children[0]);
+
+                            } else {
+                                element = ((base, n) => class extends base {
+
+                                    public create(): void {
+                                        this.render(n);
+                                    }
+
+                                })(name, templateNode.children[0]);
+                            }
+                        }
+                        target.setLocalValue(e, key, element);
+                    }
+                }
+            }
+        }
+
+        const children = node.children;
+        if (children) {
+            for (const iterator of children) {
+                const child = this.createNode(target, iterator, binder, xNodeClass, creator);
+                e.append(child);
+            }
+        }
+        return e;
+    }
 }
 
 export class AtomBridge {
