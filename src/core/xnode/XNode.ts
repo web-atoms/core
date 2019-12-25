@@ -13,7 +13,7 @@ export default class XNode {
         };
     }
 
-    public static createElement(
+    public static create(
         // tslint:disable-next-line: ban-types
         name: string | Function,
         attributes: IAttributes,
