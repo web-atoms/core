@@ -38,7 +38,7 @@ export default class AtomNotification extends AtomControl {
         }
         this.timeoutKey = setTimeout(() => {
             if (this.element) {
-                this.app.broadcast(`atom-window-close:${this.element.id}`, "");
+                this.app.broadcast(`atom-window-close:${(this as any).id}`, "");
             }
         }, this.timeout);
     }
