@@ -2,7 +2,7 @@ import { parsePath } from "../ExpressionParser";
 
 export interface IAtomComponent {
     element: any;
-    viewMode: any;
+    viewModel: any;
     localViewModel: any;
     data: any;
     app: {
