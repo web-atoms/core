@@ -2,6 +2,9 @@ import { parsePath } from "../ExpressionParser";
 
 export interface IAtomComponent {
     element: any;
+    viewMode: any;
+    localViewModel: any;
+    data: any;
     app: {
         callLater: (f: () => void) => void;
     };
@@ -14,7 +17,7 @@ export interface IAtomComponent {
  * Bindings needs to be cloned...
  */
 
-export type bindingFunction = (control: IAtomComponent) => any;
+export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T) => any;
 
 function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
     control.app.callLater(() => {
@@ -30,7 +33,8 @@ function event(name: string, b: Bind, control: IAtomComponent, e: any) {
 
 function oneWay(name: string, b: Bind, control: IAtomComponent, e: any) {
     control.app.callLater(() => {
-        control.bind(e, name, b.pathList , false, null);
+        // tslint:disable-next-line: ban-types
+        control.bind(e, name, b.pathList , false, () => (b.sourcePath as Function).call(control) );
     });
 }
 
@@ -42,19 +46,19 @@ function twoWays(name: string, b: Bind, control: IAtomComponent, e: any) {
 
 export default class Bind {
     // tslint:disable-next-line: ban-types
-    public static event(sourcePath: any): any {
-        return new Bind(event, sourcePath);
+    public static event<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): any {
+        return new Bind(event, sourcePath as any);
     }
 
-    public static oneTime(sourcePath: bindingFunction): Bind {
+    public static oneTime<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
         return new Bind(oneTime, sourcePath);
     }
 
-    public static oneWay(sourcePath: bindingFunction): Bind {
+    public static oneWay<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
         return new Bind(oneWay, sourcePath);
     }
 
-    public static twoWays(sourcePath: bindingFunction): Bind {
+    public static twoWays<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
         return new Bind(twoWays, sourcePath);
     }
 
