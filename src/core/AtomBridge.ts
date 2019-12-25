@@ -3,6 +3,7 @@ import { AtomControl } from "../web/controls/AtomControl";
 import { AtomUI, ChildEnumerator } from "../web/core/AtomUI";
 import { AtomBinder } from "./AtomBinder";
 import { IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
+import XNode from "./xnode/XNode";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
 
@@ -69,6 +70,18 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
             return true;
         });
 
+    }
+
+    public createNode(
+        target: any,
+        node: XNode,
+        // tslint:disable-next-line: ban-types
+        binder: Function,
+        // tslint:disable-next-line: ban-types
+        xNodeClass: Function,
+        // tslint:disable-next-line: ban-types
+        creator: Function): any {
+        throw new Error("Method not implemented.");
     }
 
 }

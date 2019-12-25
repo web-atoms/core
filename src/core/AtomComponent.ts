@@ -9,6 +9,7 @@ import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChange
     from "../core/types";
 import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
+import XNode from "./xnode/XNode";
 
 interface IEventObject<T> {
 
@@ -41,6 +42,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     // public element: T;
     public readonly disposables: AtomDisposableList;
+
+    public readonly element: T;
 
     protected pendingInits: Array<() => void>;
 
@@ -120,13 +123,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     constructor(
         @Inject public readonly app: App,
-        public readonly element: T = null) {
+        element: T | XNode = null) {
         // if (!app) {
         //     // tslint:disable-next-line:no-console
         //     console.error("app cannot be null while creating control");
         // }
         this.disposables = new AtomDisposableList();
-        // this.element = e;
+        this.element = element as any;
         const a = this.beginEdit();
         this.preCreate();
         this.create();
@@ -411,9 +414,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return this.disposables.add(d);
     }
 
+    protected abstract render(node: XNode): void;
+
     // tslint:disable-next-line:no-empty
     protected create(): void {
-
+        if ((this.element as any) instanceof XNode) {
+            this.render(this.element as any);
+        }
     }
 
     // tslint:disable-next-line:no-empty

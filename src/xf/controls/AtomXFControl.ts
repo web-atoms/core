@@ -2,6 +2,8 @@ import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { IAtomElement } from "../../core/types";
+import Bind from "../../core/xnode/Bind";
+import XNode from "../../core/xnode/XNode";
 import { NavigationService } from "../../services/NavigationService";
 
 const bridge = AtomBridge.instance;
@@ -32,6 +34,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
     public invokeEvent(event: { type: string, detail?: any }): void {
         (bridge as any).invokeEvent(this.element, event.type, event);
+    }
+
+    protected render(node: XNode): void {
+        (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomXFControl);
     }
 
     // protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
