@@ -34,7 +34,7 @@ function event(name: string, b: Bind, control: IAtomComponent, e: any) {
 function oneWay(name: string, b: Bind, control: IAtomComponent, e: any) {
     control.app.callLater(() => {
         // tslint:disable-next-line: ban-types
-        control.bind(e, name, b.pathList , false, () => (b.sourcePath as Function).call(control) );
+        control.bind(e, name, b.pathList , false, () => (b.sourcePath as Function).call(control, control) );
     });
 }
 
