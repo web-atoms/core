@@ -46,7 +46,7 @@ function twoWays(name: string, b: Bind, control: IAtomComponent, e: any) {
 
 export default class Bind {
     // tslint:disable-next-line: ban-types
-    public static event<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): any {
+    public static event<T extends IAtomComponent = IAtomComponent>(sourcePath: (control: T, e?: Event) => void): any {
         return new Bind(event, sourcePath as any);
     }
 
