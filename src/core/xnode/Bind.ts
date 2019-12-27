@@ -27,7 +27,7 @@ function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
 
 function event(name: string, b: Bind, control: IAtomComponent, e: any) {
     control.app.callLater(() => {
-        control.bindEvent(e, name, b.sourcePath as any);
+        control.bindEvent(e, name, (e1) => (b.sourcePath as any)(control, e1));
     });
 }
 
