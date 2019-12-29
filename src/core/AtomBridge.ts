@@ -307,7 +307,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
                     e.appendChild(this.createNode(target, iterator, binder, xNodeClass, creator));
                 } else {
                     const child = this.createNode(target, iterator, binder, xNodeClass, creator);
-                    if (parent instanceof AtomControl) {
+                    if (parent.element && parent.element.atomControl === parent) {
                         parent.append(child.atomControl || child);
                     } else {
                         parent.appendChild(child);
