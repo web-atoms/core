@@ -217,6 +217,30 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         throw new Error("Not supported");
     }
 
+    public toTemplate(element, creator) {
+        const templateNode = element as any;
+        const name = templateNode.name;
+        if (typeof name === "string") {
+            element = ((bx, n) => class extends bx {
+
+                public create(): void {
+                    this.render(n);
+                }
+
+            })(creator as any, templateNode.children[0]);
+
+        } else {
+            element = ((base, n) => class extends base {
+
+                public create(): void {
+                    this.render(n);
+                }
+
+            })(name, templateNode.children[0]);
+        }
+        return element;
+    }
+
     public createNode(
         target: any,
         node: XNode,
@@ -269,26 +293,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
                         // this is template...
                         if (element instanceof xNodeClass) {
-                            const templateNode = element as any;
-                            const name = templateNode.name;
-                            if (typeof name === "string") {
-                                element = ((bx, n) => class extends bx {
-
-                                    public create(): void {
-                                        this.render(n);
-                                    }
-
-                                })(creator as any, templateNode.children[0]);
-
-                            } else {
-                                element = ((base, n) => class extends base {
-
-                                    public create(): void {
-                                        this.render(n);
-                                    }
-
-                                })(name, templateNode.children[0]);
-                            }
+                            element = this.toTemplate(element, creator);
                         }
                         target.setLocalValue(e, key, element);
                     }
@@ -305,13 +310,19 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
                 }
                 if (typeof iterator.name === "string") {
                     e.appendChild(this.createNode(target, iterator, binder, xNodeClass, creator));
+                    continue;
+                }
+                const t = iterator.children ? iterator.children.template : null;
+                if (t) {
+                    const tx = this.toTemplate(iterator, creator);
+                    target[t] = tx;
+                    continue;
+                }
+                const child = this.createNode(target, iterator, binder, xNodeClass, creator);
+                if (parent.element && parent.element.atomControl === parent) {
+                    parent.append(child.atomControl || child);
                 } else {
-                    const child = this.createNode(target, iterator, binder, xNodeClass, creator);
-                    if (parent.element && parent.element.atomControl === parent) {
-                        parent.append(child.atomControl || child);
-                    } else {
-                        parent.appendChild(child);
-                    }
+                    parent.appendChild(child);
                 }
             }
         }
