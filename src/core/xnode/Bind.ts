@@ -80,7 +80,9 @@ export default class Bind {
         sourcePath: bindingFunction
         ) {
         this.sourcePath = sourcePath;
-
+        if (!this.sourcePath) {
+            return;
+        }
         if (Array.isArray(this.sourcePath)) {
             this.pathList = this.sourcePath as any;
             // this.setupFunction = null;
