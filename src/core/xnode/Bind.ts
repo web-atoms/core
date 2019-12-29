@@ -44,7 +44,16 @@ function twoWays(name: string, b: Bind, control: IAtomComponent, e: any) {
     });
 }
 
+function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
+    control[name] = e;
+}
+
 export default class Bind {
+
+    public static presenter<T extends IAtomComponent = IAtomComponent>(sourcePath: any): any {
+        return new Bind(presenter, sourcePath);
+    }
+
     // tslint:disable-next-line: ban-types
     public static event<T extends IAtomComponent = IAtomComponent>(sourcePath: (control: T, e?: Event) => void): any {
         return new Bind(event, sourcePath as any);
