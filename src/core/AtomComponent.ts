@@ -112,6 +112,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public abstract get parent(): TC;
 
+    /** Do not ever use, only available as intellisense feature for
+     * vs code editor.
+     */
+    public get vsProp(): { [k in keyof this]?: any} | { [k: string]: any } | {} {
+        return undefined;
+    }
+
     // public abstract get templateParent(): TC;
     // {
     //     return AtomBridge.instance.templateParent(this.element);

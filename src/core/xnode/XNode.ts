@@ -2,15 +2,26 @@ export interface IAttributes {
     [key: string]: string | number | null | any;
 }
 
+// tslint:disable-next-line: no-namespace
+declare namespace JSX {
+
+    // tslint:disable-next-line: interface-name
+    interface ElementAttributesProperty {
+        vsProps;
+    }
+
+}
+
 export default class XNode {
 
     public static prepare<T>(n: any): ((attributes: Partial<T>, ... nodes: XNode[]) => XNode) {
-        return (attributes: Partial<T>, ... nodes: XNode[]) => {
-            if (typeof n === "string") {
-                return new XNode(n, attributes as any, nodes);
-            }
-            return new XNode(n, attributes as any, nodes);
-        };
+        return n;
+        // return (attributes: Partial<T>, ... nodes: XNode[]) => {
+        //     if (typeof n === "string") {
+        //         return new XNode(n, attributes as any, nodes);
+        //     }
+        //     return new XNode(n, attributes as any, nodes);
+        // };
     }
 
     public static create(
@@ -18,13 +29,13 @@ export default class XNode {
         name: string | Function,
         attributes: IAttributes,
         ... children: Array<XNode | XNode[] | any>): XNode {
-        if (typeof name === "function") {
-            if (children) {
-                attributes = attributes || {};
-                // (attributes as any).children = children;
-            }
-            return (name as any)(attributes, children);
-        }
+        // if (typeof name === "function") {
+        //     if (children) {
+        //         attributes = attributes || {};
+        //         // (attributes as any).children = children;
+        //     }
+        //     return (name as any)(attributes, children);
+        // }
         return new XNode(name, attributes, children);
     }
 

@@ -278,6 +278,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         const children = node.children;
         if (children) {
             for (const iterator of children) {
+                if (typeof iterator === "string") {
+                    e.append(document.createTextNode(iterator));
+                    continue;
+                }
                 const child = this.createNode(target, iterator, binder, xNodeClass, creator);
                 e.append(child);
             }

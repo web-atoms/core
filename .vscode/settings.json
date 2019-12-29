@@ -16,6 +16,7 @@
         "rawbody",
         "typedoc",
         "xmlbody",
-        "xmlhttprequest"
+        "xmlhttprequest",
+        "xnode"
     ]
 }
