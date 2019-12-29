@@ -50,8 +50,8 @@ function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
 
 export default class Bind {
 
-    public static presenter<T extends IAtomComponent = IAtomComponent>(sourcePath: any): any {
-        return new Bind(presenter, sourcePath);
+    public static get presenter(): any {
+        return new Bind(presenter, undefined);
     }
 
     // tslint:disable-next-line: ban-types
