@@ -3,13 +3,15 @@ export interface IAttributes {
 }
 
 // tslint:disable-next-line: no-namespace
-declare namespace JSX {
+declare global {
+    namespace JSX {
 
-    // tslint:disable-next-line: interface-name
-    interface ElementAttributesProperty {
-        vsProps;
+        // tslint:disable-next-line: interface-name
+        interface ElementAttributesProperty {
+            vsProps;
+        }
+
     }
-
 }
 
 export default class XNode {
