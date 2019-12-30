@@ -9,7 +9,7 @@ import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChange
     from "../core/types";
 import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
-import XNode from "./xnode/XNode";
+import XNode from "./XNode";
 
 interface IEventObject<T> {
 

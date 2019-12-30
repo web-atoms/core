@@ -3,7 +3,7 @@ import { AtomControl } from "../web/controls/AtomControl";
 import { AtomUI, ChildEnumerator } from "../web/core/AtomUI";
 import { AtomBinder } from "./AtomBinder";
 import { IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
-import XNode from "./xnode/XNode";
+import XNode from "./XNode";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
 
@@ -255,11 +255,19 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
         const app = target.app;
         let e: HTMLElement = null;
+        const nn = node.attributes ? node.attributes.for : undefined;
         if (typeof node.name === "string") {
             // it is simple node..
             e = document.createElement(node.name);
             parent = e;
+            if (nn) {
+                delete node.attributes.for;
+            }
         } else {
+            if (nn) {
+                target = new (node.name as any)(app, document.createElement(nn));
+                delete node.attributes.for;
+            }
             target = new (node.name as any)(app);
             e = target.element;
             parent = target;

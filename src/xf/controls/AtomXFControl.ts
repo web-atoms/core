@@ -1,9 +1,9 @@
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
+import Bind from "../../core/Bind";
 import { IAtomElement } from "../../core/types";
-import Bind from "../../core/xnode/Bind";
-import XNode from "../../core/xnode/XNode";
+import XNode from "../../core/XNode";
 import { NavigationService } from "../../services/NavigationService";
 
 const bridge = AtomBridge.instance;

@@ -1,4 +1,4 @@
-import { parsePath } from "../ExpressionParser";
+import { parsePath } from "./ExpressionParser";
 
 export interface IAtomComponent {
     element: any;
