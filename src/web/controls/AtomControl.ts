@@ -160,6 +160,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected render(node: XNode, e?: HTMLElement): void {
+
+        // element must be created before creating control
+        // so in preCreate element should be available if
+        // control wants to add default behavior
+
         // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
 
         function toTemplate(n: XNode) {
