@@ -159,8 +159,65 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         });
     }
 
-    protected render(node: XNode): void {
-        (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
+    protected render(node: XNode, e?: HTMLElement): void {
+        // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
+
+        function toTemplate(n: XNode) {
+            const fx = typeof n.name === "function" ? n.name : AtomControl;
+            const en = n.attributes && n.attributes.for ? n.attributes.for : undefined;
+            return class Template extends (fx as any) {
+                constructor(a, e1) {
+                    super(a, e1 || (en ? document.createElement(en) : undefined));
+                }
+            };
+        }
+
+        e = e || this.element;
+        const attr = node.attributes;
+        if (attr) {
+            for (const key in attr) {
+                if (attr.hasOwnProperty(key)) {
+                    const item = attr[key];
+                    if (item instanceof Bind) {
+                        item.setupFunction(key, item, this, e);
+                    } else if (item instanceof XNode) {
+                        // this is template..
+                        this.setLocalValue(e, key, toTemplate(item));
+                    } else {
+                        this.setLocalValue(e, key, item);
+                    }
+                }
+            }
+        }
+
+        for (const iterator of node.children) {
+            if (typeof iterator === "string") {
+                e.appendChild(document.createTextNode(iterator));
+                continue;
+            }
+            const t = iterator.attributes && iterator.attributes.template;
+            if (t) {
+                this.setLocalValue(e, t, toTemplate(iterator.children[0] || {}));
+                continue;
+            }
+            if (typeof iterator.name === "string") {
+                const ex = document.createElement(iterator.name);
+                if (this.element === e) {
+                    this.append(ex);
+                } else {
+                    e.appendChild(ex);
+                }
+                this.render(iterator, ex);
+                continue;
+            }
+            const c = new (iterator.name)(this.app);
+            if (this.element === e) {
+                this.append(c);
+            } else {
+                e.appendChild(c.element);
+            }
+        }
+
     }
 
     protected preCreate(): void {
