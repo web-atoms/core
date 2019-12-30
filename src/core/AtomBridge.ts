@@ -316,14 +316,14 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
                     e.appendChild(document.createTextNode(iterator));
                     continue;
                 }
-                if (typeof iterator.name === "string") {
-                    e.appendChild(this.createNode(target, iterator, binder, xNodeClass, creator));
-                    continue;
-                }
                 const t = iterator.attributes ? iterator.attributes.template : null;
                 if (t) {
                     const tx = this.toTemplate(iterator, creator);
                     target[t] = tx;
+                    continue;
+                }
+                if (typeof iterator.name === "string") {
+                    e.appendChild(this.createNode(target, iterator, binder, xNodeClass, creator));
                     continue;
                 }
                 const child = this.createNode(target, iterator, binder, xNodeClass, creator);
