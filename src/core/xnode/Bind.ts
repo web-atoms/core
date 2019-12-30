@@ -55,7 +55,8 @@ export default class Bind {
     }
 
     // tslint:disable-next-line: ban-types
-    public static event<T extends IAtomComponent = IAtomComponent>(sourcePath: (control: T, e?: Event) => void): any {
+    public static event<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: (control: T, e?: CustomEvent) => void): any {
         return new Bind(event, sourcePath as any);
     }
 
@@ -67,7 +68,9 @@ export default class Bind {
         return new Bind(oneWay, sourcePath);
     }
 
-    public static twoWays<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
+    public static twoWays<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: bindingFunction<T>,
+        events?: string[]): Bind {
         return new Bind(twoWays, sourcePath);
     }
 
