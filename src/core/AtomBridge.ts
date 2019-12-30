@@ -320,7 +320,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
                     e.appendChild(this.createNode(target, iterator, binder, xNodeClass, creator));
                     continue;
                 }
-                const t = iterator.children ? iterator.children.template : null;
+                const t = iterator.attributes ? iterator.attributes.template : null;
                 if (t) {
                     const tx = this.toTemplate(iterator, creator);
                     target[t] = tx;
