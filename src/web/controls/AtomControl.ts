@@ -186,6 +186,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                     super(a, e1 || (en ? document.createElement(en) : undefined));
                 }
 
+                public create() {
+                    this.render(n);
+                }
+
             };
         }
 
