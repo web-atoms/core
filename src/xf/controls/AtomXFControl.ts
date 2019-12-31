@@ -49,7 +49,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
             const en = n.attributes && n.attributes.for ? n.attributes.for : undefined;
             return class Template extends (fx as any) {
                 constructor(a, e1) {
-                    super(a, e1 || (en ? document.createElement(en) : undefined));
+                    super(a, e1 || (en ? bridge.create(en) : undefined));
                 }
             };
         }
