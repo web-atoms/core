@@ -187,6 +187,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 }
 
                 public create() {
+                    super.create();
                     this.render(n);
                 }
 
