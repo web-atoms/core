@@ -124,9 +124,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     //     return AtomBridge.instance.templateParent(this.element);
     // }
 
-    private eventHandlers: Array<IEventObject<T>> = [];
+    private readonly eventHandlers: Array<IEventObject<T>>;
 
-    private bindings: Array<PropertyBinding<T>> = [];
+    private readonly bindings: Array<PropertyBinding<T>>;
 
     constructor(
         @Inject public readonly app: App,
@@ -136,6 +136,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         //     console.error("app cannot be null while creating control");
         // }
         this.disposables = new AtomDisposableList();
+        this.bindings = [];
+        this.eventHandlers = [];
         this.element = element as any;
         const a = this.beginEdit();
         this.preCreate();
@@ -219,7 +221,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string): void {
-        const deleted: Array<IEventObject<T>> = [];
+        const deleted: Array<(() => void)> = [];
         for (const be of this.eventHandlers) {
             if (element && be.element !== element) {
                 return;
@@ -238,9 +240,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             be.element = null;
             be.name = null;
             be.key = null;
-            deleted.push(be);
+            deleted.push(() => this.eventHandlers.remove(be));
         }
-        this.eventHandlers = this.eventHandlers.filter( (x) => deleted.findIndex( (d) => d === x ) !== -1 );
+        for (const iterator of deleted) {
+            iterator();
+        }
     }
 
     public hasProperty(name: string): boolean {
@@ -344,7 +348,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 binding.dispose();
             }
             this.bindings.length = 0;
-            this.bindings = null;
+            (this as any).bindings = null;
             AtomBridge.instance.dispose(this.element);
             (this as any).element = null;
 
