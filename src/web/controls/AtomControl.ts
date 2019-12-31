@@ -168,8 +168,14 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
 
         function toTemplate(n: XNode) {
-            const fx = typeof n.name === "function" ? n.name : AtomControl;
-            const en = n.attributes && n.attributes.for ? n.attributes.for : undefined;
+            let fx;
+            let en;
+            if (typeof n.name === "function") {
+                fx = n.name;
+                en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
+            } else {
+                en = n.name;
+            }
             return class Template extends (fx as any) {
 
                 // tslint:disable-next-line: variable-name
