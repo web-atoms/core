@@ -174,6 +174,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 fx = n.name;
                 en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
             } else {
+                fx = AtomControl;
                 en = n.name;
             }
             return class Template extends (fx as any) {
