@@ -219,8 +219,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             const c = new (iterator.name)(this.app, fx) as AtomControl;
             if (this.element === e) {
                 this.append(c);
+                c.render(iterator, c.element);
             } else {
                 e.appendChild(c.element);
+                c.render(iterator, c.element);
             }
         }
 

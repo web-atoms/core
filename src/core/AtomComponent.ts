@@ -425,9 +425,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     // tslint:disable-next-line:no-empty
     protected create(): void {
-        if ((this.element as any) instanceof XNode) {
-            this.render(this.element as any);
-        }
     }
 
     // tslint:disable-next-line:no-empty
