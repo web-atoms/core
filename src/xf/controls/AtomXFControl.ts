@@ -8,6 +8,11 @@ import { NavigationService } from "../../services/NavigationService";
 
 const bridge = AtomBridge.instance;
 
+declare var UMD: any;
+
+UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
+UMD.viewPrefix = "xf";
+
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
     public get parent(): AtomXFControl {
