@@ -50,12 +50,29 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
 
         function toTemplate(n: XNode) {
-            const fx = typeof n.name === "function" ? n.name : AtomXFControl;
-            const en = n.attributes && n.attributes.for ? n.attributes.for : undefined;
+            let fx;
+            let en;
+            if (typeof n.name === "function") {
+                fx = n.name;
+                en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
+            } else {
+                fx = AtomXFControl;
+                en = n.name;
+            }
             return class Template extends (fx as any) {
+
+                // tslint:disable-next-line: variable-name
+                public _creator = fx;
+
                 constructor(a, e1) {
-                    super(a, e1 || (en ? bridge.create(en) : undefined));
+                    super(a, e1 || (en ? document.createElement(en) : undefined));
                 }
+
+                public create() {
+                    super.create();
+                    this.render(n);
+                }
+
             };
         }
 
@@ -84,11 +101,11 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
             }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
-                this.setLocalValue(e, t, toTemplate(iterator.children[0] || {}));
+                this.setLocalValue(e, t, toTemplate(iterator));
                 continue;
             }
             if (typeof iterator.name === "string") {
-                const ex = bridge.create(iterator.name);
+                const ex = document.createElement(iterator.name);
                 if (this.element === e) {
                     this.append(ex);
                 } else {
@@ -98,7 +115,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                 continue;
             }
             const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            const c = new (iterator.name)(this.app, fx) as AtomXFControl;
+            const c = new (iterator.name)(this.app, fx ? document.createElement(fx) : undefined) as AtomXFControl;
             if (this.element === e) {
                 this.append(c);
                 c.render(iterator, c.element);
