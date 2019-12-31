@@ -171,9 +171,14 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             const fx = typeof n.name === "function" ? n.name : AtomControl;
             const en = n.attributes && n.attributes.for ? n.attributes.for : undefined;
             return class Template extends (fx as any) {
+
+                // tslint:disable-next-line: variable-name
+                public _creator = fx;
+
                 constructor(a, e1) {
                     super(a, e1 || (en ? document.createElement(en) : undefined));
                 }
+
             };
         }
 
@@ -202,7 +207,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
-                this.setLocalValue(e, t, toTemplate(iterator.children[0] || {}));
+                this.setLocalValue(e, t, toTemplate(iterator));
                 continue;
             }
             if (typeof iterator.name === "string") {
@@ -216,7 +221,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 continue;
             }
             const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            const c = new (iterator.name)(this.app, fx) as AtomControl;
+            const c = new (iterator.name)(this.app, fx ? document.createElement(fx) : undefined) as AtomControl;
             if (this.element === e) {
                 this.append(c);
                 c.render(iterator, c.element);

@@ -19,7 +19,8 @@ export default class XNode {
     public static with(n: any, tag: string | any) {
         return class XNodeControl extends n {
 
-            public static creator = n;
+            // tslint:disable-next-line: variable-name
+            public _creator = n;
 
             constructor(a: any, t: any) {
                 super(a, t || tag);
