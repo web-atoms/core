@@ -30,7 +30,8 @@ function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
 function event(name: string, b: Bind, control: IAtomComponent, e: any) {
     control.app.callLater(() => {
         if (isEvent.test(name)) {
-            name = name.substr(5) + (name[0].toLowerCase() + name.substr(1));
+            name = name.substr(5);
+            name = (name[0].toLowerCase() + name.substr(1));
         }
         control.bindEvent(e, name, (e1) => {
             return (b.sourcePath as any)(control, e1);
