@@ -16,6 +16,17 @@ declare global {
 
 export default class XNode {
 
+    public static with(n: any, tag: string | any) {
+        return class XNodeControl extends n {
+
+            public static creator = n;
+
+            constructor(a: any, t: any) {
+                super(a, t || tag);
+            }
+        };
+    }
+
     public static prepare<T>(n: any): ((attributes: Partial<T>, ... nodes: XNode[]) => XNode) {
         return n;
         // return (attributes: Partial<T>, ... nodes: XNode[]) => {
