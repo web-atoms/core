@@ -60,8 +60,9 @@ export default class XNode {
     }
 
     public toString(): string {
-        if (this.name) {
+        if (typeof this.name === "string") {
             return this.name.toString();
         }
+        return `name is of type ${typeof this.name}`;
     }
 }

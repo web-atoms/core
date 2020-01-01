@@ -448,10 +448,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 fx = bridge.controlFactory;
                 en = n.name;
             }
-            if (fx === undefined) {
-                // tslint:disable-next-line: no-console
-                console.log(JSON.stringify(n, undefined, 2));
-            }
             return class Template extends (fx as any) {
 
                 // tslint:disable-next-line: variable-name
@@ -472,19 +468,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const app = this.app;
 
         function create(iterator: XNode): { element?: any, control?: any } {
-            try {
-                if (typeof iterator.name === "string") {
+            if (typeof iterator.name === "string") {
 
-                    return { element: bridge.create(iterator.name) };
-                }
-                const fx = iterator.attributes ? iterator.attributes.for : undefined;
-                const c = new (iterator.name as any)(app, fx ? bridge.create(fx) : undefined) as any;
-                return { element: c.element, control: c };
-            } catch (e) {
-                // tslint:disable-next-line: no-console
-                console.log(JSON.stringify(iterator));
-                throw e;
+                return { element: bridge.create(iterator.name) };
             }
+            const fx = iterator.attributes ? iterator.attributes.for : undefined;
+            const c = new (iterator.name as any)(app, fx ? bridge.create(fx) : undefined) as any;
+            return { element: c.element, control: c };
         }
 
         e = e || this.element;
