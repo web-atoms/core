@@ -84,13 +84,13 @@ export default class Bind {
     }
 
     public static oneWay<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
-        return new Bind(oneWay, sourcePath, true);
+        return new Bind(oneWay, sourcePath);
     }
 
     public static twoWays<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         events?: string[]): Bind {
-        return new Bind(twoWays, sourcePath, false, true);
+        return new Bind(twoWays, sourcePath);
     }
 
     public readonly sourcePath: bindingFunction;
@@ -101,9 +101,7 @@ export default class Bind {
 
     constructor(
         public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
-        sourcePath: bindingFunction,
-        bindOneWay?: boolean,
-        bindTwoWay?: boolean
+        sourcePath: bindingFunction
         ) {
         this.sourcePath = sourcePath;
         if (!this.sourcePath) {
