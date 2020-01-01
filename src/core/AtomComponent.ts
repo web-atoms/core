@@ -133,7 +133,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     constructor(
         @Inject public readonly app: App,
-        element: T | XNode = null) {
+        element: T) {
         // if (!app) {
         //     // tslint:disable-next-line:no-console
         //     console.error("app cannot be null while creating control");

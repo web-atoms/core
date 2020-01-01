@@ -104,8 +104,8 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
         public atomParent(element: HTMLElement, climbUp: boolean = true): IUIAtomControl {
             const eAny: INameValuePairs = element as INameValuePairs;
-            if (eAny.IUIAtomControl) {
-                return eAny.IUIAtomControl;
+            if (eAny.atomControl) {
+                return eAny.atomControl;
             }
             if (!climbUp) {
                 return null;
@@ -146,7 +146,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         while (en.next()) {
             const iterator = en.current;
             const eAny = iterator as any;
-            const ac = eAny ? eAny.IUIAtomControl : undefined;
+            const ac = eAny ? eAny.atomControl : undefined;
 
             if (!action(iterator, ac)) {
                 continue;
@@ -157,9 +157,9 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
     public dispose(element: HTMLElement): void {
         const eAny = element as any;
-        eAny.IUIAtomControl = undefined;
+        eAny.atomControl = undefined;
         eAny.innerHTML = "";
-        delete eAny.IUIAtomControl;
+        delete eAny.atomControl;
     }
 
     public appendChild(parent: HTMLElement, child: HTMLElement): void {
@@ -199,7 +199,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
     }
 
     public attachControl(element: HTMLElement, control: IUIAtomControl): void {
-        (element as any).IUIAtomControl = control;
+        (element as any).atomControl = control;
     }
 
     public create(type: string): HTMLElement {
@@ -276,7 +276,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
             // const firstChild = node.children ? node.children[0] : null;
             // if (firstChild) {
             // 	const n = this.createNode(child, firstChild, binder, xNodeClass, creator);
-            // 	child.append(n.IUIAtomControl || n);
+            // 	child.append(n.atomControl || n);
             // }
             // return child.element;
         }
@@ -328,8 +328,8 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
                     continue;
                 }
                 const child = this.createNode(target, iterator, binder, xNodeClass, creator);
-                if (parent.element && parent.element.IUIAtomControl === parent) {
-                    parent.append(child.IUIAtomControl || child);
+                if (parent.element && parent.element.atomControl === parent) {
+                    parent.append(child.atomControl || child);
                 } else {
                     parent.appendChild(child);
                 }
