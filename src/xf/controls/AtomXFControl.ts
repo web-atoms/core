@@ -1,12 +1,14 @@
 import { AtomBinder } from "../../core/AtomBinder";
-import { AtomBridge } from "../../core/AtomBridge";
+import { AtomBridge, BaseElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import Bind from "../../core/Bind";
 import { IAtomElement } from "../../core/types";
 import XNode from "../../core/XNode";
 import { NavigationService } from "../../services/NavigationService";
 
-const bridge = AtomBridge.instance;
+declare var bridge: BaseElementBridge<IAtomElement>;
+
+AtomBridge.instance = bridge;
 
 declare var UMD: any;
 
