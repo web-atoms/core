@@ -29,11 +29,11 @@ export default class XNode {
     }
 
     public static prepare<T>(n: any): ((attributes: Partial<T>, ... nodes: XNode[]) => XNode) {
-        function fx(attrs, ... nodes: any[]) {
-            return new XNode(n, attrs, nodes);
-        }
-        fx.xNode = true;
-        return fx as any;
+        return {
+            factory(a: any, ... nodes: any[]) {
+                return new XNode(n, a, nodes);
+            }
+        } as any;
     }
 
     public static create(
@@ -41,15 +41,10 @@ export default class XNode {
         name: string | Function,
         attributes: IAttributes,
         ... children: Array<XNode | XNode[] | any>): XNode {
-        switch (typeof name) {
-            case "function":
-                if ((name as any).xNode) {
-                    return (name).apply(null, children);
-                }
-            case "string":
-            default:
-                return new XNode(name, attributes, children);
+        if (typeof name === "object") {
+                return (name as any).factory(attributes, ... children);
         }
+        return new XNode(name as any, attributes, children);
     }
 
     constructor(
