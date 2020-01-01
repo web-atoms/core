@@ -7,7 +7,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
 
-    const key: string = str;
+    const key: string = (parseThis !== undefined ? "un:" : parseThis ) + str;
 
     const px1: PathList[] = viewModelParseWatchCache[key];
     if (px1) {
