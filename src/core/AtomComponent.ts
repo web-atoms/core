@@ -1,6 +1,6 @@
 import { App } from "../App";
 import { Atom } from "../Atom";
-import { AtomBridge } from "../core/AtomBridge";
+import { AtomBridge, BaseElementBridge } from "../core/AtomBridge";
 import { AtomDispatcher } from "../core/AtomDispatcher";
 import { PropertyBinding } from "../core/PropertyBinding";
 import { PropertyMap } from "../core/PropertyMap";
@@ -11,8 +11,6 @@ import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
 import Bind from "./Bind";
 import XNode from "./XNode";
-
-const bridge = AtomBridge.instance;
 
 interface IEventObject<T> {
 
@@ -431,6 +429,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     protected render(node: XNode, e?: any, creator?: any): void {
 
         creator = creator || this;
+
+        const bridge = AtomBridge.instance;
 
         // element must be created before creating control
         // so in preCreate element should be available if
