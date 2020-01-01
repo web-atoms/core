@@ -22,6 +22,7 @@ export default class XFApp extends A.App {
 
     constructor() {
         super();
+        AtomBridge.instance = bridge;
         this.put(NavigationService, this.resolve(XFNavigationService));
         this.put(BusyIndicatorService, this.resolve(XFBusyIndicatorService));
     }

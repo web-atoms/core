@@ -8,8 +8,6 @@ import { NavigationService } from "../../services/NavigationService";
 
 declare var bridge: BaseElementBridge<IAtomElement>;
 
-AtomBridge.instance = bridge;
-
 declare var UMD: any;
 
 UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
