@@ -465,13 +465,15 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             };
         }
 
+        const app = this.app;
+
         function create(iterator: XNode): { element?: any, control?: any } {
             if (typeof iterator.name === "string") {
 
                 return { element: bridge.create(iterator.name) };
             }
             const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            const c = new (iterator.name as any)(this.app, fx ? bridge.create(fx) : undefined) as any;
+            const c = new (iterator.name as any)(app, fx ? bridge.create(fx) : undefined) as any;
             return { element: c.element, control: c };
         }
 
