@@ -118,7 +118,7 @@ export default class Bind {
                 this.pathList = lists.pathList;
             }
             if (lists.thisPath.length) {
-                this.thisPathList = lists.pathList;
+                this.thisPathList = lists.thisPath;
             }
         }
 
