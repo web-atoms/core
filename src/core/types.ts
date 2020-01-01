@@ -24,6 +24,17 @@ export interface IClassOf<T> extends Function {
 
 export type IAtomElement = HTMLElement | INativeComponent;
 
+export interface IUIElement {
+    atomControl: IUIAtomControl;
+}
+
+export interface IUIAtomControl {
+    element: IUIElement;
+    invalidate();
+    updateSize();
+    dispose();
+}
+
 export type PathList = string[];
 
 export interface INameValuePairs {

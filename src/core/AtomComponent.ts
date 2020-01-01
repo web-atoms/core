@@ -9,7 +9,10 @@ import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChange
     from "../core/types";
 import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
+import Bind from "./Bind";
 import XNode from "./XNode";
+
+const bridge = AtomBridge.instance;
 
 interface IEventObject<T> {
 
@@ -425,7 +428,123 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return this.disposables.add(d);
     }
 
-    protected abstract render(node: XNode): void;
+    protected render(node: XNode, e: any, creator: any): void {
+
+        creator = creator || this;
+
+        // element must be created before creating control
+        // so in preCreate element should be available if
+        // control wants to add default behavior
+
+        // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
+
+        function toTemplate(n: XNode) {
+            let fx;
+            let en;
+            if (typeof n.name === "function") {
+                fx = n.name;
+                en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
+            } else {
+                fx = bridge.controlFactory;
+                en = n.name;
+            }
+            return class Template extends (fx as any) {
+
+                // tslint:disable-next-line: variable-name
+                public _creator = fx;
+
+                constructor(a, e1) {
+                    super(a, e1 || (en ? bridge.create(en) : undefined));
+                }
+
+                public create() {
+                    super.create();
+                    this.render(n, null, creator);
+                }
+
+            };
+        }
+
+        function create(iterator: XNode): { element?: any, control?: any } {
+            if (typeof iterator.name === "string") {
+
+                return { element: bridge.create(iterator.name) };
+            }
+            const fx = iterator.attributes ? iterator.attributes.for : undefined;
+            const c = new (iterator.name as any)(this.app, fx ? bridge.create(fx) : undefined) as any;
+            return { element: c.element, control: c };
+        }
+
+        e = e || this.element;
+        const attr = node.attributes;
+        if (attr) {
+            for (const key in attr) {
+                if (attr.hasOwnProperty(key)) {
+                    const item = attr[key];
+                    if (item instanceof Bind) {
+                        item.setupFunction(key, item, this, e, creator);
+                    } else if (item instanceof XNode) {
+                        // this is template..
+                        this.setLocalValue(e, key, toTemplate(item));
+                    } else {
+                        this.setLocalValue(e, key, item);
+                    }
+                }
+            }
+        }
+
+        for (const iterator of node.children) {
+            if (typeof iterator === "string") {
+                e.appendChild(document.createTextNode(iterator));
+                continue;
+            }
+            if (iterator.isTemplate) {
+                this.setLocalValue(e, iterator.name, toTemplate(iterator.children[0]));
+                continue;
+            }
+            if (iterator.isProperty) {
+                for (const child of iterator.children) {
+                    const pc = create(child);
+                    (bridge as any).append(e, iterator.name, pc.element);
+                    (pc.control || this).render(child, pc.element, creator);
+                }
+                continue;
+            }
+            const t = iterator.attributes && iterator.attributes.template;
+            if (t) {
+                this.setLocalValue(e, t, toTemplate(iterator));
+                continue;
+            }
+            const c = create(iterator);
+            if (this.element === e) {
+                this.append(c.control || c.element);
+            } else {
+                e.appendChild(c.element);
+            }
+            (c.control || this).render(iterator, c.element, creator);
+            // if (typeof iterator.name === "string") {
+
+            //     const ex = bridge.create(iterator.name);
+            //     if (this.element === e) {
+            //         this.append(ex as any);
+            //     } else {
+            //         e.appendChild(ex);
+            //     }
+            //     this.render(iterator, ex, creator);
+            //     continue;
+            // }
+            // const fx = iterator.attributes ? iterator.attributes.for : undefined;
+            // const c = new (iterator.name)(this.app, fx ? bridge.create(fx) : undefined) as any;
+            // if (this.element === e) {
+            //     this.append(c);
+            //     c.render(iterator, c.element, creator);
+            // } else {
+            //     e.appendChild(c.element);
+            //     c.render(iterator, c.element, creator);
+            // }
+        }
+
+    }
 
     // tslint:disable-next-line:no-empty
     protected create(): void {

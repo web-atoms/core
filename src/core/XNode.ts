@@ -28,10 +28,13 @@ export default class XNode {
         };
     }
 
-    public static prepare<T>(n: any): ((attributes: Partial<T>, ... nodes: XNode[]) => XNode) {
+    public static prepare<T>(
+        n: any,
+        isProperty?: boolean,
+        isTemplate?: boolean): ((attributes: Partial<T>, ... nodes: XNode[]) => XNode) {
         return {
             factory(a: any, ... nodes: any[]) {
-                return new XNode(n, a, nodes);
+                return new XNode(n, a, nodes, isProperty , isTemplate);
             }
         } as any;
     }
@@ -51,7 +54,9 @@ export default class XNode {
         // tslint:disable-next-line: ban-types
         public name: string | Function,
         public attributes: IAttributes,
-        public children: XNode[] | XNode[][] | any[]) {
+        public children: XNode[] | XNode[][] | any[],
+        public isProperty?: boolean,
+        public isTemplate?: boolean) {
     }
 
     public toString(): string {

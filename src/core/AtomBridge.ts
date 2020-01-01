@@ -1,11 +1,12 @@
 import { AjaxOptions } from "../services/http/AjaxOptions";
-import { AtomControl } from "../web/controls/AtomControl";
 import { AtomUI, ChildEnumerator } from "../web/core/AtomUI";
 import { AtomBinder } from "./AtomBinder";
-import { IAtomElement, IDisposable, INameValuePairs, INativeComponent } from "./types";
+import { IAtomElement, IDisposable, INameValuePairs, INativeComponent, IUIAtomControl } from "./types";
 import XNode from "./XNode";
 
 export abstract class BaseElementBridge<T extends IAtomElement> {
+
+    public controlFactory: any;
 
     public createBusyIndicator: () => IDisposable;
 
@@ -23,7 +24,7 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
 
     public abstract create(type: string): T;
 
-    public abstract attachControl(element: T, control: AtomControl): void;
+    public abstract attachControl(element: T, control: IUIAtomControl): void;
 
     public abstract addEventHandler(
         element: T,
@@ -31,13 +32,13 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
         handler: EventListenerOrEventListenerObject,
         capture?: boolean): IDisposable;
 
-    public abstract atomParent(element: T, climbUp?: boolean): AtomControl;
+    public abstract atomParent(element: T, climbUp?: boolean): IUIAtomControl;
 
     public abstract elementParent(element: T): T;
 
-    public abstract templateParent(element: T): AtomControl;
+    public abstract templateParent(element: T): IUIAtomControl;
 
-    public abstract visitDescendents(element: T, action: (e: T, ac: AtomControl) => boolean): void;
+    public abstract visitDescendents(element: T, action: (e: T, ac: IUIAtomControl) => boolean): void;
 
     public abstract dispose(element: T): void;
 
@@ -101,10 +102,10 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
             };
         }
 
-        public atomParent(element: HTMLElement, climbUp: boolean = true): AtomControl {
+        public atomParent(element: HTMLElement, climbUp: boolean = true): IUIAtomControl {
             const eAny: INameValuePairs = element as INameValuePairs;
-            if (eAny.atomControl) {
-                return eAny.atomControl;
+            if (eAny.IUIAtomControl) {
+                return eAny.IUIAtomControl;
             }
             if (!climbUp) {
                 return null;
@@ -124,7 +125,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         return element.parentElement;
     }
 
-    public templateParent(element: HTMLElement): AtomControl {
+    public templateParent(element: HTMLElement): IUIAtomControl {
         if (!element) {
             return null;
         }
@@ -139,13 +140,13 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         return this.templateParent(parent);
     }
 
-    public visitDescendents(element: HTMLElement, action: (e: HTMLElement, ac: AtomControl) => boolean): void  {
+    public visitDescendents(element: HTMLElement, action: (e: HTMLElement, ac: IUIAtomControl) => boolean): void  {
 
         const en = new ChildEnumerator(element);
         while (en.next()) {
             const iterator = en.current;
             const eAny = iterator as any;
-            const ac = eAny ? eAny.atomControl : undefined;
+            const ac = eAny ? eAny.IUIAtomControl : undefined;
 
             if (!action(iterator, ac)) {
                 continue;
@@ -156,9 +157,9 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
     public dispose(element: HTMLElement): void {
         const eAny = element as any;
-        eAny.atomControl = undefined;
+        eAny.IUIAtomControl = undefined;
         eAny.innerHTML = "";
-        delete eAny.atomControl;
+        delete eAny.IUIAtomControl;
     }
 
     public appendChild(parent: HTMLElement, child: HTMLElement): void {
@@ -197,8 +198,8 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
         };
     }
 
-    public attachControl(element: HTMLElement, control: AtomControl): void {
-        (element as any).atomControl = control;
+    public attachControl(element: HTMLElement, control: IUIAtomControl): void {
+        (element as any).IUIAtomControl = control;
     }
 
     public create(type: string): HTMLElement {
@@ -275,7 +276,7 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
             // const firstChild = node.children ? node.children[0] : null;
             // if (firstChild) {
             // 	const n = this.createNode(child, firstChild, binder, xNodeClass, creator);
-            // 	child.append(n.atomControl || n);
+            // 	child.append(n.IUIAtomControl || n);
             // }
             // return child.element;
         }
@@ -327,8 +328,8 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
                     continue;
                 }
                 const child = this.createNode(target, iterator, binder, xNodeClass, creator);
-                if (parent.element && parent.element.atomControl === parent) {
-                    parent.append(child.atomControl || child);
+                if (parent.element && parent.element.IUIAtomControl === parent) {
+                    parent.append(child.IUIAtomControl || child);
                 } else {
                     parent.appendChild(child);
                 }

@@ -159,94 +159,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         });
     }
 
-    protected render(node: XNode, e?: HTMLElement, creator?: any): void {
-
-        creator = creator || this;
-
-        // element must be created before creating control
-        // so in preCreate element should be available if
-        // control wants to add default behavior
-
-        // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
-
-        function toTemplate(n: XNode) {
-            let fx;
-            let en;
-            if (typeof n.name === "function") {
-                fx = n.name;
-                en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
-            } else {
-                fx = AtomControl;
-                en = n.name;
-            }
-            return class Template extends (fx as any) {
-
-                // tslint:disable-next-line: variable-name
-                public _creator = fx;
-
-                constructor(a, e1) {
-                    super(a, e1 || (en ? document.createElement(en) : undefined));
-                }
-
-                public create() {
-                    super.create();
-                    this.render(n, null, creator);
-                }
-
-            };
-        }
-
-        e = e || this.element;
-        const attr = node.attributes;
-        if (attr) {
-            for (const key in attr) {
-                if (attr.hasOwnProperty(key)) {
-                    const item = attr[key];
-                    if (item instanceof Bind) {
-                        item.setupFunction(key, item, this, e, creator);
-                    } else if (item instanceof XNode) {
-                        // this is template..
-                        this.setLocalValue(e, key, toTemplate(item));
-                    } else {
-                        this.setLocalValue(e, key, item);
-                    }
-                }
-            }
-        }
-
-        for (const iterator of node.children) {
-            if (typeof iterator === "string") {
-                e.appendChild(document.createTextNode(iterator));
-                continue;
-            }
-            const t = iterator.attributes && iterator.attributes.template;
-            if (t) {
-                this.setLocalValue(e, t, toTemplate(iterator));
-                continue;
-            }
-            if (typeof iterator.name === "string") {
-                const ex = document.createElement(iterator.name);
-                if (this.element === e) {
-                    this.append(ex);
-                } else {
-                    e.appendChild(ex);
-                }
-                this.render(iterator, ex, creator);
-                continue;
-            }
-            const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            const c = new (iterator.name)(this.app, fx ? document.createElement(fx) : undefined) as AtomControl;
-            if (this.element === e) {
-                this.append(c);
-                c.render(iterator, c.element, creator);
-            } else {
-                e.appendChild(c.element);
-                c.render(iterator, c.element, creator);
-            }
-        }
-
-    }
-
     protected preCreate(): void {
         // if (!this.element) {
         //     this.element = document.createElement("div");
@@ -419,3 +331,5 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
 }
+
+bridge.controlFactory = AtomControl;
