@@ -52,6 +52,9 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         } else if (px.startsWith("_this.")) {
             if (parseThis !== true) {
                 px = px.substr(6);
+            } else {
+                // need to convert _this to this
+                px = px.substr(1);
             }
         } else {
             px = px.substr(p.length + 1);
