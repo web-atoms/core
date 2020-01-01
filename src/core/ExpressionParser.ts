@@ -30,9 +30,9 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     const index: number = str.indexOf(")");
 
-    const isThis: boolean = index === 0 || parseThis;
+    const isThis: boolean = parseThis === undefined ? (index === 0 || parseThis) : parseThis;
 
-    const p: string = isThis ? "\\_this|this" : str.substr(0, index);
+    const p: string = isThis ? "\\_this|this" : (str.substr(0, index) || "x");
 
     str = str.substr(index + 1);
 
