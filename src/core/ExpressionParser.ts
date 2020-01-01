@@ -106,7 +106,7 @@ export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
 
     let str: string = f.toString().trim();
 
-    const key: string = str;
+    const key: string = (parseThis === undefined ? "un:" : parseThis) + str;
 
     const px1 = viewModelParseWatchCache2[key];
     if (px1) {
