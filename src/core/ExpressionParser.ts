@@ -46,9 +46,13 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         // console.log(`m: ${m}`);
         let px: string = m;
         if (px.startsWith("this.")) {
-            px = px.substr(5);
+            if (parseThis !== true) {
+                px = px.substr(5);
+            }
         } else if (px.startsWith("_this.")) {
-            px = px.substr(6);
+            if (parseThis !== true) {
+                px = px.substr(6);
+            }
         } else {
             px = px.substr(p.length + 1);
         }
@@ -86,6 +90,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         rp.push(rpitem);
     }
 
+    // tslint:disable-next-line: no-console
     // console.log(`Watching: ${path.join(", ")}`);
 
     const pl = path.map( (p1) => p1.split("."));

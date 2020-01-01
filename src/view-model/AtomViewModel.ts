@@ -289,7 +289,7 @@ export class AtomViewModel {
         name?: string): IDisposable {
 
         const d: AtomWatcher<any> = new AtomWatcher<any>(
-            this, ft, proxy );
+            this, ft, proxy, this );
         if (forValidation) {
             this.validations = this.validations || [];
             this.validations.push({ name, watcher: d, initialized: false});
