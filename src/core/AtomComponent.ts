@@ -448,6 +448,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 fx = bridge.controlFactory;
                 en = n.name;
             }
+            if (fx === undefined) {
+                // tslint:disable-next-line: no-console
+                console.log(JSON.stringify(n, undefined, 2));
+            }
             return class Template extends (fx as any) {
 
                 // tslint:disable-next-line: variable-name
