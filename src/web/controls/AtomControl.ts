@@ -159,7 +159,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         });
     }
 
-    protected render(node: XNode, e?: HTMLElement): void {
+    protected render(node: XNode, e?: HTMLElement, creator?: any): void {
+
+        creator = creator || this;
 
         // element must be created before creating control
         // so in preCreate element should be available if
@@ -188,7 +190,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
                 public create() {
                     super.create();
-                    this.render(n);
+                    this.render(n, null, creator);
                 }
 
             };
@@ -201,7 +203,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 if (attr.hasOwnProperty(key)) {
                     const item = attr[key];
                     if (item instanceof Bind) {
-                        item.setupFunction(key, item, this, e);
+                        item.setupFunction(key, item, this, e, creator);
                     } else if (item instanceof XNode) {
                         // this is template..
                         this.setLocalValue(e, key, toTemplate(item));
@@ -229,17 +231,17 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 } else {
                     e.appendChild(ex);
                 }
-                this.render(iterator, ex);
+                this.render(iterator, ex, creator);
                 continue;
             }
             const fx = iterator.attributes ? iterator.attributes.for : undefined;
             const c = new (iterator.name)(this.app, fx ? document.createElement(fx) : undefined) as AtomControl;
             if (this.element === e) {
                 this.append(c);
-                c.render(iterator, c.element);
+                c.render(iterator, c.element, creator);
             } else {
                 e.appendChild(c.element);
-                c.render(iterator, c.element);
+                c.render(iterator, c.element, creator);
             }
         }
 

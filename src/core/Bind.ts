@@ -1,4 +1,4 @@
-import { parsePath } from "./ExpressionParser";
+import { parsePath, parsePathLists } from "./ExpressionParser";
 
 export interface IAtomComponent {
     element: any;
@@ -8,6 +8,7 @@ export interface IAtomComponent {
     app: {
         callLater: (f: () => void) => void;
     };
+    runAfterInit(f: () => void): void;
     setLocalValue(e: any, name: string, value: any): void;
     bindEvent(e: any, name: string, handler: any);
     bind(e: any, name: string, path: any, twoWays: boolean, converter: any, source?: any);
@@ -22,13 +23,13 @@ const isEvent = /^event/i;
 export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T) => any;
 
 function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control.app.callLater(() => {
+    control.runAfterInit(() => {
         control.setLocalValue(e, name, b.sourcePath(control));
     });
 }
 
 function event(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control.app.callLater(() => {
+    control.runAfterInit(() => {
         if (isEvent.test(name)) {
             name = name.substr(5);
             name = (name[0].toLowerCase() + name.substr(1));
@@ -39,18 +40,26 @@ function event(name: string, b: Bind, control: IAtomComponent, e: any) {
     });
 }
 
-function oneWay(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control.app.callLater(() => {
-        control.bind(e, name, b.pathList , false, () => {
-            // tslint:disable-next-line: ban-types
-            return (b.sourcePath as Function).call(control, control);
-        });
+function oneWay(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
+    control.runAfterInit(() => {
+        if (b.pathList) {
+            control.bind(e, name, b.pathList , false, () => {
+                // tslint:disable-next-line: ban-types
+                return (b.sourcePath as Function).call(creator, control);
+            });
+        }
+        if (b.thisPathList) {
+            control.bind(e, name, b.thisPathList , false, () => {
+                // tslint:disable-next-line: ban-types
+                return (b.sourcePath as Function).call(creator, control);
+            }, creator);
+        }
     });
 }
 
-function twoWays(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control.app.callLater(() => {
-        control.bind(e, name, b.pathList, true, null);
+function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
+    control.runAfterInit(() => {
+        control.bind(e, name, b.thisPathList || b.pathList, true, null, b.thisPathList ? creator : undefined);
     });
 }
 
@@ -75,22 +84,26 @@ export default class Bind {
     }
 
     public static oneWay<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
-        return new Bind(oneWay, sourcePath);
+        return new Bind(oneWay, sourcePath, true);
     }
 
     public static twoWays<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         events?: string[]): Bind {
-        return new Bind(twoWays, sourcePath);
+        return new Bind(twoWays, sourcePath, false, true);
     }
 
     public readonly sourcePath: bindingFunction;
 
     public readonly pathList: string[][];
 
+    public readonly thisPathList: string[][];
+
     constructor(
-        public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any) => void),
-        sourcePath: bindingFunction
+        public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
+        sourcePath: bindingFunction,
+        bindOneWay?: boolean,
+        bindTwoWay?: boolean
         ) {
         this.sourcePath = sourcePath;
         if (!this.sourcePath) {
@@ -100,8 +113,13 @@ export default class Bind {
             this.pathList = this.sourcePath as any;
             // this.setupFunction = null;
         } else {
-            this.pathList = parsePath(this.sourcePath);
-            // this.sourcePath = null;
+            const lists = parsePathLists(this.sourcePath);
+            if (lists.pathList.length) {
+                this.pathList = lists.pathList;
+            }
+            if (lists.thisPath.length) {
+                this.thisPathList = lists.pathList;
+            }
         }
 
     }

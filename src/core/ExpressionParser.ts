@@ -94,3 +94,47 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     return pl;
 }
+
+interface IPathLists {
+    thisPath: PathList[];
+    pathList: PathList[];
+}
+
+const viewModelParseWatchCache2: {[key: string]: IPathLists } = {};
+
+export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
+
+    let str: string = f.toString().trim();
+
+    const key: string = str;
+
+    const px1 = viewModelParseWatchCache2[key];
+    if (px1) {
+        return px1;
+    }
+
+    str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
+
+    if (str.endsWith("}")) {
+        str = str.substr(0, str.length - 1);
+    }
+
+    if (str.startsWith("function (")) {
+        str = str.substr("function (".length);
+    }
+
+    if (str.startsWith("function(")) {
+        str = str.substr("function(".length);
+    }
+
+    str = str.trim();
+
+    const pl = {
+        pathList: parsePath(str, false),
+        thisPath: parsePath(str, true)
+    };
+
+    viewModelParseWatchCache2[key] = pl;
+
+    return pl;
+}
