@@ -35,6 +35,9 @@ export default class XNode {
         return {
             factory(a: any, ... nodes: any[]) {
                 return new XNode(n, a, nodes, isProperty , isTemplate);
+            },
+            toString() {
+                return n;
             }
         } as any;
     }
