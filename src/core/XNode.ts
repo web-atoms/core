@@ -4,6 +4,7 @@ export interface IAttributes {
 
 // tslint:disable-next-line: no-namespace
 declare global {
+
     namespace JSX {
 
         // tslint:disable-next-line: interface-name
@@ -11,6 +12,18 @@ declare global {
             vsProps;
         }
 
+        type HtmlPartial<T> = {
+            [k in keyof T]?: {
+                [tx in keyof T[k]]?: T[k][tx] | any;
+            } | { [key: string]: any }
+        };
+
+        type IAllHtmlElements = HtmlPartial<HTMLElementTagNameMap>;
+
+        // tslint:disable-next-line
+        interface IntrinsicElements extends IAllHtmlElements {
+
+        }
     }
 }
 
