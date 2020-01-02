@@ -507,8 +507,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             if (iterator.isProperty) {
                 for (const child of iterator.children) {
                     const pc = create(child);
-                    (bridge as any).append(e, iterator.name, pc.element);
                     (pc.control || this).render(child, pc.element, creator);
+
+                    // in Xamarin.Forms certain properties are required to be
+                    // set in advance, so we append the element after setting
+                    // all children properties
+                    (bridge as any).append(e, iterator.name, pc.element);
                 }
                 continue;
             }
