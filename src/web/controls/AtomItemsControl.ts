@@ -4,10 +4,14 @@ import AtomEnumerator from "../../core/AtomEnumerator";
 import "../../core/AtomList";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
+import XNode from "../../core/XNode";
 import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
 import { AtomControl } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
+
+    public static itemTemplate = XNode.prepare("itemTemplate", false, true);
+
     @BindableProperty
     public mAllowSelectFirst: boolean = false;
 

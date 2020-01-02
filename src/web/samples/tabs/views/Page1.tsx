@@ -1,5 +1,7 @@
 import { App } from "../../../../App";
+import Bind from "../../../../core/Bind";
 import { BindableProperty } from "../../../../core/BindableProperty";
+import XNode from "../../../../core/XNode";
 import { Inject } from "../../../../di/Inject";
 import { AtomWindowViewModel } from "../../../../view-model/AtomWindowViewModel";
 import { AtomGridView } from "../../../controls/AtomGridView";
@@ -14,13 +16,14 @@ export default class Page1 extends AtomGridView {
         this.columns = "45%,*,45%";
         this.rows = "45%,*,45%";
 
-        const div = new AtomListBox(this.app, document.createElement("div"));
-        this.append(div);
-        // tslint:disable-next-line:no-string-literal
-        div.element["row"] = "1";
-        // tslint:disable-next-line:no-string-literal
-        div.element["column"] = "1";
-        div.bind(div.element, "items", [["viewModel", "items"]]);
+        this.render(
+        <AtomListBox
+            row={1}
+            column={1}>
+            <AtomListBox.itemTemplate>
+                <span text={Bind.oneWay((x) => x.data.label)}></span>
+            </AtomListBox.itemTemplate>
+        </AtomListBox>);
     }
 }
 
