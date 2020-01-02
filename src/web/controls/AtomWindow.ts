@@ -7,6 +7,7 @@ import { AtomTheme } from "../styles/AtomTheme";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomControl } from "./AtomControl";
 import { AtomTemplate } from "./AtomTemplate";
+import XNode from "../../core/XNode";
 
 export function getTemplateParent(e: HTMLElement) {
     const tp = e._templateParent;
@@ -104,6 +105,14 @@ class AtomWindowTitleTemplate extends AtomControl {
 }
 
 export class AtomWindow extends AtomControl {
+
+    public static windowTemplate = XNode.prepare("windowTemplate", true, true);
+
+    public static commandTemplate = XNode.prepare("commandTemplate", true, true);
+
+    public static titleTemplate = XNode.prepare("titleTemplate", true, true);
+
+    public static frameTemplate = XNode.prepare("frameTemplate", true, true);
 
     public get templateParent() {
         return getTemplateParent(this.element);

@@ -10,7 +10,8 @@ import { AtomControl } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
 
-    public static itemTemplate = XNode.prepare("itemTemplate", false, true);
+    /** Item Template for displaying individual items */
+    public static itemTemplate = XNode.prepare("itemTemplate", true, true);
 
     @BindableProperty
     public mAllowSelectFirst: boolean = false;
