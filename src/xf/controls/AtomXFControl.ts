@@ -17,20 +17,12 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return AtomBridge.instance.atomParent(this.element, true) as any;
     }
 
-    // public get templateParent(): AtomXFControl {
-    //     return bridge.templateParent(this.element) as any;
-    // }
-
     public atomParent(e: IAtomElement): AtomXFControl {
         return AtomBridge.instance.atomParent(e, false) as any;
     }
 
     public append(element: any): AtomXFControl {
-        if ((element as any).atomControl) {
-            AtomBridge.instance.appendChild(this.element, element);
-        } else {
-            AtomBridge.instance.appendChild(this.element, element.element);
-        }
+        this.element.appendChild(element.element || element);
         return this;
     }
 
@@ -42,43 +34,6 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
     public invokeEvent(event: { type: string, detail?: any }): void {
         (AtomBridge.instance as any).invokeEvent(this.element, event.type, event);
-    }
-
-    // protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
-    //     AtomBinder.refreshValue(this, name);
-    //     bridge.visitDescendents(this.element, (e, ac) => {
-    //         if (ac) {
-    //             ((ac as any) as AtomXFControl).refreshInherited(name, fx);
-    //             return false;
-    //         }
-    //         return true;
-    //     });
-    // }
-
-    protected loadXaml(content: string): void {
-        (AtomBridge.instance as any).loadXamlContent(this, this.element, content);
-    }
-
-    protected find(name: string): any {
-        return AtomBridge.instance.findChild(this.element, name);
-    }
-
-    protected createControl(name: string): any {
-        return AtomBridge.instance.create(name);
-    }
-
-    protected setTemplate(element: any, name: string, template: () => AtomXFControl): void {
-        if (!template) {
-            return;
-        }
-        AtomBridge.instance.setTemplate(element, name, template);
-    }
-
-    protected setImport(element: any, name: string, factory: () => AtomXFControl): void {
-        if (!factory) {
-            return;
-        }
-        AtomBridge.instance.setImport(element, name, factory);
     }
 
     protected setElementValue(element: any, name: string, value: any): void {

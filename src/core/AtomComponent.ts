@@ -131,11 +131,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     constructor(
         @Inject public readonly app: App,
-        element: T | XNode = null) {
-        // if (!app) {
-        //     // tslint:disable-next-line:no-console
-        //     console.error("app cannot be null while creating control");
-        // }
+        element: T = null) {
         this.disposables = new AtomDisposableList();
         this.bindings = [];
         this.eventHandlers = [];

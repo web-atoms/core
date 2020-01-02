@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
-
+    appendChild(e: any);
 }
 
 export interface INotifyPropertyChanging {
