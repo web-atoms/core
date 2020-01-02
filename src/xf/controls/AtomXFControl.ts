@@ -6,8 +6,6 @@ import { IAtomElement } from "../../core/types";
 import XNode from "../../core/XNode";
 import { NavigationService } from "../../services/NavigationService";
 
-declare var bridge: BaseElementBridge<IAtomElement>;
-
 declare var UMD: any;
 
 UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
@@ -16,7 +14,7 @@ UMD.viewPrefix = "xf";
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
     public get parent(): AtomXFControl {
-        return bridge.atomParent(this.element, true) as any;
+        return AtomBridge.instance.atomParent(this.element, true) as any;
     }
 
     // public get templateParent(): AtomXFControl {
@@ -24,21 +22,26 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     // }
 
     public atomParent(e: IAtomElement): AtomXFControl {
-        return bridge.atomParent(e, false) as any;
+        return AtomBridge.instance.atomParent(e, false) as any;
     }
 
-    public append(element: IAtomElement | AtomXFControl): AtomXFControl {
+    public append(element: any): AtomXFControl {
+        if ((element as any).atomControl) {
+            AtomBridge.instance.appendChild(this.element, element);
+        } else {
+            AtomBridge.instance.appendChild(this.element, element.element);
+        }
         return this;
     }
 
     public dispose(e?: IAtomElement): void {
         const el = this.element;
         super.dispose(e);
-        bridge.dispose(el);
+        AtomBridge.instance.dispose(el);
     }
 
     public invokeEvent(event: { type: string, detail?: any }): void {
-        (bridge as any).invokeEvent(this.element, event.type, event);
+        (AtomBridge.instance as any).invokeEvent(this.element, event.type, event);
     }
 
     // protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
@@ -53,29 +56,29 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     // }
 
     protected loadXaml(content: string): void {
-        (bridge as any).loadXamlContent(this, this.element, content);
+        (AtomBridge.instance as any).loadXamlContent(this, this.element, content);
     }
 
     protected find(name: string): any {
-        return bridge.findChild(this.element, name);
+        return AtomBridge.instance.findChild(this.element, name);
     }
 
     protected createControl(name: string): any {
-        return bridge.create(name);
+        return AtomBridge.instance.create(name);
     }
 
     protected setTemplate(element: any, name: string, template: () => AtomXFControl): void {
         if (!template) {
             return;
         }
-        bridge.setTemplate(element, name, template);
+        AtomBridge.instance.setTemplate(element, name, template);
     }
 
     protected setImport(element: any, name: string, factory: () => AtomXFControl): void {
         if (!factory) {
             return;
         }
-        bridge.setImport(element, name, factory);
+        AtomBridge.instance.setImport(element, name, factory);
     }
 
     protected setElementValue(element: any, name: string, value: any): void {
@@ -96,9 +99,9 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
             });
             return;
         }
-        bridge.setValue(element, name, value);
+        AtomBridge.instance.setValue(element, name, value);
     }
 
 }
-
+declare var bridge;
 bridge.controlFactory = AtomXFControl;
