@@ -64,13 +64,13 @@ function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator
 }
 
 function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control[name] = e;
+    control[b.name || name] = e;
 }
 
 export default class Bind {
 
-    public static get presenter(): any {
-        return new Bind(presenter, undefined);
+    public static presenter(name?: string): Bind {
+        return new Bind(presenter, null, name as any);
     }
 
     // tslint:disable-next-line: ban-types
@@ -101,7 +101,8 @@ export default class Bind {
 
     constructor(
         public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
-        sourcePath: bindingFunction
+        sourcePath: bindingFunction,
+        public readonly name?: string
         ) {
         this.sourcePath = sourcePath;
         if (!this.sourcePath) {
