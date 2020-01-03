@@ -1,6 +1,7 @@
 import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import { CancelToken, IClassOf } from "../../core/types";
+import XNode from "../../core/XNode";
 import { IPageOptions, NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
@@ -14,6 +15,8 @@ class EmptyStyle extends AtomStyle {
 }
 
 export class AtomPageLink extends AtomControl {
+
+    public static page = XNode.prepare("page", true, true);
 
     public page: string | IClassOf<AtomControl>;
 
