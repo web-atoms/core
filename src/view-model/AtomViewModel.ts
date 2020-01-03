@@ -132,6 +132,7 @@ export class AtomViewModel {
      */
     public get isValid(): boolean {
         let valid = true;
+        const validateWasFalse = this.mShouldValidate === false;
         this.mShouldValidate = true;
         for (const v of this.validations) {
             if (!v.initialized) {
@@ -139,6 +140,9 @@ export class AtomViewModel {
                 v.initialized = true;
             }
             if (this[v.name]) {
+                if (validateWasFalse) {
+                    AtomBinder.refreshValue(this, v.name);
+                }
                 valid = false;
             }
         }
