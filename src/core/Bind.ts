@@ -56,7 +56,9 @@ function oneWay(name: string, b: Bind, control: IAtomComponent, e: any, creator:
 }
 
 function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
-    control.bind(e, name, b.thisPathList || b.pathList, true, null, b.thisPathList ? creator : undefined);
+    control.bind(e,
+        name,
+        b.thisPathList || b.pathList, (b.eventList as any) || true, null, b.thisPathList ? creator : undefined);
 }
 
 function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
@@ -86,7 +88,7 @@ export default class Bind {
     public static twoWays<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         events?: string[]): Bind {
-        return new Bind(twoWays, sourcePath);
+        return new Bind(twoWays, sourcePath, null, events);
     }
 
     public readonly sourcePath: bindingFunction;
@@ -98,7 +100,8 @@ export default class Bind {
     constructor(
         public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
         sourcePath: bindingFunction,
-        public readonly name?: string
+        public readonly name?: string,
+        public readonly eventList?: string[]
         ) {
         this.sourcePath = sourcePath;
         if (!this.sourcePath) {
