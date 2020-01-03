@@ -41,26 +41,22 @@ function event(name: string, b: Bind, control: IAtomComponent, e: any) {
 }
 
 function oneWay(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
-    control.runAfterInit(() => {
-        if (b.pathList) {
-            control.bind(e, name, b.pathList , false, () => {
-                // tslint:disable-next-line: ban-types
-                return (b.sourcePath as Function).call(creator, control);
-            });
-        }
-        if (b.thisPathList) {
-            control.bind(e, name, b.thisPathList , false, () => {
-                // tslint:disable-next-line: ban-types
-                return (b.sourcePath as Function).call(creator, control);
-            }, creator);
-        }
-    });
+    if (b.pathList) {
+        control.bind(e, name, b.pathList , false, () => {
+            // tslint:disable-next-line: ban-types
+            return (b.sourcePath as Function).call(creator, control);
+        });
+    }
+    if (b.thisPathList) {
+        control.bind(e, name, b.thisPathList , false, () => {
+            // tslint:disable-next-line: ban-types
+            return (b.sourcePath as Function).call(creator, control);
+        }, creator);
+    }
 }
 
 function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
-    control.runAfterInit(() => {
-        control.bind(e, name, b.thisPathList || b.pathList, true, null, b.thisPathList ? creator : undefined);
-    });
+    control.bind(e, name, b.thisPathList || b.pathList, true, null, b.thisPathList ? creator : undefined);
 }
 
 function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
