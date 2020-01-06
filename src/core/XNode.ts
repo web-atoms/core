@@ -15,7 +15,13 @@ declare global {
         type HtmlPartial<T> = {
             [k in keyof T]?: {
                 [tx in keyof T[k]]?: T[k][tx] | any;
-            } | { [key: string]: any }
+            } | {
+                eventClick?: any;
+                eventBlur?: any;
+                eventFocus?: any;
+                text?: string | any;
+                [key: string]: any
+            }
         };
 
         type IAllHtmlElements = HtmlPartial<HTMLElementTagNameMap>;
