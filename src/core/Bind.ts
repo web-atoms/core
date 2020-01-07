@@ -62,7 +62,11 @@ function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator
 }
 
 function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control[b.name || name] = e;
+    let c = control as any;
+    while (!c.hasProperty(name)) {
+        c = c.parent;
+    }
+    c[b.name || name] = e;
 }
 
 export default class Bind {
