@@ -1,5 +1,5 @@
-import closeButton from "../images/close-button.svg";
-import closeButtonHover from "../images/close-button-hover.svg";
+import closeButtonHover from "@web-atoms/core/src/web/images/close-button-hover.svg";
+import closeButton from "@web-atoms/core/src/web/images/images/close-button.svg";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
