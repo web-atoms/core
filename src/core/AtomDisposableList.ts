@@ -27,6 +27,7 @@ export class AtomDisposableList implements IDisposable {
         for (const iterator of this.disposables) {
             iterator.dispose();
         }
+        this.disposables.length = 0;
     }
 
 }

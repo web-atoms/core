@@ -43,8 +43,12 @@ export interface IPageOptions {
     cancelToken?: CancelToken;
 }
 
+declare var UMD: any;
+
+const nameSymbol = UMD.nameSymbol;
+
 function hasPageUrl(target: any): boolean {
-    const url = target._$_url;
+    const url = target[nameSymbol];
     if (!url) {
         return false;
     }
@@ -53,7 +57,7 @@ function hasPageUrl(target: any): boolean {
         // this is not possible...
         return false;
     }
-    return baseClass._$_url !== url;
+    return baseClass[nameSymbol] !== url;
 }
 
 export abstract class NavigationService {
@@ -82,7 +86,7 @@ export abstract class NavigationService {
 
         if (typeof pageName !== "string") {
             if (hasPageUrl(pageName)) {
-                pageName = pageName._$_url as string;
+                pageName = pageName[nameSymbol] as string;
             } else {
                 const rs = this.app.resolve(ReferenceService) as ReferenceService;
                 const host = pageName instanceof AtomComponent ? "reference" : "class";

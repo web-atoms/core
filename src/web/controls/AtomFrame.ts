@@ -172,12 +172,14 @@ export class AtomFrame
 
         const e = view.element;
 
+        this.navigationService.currentTarget = e;
+
         this.setUrl(urlString);
-        disposables.add(view);
         disposables.add({
             dispose: () => {
                 e.innerHTML = "";
                 e.remove();
+                this.navigationService.currentTarget = null;
                 this.popStack(true);
             }
         });

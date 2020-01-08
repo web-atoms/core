@@ -34,7 +34,30 @@ export class WindowService extends NavigationService {
 
     public readonly screen: IScreen;
 
-    public currentTarget: HTMLElement = null;
+    private targetStack: HTMLElement[] = [];
+    public get currentTarget(): HTMLElement {
+        const ts = this.targetStack;
+        return ts.length > 0 ? ts[ts.length - 1] : undefined;
+    }
+    public set currentTarget(v: HTMLElement) {
+        const ts = this.targetStack;
+        const nts = [];
+        if (v === null) {
+            // special case... remove all non existent elements...
+            for (const iterator of ts) {
+                if (iterator.parentElement) {
+                    nts.push(iterator);
+                }
+            }
+            this.targetStack = nts;
+            return;
+        }
+
+        if (ts.length === 0 && ts[ts.length - 1] === v) {
+            return;
+        }
+        ts.push(v);
+    }
 
     private popups: AtomControl[] = [];
 
@@ -97,8 +120,8 @@ export class WindowService extends NavigationService {
 
         if (window) {
             window.addEventListener("click", (e) => {
-                this.currentTarget = e.target as HTMLElement;
-                this.closePopup();
+                // this.currentTarget = e.target as HTMLElement;
+                this.closePopup(e);
             });
 
             const update = (e) => {
@@ -175,13 +198,31 @@ export class WindowService extends NavigationService {
         });
     }
 
-    public closePopup(): void {
+    public closePopup(e: MouseEvent): void {
+        let target = this.currentTarget;
+        const et = e.target as HTMLElement;
+        if (!et.parentElement) {
+            // probably the window/popup was just disposed..
+            // ignore it...
+
+            // if mouse click was outside body and within the window
+            // target element will be HTML
+            // in that case we have to dispose the top popup
+            if (!/html/i.test(et.tagName)) {
+                return;
+            }
+
+            // we need to manually override target so popup will be disposed
+            target = et;
+        }
+
+        this.currentTarget = e.target as HTMLElement;
         if (!this.popups.length) {
             return;
         }
+
         const peek = this.popups[this.popups.length - 1];
         const element = peek.element;
-        let target = this.currentTarget;
 
         while (target) {
             if (target === element) {
@@ -240,8 +281,7 @@ export class WindowService extends NavigationService {
 
         if (window) {
             window.addEventListener("click", (e) => {
-                this.currentTarget = e.target as HTMLElement;
-                this.closePopup();
+                this.closePopup(e);
             });
         }
     }
@@ -269,8 +309,6 @@ export class WindowService extends NavigationService {
                 this.remove(popup, true);
             });
         }
-
-        disposables.add(popup);
 
         const e = popup.element;
 
@@ -361,6 +399,7 @@ export class WindowService extends NavigationService {
             dispose: () => {
                 e.innerHTML = "";
                 e.remove();
+                this.currentTarget = null;
             }
         });
 

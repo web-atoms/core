@@ -2,7 +2,6 @@ import { App } from "../../App";
 import { IDisposable } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { RegisterSingleton } from "../../di/RegisterSingleton";
-import { ModuleFiles } from "../../ModuleFiles";
 import { BusyIndicatorService } from "../../services/BusyIndicatorService";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomControl } from "../controls/AtomControl";

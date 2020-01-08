@@ -1,6 +1,7 @@
 import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, IRect } from "../../core/types";
+import XNode from "../../core/XNode";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomUI } from "../../web/core/AtomUI";
 import { AtomTheme } from "../styles/AtomTheme";
@@ -104,6 +105,14 @@ class AtomWindowTitleTemplate extends AtomControl {
 }
 
 export class AtomWindow extends AtomControl {
+
+    public static windowTemplate = XNode.prepare("windowTemplate", true, true);
+
+    public static commandTemplate = XNode.prepare("commandTemplate", true, true);
+
+    public static titleTemplate = XNode.prepare("titleTemplate", true, true);
+
+    public static frameTemplate = XNode.prepare("frameTemplate", true, true);
 
     public get templateParent() {
         return getTemplateParent(this.element);

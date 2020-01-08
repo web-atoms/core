@@ -136,9 +136,6 @@ export default class XFNavigationService extends NavigationService {
         }, (e) => {
             this.remove(popup, true);
         });
-
-        disposables.add(popup);
-
         return returnPromise;
     }
 

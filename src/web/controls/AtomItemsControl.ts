@@ -4,10 +4,15 @@ import AtomEnumerator from "../../core/AtomEnumerator";
 import "../../core/AtomList";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
+import XNode from "../../core/XNode";
 import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
 import { AtomControl } from "./AtomControl";
 
 export class AtomItemsControl extends AtomControl {
+
+    /** Item Template for displaying individual items */
+    public static itemTemplate = XNode.prepare("itemTemplate", true, true);
+
     @BindableProperty
     public mAllowSelectFirst: boolean = false;
 
@@ -939,7 +944,7 @@ export class AtomItemsControl extends AtomControl {
 
         let vc: HTMLElement = this.mVirtualContainer;
         if (!vc) {
-            if (ip === e || /table/i.test(e.nodeName)) {
+            if (ip === e || !/table/i.test(e.nodeName)) {
                 throw new Error("virtualContainer presenter not found,"
                 + "you must put itemsPresenter inside a virtualContainer in order for Virtualization to work");
             } else {

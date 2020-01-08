@@ -1,6 +1,7 @@
 import { App } from "../../App";
 import { BindableProperty } from "../../core/BindableProperty";
 import { CancelToken, IClassOf } from "../../core/types";
+import XNode from "../../core/XNode";
 import { IPageOptions, NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
@@ -14,6 +15,8 @@ class EmptyStyle extends AtomStyle {
 }
 
 export class AtomPageLink extends AtomControl {
+
+    public static page = XNode.prepare("page", true, true);
 
     public page: string | IClassOf<AtomControl>;
 
@@ -79,6 +82,15 @@ export class AtomPageLink extends AtomControl {
                 "is-open": v
             }),
             this);
+
+        this.registerDisposable({
+            dispose: () => {
+                const ct = this.cancelToken;
+                if (ct) {
+                    ct.cancel();
+                }
+            }
+        });
     }
 
     protected async openPopup(): Promise<void> {
@@ -108,12 +120,22 @@ export class AtomPageLink extends AtomControl {
             const o = this.options ?
                 { ... this.options, cancelToken: this.cancelToken } :
                 { cancelToken: this.cancelToken };
-            const result = await navigationService.openPage(pt, this.parameters, o);
+
+            const getParametersEvent = new CustomEvent("getParameters", { detail: {} as any});
+
+            this.element.dispatchEvent(getParametersEvent);
+
+            const p =  getParametersEvent.detail.parameters || this.parameters;
+
+            const result = await navigationService.openPage(pt, p, o);
 
             this.element.dispatchEvent(new CustomEvent("result", { detail: result }));
 
         } catch (e) {
-            this.element.dispatchEvent(new CustomEvent("error", { detail: e }));
+            // if element is disposed or null, ignore
+            if (this.element) {
+                this.element.dispatchEvent(new CustomEvent("error", { detail: e }));
+            }
         } finally {
             this.cancelToken = null;
             this.isOpen = false;

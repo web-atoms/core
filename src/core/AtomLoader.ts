@@ -33,7 +33,8 @@ export class AtomLoader {
         return obj;
     }
 
-    public static async loadView<T extends { viewModel: any, element: any }>(
+    public static async loadView<T extends { viewModel: any, element: any,
+        dispose: () => any, disposables: AtomDisposableList }>(
         url: AtomUri,
         app: App,
         hookCloseEvents: boolean,
@@ -83,7 +84,7 @@ export class AtomLoader {
             // register hooks !! if it is a window !!
             if (hookCloseEvents && vm) {
 
-                const disposables = new AtomDisposableList();
+                const disposables = view.disposables;
 
                 const id = (AtomLoader.id++).toString();
                 (view as any).id = id;
@@ -91,11 +92,11 @@ export class AtomLoader {
                 const returnPromise = new Promise((resolve, reject) => {
                     disposables.add( app.subscribe(`atom-window-close:${id}`, (m, r) => {
                         resolve(r);
-                        disposables.dispose();
+                        view.dispose();
                     }));
                     disposables.add( app.subscribe(`atom-window-cancel:${id}`, () => {
                         reject("cancelled");
-                        disposables.dispose();
+                        view.dispose();
                     }));
                 });
 

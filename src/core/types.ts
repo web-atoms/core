@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
-
+    appendChild(e: any);
 }
 
 export interface INotifyPropertyChanging {
@@ -23,6 +23,17 @@ export interface IClassOf<T> extends Function {
 }
 
 export type IAtomElement = HTMLElement | INativeComponent;
+
+export interface IUIElement {
+    atomControl: IUIAtomControl;
+}
+
+export interface IUIAtomControl {
+    element: IUIElement;
+    invalidate();
+    updateSize();
+    dispose();
+}
 
 export type PathList = string[];
 

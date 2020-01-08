@@ -19,7 +19,7 @@ export default class AtomNotification extends AtomControl {
 
     public create(): void {
         this.defaultControlStyle = AtomNotificationStyle;
-        this.bind(this.element, "formttedText", [["this", "viewModel", "message"]], false, null, this);
+        this.bind(this.element, "formattedText", [["this", "viewModel", "message"]], false, null, this);
         this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 5000 , this);
         this.bind(this.element,
             "styleClass",
@@ -38,7 +38,7 @@ export default class AtomNotification extends AtomControl {
         }
         this.timeoutKey = setTimeout(() => {
             if (this.element) {
-                this.app.broadcast(`atom-window-close:${this.element.id}`, "");
+                this.app.broadcast(`atom-window-close:${(this as any).id}`, "");
             }
         }, this.timeout);
     }

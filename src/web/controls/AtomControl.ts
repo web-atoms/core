@@ -4,15 +4,19 @@ import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
+import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import FormattedString from "../../core/FormattedString";
 import { IClassOf, UMD } from "../../core/types";
 import WebImage from "../../core/WebImage";
+import XNode from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
+
+const bridge = AtomBridge.instance;
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -96,7 +100,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
     public set theme(v: AtomStyleSheet) {
         this.mTheme = v;
-        AtomBridge.instance.refreshInherited(this, "theme");
+        bridge.refreshInherited(this, "theme");
     }
 
     /**
@@ -146,7 +150,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public updateSize(): void {
         this.onUpdateSize();
-        AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
+        bridge.visitDescendents(this.element, (e, ac) => {
             if (ac) {
                 ac.updateSize();
                 return false;
@@ -327,3 +331,5 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
 }
+
+bridge.controlFactory = AtomControl;

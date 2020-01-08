@@ -1,8 +1,15 @@
 import { AtomBinder } from "../../core/AtomBinder";
-import { AtomBridge } from "../../core/AtomBridge";
+import { AtomBridge, BaseElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
+import Bind from "../../core/Bind";
 import { IAtomElement } from "../../core/types";
+import XNode from "../../core/XNode";
 import { NavigationService } from "../../services/NavigationService";
+
+declare var UMD: any;
+
+UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
+UMD.viewPrefix = "xf";
 
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
@@ -10,15 +17,12 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return AtomBridge.instance.atomParent(this.element, true) as any;
     }
 
-    // public get templateParent(): AtomXFControl {
-    //     return AtomBridge.instance.templateParent(this.element) as any;
-    // }
-
     public atomParent(e: IAtomElement): AtomXFControl {
         return AtomBridge.instance.atomParent(e, false) as any;
     }
 
-    public append(element: IAtomElement | AtomXFControl): AtomXFControl {
+    public append(element: any): AtomXFControl {
+        this.element.appendChild(element.element || element);
         return this;
     }
 
@@ -28,42 +32,8 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         AtomBridge.instance.dispose(el);
     }
 
-    // protected refreshInherited(name: string, fx: (ac: AtomComponent<IAtomElement, AtomXFControl>) => boolean): void {
-    //     AtomBinder.refreshValue(this, name);
-    //     AtomBridge.instance.visitDescendents(this.element, (e, ac) => {
-    //         if (ac) {
-    //             ((ac as any) as AtomXFControl).refreshInherited(name, fx);
-    //             return false;
-    //         }
-    //         return true;
-    //     });
-    // }
-
-    protected loadXaml(content: string): void {
-        const bridge = AtomBridge.instance as any;
-        bridge.loadXamlContent(this, this.element, content);
-    }
-
-    protected find(name: string): any {
-        return AtomBridge.instance.findChild(this.element, name);
-    }
-
-    protected createControl(name: string): any {
-        return AtomBridge.instance.create(name);
-    }
-
-    protected setTemplate(element: any, name: string, template: () => AtomXFControl): void {
-        if (!template) {
-            return;
-        }
-        AtomBridge.instance.setTemplate(element, name, template);
-    }
-
-    protected setImport(element: any, name: string, factory: () => AtomXFControl): void {
-        if (!factory) {
-            return;
-        }
-        AtomBridge.instance.setImport(element, name, factory);
+    public invokeEvent(event: { type: string, detail?: any }): void {
+        (AtomBridge.instance as any).invokeEvent(this.element, event.type, event);
     }
 
     protected setElementValue(element: any, name: string, value: any): void {
@@ -88,3 +58,5 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
 }
+declare var bridge;
+bridge.controlFactory = AtomXFControl;
