@@ -70,13 +70,13 @@ export class AtomWindowStyle extends AtomStyle {
             padding: "9px",
             border: "none",
             backgroundColor: "transparent",
-            backgroundImage: closeButton,
+            backgroundImage: closeButtonHover
             // As suggested by srikanth sir
-             subclasses: {
-                 ":hover": {
-                     backgroundImage: closeButtonHover
-                 }
-            }
+            //  subclasses: {
+            //      ":hover": {
+            //          backgroundImage: closeButtonHover
+            //      }
+            // }
         };
     }
 
