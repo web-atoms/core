@@ -181,7 +181,7 @@ export class AtomStyle
                         }
                     }
                 } else {
-                    if (element instanceof WebImage) {
+                    if (element.url) {
                         styleList.push(`${keyName}: url(${element})`);
                     } else {
                         styleList.push(`${keyName}: ${element}`);
