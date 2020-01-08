@@ -1,5 +1,4 @@
 import { BindableProperty } from "../../core/BindableProperty";
-import { ModuleFiles } from "../../ModuleFiles";
 import CloseButtonDataUrl from "../images/CloseButtonDataUrl";
 import CloseButtonHoverDataUrl from "../images/CloseButtonHoverDataUrl";
 import { AtomStyle } from "./AtomStyle";
