@@ -169,7 +169,7 @@ export class AtomStyle
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
                 const element = styles[key];
-                if (element === undefined || element === null || key === "className") {
+                if (element === undefined || element === null || key === "className" || key === "toString") {
                     continue;
                 }
                 const keyName = StringHelper.fromCamelToHyphen(key);
