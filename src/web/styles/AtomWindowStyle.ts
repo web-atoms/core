@@ -1,4 +1,5 @@
-import closeButton from "../images/close-button-hover.svg";
+import closeButton from "../images/close-button.svg";
+import closeButtonHover from "../images/close-button-hover.svg";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
@@ -71,11 +72,11 @@ export class AtomWindowStyle extends AtomStyle {
             backgroundColor: "transparent",
             backgroundImage: closeButton,
             // As suggested by srikanth sir
-            // subclasses: {
-            //     ":hover": {
-            //         backgroundImage: CloseButtonHoverDataUrl
-            //     }
-            // }
+             subclasses: {
+                 ":hover": {
+                     backgroundImage: closeButtonHover
+                 }
+            }
         };
     }
 
