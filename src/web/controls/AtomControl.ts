@@ -160,7 +160,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected preCreate(): void {
-        this.mControlStyle = undefined;
         // if (!this.element) {
         //     this.element = document.createElement("div");
         // }
