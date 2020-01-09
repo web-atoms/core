@@ -168,11 +168,11 @@ export class AtomStyle
         const styleList: any[] = [];
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
-                if (key.startsWith("_$_")) {
+                if (/^(\_\$\_|className$|toString$)/i.test(key)) {
                     continue;
                 }
                 const element = styles[key];
-                if (element === undefined || element === null || key === "className" || key === "toString") {
+                if (element === undefined || element === null) {
                     continue;
                 }
                 const keyName = StringHelper.fromCamelToHyphen(key);
