@@ -168,6 +168,9 @@ export class AtomStyle
         const styleList: any[] = [];
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
+                if (key.startsWith("_$_")) {
+                    continue;
+                }
                 const element = styles[key];
                 if (element === undefined || element === null || key === "className" || key === "toString") {
                     continue;
