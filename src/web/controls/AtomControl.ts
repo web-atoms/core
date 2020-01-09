@@ -37,7 +37,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public defaultControlStyle: any;
 
-    private mControlStyle: AtomStyle = undefined;
+    private mControlStyle: AtomStyle;
     public get controlStyle(): any {
         if (this.mControlStyle === undefined) {
             const key = TypeKey.get(this.defaultControlStyle || this.constructor);
@@ -160,6 +160,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected preCreate(): void {
+        this.mControlStyle = undefined;
         // if (!this.element) {
         //     this.element = document.createElement("div");
         // }
