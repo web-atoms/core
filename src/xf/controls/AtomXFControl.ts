@@ -37,7 +37,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     public staticResource(name: string) {
-        return undefined;
+        return (AtomBridge.instance as any).getStaticResource(this.element, name);
     }
 
     protected setElementValue(element: any, name: string, value: any): void {
