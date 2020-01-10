@@ -22,7 +22,7 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
     public setImport: (element: any, name: string, templateFactory: () => any) => void;
     public reset: () => void;
 
-    public abstract create(type: string): T;
+    public abstract create(type: string, node?: any): T;
 
     public abstract attachControl(element: T, control: IUIAtomControl): void;
 
