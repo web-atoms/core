@@ -361,6 +361,9 @@ export class AtomBridge {
             en = n.name;
         }
 
+        // tslint:disable-next-line: no-console
+        console.log(`This is template creator for web`);
+
         return class Template extends (fx as any) {
 
             // tslint:disable-next-line: variable-name
