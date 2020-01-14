@@ -27,7 +27,7 @@ AtomBridge.toTemplate = (n: XNode, creator: any): any => {
 
     const template = oldToTemplate(n.children[0], creator) as any;
 
-    return AtomBridge.create(name, () => new (template)(creator.app) as any);
+    return AtomBridge.create(name, (() => new (template)(creator.app)) as any);
 
 };
 
