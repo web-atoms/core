@@ -12,6 +12,25 @@ UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
 UMD.viewPrefix = "xf";
 AtomBridge.platform = "xf";
 
+const oldToTemplate = AtomBridge.toTemplate;
+
+AtomBridge.toTemplate = (n: XNode, creator: any): any => {
+
+    // since template will have a root node...
+    // we create the template and send it
+    let name;
+    if (typeof n.name === "function") {
+        throw new Error("Not supported, template should be of type DataTemplate or ControlTemplate");
+    } else {
+        name = n.name;
+    }
+
+    const template = oldToTemplate(n.children[0], creator) as any;
+
+    return AtomBridge.instance.create(name, () => new (template)(creator.app) as any);
+
+};
+
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
     public get parent(): AtomXFControl {

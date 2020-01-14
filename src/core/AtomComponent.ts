@@ -449,11 +449,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         item.setupFunction(key, item, this, e, creator);
                     } else if (item instanceof XNode) {
                         // this is template..
-                        if (AtomBridge.platform !== "web") {
-                            this.setLocalValue(e, key, () => AtomBridge.toTemplate(item, creator));
-                        } else {
-                            this.setLocalValue(e, key, AtomBridge.toTemplate(item, creator));
-                        }
+                        this.setLocalValue(e, key, AtomBridge.toTemplate(item, creator));
                     } else {
                         this.setLocalValue(e, key, item);
                     }
@@ -467,7 +463,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 continue;
             }
             if (iterator.isTemplate) {
-                this.setLocalValue(e, iterator.name, toTemplate(iterator.children[0]));
+                this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(iterator.children[0], creator));
                 continue;
             }
             if (iterator.isProperty) {
@@ -484,7 +480,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
-                this.setLocalValue(e, t, toTemplate(iterator));
+                this.setLocalValue(e, t, AtomBridge.toTemplate(iterator, creator));
                 continue;
             }
             const c = create(iterator);
@@ -494,26 +490,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 e.appendChild(c.element);
             }
             (c.control || this).render(iterator, c.element, creator);
-            // if (typeof iterator.name === "string") {
-
-            //     const ex = bridge.create(iterator.name);
-            //     if (this.element === e) {
-            //         this.append(ex as any);
-            //     } else {
-            //         e.appendChild(ex);
-            //     }
-            //     this.render(iterator, ex, creator);
-            //     continue;
-            // }
-            // const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            // const c = new (iterator.name)(this.app, fx ? bridge.create(fx) : undefined) as any;
-            // if (this.element === e) {
-            //     this.append(c);
-            //     c.render(iterator, c.element, creator);
-            // } else {
-            //     e.appendChild(c.element);
-            //     c.render(iterator, c.element, creator);
-            // }
         }
 
     }
