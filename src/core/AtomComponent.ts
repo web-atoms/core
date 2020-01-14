@@ -427,40 +427,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         creator = creator || this;
 
         const bridge = AtomBridge.instance;
-
-        // element must be created before creating control
-        // so in preCreate element should be available if
-        // control wants to add default behavior
-
-        // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
-
-        function toTemplate(n: XNode) {
-            let fx;
-            let en;
-            if (typeof n.name === "function") {
-                fx = n.name;
-                en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
-            } else {
-                fx = bridge.controlFactory;
-                en = n.name;
-            }
-            return class Template extends (fx as any) {
-
-                // tslint:disable-next-line: variable-name
-                public _creator = fx;
-
-                constructor(a, e1) {
-                    super(a, e1 || (en ? bridge.create(en) : undefined));
-                }
-
-                public create() {
-                    super.create();
-                    this.render(n, null, creator);
-                }
-
-            };
-        }
-
         const app = this.app;
 
         function create(iterator: XNode): { element?: any, control?: any } {
@@ -483,7 +449,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         item.setupFunction(key, item, this, e, creator);
                     } else if (item instanceof XNode) {
                         // this is template..
-                        this.setLocalValue(e, key, toTemplate(item));
+                        if (AtomBridge.platform !== "web") {
+                            this.setLocalValue(e, key, () => AtomBridge.toTemplate(item, creator));
+                        } else {
+                            this.setLocalValue(e, key, AtomBridge.toTemplate(item, creator));
+                        }
                     } else {
                         this.setLocalValue(e, key, item);
                     }

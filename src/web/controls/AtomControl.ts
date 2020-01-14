@@ -1,7 +1,7 @@
 import { App } from "../../App";
 import { Atom } from "../../Atom";
 import { AtomBinder } from "../../core/AtomBinder";
-import { AtomBridge } from "../../core/AtomBridge";
+import { AtomBridge, AtomElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import Bind from "../../core/Bind";
@@ -16,6 +16,10 @@ import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 
+if (!AtomBridge.platform) {
+    AtomBridge.platform = "web";
+    AtomBridge.instance = new AtomElementBridge();
+}
 const bridge = AtomBridge.instance;
 
 declare global {

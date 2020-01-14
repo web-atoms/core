@@ -341,10 +341,41 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
 export class AtomBridge {
 
-    public static instance: BaseElementBridge<IAtomElement> = new AtomElementBridge();
+    public static platform: "web" | "xf";
+
+    public static instance: BaseElementBridge<IAtomElement>;
 
     public static create(name: string): IAtomElement {
         return this.instance.create(name);
+    }
+
+    public static toTemplate(n: XNode, creator: any) {
+        const bridge = AtomBridge.instance;
+        let fx;
+        let en;
+        if (typeof n.name === "function") {
+            fx = n.name;
+            en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
+        } else {
+            fx = bridge.controlFactory;
+            en = n.name;
+        }
+
+        return class Template extends (fx as any) {
+
+            // tslint:disable-next-line: variable-name
+            public _creator = fx;
+
+            constructor(a, e1) {
+                super(a, e1 || (en ? bridge.create(en) : undefined));
+            }
+
+            public create() {
+                super.create();
+                this.render(n, null, creator);
+            }
+
+        };
     }
 
     public static refreshInherited(target: { element: any }, name: string, fieldName?: string): void {

@@ -10,6 +10,7 @@ declare var UMD: any;
 
 UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
 UMD.viewPrefix = "xf";
+AtomBridge.platform = "xf";
 
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
