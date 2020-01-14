@@ -463,6 +463,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 continue;
             }
             if (iterator.isTemplate) {
+                // tslint:disable-next-line: no-console
+                console.log("Setting template");
                 this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(iterator.children[0], creator));
                 continue;
             }
