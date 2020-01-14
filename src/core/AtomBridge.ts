@@ -349,7 +349,12 @@ export class AtomBridge {
         return this.instance.create(name, a);
     }
 
-    public static toTemplate(n: XNode, creator: any) {
+    public static toTemplate(n: XNode, creator: any, returnFactory: boolean = true) {
+        if (AtomBridge.platform !== "web") {
+            if (returnFactory) {
+                return AtomBridge.create(n.name as string, () => AtomBridge.toTemplate(n.children[0], creator, false));
+            }
+        }
         const bridge = AtomBridge.instance;
         let fx;
         let en;
@@ -360,9 +365,6 @@ export class AtomBridge {
             fx = bridge.controlFactory;
             en = n.name;
         }
-
-        // tslint:disable-next-line: no-console
-        console.log(`This is template creator for web`);
 
         return class Template extends (fx as any) {
 
