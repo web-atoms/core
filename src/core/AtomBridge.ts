@@ -345,8 +345,8 @@ export class AtomBridge {
 
     public static instance: BaseElementBridge<IAtomElement>;
 
-    public static create(name: string): IAtomElement {
-        return this.instance.create(name);
+    public static create(name: string, a?: any): IAtomElement {
+        return this.instance.create(name, a);
     }
 
     public static toTemplate(n: XNode, creator: any) {
