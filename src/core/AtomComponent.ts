@@ -449,6 +449,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         item.setupFunction(key, item, this, e, creator);
                     } else if (item instanceof XNode) {
                         // this is template..
+                        // tslint:disable-next-line: no-console
+                        console.log(`Setting Template ${key}`);
                         this.setLocalValue(e, key, AtomBridge.toTemplate(item, creator));
                     } else {
                         this.setLocalValue(e, key, item);
