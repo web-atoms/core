@@ -28,7 +28,7 @@ AtomBridge.toTemplate = (n: XNode, creator: any): any => {
     const template = oldToTemplate(n.children[0], creator) as any;
 
     // tslint:disable-next-line: no-console
-    console.log("Creating template");
+    console.log(`Creating template for ${name}`);
 
     return AtomBridge.create(name, () => new (template)(creator.app) as any);
 
