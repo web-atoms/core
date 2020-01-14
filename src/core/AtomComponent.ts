@@ -462,9 +462,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 e.appendChild(document.createTextNode(iterator));
                 continue;
             }
+            // tslint:disable-next-line: no-console
+            console.log(`Setting Property ${iterator.name} ${iterator.isTemplate} ${iterator.isProperty}`);
             if (iterator.isTemplate) {
-                // tslint:disable-next-line: no-console
-                console.log("Setting template");
                 this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(iterator.children[0], creator));
                 continue;
             }
