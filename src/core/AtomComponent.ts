@@ -429,6 +429,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const bridge = AtomBridge.instance;
         const app = this.app;
 
+        // tslint:disable-next-line: no-console
+        console.log(`Creating XNode ${node}`);
+
         function create(iterator: XNode): { element?: any, control?: any } {
             if (!(typeof iterator.name !== "string")) {
 
@@ -453,6 +456,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         console.log(`Setting Template ${key}`);
                         this.setLocalValue(e, key, AtomBridge.toTemplate(item, creator));
                     } else {
+                        // tslint:disable-next-line: no-console
+                        console.log(`Setting Property ${key}`);
                         this.setLocalValue(e, key, item);
                     }
                 }
