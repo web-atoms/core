@@ -466,7 +466,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 if (iterator.isProperty) {
                     this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(iterator.children[0], creator));
                 } else {
-                    e.appendChild(AtomBridge.toTemplate(iterator.children[0], creator));
+                    e.appendChild(AtomBridge.toTemplate(iterator, creator));
                 }
                 continue;
             }
