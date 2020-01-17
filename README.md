@@ -10,7 +10,7 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 4. One time, One way and Two way binding support
 5. Simple dependency Injection
 6. In built simple unit testing framework
-7. CommonJS module support
+7. UMD module support
 8. Full featured MVVM Framework with powerful validation
 9. Single code base for Business Logic (View Model + Services) for Web as well as Mobile (through Xamarin.Forms)
 
@@ -30,13 +30,13 @@ src
 |
 +--web
 |  +--tasks
-|     +--TaskListView.html
-|     +--TaskEditorView.html
+|     +--TaskListView.tsx
+|     +--TaskEditorView.tsx
 |
 +--xf
    +--tasks
-      +--TaskListView.xaml
-      +--TaskEditorView.xaml 
+      +--TaskListView.tsx
+      +--TaskEditorView.tsx 
 ```
 
 ### Example View Model
