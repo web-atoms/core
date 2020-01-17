@@ -91,8 +91,10 @@ export default function Load(
             /**
              * For the special case of init and watch both are true,
              * we need to make sure that watch is ignored for first run
+             *
+             * So executing is set to true for the first time
              */
-            let executing = init ? undefined : false;
+            let executing = init;
             const m = async (ctx?: CancelToken) => {
                 const ns = app.resolve(NavigationService) as NavigationService;
                 try {
@@ -124,7 +126,8 @@ export default function Load(
                     app.runAsync(async () => {
                         if (ct) { ct.cancel(); }
                         const ct2 = ct = new CancelToken();
-                        if (executing === undefined || executing) {
+
+                        if (executing) {
                             return;
                         }
                         executing = true;
