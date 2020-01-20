@@ -66,8 +66,13 @@ export default class XNode {
         name: string | Function,
         attributes: IAttributes,
         ... children: Array<XNode | XNode[] | any>): XNode {
-        if (typeof name === "object") {
+        switch (typeof name) {
+            case "object":
                 return (name as any).factory(attributes, ... children);
+            case "function":
+                if (!(name as any).isControl) {
+                    return name(name, attributes, ... children);
+                }
         }
         return new XNode(name as any, attributes, children);
     }

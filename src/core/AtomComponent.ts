@@ -41,6 +41,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
 
+    public static readonly isControl = true;
+
     // public element: T;
     public readonly disposables: AtomDisposableList;
 
