@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import Map from "./AtomMap";
 
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
@@ -128,7 +129,38 @@ export class ArrayHelper {
         }
         return false;
     }
+
 }
+
+declare global {
+
+    interface IKeyedArray<TKey, T> extends Array<T> {
+        key: TKey;
+    }
+
+    // tslint:disable-next-line
+    interface Array<T> {
+        groupBy<TKey>(keySelector: ((item: T) => TKey)): Array<IKeyedArray<TKey, T>>;
+    }
+}
+
+// tslint:disable-next-line
+Array.prototype["groupBy"] = <any> function (keySelector: any) {
+    const map = new Map();
+    const groups = [];
+    for (const iterator of this) {
+        const key = keySelector(iterator);
+        let g = map.get(key);
+        if (!g) {
+            g = [] as IKeyedArray<any, any>;
+            g.key = key;
+            groups.push(g);
+        }
+        g.push(iterator);
+    }
+    map.clear();
+    return groups;
+};
 
 export interface IUMDClass {
     debug: boolean;
