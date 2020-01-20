@@ -71,7 +71,7 @@ export default class XNode {
                 return (name as any).factory(attributes, ... children);
             case "function":
                 if (!(name as any).isControl) {
-                    return name(name, attributes, ... children);
+                    return name(attributes, ... children);
                 }
         }
         return new XNode(name as any, attributes, children);
