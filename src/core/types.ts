@@ -4,6 +4,7 @@ import Map from "./AtomMap";
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
     appendChild(e: any);
+    dispatchEvent(e: any);
 }
 
 export interface INotifyPropertyChanging {
