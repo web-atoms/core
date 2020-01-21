@@ -1,3 +1,5 @@
+import { IClassOf } from "./types";
+
 export interface IAttributes {
     [key: string]: string | number | null | any;
 }
@@ -33,10 +35,27 @@ declare global {
     }
 }
 
+export type IMergedControl<T, T1> =
+{
+    [P in keyof (T & T1)]?: (T & T1)[P];
+} & {
+    vsProps: {
+        [P in keyof (T & T1)]?: (T & T1)[P];
+    }
+};
+
 export default class XNode {
 
-    public static with(n: any, tag: string | any) {
-        return class XNodeControl extends n {
+    public static attach<T, T1 extends HTMLElementTagNameMap, K extends keyof T1>(
+        n: IClassOf<T>,
+        tag: K): new (... a: any[]) => IMergedControl<T, T1[K]> ;
+    public static attach<T, T1>(
+        n: IClassOf<T>,
+        tag: (a?: Partial<T1>, ... nodes: XNode[]) => XNode): new (... a: any[]) => IMergedControl<T, T1> ;
+    public static attach(
+        n: any,
+        tag: any): any {
+        return class XNodeControl extends (n as any) {
 
             // tslint:disable-next-line: variable-name
             public _creator = n;
