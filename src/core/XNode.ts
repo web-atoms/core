@@ -55,14 +55,11 @@ export default class XNode {
     public static attach(
         n: any,
         tag: any): any {
-        return class XNodeControl extends (n as any) {
-
-            // tslint:disable-next-line: variable-name
-            public _creator = n;
-
-            constructor(a: any, t: any) {
-                super(a, t || (XNode as any).factory(tag));
-            }
+        return (attributes: any, ... nodes: XNode[] ) => {
+            return new XNode(n,
+                attributes
+                    ? { ... attributes , for: tag }
+                    : { for: tag }, nodes);
         };
     }
 
