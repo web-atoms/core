@@ -61,7 +61,7 @@ export default class XNode {
             public _creator = n;
 
             constructor(a: any, t: any) {
-                super(a, t || tag);
+                super(a, t || (XNode as any).factory(tag));
             }
         };
     }

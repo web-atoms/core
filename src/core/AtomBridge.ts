@@ -400,3 +400,5 @@ export class AtomBridge {
     }
 
 }
+
+(XNode as any).factory = AtomBridge.create;
