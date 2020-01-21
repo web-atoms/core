@@ -56,7 +56,7 @@ export default class XNode {
         n: any,
         tag: any): any {
         return (attributes: any, ... nodes: XNode[] ) => {
-            return new XNode(n,
+            return XNode.create(n,
                 attributes
                     ? { ... attributes , for: tag }
                     : { for: tag }, nodes);
