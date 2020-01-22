@@ -63,11 +63,11 @@ function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator
 
 function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
     const n = b.name || name;
-    let c = control as any;
-    while (c && c[n] === undefined) {
-        c = c.parent;
+    let c = control.element as any;
+    while (c && c.atomControl && c.atomControl[n] === undefined) {
+        c = c._logicalParent || c.parentElement;
     }
-    (c || control)[n] = e;
+    ((c && c.atomControl) || control)[n] = e;
 }
 
 export default class Bind {
