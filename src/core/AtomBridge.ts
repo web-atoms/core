@@ -349,7 +349,7 @@ export class AtomBridge {
         return this.instance.create(name, a);
     }
 
-    public static toTemplate(n: XNode, creator: any, returnFactory: boolean = false) {
+    public static toTemplate(app: any, n: XNode, creator: any, returnFactory: boolean = false) {
         const bridge = AtomBridge.instance;
         let fx;
         let en;
@@ -367,7 +367,7 @@ export class AtomBridge {
             public _creator = fx;
 
             constructor(a, e1) {
-                super(a, e1 || (en ? bridge.create(en) : undefined));
+                super(a || app, e1 || (en ? bridge.create(en) : undefined));
             }
 
             public create() {

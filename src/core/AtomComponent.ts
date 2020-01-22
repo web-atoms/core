@@ -451,7 +451,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         item.setupFunction(key, item, this, e, creator);
                     } else if (item instanceof XNode) {
                         // this is template..
-                        this.setLocalValue(e, key, AtomBridge.toTemplate(item, creator));
+                        this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
                     } else {
                         this.setLocalValue(e, key, item);
                     }
@@ -466,9 +466,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             if (iterator.isTemplate) {
                 if (iterator.isProperty) {
-                    this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(iterator.children[0], creator));
+                    this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(app, iterator.children[0], creator));
                 } else {
-                    e.appendChild(AtomBridge.toTemplate(iterator, creator));
+                    e.appendChild(AtomBridge.toTemplate(app, iterator, creator));
                 }
                 continue;
             }
@@ -486,7 +486,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
-                this.setLocalValue(e, t, AtomBridge.toTemplate(iterator, creator));
+                this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
                 continue;
             }
             const c = create(iterator);
