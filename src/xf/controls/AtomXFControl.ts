@@ -84,3 +84,12 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 }
 declare var bridge;
 bridge.controlFactory = AtomXFControl;
+
+// add custom event...
+
+declare var global;
+
+global.CustomEvent = function(type: string, { detail }) {
+    this.type = type;
+    this.detail = detail;
+};

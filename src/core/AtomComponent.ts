@@ -432,7 +432,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const app = this.app;
 
         function create(iterator: XNode): { element?: any, control?: any } {
-            if (!(typeof iterator.name !== "string")) {
+            if (typeof iterator.name !== "function") {
 
                 return { element: bridge.create(iterator.name.toString(), iterator) };
             }
