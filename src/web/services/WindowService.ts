@@ -199,6 +199,17 @@ export class WindowService extends NavigationService {
     }
 
     public closePopup(e: MouseEvent): void {
+
+        // need to simulate parent click if we are inside an iframe...
+        const fe = typeof frameElement !== "undefined" ? frameElement : null;
+        if (fe) {
+            fe.dispatchEvent(new Event("click"));
+            const pe = fe.ownerDocument ? fe.ownerDocument.defaultView as any : null;
+            if (pe && pe.simulateParentClick) {
+                pe.simulateParentClick();
+            }
+        }
+
         let target = this.currentTarget;
         const et = e.target as HTMLElement;
         if (!et.parentElement) {
