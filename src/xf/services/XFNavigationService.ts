@@ -136,6 +136,16 @@ export default class XFNavigationService extends NavigationService {
         }, (e) => {
             this.remove(popup, true);
         });
+
+        disposables.add(() => {
+            (AtomBridge.instance as any).popPage(popup.element, () => {
+                // do nothing
+            }, (e) => {
+                // tslint:disable-next-line: no-console
+                console.error(e);
+            });
+        });
+
         return returnPromise;
     }
 
