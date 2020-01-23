@@ -128,9 +128,10 @@ export default class XFNavigationService extends NavigationService {
                 this.remove(popup, true);
             });
         }
-        AtomBridge.instance.setValue(popup.element, "name", id);
+        const ve = popup.element;
+        AtomBridge.instance.setValue(ve, "name", id);
 
-        bridge.pushPage(popup.element, () => {
+        bridge.pushPage(ve, () => {
             // reject("cancelled");
             // do nothing...
         }, (e) => {
@@ -138,7 +139,7 @@ export default class XFNavigationService extends NavigationService {
         });
 
         disposables.add(() => {
-            (AtomBridge.instance as any).popPage(popup.element, () => {
+            (AtomBridge.instance as any).popPage(ve, () => {
                 // do nothing
             }, (e) => {
                 // tslint:disable-next-line: no-console
