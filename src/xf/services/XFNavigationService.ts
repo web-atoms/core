@@ -25,7 +25,7 @@ declare var bridge: {
     getTitle(): string;
     setTitle(v: string): void;
     setRoot(e: any): void;
-    pushPage(e: any, success: () => void, failed: (r) => void);
+    pushPage(e: any, options: IPageOptions, success: () => void, failed: (r) => void);
 };
 
 @RegisterSingleton
@@ -131,11 +131,15 @@ export default class XFNavigationService extends NavigationService {
         const ve = popup.element;
         AtomBridge.instance.setValue(ve, "name", id);
 
-        bridge.pushPage(ve, () => {
-            // reject("cancelled");
-            // do nothing...
-        }, (e) => {
-            this.remove(popup, true);
+        bridge.pushPage(
+            ve,
+            options || {},
+            () => {
+                // reject("cancelled");
+                // do nothing...
+            },
+            (e) => {
+                this.remove(popup, true);
         });
 
         disposables.add(() => {
