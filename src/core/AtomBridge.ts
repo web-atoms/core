@@ -349,7 +349,13 @@ export class AtomBridge {
         return this.instance.create(name, a);
     }
 
-    public static toTemplate(app: any, n: XNode, creator: any, returnFactory: boolean = false) {
+    public static toTemplate(app: any, n: XNode, creator: any) {
+
+        if (n.isTemplate) {
+            const t = AtomBridge.toTemplate(app, n.children[0], creator);
+            return AtomBridge.instance.create(n.name.toString(), t);
+        }
+
         const bridge = AtomBridge.instance;
         let fx;
         let en;
