@@ -451,7 +451,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         item.setupFunction(key, item, this, e, creator);
                     } else if (item instanceof XNode) {
                         // this is template..
-                        this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
+                        if (item.isTemplate) {
+                            this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
+                        } else {
+                            const child = create(item);
+                            this.setLocalValue(e, key, child.element);
+                        }
                     } else {
                         this.setLocalValue(e, key, item);
                     }
