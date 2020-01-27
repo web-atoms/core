@@ -83,7 +83,7 @@ export default class XNode {
                 [n]: v
             };
             Object.defineProperty(a, "toString", {
-                value: () => v,
+                value: () => n,
                 enumerable: false
             } );
             return a;
