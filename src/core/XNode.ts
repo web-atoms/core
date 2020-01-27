@@ -76,6 +76,20 @@ export default class XNode {
         } as any;
     }
 
+    /** Creates Attached Property for Xamarin.Forms */
+    public static attached(n: string) {
+        return (v) => {
+            const a = {
+                [n]: v
+            };
+            Object.defineProperty(a, "toString", {
+                value: () => v,
+                enumerable: false
+            } );
+            return a;
+        };
+    }
+
     public static create(
         // tslint:disable-next-line: ban-types
         name: string | Function,
