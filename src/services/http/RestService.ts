@@ -585,7 +585,8 @@ export class BaseService {
 
         url = url || options.url;
 
-        await Atom.delay(100, options.cancel);
+        // no longer needed, watch must provide functionality of waiting and cancelling
+        // await Atom.delay(1, options.cancel);
 
         if (options.cancel && options.cancel.cancelled) {
             throw new Error("cancelled");
