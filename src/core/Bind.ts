@@ -46,12 +46,28 @@ function oneWay(name: string, b: Bind, control: IAtomComponent, e: any, creator:
             // tslint:disable-next-line: ban-types
             return (b.sourcePath as Function).call(creator, control);
         });
+        return;
+    }
+    if (b.combined) {
+        const a = {
+
+            // it is `this`
+            t: creator,
+            // it is first parameter
+            x: control
+        };
+        control.bind(e, name, b.combined , false, () => {
+            // tslint:disable-next-line: ban-types
+            return (b.sourcePath as Function).call(creator, control);
+        }, a);
+        return;
     }
     if (b.thisPathList) {
         control.bind(e, name, b.thisPathList , false, () => {
             // tslint:disable-next-line: ban-types
             return (b.sourcePath as Function).call(creator, control);
         }, creator);
+        return;
     }
 }
 
@@ -105,6 +121,8 @@ export default class Bind {
 
     public readonly thisPathList: string[][];
 
+    public readonly combined: string[][];
+
     constructor(
         public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
         sourcePath: bindingFunction,
@@ -120,6 +138,9 @@ export default class Bind {
             // this.setupFunction = null;
         } else {
             const lists = parsePathLists(this.sourcePath);
+            if (lists.combined.length) {
+                this.combined = lists.combined;
+            }
             if (lists.pathList.length) {
                 this.pathList = lists.pathList;
             }

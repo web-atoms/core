@@ -104,8 +104,9 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 }
 
 interface IPathLists {
-    thisPath: PathList[];
-    pathList: PathList[];
+    thisPath?: PathList[];
+    pathList?: PathList[];
+    combined?: PathList[];
 }
 
 const viewModelParseWatchCache2: {[key: string]: IPathLists } = {};
@@ -139,8 +140,19 @@ export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
 
     const pl = {
         pathList: parsePath(str, false),
-        thisPath: parsePath(str, true)
+        thisPath: parsePath(str, true),
+        combined: []
     };
+
+    if (pl.thisPath.length && pl.pathList.length) {
+        // we need to combine this
+        // pl.combinedPathList =
+        pl.combined = pl.thisPath
+            .map((x) => ["t", ... x])
+            .concat(pl.pathList.map((x) => ["x", ... x]));
+        pl.thisPath = [];
+        pl.pathList = [];
+    }
 
     viewModelParseWatchCache2[key] = pl;
 
