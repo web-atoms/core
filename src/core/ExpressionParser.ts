@@ -148,7 +148,10 @@ export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
         // we need to combine this
         // pl.combinedPathList =
         pl.combined = pl.thisPath
-            .map((x) => ["t", ... x])
+            .map((x) => {
+                x[0] = "t";
+                return x;
+            })
             .concat(pl.pathList.map((x) => ["x", ... x]));
         pl.thisPath = [];
         pl.pathList = [];
