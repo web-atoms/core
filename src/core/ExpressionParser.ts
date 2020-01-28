@@ -150,9 +150,13 @@ export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
         pl.combined = pl.thisPath
             .map((x) => {
                 x[0] = "t";
+                x.splice(0, 0, "this");
                 return x;
             })
-            .concat(pl.pathList.map((x) => ["x", ... x]));
+            .concat(pl.pathList.map((x) => {
+                x.splice(0, 0, "this", "x");
+                return x;
+            }));
         pl.thisPath = [];
         pl.pathList = [];
     }
