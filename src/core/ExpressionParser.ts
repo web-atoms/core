@@ -28,11 +28,16 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     str = str.trim();
 
-    const index: number = str.indexOf(")");
+    let index: number = str.indexOf(")");
+
+    const commaIndex = str.indexOf(",");
+    if (commaIndex !== -1 && commaIndex < index) {
+        index = commaIndex;
+    }
 
     const isThis: boolean = parseThis === undefined ? (index === 0 || parseThis) : parseThis;
 
-    const p: string = isThis ? "\\_this|this" : (str.substr(0, index) || "x");
+    const p: string = (isThis ? "\\_this|this" : (str.substr(0, index) || "x")).trim();
 
     str = str.substr(index + 1);
 
