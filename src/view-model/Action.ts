@@ -99,13 +99,12 @@ export default function Action(
                         return result;
                     }
                 } catch (e) {
-                    const s = "" + e;
-                    if (/^(cancelled|canceled)$/i.test(s.trim())) {
+                    if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
                         // tslint:disable-next-line: no-console
                         console.warn(e);
                         return;
                     }
-                    await ns.alert(s, "Error");
+                    await ns.alert(e, "Error");
                 }
             };
         });

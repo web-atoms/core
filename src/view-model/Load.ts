@@ -103,8 +103,7 @@ export default function Load(
                         return await pe;
                     }
                 } catch (e) {
-                    const s = "" + e;
-                    if (/^(cancelled|canceled)$/i.test(s.trim())) {
+                    if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
                         // tslint:disable-next-line: no-console
                         console.warn(e);
                         return;
@@ -114,7 +113,7 @@ export default function Load(
                         console.error(e);
                         return;
                     }
-                    await ns.alert(s, "Error");
+                    await ns.alert(e, "Error");
                 } finally {
                     showError = true;
                     executing = false;
