@@ -39,13 +39,6 @@ export class AtomItemsControl extends AtomControl {
 
     public uiVirtualize: any = false;
 
-    /**
-     * This property is useful to add multiple elements inside
-     * this control and only array items will be removed when items
-     * are reset
-     */
-    public clearAllChildren: boolean = true;
-
     private mValue: any = undefined;
 
     private mSelectedItems: any[];
@@ -1034,14 +1027,9 @@ export class AtomItemsControl extends AtomControl {
             const ac = (iterator as any).atomControl as AtomControl;
             if (ac) {
                 ac.dispose();
-                if (!this.clearAllChildren) {
-                    ac.element.remove();
-                }
             }
         }
-        if (this.clearAllChildren) {
-            e.innerHTML = "";
-        }
+        e.innerHTML = "";
     }
 }
 
