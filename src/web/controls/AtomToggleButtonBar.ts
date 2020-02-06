@@ -17,6 +17,13 @@ export class AtomToggleButtonBar extends AtomListBox {
         this.defaultControlStyle = AtomToggleButtonBarStyle;
         this.registerItemClick();
     }
+
+    protected setControlClass() {
+        this.setElementClass(this.element, {
+            [this.controlStyle.root.className]: 1,
+            "atom-toggle-button-bar": 1
+        }, true );
+    }
 }
 
 class AtomToggleButtonBarItemTemplate extends AtomControl {

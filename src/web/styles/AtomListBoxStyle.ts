@@ -8,6 +8,12 @@ export class AtomListBoxStyle extends AtomStyle {
     @BindableProperty
     public padding: number;
 
+    public get root(): IStyleDeclaration {
+        return {
+            // empty
+        };
+    }
+
     public get theme(): AtomTheme {
         return this.styleSheet as AtomTheme;
     }
