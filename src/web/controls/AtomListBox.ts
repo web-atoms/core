@@ -12,14 +12,10 @@ export class AtomListBox extends AtomItemsControl {
         super.preCreate();
         this.defaultControlStyle = AtomListBoxStyle;
         this.registerItemClick();
-        this.runAfterInit(() => this.setControlClass());
-    }
-
-    protected setControlClass() {
-        this.setElementClass(this.element, {
+        this.runAfterInit(() => this.setElementClass(this.element, {
             [this.controlStyle.root.className]: 1,
             "atom-list-box": 1
-        }, true );
+        }, true ));
     }
 
     protected registerItemClick(): void {
