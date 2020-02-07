@@ -12,7 +12,7 @@ export interface IServiceDef {
 declare var global: any;
 declare var window: any;
 
-const globalNS = (typeof global !== "undefined") ? global : window;
+const globalNS = (typeof global === "undefined") ? window : global;
 
 function evalGlobal(path: string | any) {
     if (typeof path === "string") {
