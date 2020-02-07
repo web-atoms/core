@@ -18,13 +18,15 @@ export default class DIGlobalTest extends AtomTest {
 
 declare var global;
 
-global.globalServiceImpl = {
+global.a = {};
+
+global.a.globalServiceImpl = {
     getName() {
         return "this is global service";
     }
 };
 
-@DISingleton({ globalVar: "globalServiceImpl" })
+@DISingleton({ globalVar: "a.globalServiceImpl" })
 class GlobalService {
 
     public getName(): string {
