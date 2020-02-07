@@ -15,7 +15,7 @@ export class AtomListBox extends AtomItemsControl {
         this.runAfterInit(() => this.setElementClass(this.element, {
             [this.controlStyle.root.className]: 1,
             "atom-list-box": 1
-        }, true ));
+        }));
     }
 
     protected registerItemClick(): void {
