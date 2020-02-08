@@ -1,9 +1,15 @@
-[![Action Status](https://github.com/neurospeech/web-atoms-core/workflows/Build/badge.svg)](https://github.com/neurospeech/web-atoms-core/actions) [![npm version](https://badge.fury.io/js/web-atoms-core.svg)](https://badge.fury.io/js/web-atoms-core) [![codecov](https://codecov.io/gh/neurospeech/web-atoms-core/branch/master/graph/badge.svg)](https://codecov.io/gh/neurospeech/web-atoms-core)
+[![Action Status](https://github.com/web-atoms/core/workflows/Build/badge.svg)](https://github.com/web-atoms/core/actions) [![npm version](https://badge.fury.io/js/%40web-atoms%2Fcore.svg)](https://badge.fury.io/js/%40web-atoms%2Fcore) [![codecov](https://codecov.io/gh/web-atoms/core/branch/master/graph/badge.svg)](https://codecov.io/gh/web-atoms/core)
 
 # Web-Atoms Core
 Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to design modern web and mobile applications.
 
-## Features
+## Xamarin.Forms Features
+1. Use VS Code to develop Xamarin.Forms
+2. Write TypeScript instead of C#
+3. Write TSX (JSX) instead of Xaml
+4. Live hot reload for published app
+
+## Web Features
 1. Abstract Atom Component
 2. Abstract Device API (Browser Service, Message Broadcast)
 3. Theme and styles support without CSS
@@ -12,7 +18,6 @@ Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to
 6. In built simple unit testing framework
 7. UMD module support
 8. Full featured MVVM Framework with powerful validation
-9. Single code base for Business Logic (View Model + Services) for Web as well as Mobile (through Xamarin.Forms)
 
 ## Folder structure
 1. All views for web must be placed under "web" folder inside "src" folder.
