@@ -22,6 +22,8 @@ jobs:
       - run: node ./node_modules/.bin/istanbul cover ./dist/test.js
       - run: node ./node_modules/.bin/remap-istanbul -i ./coverage/coverage.json -t json -o ./coverage/coverage.json
       - run: codecov
+        env:
+          CODECOV_TOKEN: ${{secretes.codecov_token}}
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
