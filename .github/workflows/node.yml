@@ -15,10 +15,13 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/          
       - run: npm install
-      - run: npm install -g typescript@3.7.3 typedocs
+      - run: npm install -g typescript@3.7.3 typedocs codecov
+      - run: npm install -D istanbul remap-istanbul
       - run: tsc
       # - run: typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
-      # - run: npm run test
+      - run: node ./node_modules/.bin/istanbul cover ./dist/test.js
+      - run: node ./node_modules/.bin/remap-istanbul -i ./coverage/coverage.json -t json -o ./coverage/coverage.json
+      - run: codecov
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
