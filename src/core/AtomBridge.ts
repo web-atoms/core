@@ -345,17 +345,18 @@ export class AtomBridge {
 
     public static instance: BaseElementBridge<IAtomElement>;
 
-    public static create(name: string, a?: any, app?: any): IAtomElement {
-        return this.instance.create(name, a, app);
-    }
+    // public static create(name: string, a?: any, app?: any): IAtomElement {
+    //     return this.instance.create(name, a, app);
+    // }
 
     public static createNode(iterator: XNode, app: any): { element?: any, control?: any } {
         if (typeof iterator.name !== "function") {
 
-            return { element: this.instance.create(iterator.name.toString(), iterator, app) };
+            return { element: AtomBridge.instance.create(iterator.name.toString(), iterator, app) };
         }
         const fx = iterator.attributes ? iterator.attributes.for : undefined;
-        const c = new (iterator.name as any)(app, fx ? this.instance.create(fx, iterator, app) : undefined) as any;
+        const c = new (iterator.name as any)(app,
+            fx ? AtomBridge.instance.create(fx, iterator, app) : undefined) as any;
         return { element: c.element, control: c };
     }
 
