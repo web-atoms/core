@@ -50,17 +50,17 @@ class SetClassControl extends AtomControl {
 
 export default class AtomControlPropertiesTest extends AtomWebTest {
 
-    @Test
-    public async autoFocus(): Promise<void> {
-        const root = document.createElement("div");
-        const control = new InputControl(this.app, root);
+    // @Test
+    // public async autoFocus(): Promise<void> {
+    //     const root = document.createElement("div");
+    //     const control = new InputControl(this.app, root);
 
-        await this.app.waitForPendingCalls();
+    //     await this.app.waitForPendingCalls();
 
-        const input = control.element.firstElementChild as HTMLInputElement;
-        Assert.equals(input, document.activeElement);
+    //     const input = control.element.firstElementChild as HTMLInputElement;
+    //     Assert.equals(input, document.activeElement);
 
-    }
+    // }
 
     @Test
     public async formattedText(): Promise<void> {
