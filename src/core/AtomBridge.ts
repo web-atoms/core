@@ -22,7 +22,7 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
     public setImport: (element: any, name: string, templateFactory: () => any) => void;
     public reset: () => void;
 
-    public abstract create(type: string | ((n: any, ... nodes: XNode[]) => XNode ), node?: any): T;
+    public abstract create(type: string | ((n: any, ... nodes: XNode[]) => XNode), node: any, app: any): T;
 
     public abstract attachControl(element: T, control: IUIAtomControl): void;
 
@@ -345,15 +345,25 @@ export class AtomBridge {
 
     public static instance: BaseElementBridge<IAtomElement>;
 
-    public static create(name: string, a?: any): IAtomElement {
-        return this.instance.create(name, a);
+    public static create(name: string, a?: any, app?: any): IAtomElement {
+        return this.instance.create(name, a, app);
+    }
+
+    public static createNode(iterator: XNode, app: any): { element?: any, control?: any } {
+        if (typeof iterator.name !== "function") {
+
+            return { element: this.instance.create(iterator.name.toString(), iterator, app) };
+        }
+        const fx = iterator.attributes ? iterator.attributes.for : undefined;
+        const c = new (iterator.name as any)(app, fx ? this.instance.create(fx, iterator, app) : undefined) as any;
+        return { element: c.element, control: c };
     }
 
     public static toTemplate(app: any, n: XNode, creator: any) {
 
         if (n.isTemplate) {
             const t = AtomBridge.toTemplate(app, n.children[0], creator);
-            return AtomBridge.instance.create(n.name.toString(), t);
+            return AtomBridge.instance.create(n.name.toString(), t, app);
         }
 
         const bridge = AtomBridge.instance;
@@ -373,7 +383,7 @@ export class AtomBridge {
             public _creator = fx;
 
             constructor(a, e1) {
-                super(a || app, e1 || (en ? bridge.create(en) : undefined));
+                super(a || app, e1 || (en ? bridge.create(en, null, app) : undefined));
             }
 
             public create() {

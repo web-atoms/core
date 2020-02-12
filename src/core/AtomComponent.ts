@@ -431,16 +431,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const bridge = AtomBridge.instance;
         const app = this.app;
 
-        function create(iterator: XNode): { element?: any, control?: any } {
-            if (typeof iterator.name !== "function") {
-
-                return { element: bridge.create(iterator.name.toString(), iterator) };
-            }
-            const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            const c = new (iterator.name as any)(app, fx ? bridge.create(fx, iterator) : undefined) as any;
-            return { element: c.element, control: c };
-        }
-
         e = e || this.element;
         const attr = node.attributes;
         if (attr) {
@@ -454,7 +444,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         if (item.isTemplate) {
                             this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
                         } else {
-                            const child = create(item);
+                            const child = AtomBridge.createNode(item, app);
                             this.setLocalValue(e, key, child.element);
                         }
                     } else {
@@ -479,7 +469,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             if (iterator.isProperty) {
                 for (const child of iterator.children) {
-                    const pc = create(child);
+                    const pc = AtomBridge.createNode(child, app);
                     (pc.control || this).render(child, pc.element, creator);
 
                     // in Xamarin.Forms certain properties are required to be
@@ -494,7 +484,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
                 continue;
             }
-            const c = create(iterator);
+            const c = AtomBridge.createNode(iterator, app);
             if (this.element === e) {
                 this.append(c.control || c.element);
             } else {
