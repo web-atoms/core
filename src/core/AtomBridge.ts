@@ -417,3 +417,8 @@ export class AtomBridge {
     }
 
 }
+
+// tslint:disable-next-line: one-variable-per-declaration
+declare var window, global;
+const globalNS = (typeof window !== "undefined" ? window : (global as any)) as any;
+globalNS.AtomBridge = AtomBridge;
