@@ -55,10 +55,10 @@ export default class XNode {
     public static attach(
         n: any,
         tag: any): any {
-        return (attributes: any, ... nodes: XNode[] ) => {
-            return new XNode(n, attributes
-                    ? { ... attributes, for: tag }
-                    : { for: tag}, nodes);
+        return {
+            factory: (attributes: any, ... nodes: XNode[] ) => new XNode(n, attributes
+                ? { ... attributes, for: tag }
+                : { for: tag}, nodes)
         };
     }
 
