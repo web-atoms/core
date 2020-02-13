@@ -10,6 +10,7 @@ declare var UMD: any;
 
 UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
 UMD.viewPrefix = "xf";
+AtomBridge.platform = "xf";
 
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
@@ -36,6 +37,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         (AtomBridge.instance as any).invokeEvent(this.element, event.type, event);
     }
 
+    public staticResource(name: string) {
+        return (AtomBridge.instance as any).getStaticResource(this.element, name);
+    }
+
     protected setElementValue(element: any, name: string, value: any): void {
         if (/^event/.test(name)) {
             this.bindEvent(element, name.substr(5), async () => {
@@ -60,3 +65,12 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 }
 declare var bridge;
 bridge.controlFactory = AtomXFControl;
+
+// add custom event...
+
+declare var global;
+
+global.CustomEvent = function(type: string, { detail }) {
+    this.type = type;
+    this.detail = detail;
+};

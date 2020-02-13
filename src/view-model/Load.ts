@@ -87,6 +87,14 @@ export default function Load(
             const app = vm.app as App;
             let showError = init ? (showErrorOnInit ? true : false) : true;
             let ct: CancelToken = new CancelToken();
+
+            /**
+             * For the special case of init and watch both are true,
+             * we need to make sure that watch is ignored for first run
+             *
+             * So executing is set to true for the first time
+             */
+            let executing = init;
             const m = async (ctx?: CancelToken) => {
                 const ns = app.resolve(NavigationService) as NavigationService;
                 try {
@@ -95,8 +103,7 @@ export default function Load(
                         return await pe;
                     }
                 } catch (e) {
-                    const s = "" + e;
-                    if (/^(cancelled|canceled)$/i.test(s.trim())) {
+                    if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
                         // tslint:disable-next-line: no-console
                         console.warn(e);
                         return;
@@ -106,18 +113,19 @@ export default function Load(
                         console.error(e);
                         return;
                     }
-                    await ns.alert(s, "Error");
+                    await ns.alert(e, "Error");
                 } finally {
                     showError = true;
+                    executing = false;
                 }
             };
 
             if (watch) {
-                let executing = false;
                 const fx = () =>
                     app.runAsync(async () => {
                         if (ct) { ct.cancel(); }
                         const ct2 = ct = new CancelToken();
+
                         if (executing) {
                             return;
                         }

@@ -22,7 +22,7 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
     public setImport: (element: any, name: string, templateFactory: () => any) => void;
     public reset: () => void;
 
-    public abstract create(type: string): T;
+    public abstract create(type: string | ((n: any, ... nodes: XNode[]) => XNode), node: any, app: any): T;
 
     public abstract attachControl(element: T, control: IUIAtomControl): void;
 
@@ -341,10 +341,54 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
 export class AtomBridge {
 
-    public static instance: BaseElementBridge<IAtomElement> = new AtomElementBridge();
+    public static platform: "web" | "xf";
 
-    public static create(name: string): IAtomElement {
-        return this.instance.create(name);
+    public static instance: BaseElementBridge<IAtomElement>;
+
+    public static createNode(iterator: XNode, app: any): { element?: any, control?: any } {
+        if (typeof iterator.name !== "function") {
+
+            return { element: AtomBridge.instance.create(iterator.name.toString(), iterator, app) };
+        }
+        const fx = iterator.attributes ? iterator.attributes.for : undefined;
+        const c = new (iterator.name as any)(app,
+            fx ? AtomBridge.instance.create(fx, iterator, app) : undefined) as any;
+        return { element: c.element, control: c };
+    }
+
+    public static toTemplate(app: any, n: XNode, creator: any) {
+
+        if (n.isTemplate) {
+            const t = AtomBridge.toTemplate(app, n.children[0], creator);
+            return AtomBridge.instance.create(n.name.toString(), t, app);
+        }
+
+        const bridge = AtomBridge.instance;
+        let fx;
+        let en;
+        if (typeof n.name === "function") {
+            fx = n.name;
+            en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
+        } else {
+            fx = bridge.controlFactory;
+            en = n.name;
+        }
+
+        return class Template extends (fx as any) {
+
+            // tslint:disable-next-line: variable-name
+            public _creator = fx;
+
+            constructor(a, e1) {
+                super(a || app, e1 || (en ? bridge.create(en, null, app) : undefined));
+            }
+
+            public create() {
+                super.create();
+                this.render(n, null, creator);
+            }
+
+        };
     }
 
     public static refreshInherited(target: { element: any }, name: string, fieldName?: string): void {
@@ -369,3 +413,8 @@ export class AtomBridge {
     }
 
 }
+
+// tslint:disable-next-line: one-variable-per-declaration
+declare var window, global;
+const globalNS = (typeof window !== "undefined" ? window : (global as any)) as any;
+globalNS.AtomBridge = AtomBridge;

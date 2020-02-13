@@ -12,7 +12,7 @@ export interface IServiceDef {
 declare var global: any;
 declare var window: any;
 
-const globalNS = (typeof global !== "undefined") ? global : window;
+const globalNS = (typeof global === "undefined") ? window : global;
 
 function evalGlobal(path: string | any) {
     if (typeof path === "string") {
@@ -46,9 +46,8 @@ export function Register(id: string | IServiceDef, scope?: Scope): ((t: any) => 
                     DI.mockType(target, id.mockOrInject.mock);
                 } else if (id.mockOrInject.globalVar) {
                     ServiceCollection.instance.register(
-                        id.for || target, id.for ?
-                            (sp) => evalGlobal(id.mockOrInject.globalVar) : null,
-                        id.scope || Scope.Transient, id.id);
+                        id.for || target, (sp) => evalGlobal(id.mockOrInject.globalVar),
+                        id.scope || Scope.Global, id.id);
                 }
             }
 

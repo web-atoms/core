@@ -1,14 +1,26 @@
 import Assert from "@web-atoms/unit-test/dist/Assert";
 import Test from "@web-atoms/unit-test/dist/Test";
 import TestItem from "@web-atoms/unit-test/dist/TestItem";
+import XNode, { IMergedControl } from "../../../core/XNode";
 import { MockNavigationService } from "../../../services/MockNavigationService";
 import { NavigationService } from "../../../services/NavigationService";
+import { AtomComboBox } from "../../../web/controls/AtomComboBox";
+import { AtomPageLink } from "../../../web/controls/AtomPageLink";
 import AtomWebTest from "../AtomWebTest";
 
 export class TestCase extends AtomWebTest {
 
     @Test
     public async noWindowRegistered(): Promise<any> {
+
+        // const A = XNode.attach(AtomPageLink, "button");
+
+        // const B = XNode.prepare("ABCD") as (a?: Partial<AtomComboBox>) => XNode;
+
+        // const BB = XNode.attach(AtomPageLink, B);
+
+        // const d = <BB></BB>;
+
         const nav = this.navigationService;
 
         try {

@@ -12,6 +12,10 @@ export class AtomListBox extends AtomItemsControl {
         super.preCreate();
         this.defaultControlStyle = AtomListBoxStyle;
         this.registerItemClick();
+        this.runAfterInit(() => this.setElementClass(this.element, {
+            [this.controlStyle.root.className]: 1,
+            "atom-list-box": 1
+        }));
     }
 
     protected registerItemClick(): void {
@@ -49,6 +53,9 @@ export class AtomListBox extends AtomItemsControl {
             false,
             (version, itemData, selectedItems: any[]) => {
                 return {
+                    "list-item": true,
+                    "selected-list-item": selectedItems
+                        && selectedItems.find((x) => x === itemData),
                     [this.controlStyle.item.className]: true,
                     [this.controlStyle.selectedItem.className]: selectedItems
                         && selectedItems.find((x) => x === itemData)

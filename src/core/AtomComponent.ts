@@ -41,6 +41,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
 
+    public static readonly isControl = true;
+
     // public element: T;
     public readonly disposables: AtomDisposableList;
 
@@ -136,10 +138,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         this.bindings = [];
         this.eventHandlers = [];
         this.element = element as any;
+        AtomBridge.instance.attachControl(this.element, this as any);
         const a = this.beginEdit();
         this.preCreate();
         this.create();
-        AtomBridge.instance.attachControl(this.element, this as any);
         app.callLater(() => a.dispose());
     }
 
@@ -427,51 +429,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         creator = creator || this;
 
         const bridge = AtomBridge.instance;
-
-        // element must be created before creating control
-        // so in preCreate element should be available if
-        // control wants to add default behavior
-
-        // (this as any).element = bridge.createNode(this, node, Bind, XNode, AtomControl);
-
-        function toTemplate(n: XNode) {
-            let fx;
-            let en;
-            if (typeof n.name === "function") {
-                fx = n.name;
-                en = (n.attributes && n.attributes.for) ? n.attributes.for : undefined;
-            } else {
-                fx = bridge.controlFactory;
-                en = n.name;
-            }
-            return class Template extends (fx as any) {
-
-                // tslint:disable-next-line: variable-name
-                public _creator = fx;
-
-                constructor(a, e1) {
-                    super(a, e1 || (en ? bridge.create(en) : undefined));
-                }
-
-                public create() {
-                    super.create();
-                    this.render(n, null, creator);
-                }
-
-            };
-        }
-
         const app = this.app;
 
-        function create(iterator: XNode): { element?: any, control?: any } {
-            if (!(typeof iterator.name !== "string")) {
-
-                return { element: bridge.create(iterator.name.toString()) };
-            }
-            const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            const c = new (iterator.name as any)(app, fx ? bridge.create(fx) : undefined) as any;
-            return { element: c.element, control: c };
-        }
+        const renderFirst = AtomBridge.platform === "xf";
 
         e = e || this.element;
         const attr = node.attributes;
@@ -483,7 +443,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         item.setupFunction(key, item, this, e, creator);
                     } else if (item instanceof XNode) {
                         // this is template..
-                        this.setLocalValue(e, key, toTemplate(item));
+                        if (item.isTemplate) {
+                            this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
+                        } else {
+                            const child = AtomBridge.createNode(item, app);
+                            this.setLocalValue(e, key, child.element);
+                        }
                     } else {
                         this.setLocalValue(e, key, item);
                     }
@@ -497,12 +462,16 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 continue;
             }
             if (iterator.isTemplate) {
-                this.setLocalValue(e, iterator.name, toTemplate(iterator.children[0]));
+                if (iterator.isProperty) {
+                    this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(app, iterator.children[0], creator));
+                } else {
+                    e.appendChild(AtomBridge.toTemplate(app, iterator, creator));
+                }
                 continue;
             }
             if (iterator.isProperty) {
                 for (const child of iterator.children) {
-                    const pc = create(child);
+                    const pc = AtomBridge.createNode(child, app);
                     (pc.control || this).render(child, pc.element, creator);
 
                     // in Xamarin.Forms certain properties are required to be
@@ -514,36 +483,21 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
-                this.setLocalValue(e, t, toTemplate(iterator));
+                this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
                 continue;
             }
-            const c = create(iterator);
+            const c = AtomBridge.createNode(iterator, app);
+            if (renderFirst) {
+                (c.control || this).render(iterator, c.element, creator);
+            }
             if (this.element === e) {
                 this.append(c.control || c.element);
             } else {
                 e.appendChild(c.element);
             }
-            (c.control || this).render(iterator, c.element, creator);
-            // if (typeof iterator.name === "string") {
-
-            //     const ex = bridge.create(iterator.name);
-            //     if (this.element === e) {
-            //         this.append(ex as any);
-            //     } else {
-            //         e.appendChild(ex);
-            //     }
-            //     this.render(iterator, ex, creator);
-            //     continue;
-            // }
-            // const fx = iterator.attributes ? iterator.attributes.for : undefined;
-            // const c = new (iterator.name)(this.app, fx ? bridge.create(fx) : undefined) as any;
-            // if (this.element === e) {
-            //     this.append(c);
-            //     c.render(iterator, c.element, creator);
-            // } else {
-            //     e.appendChild(c.element);
-            //     c.render(iterator, c.element, creator);
-            // }
+            if (!renderFirst) {
+                (c.control || this).render(iterator, c.element, creator);
+            }
         }
 
     }

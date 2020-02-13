@@ -1,3 +1,5 @@
+import { IClassOf } from "./types";
+
 export interface IAttributes {
     [key: string]: string | number | null | any;
 }
@@ -33,17 +35,30 @@ declare global {
     }
 }
 
+export type IMergedControl<T, T1> =
+{
+    [P in keyof (T & T1)]?: (T & T1)[P];
+} & {
+    vsProps: {
+        [P in keyof (T & T1)]?: (T & T1)[P];
+    }
+};
+
 export default class XNode {
 
-    public static with(n: any, tag: string | any) {
-        return class XNodeControl extends n {
-
-            // tslint:disable-next-line: variable-name
-            public _creator = n;
-
-            constructor(a: any, t: any) {
-                super(a, t || tag);
-            }
+    public static attach<T, T1 extends HTMLElementTagNameMap, K extends keyof T1>(
+        n: IClassOf<T>,
+        tag: K): new (... a: any[]) => IMergedControl<T, T1[K]> ;
+    public static attach<T, T1>(
+        n: IClassOf<T>,
+        tag: (a?: Partial<T1>, ... nodes: XNode[]) => XNode): new (... a: any[]) => IMergedControl<T, T1> ;
+    public static attach(
+        n: any,
+        tag: any): any {
+        return (attributes: any, ... nodes: XNode[] ) => {
+            return new XNode(n, attributes
+                    ? { ... attributes, for: tag }
+                    : { for: tag}, nodes);
         };
     }
 
@@ -61,13 +76,33 @@ export default class XNode {
         } as any;
     }
 
+    /** Creates Attached Property for Xamarin.Forms */
+    public static attached(n: string) {
+        return (v) => {
+            const a = {
+                [n]: v
+            };
+            Object.defineProperty(a, "toString", {
+                value: () => n,
+                enumerable: false
+            } );
+            return a;
+        };
+    }
+
     public static create(
         // tslint:disable-next-line: ban-types
         name: string | Function,
         attributes: IAttributes,
         ... children: Array<XNode | XNode[] | any>): XNode {
+        if ((name as any).factory) {
+            return ((name as any).factory)(attributes, ... children);
+        }
+        if ((name as any).isControl) {
+            return new XNode(name as any, attributes, children);
+        }
         if (typeof name === "object") {
-                return (name as any).factory(attributes, ... children);
+            name = (name as any).toString();
         }
         return new XNode(name as any, attributes, children);
     }

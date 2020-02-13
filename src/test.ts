@@ -10,6 +10,20 @@ import TestRunner from "@web-atoms/unit-test/dist/TestRunner";
 const { statSync, readdirSync } = require("fs") as any;
 // tslint:disable-next-line:no-var-requires
 const path = require("path");
+
+// tslint:disable-next-line: no-var-requires
+const Module = require("module");
+// tslint:disable-next-line: ban-types
+const oldr: Function = Module.prototype.require;
+const r = function(name) {
+    if (/\.(svg|jpg|gif|png)$/i.test(name)) {
+        return name;
+    }
+    return oldr.call(this, name);
+};
+r.resolve = (oldr as any).resolve;
+Module.prototype.require = r;
+
 // import "./tests/AtomClassTest";
 // import "./tests/AppTest";
 // import "./tests/core/ColorTests";

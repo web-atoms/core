@@ -28,11 +28,16 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     str = str.trim();
 
-    const index: number = str.indexOf(")");
+    let index: number = str.indexOf(")");
+
+    const commaIndex = str.indexOf(",");
+    if (commaIndex !== -1 && commaIndex < index) {
+        index = commaIndex;
+    }
 
     const isThis: boolean = parseThis === undefined ? (index === 0 || parseThis) : parseThis;
 
-    const p: string = isThis ? "\\_this|this" : (str.substr(0, index) || "x");
+    const p: string = (isThis ? "\\_this|this" : (str.substr(0, index) || "x")).trim();
 
     str = str.substr(index + 1);
 
@@ -104,8 +109,9 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 }
 
 interface IPathLists {
-    thisPath: PathList[];
-    pathList: PathList[];
+    thisPath?: PathList[];
+    pathList?: PathList[];
+    combined?: PathList[];
 }
 
 const viewModelParseWatchCache2: {[key: string]: IPathLists } = {};
@@ -139,8 +145,26 @@ export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
 
     const pl = {
         pathList: parsePath(str, false),
-        thisPath: parsePath(str, true)
+        thisPath: parsePath(str, true),
+        combined: []
     };
+
+    if (pl.thisPath.length && pl.pathList.length) {
+        // we need to combine this
+        // pl.combinedPathList =
+        pl.combined = pl.thisPath
+            .map((x) => {
+                x[0] = "t";
+                x.splice(0, 0, "this");
+                return x;
+            })
+            .concat(pl.pathList.map((x) => {
+                x.splice(0, 0, "this", "x");
+                return x;
+            }));
+        pl.thisPath = [];
+        pl.pathList = [];
+    }
 
     viewModelParseWatchCache2[key] = pl;
 

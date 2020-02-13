@@ -20,11 +20,11 @@ const isEvent = /^event/i;
  * Bindings needs to be cloned...
  */
 
-export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T) => any;
+export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => any;
 
 function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
     control.runAfterInit(() => {
-        control.setLocalValue(e, name, b.sourcePath(control));
+        control.setLocalValue(e, name, b.sourcePath(control, e));
     });
 }
 
@@ -44,14 +44,30 @@ function oneWay(name: string, b: Bind, control: IAtomComponent, e: any, creator:
     if (b.pathList) {
         control.bind(e, name, b.pathList , false, () => {
             // tslint:disable-next-line: ban-types
-            return (b.sourcePath as Function).call(creator, control);
+            return (b.sourcePath as Function).call(creator, control, e);
         });
+        return;
+    }
+    if (b.combined) {
+        const a = {
+
+            // it is `this`
+            t: creator,
+            // it is first parameter
+            x: control
+        };
+        control.bind(e, name, b.combined , false, () => {
+            // tslint:disable-next-line: ban-types
+            return (b.sourcePath as Function).call(creator, control, e);
+        }, a);
+        return;
     }
     if (b.thisPathList) {
         control.bind(e, name, b.thisPathList , false, () => {
             // tslint:disable-next-line: ban-types
-            return (b.sourcePath as Function).call(creator, control);
+            return (b.sourcePath as Function).call(creator, control, e);
         }, creator);
+        return;
     }
 }
 
@@ -62,11 +78,15 @@ function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator
 }
 
 function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
-    let c = control as any;
-    while (c && c[name] === undefined) {
-        c = c.parent;
+    const n = b.name || name;
+    let c = control.element as any;
+    while (c) {
+        if (c.atomControl && c.atomControl[n] !== undefined) {
+            break;
+        }
+        c = c._logicalParent || c.parentElement;
     }
-    (c || control)[b.name || name] = e;
+    ((c && c.atomControl) || control)[n] = e;
 }
 
 export default class Bind {
@@ -101,6 +121,8 @@ export default class Bind {
 
     public readonly thisPathList: string[][];
 
+    public readonly combined: string[][];
+
     constructor(
         public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
         sourcePath: bindingFunction,
@@ -116,6 +138,9 @@ export default class Bind {
             // this.setupFunction = null;
         } else {
             const lists = parsePathLists(this.sourcePath);
+            if (lists.combined.length) {
+                this.combined = lists.combined;
+            }
             if (lists.pathList.length) {
                 this.pathList = lists.pathList;
             }

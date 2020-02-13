@@ -168,8 +168,11 @@ export class AtomStyle
         const styleList: any[] = [];
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
+                if (/^(\_\$\_|className$|toString$)/i.test(key)) {
+                    continue;
+                }
                 const element = styles[key];
-                if (element === undefined || element === null || key === "className") {
+                if (element === undefined || element === null) {
                     continue;
                 }
                 const keyName = StringHelper.fromCamelToHyphen(key);
@@ -181,7 +184,7 @@ export class AtomStyle
                         }
                     }
                 } else {
-                    if (element instanceof WebImage) {
+                    if (element.url) {
                         styleList.push(`${keyName}: url(${element})`);
                     } else {
                         styleList.push(`${keyName}: ${element}`);
