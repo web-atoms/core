@@ -431,6 +431,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const bridge = AtomBridge.instance;
         const app = this.app;
 
+        const renderFirst = AtomBridge.platform === "xf";
+
         e = e || this.element;
         const attr = node.attributes;
         if (attr) {
@@ -485,12 +487,17 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 continue;
             }
             const c = AtomBridge.createNode(iterator, app);
+            if (renderFirst) {
+                (c.control || this).render(iterator, c.element, creator);
+            }
             if (this.element === e) {
                 this.append(c.control || c.element);
             } else {
                 e.appendChild(c.element);
             }
-            (c.control || this).render(iterator, c.element, creator);
+            if (!renderFirst) {
+                (c.control || this).render(iterator, c.element, creator);
+            }
         }
 
     }
