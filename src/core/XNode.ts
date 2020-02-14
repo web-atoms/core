@@ -62,6 +62,31 @@ export default class XNode {
         };
     }
 
+    /**
+     * Creates a class for Native Elements, e.g Xamarin.Forms classes
+     * @param name name of Property/class
+     * @param ctor Class to inspect properties
+     * @param isProperty true if this is a property
+     * @param isTemplate true if this is a template
+     */
+    public static createNative<T, C = (new () => T)>(
+        name: string,
+        ctor: C,
+        isProperty?: boolean,
+        isTemplate?: boolean):
+        C & {
+            [K in keyof C]: C[K];
+        } {
+        const aa = ctor as any;
+        aa.factory = (a?: any, ... nodes: XNode[]) => {
+            return new XNode(name, { ... a }, nodes, isProperty, isTemplate);
+        };
+        aa.toString = () => {
+            return name;
+        };
+        return aa;
+    }
+
     public static prepare<T>(
         n: any,
         isProperty?: boolean,

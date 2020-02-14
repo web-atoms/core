@@ -1,22 +1,18 @@
 import Bind from "../../core/Bind";
+import { IClassOf } from "../../core/types";
 import XNode from "../../core/XNode";
 
-interface INativeElement<T> {
-    vsProps: {
-        [k in keyof this]?: this[k] | Bind
-    } | { [k: string]: any } | {};
-}
-
-interface IBindablePartial<T, C = (new () => T)> {
-    [P in keyof C]?: C[P];
-    new (): INativeElement<T>;
-};
-
-function createNative<T, C = (new () => T)>(name: string, ctor: C):
-    IBindablePartial<T, C> {
+function createNative<T, C = (new () => T)>(
+    name: string,
+    ctor: C,
+    isProperty?: boolean,
+    isTemplate?: boolean):
+    C & {
+        [K in keyof C]: C[K];
+    } {
     const aa = ctor as any;
     aa.factory = (a?: any, ... nodes: XNode[]) => {
-        return new XNode(name, { ... a }, nodes);
+        return new XNode(name, { ... a }, nodes, isProperty, isTemplate);
     };
     aa.toString = () => {
         return name;
@@ -32,20 +28,31 @@ class RootObject {
     }
 }
 
-const DataTemplate = createNative("Web", class extends RootObject {
+class DataTemplate extends RootObject {
     public type: string;
-});
+}
 
-const NativeElement = createNative("Native", class extends RootObject {
+/**
+ * Class NativeElement
+ */
+class NativeElement extends RootObject {
 
-    public static itemTemplate = createNative("itemTemplate", DataTemplate);
+    public static itemTemplate = createNative("itemTemplate", DataTemplate, true, true);
 
     public label: string;
     public fontFamily: string;
-});
+}
+
+/**
+ * Class Derived
+ */
+class Derived extends NativeElement {
+    public other: string;
+}
 
 const XF = {
     DataTemplate,
-    NativeElement
+    NativeElement,
+    Derived
 };
 export default XF;
