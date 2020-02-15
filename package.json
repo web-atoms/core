@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/jquery": "^3.3.30",
     "@web-atoms/module-loader": "^1.0.375",
-    "@web-atoms/unit-test": "^1.0.12",
+    "@web-atoms/unit-test": "^1.0.23",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
     "jsdom": "^15.1.1",

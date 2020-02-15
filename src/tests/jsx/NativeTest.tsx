@@ -1,8 +1,8 @@
 import XNode from "../../core/XNode";
-import { AtomXFControl } from "../../xf/controls/AtomXFControl";
+import { AtomControl } from "../../web/controls/AtomControl";
 import XF from "./NativeElement";
 
-export default class NativeTest extends AtomXFControl {
+export default class NativeTest extends AtomControl {
 
     public create() {
         this.render(<XF.NativeElement

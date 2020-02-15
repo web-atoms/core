@@ -2,7 +2,6 @@ import Assert from "@web-atoms/unit-test/dist/Assert";
 import Category from "@web-atoms/unit-test/dist/Category";
 import Test from "@web-atoms/unit-test/dist/Test";
 import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import "test-dom";
 import { App } from "../../../App";
 import { AtomTheme } from "../../../web/styles/AtomTheme";
 

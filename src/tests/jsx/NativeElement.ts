@@ -28,6 +28,16 @@ class RootObject {
     }
 }
 
+function TypeName(type: any) {
+    return (c) => {
+        c.factory = (a?: any, ... nodes: XNode[]) => {
+            return new XNode(type, a, nodes);
+        };
+        c.toString = () => type;
+    };
+}
+
+@TypeName("WebAtoms.DataTemplate;WebAtoms")
 class DataTemplate extends RootObject {
     public type: string;
 }
@@ -35,6 +45,7 @@ class DataTemplate extends RootObject {
 /**
  * Class NativeElement
  */
+@TypeName("WebAtoms.NativeElement;WebAtoms")
 class NativeElement extends RootObject {
 
     public static itemTemplate = createNative("itemTemplate", DataTemplate, true, true);
@@ -46,6 +57,7 @@ class NativeElement extends RootObject {
 /**
  * Class Derived
  */
+@TypeName("WebAtoms.Derived;WebAtoms")
 class Derived extends NativeElement {
     public other: string;
 }
