@@ -1,4 +1,3 @@
-import "test-dom";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { MockNavigationService } from "../../services/MockNavigationService";
 import { NavigationService } from "../../services/NavigationService";

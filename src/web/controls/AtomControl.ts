@@ -16,10 +16,12 @@ import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 
-if (!AtomBridge.platform) {
-    AtomBridge.platform = "web";
-    AtomBridge.instance = new AtomElementBridge();
-}
+// if (!AtomBridge.platform) {
+//     AtomBridge.platform = "web";
+//     AtomBridge.instance = new AtomElementBridge();
+// } else {
+//     console.log(`Platform is ${AtomBridge.platform}`);
+// }
 const bridge = AtomBridge.instance;
 
 declare global {
