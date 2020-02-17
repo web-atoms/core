@@ -424,7 +424,7 @@ declare var window, global;
 const globalNS = (typeof window !== "undefined" ? window : (global as any)) as any;
 globalNS.AtomBridge = AtomBridge;
 
-if (window) {
+if (typeof window !== "undefined") {
     AtomBridge.instance = new AtomElementBridge();
     AtomBridge.platform = "web";
 }
