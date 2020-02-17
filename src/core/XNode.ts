@@ -96,7 +96,7 @@ export default class XNode {
         } as any;
     }
 
-    public static attached<T>(): AttachedNode {
+    public static attached(): AttachedNode {
         return {
             factory: true,
             attached: true
