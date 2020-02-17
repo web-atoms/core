@@ -9,6 +9,8 @@ class C extends RootObject {
 
     public static p = XNode.property();
 
+    public static n = XNode.attached();
+
 }
 
 export default class JSXTest extends AtomTest {
@@ -17,6 +19,9 @@ export default class JSXTest extends AtomTest {
     public propertyTest() {
         const x = (C.p as any).factory();
         Assert.equals("A.C:p;B", x.name);
+
+        const g = C.n(1);
+        Assert.equals(g["A.C:n;B"], 1);
     }
 
 }

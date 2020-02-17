@@ -98,7 +98,6 @@ export default class XNode {
 
     public static attached(): AttachedNode {
         return {
-            factory: true,
             attached: true
         } as any;
     }
