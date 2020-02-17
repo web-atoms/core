@@ -2,7 +2,7 @@ import Bind from "../../core/Bind";
 import { IClassOf } from "../../core/types";
 import XNode, { RootObject } from "../../core/XNode";
 
-const NSWebAtoms = XNode.namespace("WebAtoms");
+const NSWebAtoms = XNode.namespace("WebAtoms", "WebAtoms");
 
 @NSWebAtoms("WebAtoms.DataTemplate")
 class DataTemplate extends RootObject {
