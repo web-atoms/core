@@ -115,15 +115,15 @@ export default class XNode {
      * @param ns Root Namespace
      */
     public static namespace(ns: string, assemblyName: string) {
-        return (type: any) => {
+        return (type: string) => {
             return (c) => {
-                for (const key in type) {
-                    if (type.hasOwnProperty(key)) {
-                        const element = type[key];
+                for (const key in c) {
+                    if (c.hasOwnProperty(key)) {
+                        const element = c[key];
                         if (element) {
                             const n = ns + "." + type + ":" + key + ";" + assemblyName;
                             if (element.factory) {
-                                type[key] = {
+                                c[key] = {
                                     factory(a?: any, ... nodes: XNode[]) {
                                         return new XNode(n, a, nodes, true, element.isTemplate);
                                     },
@@ -132,7 +132,7 @@ export default class XNode {
                                     }
                                 };
                             } else if (element.attached) {
-                                type[key] = (a) => {
+                                c[key] = (a) => {
                                     const r = {
                                         [n]: a
                                     };
