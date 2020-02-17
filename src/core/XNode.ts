@@ -115,7 +115,7 @@ export default class XNode {
      * @param ns Root Namespace
      */
     public static namespace(ns: string, assemblyName: string) {
-        return (type: string) => {
+        return (type: string, isTemplate?: boolean) => {
             return (c) => {
                 for (const key in c) {
                     if (c.hasOwnProperty(key)) {
@@ -149,7 +149,7 @@ export default class XNode {
                 }
                 const tn = ns + "." + type + ";" + assemblyName;
                 c.factory = (a?: any, ... nodes: XNode[]) => {
-                    return new XNode(tn, a, nodes);
+                    return new XNode(tn, a, nodes, false, isTemplate);
                 };
                 c.toString = () => tn;
             };
