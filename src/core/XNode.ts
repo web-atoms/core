@@ -96,6 +96,9 @@ export default class XNode {
         } as any;
     }
 
+    /**
+     * This is only for intellisense...
+     */
     public static attached(): AttachedNode {
         return {
             attached: true
@@ -121,34 +124,21 @@ export default class XNode {
                         const element = c[key];
                         if (element) {
                             const n = ns + "." + type + ":" + key + ";" + assemblyName;
-                            if (element.factory) {
-                                c[key] = {
-                                    factory(a?: any, ... nodes: XNode[]) {
-                                        return new XNode(n, a, nodes, true, element.isTemplate);
-                                    },
-                                    toString() {
-                                        return n;
-                                    }
+                            const af: any = (a) => {
+                                const r = {
+                                    [n]: a
                                 };
-                            } else if (element.attached) {
-                                const af: any = (a) => {
-                                    const r = {
-                                        [n]: a
-                                    };
-                                    Object.defineProperty(r, "toString", {
-                                        value: () => n,
-                                        enumerable: false,
-                                        configurable: false
-                                    });
-                                    return r;
-                                };
-
-                                // in case this is used as expandable property
-                                // we need factory as well..
-                                af.factory = (a?: any, ... nodes: any[]) => new XNode(n, a, nodes, true, false );
-                                af.toString = () => n;
-                                c[key] = af;
-                            }
+                                Object.defineProperty(r, "toString", {
+                                    value: () => n,
+                                    enumerable: false,
+                                    configurable: false
+                                });
+                                return r;
+                            };
+                            af.factory = (a?: any, ... nodes: any[]) =>
+                                new XNode(n, a, nodes, true, element.isTemplate );
+                            af.toString = () => n;
+                            c[key] = af;
                         }
                     }
                 }
