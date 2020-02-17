@@ -53,6 +53,10 @@ export type IMergedControl<T, T1> =
     }
 };
 
+export type NodeFactory = (a?: any, ... nodes: XNode[]) => XNode;
+
+export type AttachedNode = (n: any) => { [key: string]: any};
+
 export default class XNode {
 
     public static attach<T, T1 extends HTMLElementTagNameMap, K extends keyof T1>(
@@ -85,18 +89,18 @@ export default class XNode {
         } as any;
     }
 
-    public static template<T>(type: IClassOf<T>): IClassOf<T> {
+    public static template(): NodeFactory {
         return {
             factory: true,
             isTemplate: true,
-        } as unknown as IClassOf<T>;
+        } as any;
     }
 
-    public static attached<T>(type: IClassOf<T>): (n: T) => {[key: string]: any} {
+    public static attached<T>(): AttachedNode {
         return {
             factory: true,
             attached: true
-        } as any as (n: T) => {[key: string]: any};
+        } as any;
     }
 
     /**

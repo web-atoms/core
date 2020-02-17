@@ -15,7 +15,7 @@ class DataTemplate extends RootObject {
 @NSWebAtoms("WebAtoms.NativeElement")
 export class NativeElement extends RootObject {
 
-    public static itemTemplate = XNode.template(DataTemplate);
+    public static itemTemplate = XNode.template();
 
     public label: string;
     public fontFamily: string;
@@ -24,7 +24,7 @@ export class NativeElement extends RootObject {
 @NSWebAtoms("WebAtoms.Grid")
 class Grid extends RootObject {
 
-    public static row = XNode.attached(Number);
+    public static row = XNode.attached();
 
 }
 
