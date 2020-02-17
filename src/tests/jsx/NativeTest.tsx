@@ -8,6 +8,11 @@ export default class NativeTest extends AtomControl {
         this.render(<XF.NativeElement
             fontFamily="a"
             eventClick={null}>
+            <XF.Grid>
+                <XF.NativeElement
+                    { ... XF.Grid.row(3) }
+                    ></XF.NativeElement>
+            </XF.Grid>
             <XF.NativeElement.itemTemplate>
                 <XF.DataTemplate>
                     <XF.NativeElement></XF.NativeElement>
