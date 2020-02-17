@@ -1,7 +1,16 @@
+import Bind from "./Bind";
 import { IClassOf } from "./types";
 
 export interface IAttributes {
     [key: string]: string | number | null | any;
+}
+
+export class RootObject {
+    public get vsProps(): {
+        [k in keyof this]?: this[k] | Bind
+    } | { [k: string]: any } | {} {
+        return undefined;
+    }
 }
 
 // tslint:disable-next-line: no-namespace
@@ -62,31 +71,6 @@ export default class XNode {
         };
     }
 
-    /**
-     * Creates a class for Native Elements, e.g Xamarin.Forms classes
-     * @param name name of Property/class
-     * @param ctor Class to inspect properties
-     * @param isProperty true if this is a property
-     * @param isTemplate true if this is a template
-     */
-    public static createNative<T, C = (new () => T)>(
-        name: string,
-        ctor: C,
-        isProperty?: boolean,
-        isTemplate?: boolean):
-        C & {
-            [K in keyof C]: C[K];
-        } {
-        const aa = ctor as any;
-        aa.factory = (a?: any, ... nodes: XNode[]) => {
-            return new XNode(name, { ... a }, nodes, isProperty, isTemplate);
-        };
-        aa.toString = () => {
-            return name;
-        };
-        return aa;
-    }
-
     public static prepare<T>(
         n: any,
         isProperty?: boolean,
@@ -101,17 +85,63 @@ export default class XNode {
         } as any;
     }
 
-    /** Creates Attached Property for Xamarin.Forms */
-    public static attached(n: string) {
-        return (v) => {
-            const a = {
-                [n]: v
+    public static template<T>(type: IClassOf<T>): IClassOf<T> {
+        return {
+            factory: true,
+            isTemplate: true,
+        } as unknown as IClassOf<T>;
+    }
+
+    public static attached<T>(type: IClassOf<T>): (n: T) => {[key: string]: any} {
+        return {
+            factory: true,
+            attached: true
+        } as any as (n: T) => {[key: string]: any};
+    }
+
+    /**
+     * Declare Root Namespace and then you can use return function to
+     * to declare type
+     * @param ns Root Namespace
+     */
+    public static namespace(ns: string) {
+        return (type: any) => {
+            return (c) => {
+                for (const key in type) {
+                    if (type.hasOwnProperty(key)) {
+                        const element = type[key];
+                        if (element) {
+                            const n = type + ":" + key;
+                            if (element.factory) {
+                                type[key] = {
+                                    factory(a?: any, ... nodes: XNode[]) {
+                                        return new XNode(n, a, nodes, true, element.isTemplate);
+                                    },
+                                    toString() {
+                                        return n;
+                                    }
+                                };
+                            } else {
+                                type[key] = (a) => {
+                                    const r = {
+                                        [n]: a
+                                    };
+                                    Object.defineProperty(r, "toString", {
+                                        value: () => n,
+                                        enumerable: false,
+                                        configurable: false
+                                    });
+                                    return r;
+                                };
+                            }
+                        }
+                    }
+                }
+                c.factory = (a?: any, ... nodes: XNode[]) => {
+                    return new XNode(type, a, nodes);
+                };
+                c.toString = () => type;
             };
-            Object.defineProperty(a, "toString", {
-                value: () => n,
-                enumerable: false
-            } );
-            return a;
         };
     }
 
