@@ -100,18 +100,18 @@ export default class XNode {
     }
 
     /**
-     * Declare Root Namespace and then you can use return function to
-     * to declare type
+     * Declares Root Namespace and Assembly. You can use return function to
+     * to declare the type
      * @param ns Root Namespace
      */
-    public static namespace(ns: string) {
+    public static namespace(ns: string, assemblyName: string) {
         return (type: any) => {
             return (c) => {
                 for (const key in type) {
                     if (type.hasOwnProperty(key)) {
                         const element = type[key];
                         if (element) {
-                            const n = type + ":" + key;
+                            const n = ns + "." + type + ":" + key + ";" + assemblyName;
                             if (element.factory) {
                                 type[key] = {
                                     factory(a?: any, ... nodes: XNode[]) {
@@ -121,7 +121,7 @@ export default class XNode {
                                         return n;
                                     }
                                 };
-                            } else if (element.attached){
+                            } else if (element.attached) {
                                 type[key] = (a) => {
                                     const r = {
                                         [n]: a
