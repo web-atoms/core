@@ -143,9 +143,9 @@ export default class XNode {
                 }
                 const tn = ns + "." + type + ";" + assemblyName;
                 c.factory = (a?: any, ... nodes: XNode[]) => {
-                    return new XNode(type, a, nodes);
+                    return new XNode(tn, a, nodes);
                 };
-                c.toString = () => type;
+                c.toString = () => tn;
             };
         };
     }
