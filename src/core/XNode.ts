@@ -131,7 +131,7 @@ export default class XNode {
                                     }
                                 };
                             } else if (element.attached) {
-                                c[key] = (a) => {
+                                const af: any = (a) => {
                                     const r = {
                                         [n]: a
                                     };
@@ -142,6 +142,12 @@ export default class XNode {
                                     });
                                     return r;
                                 };
+
+                                // in case this is used as expandable property
+                                // we need factory as well..
+                                af.factory = (a?: any, ... nodes: any[]) => new XNode(n, a, nodes, true, false );
+                                af.toString = () => n;
+                                c[key] = af;
                             }
                         }
                     }
