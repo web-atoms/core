@@ -26,8 +26,8 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
         type: string
         | ((n: any, ... nodes: XNode[]) => XNode)
         | (new (... a: any[]) => any),
-        node: any,
-        app: any): T;
+        node?: any,
+        app?: any): T;
 
     public abstract attachControl(element: T, control: IUIAtomControl): void;
 
