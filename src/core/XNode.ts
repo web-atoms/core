@@ -121,7 +121,7 @@ export default class XNode {
                                         return n;
                                     }
                                 };
-                            } else {
+                            } else if (element.attached){
                                 type[key] = (a) => {
                                     const r = {
                                         [n]: a
