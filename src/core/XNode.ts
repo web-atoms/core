@@ -103,6 +103,12 @@ export default class XNode {
         } as any;
     }
 
+    public static property(): NodeFactory {
+        return {
+            factory: true
+        } as any;
+    }
+
     /**
      * Declares Root Namespace and Assembly. You can use return function to
      * to declare the type
