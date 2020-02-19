@@ -112,7 +112,11 @@ export default class Bind {
     public static twoWays<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         events?: string[]): Bind {
-        return new Bind(twoWays, sourcePath, null, events);
+        const b = new Bind(twoWays, sourcePath, null, events);
+        if (!(b.thisPathList  || b.pathList)) {
+            throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
+        }
+        return b;
     }
 
     public readonly sourcePath: bindingFunction;
