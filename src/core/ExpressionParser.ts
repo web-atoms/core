@@ -7,7 +7,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
 
-    const key: string = (parseThis === undefined ? "un:" : parseThis ) + str;
+    const key: string = (parseThis === undefined ? "un:" : (parseThis ? "_this:" : "_noThis:") ) + str;
 
     const px1: PathList[] = viewModelParseWatchCache[key];
     if (px1) {
@@ -116,11 +116,11 @@ interface IPathLists {
 
 const viewModelParseWatchCache2: {[key: string]: IPathLists } = {};
 
-export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
+export function parsePathLists(f: any): IPathLists {
 
     let str: string = f.toString().trim();
 
-    const key: string = (parseThis === undefined ? "un:" : parseThis) + str;
+    const key: string = str;
 
     const px1 = viewModelParseWatchCache2[key];
     if (px1) {
