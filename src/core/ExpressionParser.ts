@@ -7,7 +7,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
 
-    const key: string = (parseThis === undefined ? "un:" : parseThis ) + str;
+    const key: string = (parseThis === undefined ? "un:" : (parseThis ? "_this:" : "_noThis:") ) + str;
 
     const px1: PathList[] = viewModelParseWatchCache[key];
     if (px1) {
@@ -37,7 +37,16 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     const isThis: boolean = parseThis === undefined ? (index === 0 || parseThis) : parseThis;
 
-    const p: string = (isThis ? "\\_this|this" : (str.substr(0, index) || "x")).trim();
+    const p: string = (isThis ? "\\_this|this" : (str.substr(0, index) || "")).trim();
+
+    /**
+     * This is the case when there is no parameter to check and there `parseThis` is false
+     */
+    if (p.length === 0) {
+        const empty = [];
+        viewModelParseWatchCache[key] = empty;
+        return empty;
+    }
 
     str = str.substr(index + 1);
 
@@ -116,32 +125,32 @@ interface IPathLists {
 
 const viewModelParseWatchCache2: {[key: string]: IPathLists } = {};
 
-export function parsePathLists(f: any, parseThis?: boolean): IPathLists {
+export function parsePathLists(f: any): IPathLists {
 
-    let str: string = f.toString().trim();
+    const str = f.toString().trim();
 
-    const key: string = (parseThis === undefined ? "un:" : parseThis) + str;
+    const key: string = str;
 
     const px1 = viewModelParseWatchCache2[key];
     if (px1) {
         return px1;
     }
 
-    str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
+    // str = str.split("\n").filter((s) => !/^\/\//.test(s.trim())).join("\n");
 
-    if (str.endsWith("}")) {
-        str = str.substr(0, str.length - 1);
-    }
+    // if (str.endsWith("}")) {
+    //     str = str.substr(0, str.length - 1);
+    // }
 
-    if (str.startsWith("function (")) {
-        str = str.substr("function (".length);
-    }
+    // if (str.startsWith("function (")) {
+    //     str = str.substr("function (".length);
+    // }
 
-    if (str.startsWith("function(")) {
-        str = str.substr("function(".length);
-    }
+    // if (str.startsWith("function(")) {
+    //     str = str.substr("function(".length);
+    // }
 
-    str = str.trim();
+    // str = str.trim();
 
     const pl = {
         pathList: parsePath(str, false),

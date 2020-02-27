@@ -27,8 +27,8 @@ export default class XFApp extends A.App {
         this.put(NavigationService, this.resolve(XFNavigationService));
         this.put(BusyIndicatorService, this.resolve(XFBusyIndicatorService));
 
-        const s = bridge.subscribe((m) => {
-            this.broadcast(m.channel, m.data);
+        const s = bridge.subscribe((channel, data) => {
+            this.broadcast(channel, data);
         });
 
         // register for messaging...

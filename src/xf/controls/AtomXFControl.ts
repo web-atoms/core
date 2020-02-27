@@ -41,6 +41,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return (AtomBridge.instance as any).getStaticResource(this.element, name);
     }
 
+    public loadXaml(text: string) {
+        (AtomBridge.instance as any).loadXaml(this.element, text);
+    }
+
     protected setElementValue(element: any, name: string, value: any): void {
         if (/^event/.test(name)) {
             this.bindEvent(element, name.substr(5), async () => {

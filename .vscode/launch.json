@@ -12,12 +12,12 @@
             "url": "http://http://192.168.0.187:8080/",
             "webRoot": "${workspaceFolder}/",
         },
-
         {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/src/test.ts",
+            "program": "${workspaceFolder}/node_modules/@web-atoms/unit-test/index.js",
+            "args": ["./dist/tests"],
             "cwd": "${workspaceFolder}",
             "protocol": "inspector",
             "outFiles": [

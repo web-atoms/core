@@ -96,10 +96,18 @@ export default class XNode {
         } as any;
     }
 
-    public static attached<T>(): AttachedNode {
+    /**
+     * This is only for intellisense...
+     */
+    public static attached(): AttachedNode {
         return {
-            factory: true,
             attached: true
+        } as any;
+    }
+
+    public static property(): NodeFactory {
+        return {
+            factory: true
         } as any;
     }
 
@@ -109,42 +117,36 @@ export default class XNode {
      * @param ns Root Namespace
      */
     public static namespace(ns: string, assemblyName: string) {
-        return (type: any) => {
+        return (type: string, isTemplate?: boolean) => {
             return (c) => {
-                for (const key in type) {
-                    if (type.hasOwnProperty(key)) {
-                        const element = type[key];
+                for (const key in c) {
+                    if (c.hasOwnProperty(key)) {
+                        const element = c[key];
                         if (element) {
                             const n = ns + "." + type + ":" + key + ";" + assemblyName;
-                            if (element.factory) {
-                                type[key] = {
-                                    factory(a?: any, ... nodes: XNode[]) {
-                                        return new XNode(n, a, nodes, true, element.isTemplate);
-                                    },
-                                    toString() {
-                                        return n;
-                                    }
+                            const af: any = (a) => {
+                                const r = {
+                                    [n]: a
                                 };
-                            } else if (element.attached) {
-                                type[key] = (a) => {
-                                    const r = {
-                                        [n]: a
-                                    };
-                                    Object.defineProperty(r, "toString", {
-                                        value: () => n,
-                                        enumerable: false,
-                                        configurable: false
-                                    });
-                                    return r;
-                                };
-                            }
+                                Object.defineProperty(r, "toString", {
+                                    value: () => n,
+                                    enumerable: false,
+                                    configurable: false
+                                });
+                                return r;
+                            };
+                            af.factory = (a?: any, ... nodes: any[]) =>
+                                new XNode(n, a, nodes, true, element.isTemplate );
+                            af.toString = () => n;
+                            c[key] = af;
                         }
                     }
                 }
+                const tn = ns + "." + type + ";" + assemblyName;
                 c.factory = (a?: any, ... nodes: XNode[]) => {
-                    return new XNode(type, a, nodes);
+                    return new XNode(tn, a, nodes, false, isTemplate);
                 };
-                c.toString = () => type;
+                c.toString = () => tn;
             };
         };
     }

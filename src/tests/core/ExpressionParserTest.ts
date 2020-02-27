@@ -1,6 +1,6 @@
 import Assert from "@web-atoms/unit-test/dist/Assert";
 import Test from "@web-atoms/unit-test/dist/Test";
-import { parsePath } from "../../core/ExpressionParser";
+import { parsePath, parsePathLists } from "../../core/ExpressionParser";
 import { AtomTest } from "../../unit/AtomTest";
 
 export class ExpressionParserTest extends AtomTest {
@@ -75,6 +75,15 @@ export class ExpressionParserTest extends AtomTest {
         }`);
 
         Assert.equals(1, p.length);
+    }
+
+    @Test
+    public parseLongPath(): void {
+        const p = parsePathLists(`function () {
+            return _this.viewModel.comboBox.searchText;
+        }`);
+
+        Assert.equals(1, p.thisPath.length);
     }
 
 }

@@ -26,8 +26,8 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
         type: string
         | ((n: any, ... nodes: XNode[]) => XNode)
         | (new (... a: any[]) => any),
-        node: any,
-        app: any): T;
+        node?: any,
+        app?: any): T;
 
     public abstract attachControl(element: T, control: IUIAtomControl): void;
 
@@ -424,7 +424,7 @@ declare var window, global;
 const globalNS = (typeof window !== "undefined" ? window : (global as any)) as any;
 globalNS.AtomBridge = AtomBridge;
 
-if (window) {
+if (typeof window !== "undefined") {
     AtomBridge.instance = new AtomElementBridge();
     AtomBridge.platform = "web";
 }
