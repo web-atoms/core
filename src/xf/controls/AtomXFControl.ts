@@ -6,6 +6,8 @@ import { IAtomElement } from "../../core/types";
 import XNode from "../../core/XNode";
 import { NavigationService } from "../../services/NavigationService";
 
+export { default as XFApp } from "../XFApp";
+
 declare var UMD: any;
 
 UMD.defaultApp = "@web-atoms/core/dist/xf/XFApp";
