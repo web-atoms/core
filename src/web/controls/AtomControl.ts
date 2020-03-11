@@ -16,6 +16,8 @@ import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 
+// export { default as WebApp } from "../WebApp";
+
 // if (!AtomBridge.platform) {
 //     AtomBridge.platform = "web";
 //     AtomBridge.instance = new AtomElementBridge();

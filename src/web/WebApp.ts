@@ -4,7 +4,6 @@ import { AtomUri } from "../core/AtomUri";
 import { ServiceCollection } from "../di/ServiceCollection";
 import { BusyIndicatorService } from "../services/BusyIndicatorService";
 import { NavigationService } from "../services/NavigationService";
-import { AtomControl } from "./controls/AtomControl";
 import { ChildEnumerator } from "./core/AtomUI";
 import { WebBusyIndicatorService } from "./services/WebBusyIndicatorService";
 import { WindowService } from "./services/WindowService";
@@ -19,12 +18,12 @@ export default class WebApp extends App {
         return document.body;
     }
 
-    private mRoot: AtomControl;
-    public get root(): AtomControl {
+    private mRoot: any;
+    public get root(): any {
         return this.mRoot;
     }
 
-    public set root(v: AtomControl) {
+    public set root(v: any) {
         const old = this.mRoot;
         if (old) {
             old.dispose();
