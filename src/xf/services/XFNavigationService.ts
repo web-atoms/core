@@ -35,11 +35,12 @@ export default class XFNavigationService extends NavigationService {
 
     public get title(): string {
         // return bridge.getTitle();
-        throw new Error("Not supported");
+        // throw new Error("Not supported");
+        return undefined;
     }
     public set title(v: string) {
         // bridge.setTitle(v);
-        throw new Error("Not supported");
+        // throw new Error("Not supported");
     }
 
     // private mLocation: ILocation;
