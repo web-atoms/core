@@ -24,20 +24,20 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@types/jquery": "^3.3.30",
-    "@web-atoms/module-loader": "^1.0.375",
-    "@web-atoms/unit-test": "^1.0.23",
+    "@types/jquery": "^3.3.33",
+    "@web-atoms/module-loader": "^1.0.408",
+    "@web-atoms/unit-test": "^1.0.24",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
-    "jsdom": "^15.1.1",
+    "jsdom": "^15.2.1",
     "path": "^0.12.7",
     "remap-istanbul": "^0.11.1",
     "test-dom": "^1.0.0",
-    "typedoc": "^0.15.0",
+    "typedoc": "^0.15.8",
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
-    "@web-atoms/date-time": "^1.0.21",
+    "@web-atoms/date-time": "^1.0.23",
     "reflect-metadata": "^0.1.13"
   }
 }
