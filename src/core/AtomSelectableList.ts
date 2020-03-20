@@ -131,6 +131,7 @@ export default class AtomSelectableList<T> {
         }
         this.items.replace(map, start, size);
         this.mValue = undefined;
+        this.updateBindings(true);
     }
 
     public find(item: T | ((i: T) => boolean)): ISelectableItem<T> {
