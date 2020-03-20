@@ -38,7 +38,7 @@ export default class AtomSelectableList<T> {
     }
 
     public set selectedItem(item: T) {
-        this.clearSelected();
+        this.selectedItems.clear();
         if (!item) {
             this.updateBindings(true);
             return;
@@ -114,7 +114,7 @@ export default class AtomSelectableList<T> {
         if (!this.allowMultipleSelection) {
             values = [values];
         }
-        this.clearSelected();
+        this.selectedItems.clear();
         const map = source.map((x) => {
             const item = this.newItem(x);
             if (values && values.length) {
@@ -248,11 +248,9 @@ export default class AtomSelectableList<T> {
 
     private clearSelected() {
         if (!this.allowMultipleSelection) {
-            const items = this.selectedItems.map((s) => s);
+            const si = this.selectedItem;
             this.selectedItems.clear();
-            for (const iterator of items) {
-                AtomBinder.refreshValue(iterator, "selected");
-            }
+            AtomBinder.refreshValue(si, "selected");
         }
     }
 }
