@@ -23,6 +23,7 @@ export default class AtomSelectableList<T> {
     public set selectedIndex(n: number) {
         this.selectedItems.clear();
         if (n === -1) {
+            this.updateBindings(true);
             return;
         }
         this.selectedItems.add(this.items[n]);
@@ -38,6 +39,10 @@ export default class AtomSelectableList<T> {
 
     public set selectedItem(item: T) {
         this.clearSelected();
+        if (!item) {
+            this.updateBindings(true);
+            return;
+        }
         const si = this.items.find((s) => s.item === item);
         si.select();
     }
@@ -109,6 +114,7 @@ export default class AtomSelectableList<T> {
         if (!this.allowMultipleSelection) {
             values = [values];
         }
+        this.clearSelected();
         const map = source.map((x) => {
             const item = this.newItem(x);
             if (values && values.length) {
@@ -166,7 +172,7 @@ export default class AtomSelectableList<T> {
         si.toggle();
     }
 
-    public replaceSeleted(va: T[]): void {
+    public replaceSelected(va: T[]): void {
         this.replaceSelectedInternal(va, true);
     }
 
@@ -186,10 +192,15 @@ export default class AtomSelectableList<T> {
             this.selectedItems.replace(newItems);
         }
 
+        this.updateBindings(refreshValue);
+    }
+
+    private updateBindings(refreshValue: boolean = true) {
         // to prevent recursive updates...
         if (refreshValue) {
             AtomBinder.refreshValue(this, "value");
         }
+
         AtomBinder.refreshValue(this, "label");
         AtomBinder.refreshValue(this, "selectAll");
         AtomBinder.refreshValue(this, "selectedItem");
@@ -218,11 +229,7 @@ export default class AtomSelectableList<T> {
                     self.selectedItems.remove(this);
                 }
                 AtomBinder.refreshValue(this, "selected");
-                AtomBinder.refreshValue(self, "value");
-                AtomBinder.refreshValue(self, "label");
-                AtomBinder.refreshValue(self, "selectAll");
-                AtomBinder.refreshValue(self, "selectedItem");
-                AtomBinder.refreshValue(self, "selectedIndex");
+                self.updateBindings(true);
             }
         };
         newItem.select = () => {
