@@ -89,7 +89,23 @@ function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
     ((c && c.atomControl) || control)[n] = e;
 }
 
+interface IBinder<T extends IAtomComponent = IAtomComponent> {
+    presenter(name?: string): Bind;
+    event(handler: (control: T, e?: CustomEvent) => void): any;
+    oneTime(path: bindingFunction<T>): Bind;
+    oneWay(path: bindingFunction<T>): Bind;
+    twoWays(path: bindingFunction<T>, events?: string[]): Bind;
+}
+
 export default class Bind {
+
+    public static withData<D>() {
+        return Bind as any as IBinder< IAtomComponent & { data: D }>;
+    }
+
+    public static withViewModel<D>() {
+        return Bind as any as IBinder< IAtomComponent & { viewModel: D }>;
+    }
 
     public static presenter(name?: string): Bind {
         return new Bind(presenter, null, name as any);
