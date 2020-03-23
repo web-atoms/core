@@ -21,7 +21,7 @@ interface IDeviceNavigationService {
 declare var bridge: {
     navigationService: IDeviceNavigationService;
     alert(message: string, title: string, success: () => void, failed: (r) => void);
-    confirm(message: string, title: string, success: () => void, failed: (r) => void);
+    confirm(message: string, title: string, success: (r: boolean) => void, failed: (e) => void);
     getTitle(): string;
     setTitle(v: string): void;
     setRoot(e: any): void;
@@ -72,8 +72,8 @@ export default class XFNavigationService extends NavigationService {
     }
     public confirm(message: string, title?: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            bridge.confirm(message, title, () => {
-                resolve();
+            bridge.confirm(message, title, (r) => {
+                resolve(r);
             }, (f) => {
                 reject(f);
             });
