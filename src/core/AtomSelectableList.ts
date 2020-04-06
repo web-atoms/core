@@ -109,6 +109,13 @@ export default class AtomSelectableList<T> {
 
     }
 
+    public clear(clearValue: boolean = false) {
+        if (clearValue) {
+            this.replaceSelectedInternal([], false);
+        }
+        this.items.clear();
+    }
+
     public replace(source: T[], start?: number, size?: number): void {
         let values = this.value as any[];
         if (!this.allowMultipleSelection) {
