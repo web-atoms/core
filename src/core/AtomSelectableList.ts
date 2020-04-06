@@ -13,6 +13,16 @@ export default class AtomSelectableList<T> {
 
     public readonly selectedItems: Array<ISelectableItem<T>> = [];
 
+    /**
+     * Reference for Paging
+     */
+    public start: number;
+
+    /**
+     * Reference for paging
+     */
+    public total: number;
+
     public get selectedIndex(): number {
         if (this.selectedItems.length) {
             return this.items.indexOf(this.selectedItems[0]);
@@ -109,11 +119,41 @@ export default class AtomSelectableList<T> {
 
     }
 
+    /**
+     * Remove all items
+     * @param clearValue clear Selection
+     */
     public clear(clearValue: boolean = false) {
         if (clearValue) {
             this.replaceSelectedInternal([], false);
         }
         this.items.clear();
+    }
+
+    /**
+     * Append to existing items
+     * @param source source items
+     * @param total total number of items
+     */
+    public append(source: T[], total?: number) {
+        let values = this.value as any[];
+        if (!this.allowMultipleSelection) {
+            values = [values];
+        }
+        const map = source.map((x) => {
+            const item = this.newItem(x);
+            if (values && values.length) {
+                const v = this.valuePath(x);
+                if (values.find((v1) => v1 === v)) {
+                    item.selected = true;
+                }
+            }
+            return item;
+        });
+        this.total = total;
+        this.items.addAll(map);
+        this.mValue = undefined;
+        this.updateBindings(true);
     }
 
     public replace(source: T[], start?: number, size?: number): void {
