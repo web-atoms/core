@@ -10,6 +10,8 @@ declare var bridge: any;
 
 export default class XFApp extends A.App {
 
+    public classSeparator = "_";
+
     private mLastStyle: string = null;
 
     private mRoot: any;
@@ -42,24 +44,12 @@ export default class XFApp extends A.App {
     }
 
     public updateDefaultStyle(textContent: string) {
-        if (this.mLastStyle === textContent) {
+        if (!textContent) { return; }
+        if (this.mLastStyle && this.mLastStyle === textContent) {
             return;
         }
         this.mLastStyle = textContent;
         bridge.updateDefaultStyle(textContent);
-        // if (this.styleElement) {
-        //     if (this.styleElement.textContent === textContent) {
-        //         return;
-        //     }
-        // }
-        // const ss = document.createElement("style");
-
-        // ss.textContent = textContent;
-        // if (this.styleElement) {
-        //     this.styleElement.remove();
-        // }
-        // document.head.appendChild(ss);
-        // this.styleElement = ss;
     }
 
     public broadcast(channel: string, data: any) {

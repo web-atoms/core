@@ -53,10 +53,15 @@ export class AtomStyleSheet extends AtomStyle
 
     private flatten(pairs: INameValuePairs): string {
         const sl: string[] = [];
+        const sep = (this.app as any).classSeparator;
         for (const key in pairs) {
             if (pairs.hasOwnProperty(key)) {
                 const element = pairs[key];
-                sl.push(`.${key} ${element} `);
+                if (sep) {
+                    sl.push(`.${key.split("-").join(sep)} ${element} `);
+                } else {
+                    sl.push(`.${key} ${element} `);
+                }
             }
         }
 

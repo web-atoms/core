@@ -103,7 +103,12 @@ export class AtomStyle
     }
 
     protected toFullName(n: string): string {
-        return `${this.name}-${ StringHelper.fromCamelToHyphen(n)}`;
+        const a = (this.styleSheet.app as any).classSeparator;
+        const name = `${this.name}-${ StringHelper.fromCamelToHyphen(n)}`;
+        if (a) {
+            return name.split("-").join(a);
+        }
+        return name;
     }
 
     protected build(): void {

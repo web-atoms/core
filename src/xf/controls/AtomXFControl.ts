@@ -69,7 +69,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
             ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key));
         }
         AtomBinder.refreshValue(this, "controlStyle");
-        this.invalidate();
+        // this.invalidate();
     }
 
     public get theme(): AtomStyleSheet {
