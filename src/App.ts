@@ -93,7 +93,7 @@ export class App extends ServiceProvider {
     }
 
     public updateDefaultStyle(content: string) {
-        throw new Error("Not supported");
+        throw new Error("Platform does not support StyleSheets");
     }
 
     public waitForPendingCalls(): Promise<any> {

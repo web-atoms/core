@@ -3,15 +3,17 @@ import Category from "@web-atoms/unit-test/dist/Category";
 import Test from "@web-atoms/unit-test/dist/Test";
 import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { App } from "../../../App";
+import { MockApp } from "../../../MockApp";
 import { AtomTheme } from "../../../web/styles/AtomTheme";
+import AtomWebTest from "../AtomWebTest";
 
 @Category("Styles")
-export class TestCase extends TestItem {
+export class TestCase extends AtomWebTest {
 
     @Test
     public async atomTheme(): Promise<any> {
 
-        const app = new App();
+        const app = new MockApp();
 
         const theme = app.get(AtomTheme);
 
