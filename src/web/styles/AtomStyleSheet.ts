@@ -4,7 +4,6 @@ import { AtomStyle } from "./AtomStyle";
 
 export class AtomStyleSheet extends AtomStyle
         implements INotifyPropertyChanging {
-    public styleElement: HTMLElement;
     private lastUpdateId: any = 0;
 
     private isAttaching: boolean = false;
@@ -44,20 +43,7 @@ export class AtomStyleSheet extends AtomStyle
         const pairs = this.toStyle({});
 
         const textContent = this.flatten(pairs);
-        if (this.styleElement) {
-            if (this.styleElement.textContent === textContent) {
-                this.isAttaching = false;
-                return;
-            }
-        }
-        const ss = document.createElement("style");
-
-        ss.textContent = textContent;
-        if (this.styleElement) {
-            this.styleElement.remove();
-        }
-        document.head.appendChild(ss);
-        this.styleElement = ss;
+        this.app.updateDefaultStyle(textContent);
         this.isAttaching = false;
     }
 

@@ -9,6 +9,8 @@ declare var bridge: any;
 
 export default class XFApp extends A.App {
 
+    private mLastStyle: string = null;
+
     private mRoot: any;
     public get root(): any {
         return this.mRoot;
@@ -35,6 +37,27 @@ export default class XFApp extends A.App {
             s.dispose();
             oldDispose.call(this);
         };
+    }
+
+    public updateDefaultStyle(textContent: string) {
+        if (this.mLastStyle === textContent) {
+            return;
+        }
+        this.mLastStyle = textContent;
+        bridge.updateDefaultStyle(textContent);
+        // if (this.styleElement) {
+        //     if (this.styleElement.textContent === textContent) {
+        //         return;
+        //     }
+        // }
+        // const ss = document.createElement("style");
+
+        // ss.textContent = textContent;
+        // if (this.styleElement) {
+        //     this.styleElement.remove();
+        // }
+        // document.head.appendChild(ss);
+        // this.styleElement = ss;
     }
 
     public broadcast(channel: string, data: any) {

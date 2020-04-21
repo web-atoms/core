@@ -3,10 +3,8 @@ import { AtomBinder } from "../../core/AtomBinder";
 import { ColorItem } from "../../core/Colors";
 import { StringHelper } from "../../core/StringHelper";
 import { IClassOf, INameValuePairs } from "../../core/types";
-import WebImage from "../../core/WebImage";
 import { TypeKey } from "../../di/TypeKey";
 import { AtomControl } from "../controls/AtomControl";
-import WebApp from "../WebApp";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
@@ -155,14 +153,14 @@ export class AtomStyle
         // empty...
     }
 
-    protected registerExternalStyleSheet(s: {
-        href: string,
-        integrity?: string,
-        crossOrigin?: string
-    }): void {
-        const wa = this.styleSheet.app as WebApp;
-        wa.installStyleSheet(s);
-    }
+    // protected registerExternalStyleSheet(s: {
+    //     href: string,
+    //     integrity?: string,
+    //     crossOrigin?: string
+    // }): void {
+    //     const wa = this.styleSheet.app as WebApp;
+    //     wa.installStyleSheet(s);
+    // }
 
     private createStyleText(name: string, pairs: INameValuePairs, styles: IStyleDeclaration): INameValuePairs {
         const styleList: any[] = [];
