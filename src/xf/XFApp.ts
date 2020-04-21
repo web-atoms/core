@@ -2,9 +2,9 @@ import * as A from "../App";
 import { AtomBridge } from "../core/AtomBridge";
 import { BusyIndicatorService } from "../services/BusyIndicatorService";
 import { NavigationService } from "../services/NavigationService";
+import { AtomStyleSheet } from "../web/styles/AtomStyleSheet";
 import XFBusyIndicatorService from "./services/XFBusyIndicatorService";
 import XFNavigationService from "./services/XFNavigationService";
-import { AtomStyleSheet } from "../web/styles/AtomStyleSheet";
 
 declare var bridge: any;
 
