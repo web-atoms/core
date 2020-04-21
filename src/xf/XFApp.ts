@@ -27,7 +27,7 @@ export default class XFApp extends A.App {
         AtomBridge.instance = bridge;
         this.put(NavigationService, this.resolve(XFNavigationService));
         this.put(BusyIndicatorService, this.resolve(XFBusyIndicatorService));
-        this.put(AtomStyleSheet, this.resolve(AtomStyleSheet, true));
+        this.put(AtomStyleSheet, new AtomStyleSheet(this, "WA_"));
 
         const s = bridge.subscribe((channel, data) => {
             this.broadcast(channel, data);
