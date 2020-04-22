@@ -52,22 +52,20 @@ export class AtomStyleSheet extends AtomStyle
     }
 
     private flatten(pairs: INameValuePairs): string {
-        const sl: Array<{key: string, element: string}> = [];
-        const sep = (this.app as any).classSeparator;
+        // const sl: Array<[string, string]> = [];
+        const r = [];
         for (const key in pairs) {
             if (pairs.hasOwnProperty(key)) {
                 const element = pairs[key];
-                if (sep) {
-                    sl.push({key: key.split("-").join(sep), element});
-                } else {
-                    sl.push({key,  element});
-                }
+                // sl.push([key,  element]);
+                r.push(`.${key} ${element}`);
             }
         }
 
-        sl.sort((a, b) => a.key.localeCompare(b.key) );
+        // sl.sort((a, b) => a[0].localeCompare(b[0]) );
 
-        return sl.map((i) => `.${i.key} ${i.element}`).join("\r\n");
+        // return sl.map((i) => `.${i[0]} ${i[1]}`).join("\r\n");
+        return r.join("\n");
     }
 
 }

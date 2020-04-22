@@ -10,8 +10,6 @@ declare var bridge: any;
 
 export default class XFApp extends A.App {
 
-    // public classSeparator = "_";
-
     private mLastStyle: string = null;
 
     private mRoot: any;
