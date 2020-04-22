@@ -67,7 +67,7 @@ export class AtomStyleSheet extends AtomStyle
 
         sl.sort((a, b) => a.key.localeCompare(b.key) );
 
-        return sl.join("\r\n");
+        return sl.map((i) => `.${i.key} ${i.element}`).join("\r\n");
     }
 
 }
