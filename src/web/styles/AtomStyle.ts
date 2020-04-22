@@ -200,7 +200,7 @@ export class AtomStyle
         const styleClassName = `${this.name}-${cname}`;
 
         if (styleList.length) {
-            pairs[styleClassName] = `{ ${styleList.join(";\r\n")} }`;
+            pairs[styleClassName] = `{ ${styleList.join(";\r\n")}; }`;
         }
         // styles.className = styleClassName;
         // styles.toString = () => styleClassName;
