@@ -198,7 +198,10 @@ export class AtomStyle
         const cname = StringHelper.fromCamelToHyphen(name);
 
         const styleClassName = `${this.name}-${cname}`;
-        pairs[styleClassName] = `{ ${styleList.join(";\r\n")} }`;
+
+        if (styleList.length) {
+            pairs[styleClassName] = `{ ${styleList.join(";\r\n")} }`;
+        }
         // styles.className = styleClassName;
         // styles.toString = () => styleClassName;
         return pairs;
