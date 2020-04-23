@@ -4,7 +4,6 @@ import { ColorItem } from "../../core/Colors";
 import { StringHelper } from "../../core/StringHelper";
 import { IClassOf, INameValuePairs } from "../../core/types";
 import { TypeKey } from "../../di/TypeKey";
-import { AtomControl } from "../controls/AtomControl";
 import { AtomStyleSheet } from "./AtomStyleSheet";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
@@ -44,7 +43,7 @@ export class AtomStyle
         return style;
     }
 
-    public createStyle<TC extends AtomControl, T extends AtomStyle>(tc: IClassOf<TC>, c: IClassOf<T>, name: string): T {
+    public createStyle<TC, T extends AtomStyle>(tc: IClassOf<TC>, c: IClassOf<T>, name: string): T {
 
         this.defaults = this.defaults || {};
 
