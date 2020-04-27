@@ -14,7 +14,7 @@ export class AtomStyleSheet extends AtomStyle
     [key: string]: any;
 
     constructor(public readonly app: App, prefix: string) {
-        super(null, null);
+        super(null, prefix);
         (this as any).styleSheet = this;
         this.pushUpdate(0);
     }
