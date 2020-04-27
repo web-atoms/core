@@ -53,7 +53,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
             }
             if (this.defaultControlStyle) {
                 this.mControlStyle = defaultStyleSheets[key] ||
-                ( defaultStyleSheets[key] = this.theme.createNamedStyle(this.defaultControlStyle, key));
+                ( defaultStyleSheets[key] = this.theme.createNamedStyle(this.defaultControlStyle, key, 0));
             }
             this.mControlStyle = this.mControlStyle || null;
         }
@@ -66,7 +66,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         } else {
             const key = TypeKey.get(v);
             this.mControlStyle = defaultStyleSheets[key] ||
-            ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key));
+            ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key, 0));
         }
         AtomBinder.refreshValue(this, "controlStyle");
         // this.invalidate();
