@@ -11,7 +11,8 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 
     public get root(): IStyleDeclaration {
         return {
-            display: "inline-block"
+            display: "inline-block",
+            paddingInlineStart: 0
         };
     }
 
