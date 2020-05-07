@@ -8,10 +8,6 @@ export default class Markdown extends FormattedString {
         return new Markdown(text);
     }
 
-    private constructor(public readonly text: string) {
-        super();
-    }
-
     public applyTo(app: App, element: any): void {
         (element as HTMLElement).innerHTML = this.toHtmlString(app);
     }
