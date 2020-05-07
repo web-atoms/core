@@ -1,4 +1,6 @@
 import DISingleton from "../../di/DISingleton";
+import { RegisterSingleton } from "../../di/RegisterSingleton";
+import { Register } from "../../di/Register";
 
 type Processor = [string, string, (s: string, e: string, t: string) => string ];
 
@@ -23,6 +25,8 @@ const regExps: Exp[] = [
 
 @DISingleton()
 export default class MarkdownService {
+
+    public static instance: MarkdownService = new MarkdownService();
 
     public toHtml(text: string): string {
         for (const iterator of regExps) {

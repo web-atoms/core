@@ -8,6 +8,8 @@ import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../../web/styles/AtomStyle";
 import { AtomStyleSheet } from "../../web/styles/AtomStyleSheet";
+import FormattedString from "../../core/FormattedString";
+import Markdown from "../../core/Markdown";
 
 // export { default as XFApp } from "../XFApp";
 

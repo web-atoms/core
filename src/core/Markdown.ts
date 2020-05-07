@@ -13,13 +13,18 @@ export default class Markdown extends FormattedString {
     }
 
     public applyTo(app: App, element: any): void {
-        const ms = app.resolve(MarkdownService) as MarkdownService;
-        const t = ms.toHtml(this.text);
-        (element as HTMLElement).innerHTML = t;
+        (element as HTMLElement).innerHTML = this.toHtmlString(app);
     }
 
     public toString(): string {
         return this.text;
+    }
+
+    public  toHtmlString(app?: App): string {
+        const ms = app
+            ? app.resolve(MarkdownService) as MarkdownService
+            : MarkdownService.instance;
+        return ms.toHtml(this.text);
     }
 
 }
