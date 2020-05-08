@@ -76,7 +76,12 @@ export class AtomLoader {
                             vm[key.split(":", 2)[1]] = v.consume();
                             continue;
                         }
-                        vm[key] = element;
+                        try {
+                            vm[key] = element;
+                        } catch (e) {
+                            // tslint:disable-next-line: no-console
+                            console.error(e);
+                        }
                     }
                 }
             }
