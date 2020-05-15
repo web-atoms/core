@@ -525,7 +525,7 @@ export class BaseService {
                                 if (v.hasOwnProperty(key)) {
                                     const element = v[key];
                                     if (element) {
-                                        url += `${encodeURIComponent(key)}=${encodeURIComponent(element)}`;
+                                        url += `${encodeURIComponent(key)}=${encodeURIComponent(element)}&`;
                                     }
                                 }
                             }
