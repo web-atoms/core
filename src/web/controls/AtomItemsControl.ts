@@ -944,7 +944,7 @@ export class AtomItemsControl extends AtomControl {
 
         let vc: HTMLElement = this.mVirtualContainer;
         if (!vc) {
-            if (ip === e || !/table/i.test(e.nodeName)) {
+            if (ip === e && !/table/i.test(e.nodeName)) {
                 throw new Error("virtualContainer presenter not found,"
                 + "you must put itemsPresenter inside a virtualContainer in order for Virtualization to work");
             } else {

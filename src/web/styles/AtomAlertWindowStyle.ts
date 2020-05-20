@@ -28,7 +28,8 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
             ... this.getBaseProperty(AtomAlertWindowStyle, "content"),
             padding: "0px",
             textAlign: "center",
-            backgroundColor: Colors.white,
+            backgroundColor: "transparent",
+            paddingBottom: "15px",
             subclasses: {
                 " div > .yes-button": {
                     ...this.buttonStyle,

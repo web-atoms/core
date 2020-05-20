@@ -60,6 +60,8 @@ export default class WebApp extends App {
 
     private hashUpdater = new AtomOnce();
 
+    private styleElement: HTMLElement;
+
     constructor() {
         super();
 
@@ -161,6 +163,22 @@ export default class WebApp extends App {
         });
         (script as any).loaderPromise = p;
         return p;
+    }
+
+    public updateDefaultStyle(textContent: string) {
+        if (this.styleElement) {
+            if (this.styleElement.textContent === textContent) {
+                return;
+            }
+        }
+        const ss = document.createElement("style");
+
+        ss.textContent = textContent;
+        if (this.styleElement) {
+            this.styleElement.remove();
+        }
+        document.head.appendChild(ss);
+        this.styleElement = ss;
     }
 
     /**

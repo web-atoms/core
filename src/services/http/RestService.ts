@@ -183,6 +183,20 @@ export const Header: RestParamAttr = parameterBuilder("Header");
 export const Query: RestParamAttr = parameterBuilder("Query");
 
 /**
+ * This will register Url query fragments on parameter of type object
+ *
+ * @example
+ *
+ *     @Get("/api/products")
+ *     async getProducts(
+ *          @Queries queries: { [key: string]: string | number | boolean | null }
+ *     ): Promise<Product[]> {
+ *         return null;
+ * }
+ */
+export const Queries: RestAttr = parameterBuilder("Queries")("");
+
+/**
  * This will register data fragment on ajax.
  *
  * @example
@@ -499,6 +513,22 @@ export class BaseService {
                                 url += "&";
                             }
                             url += `${encodeURIComponent(p.key)}=${encodeURIComponent(v)}`;
+                            break;
+                        case "queries":
+                            if (url.indexOf("?") === -1) {
+                                url += "?";
+                            }
+                            if (! /(\&|\?)$/.test(url)) {
+                                url += "&";
+                            }
+                            for (const key in v) {
+                                if (v.hasOwnProperty(key)) {
+                                    const element = v[key];
+                                    if (element) {
+                                        url += `${encodeURIComponent(key)}=${encodeURIComponent(element)}&`;
+                                    }
+                                }
+                            }
                             break;
                         case "body":
                             options.data = v;

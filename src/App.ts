@@ -92,6 +92,10 @@ export class App extends ServiceProvider {
         this.dispatcher.callLater(f);
     }
 
+    public updateDefaultStyle(content: string) {
+        throw new Error("Platform does not support StyleSheets");
+    }
+
     public waitForPendingCalls(): Promise<any> {
         return this.dispatcher.waitForAll();
     }

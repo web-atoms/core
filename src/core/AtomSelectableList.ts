@@ -13,6 +13,16 @@ export default class AtomSelectableList<T> {
 
     public readonly selectedItems: Array<ISelectableItem<T>> = [];
 
+    /**
+     * Reference for Paging
+     */
+    public start: number;
+
+    /**
+     * Reference for paging
+     */
+    public total: number;
+
     public get selectedIndex(): number {
         if (this.selectedItems.length) {
             return this.items.indexOf(this.selectedItems[0]);
@@ -23,6 +33,7 @@ export default class AtomSelectableList<T> {
     public set selectedIndex(n: number) {
         this.selectedItems.clear();
         if (n === -1) {
+            this.updateBindings(true);
             return;
         }
         this.selectedItems.add(this.items[n]);
@@ -37,7 +48,11 @@ export default class AtomSelectableList<T> {
     }
 
     public set selectedItem(item: T) {
-        this.clearSelected();
+        this.selectedItems.clear();
+        if (!item) {
+            this.updateBindings(true);
+            return;
+        }
         const si = this.items.find((s) => s.item === item);
         si.select();
     }
@@ -104,11 +119,49 @@ export default class AtomSelectableList<T> {
 
     }
 
+    /**
+     * Remove all items
+     * @param clearValue clear Selection
+     */
+    public clear(clearValue: boolean = false) {
+        if (clearValue) {
+            this.replaceSelectedInternal([], false);
+        }
+        this.items.clear();
+    }
+
+    /**
+     * Append to existing items
+     * @param source source items
+     * @param total total number of items
+     */
+    public append(source: T[], total?: number) {
+        let values = this.value as any[];
+        if (!this.allowMultipleSelection) {
+            values = [values];
+        }
+        const map = source.map((x) => {
+            const item = this.newItem(x);
+            if (values && values.length) {
+                const v = this.valuePath(x);
+                if (values.find((v1) => v1 === v)) {
+                    item.selected = true;
+                }
+            }
+            return item;
+        });
+        this.total = total;
+        this.items.addAll(map);
+        this.mValue = undefined;
+        this.updateBindings(true);
+    }
+
     public replace(source: T[], start?: number, size?: number): void {
         let values = this.value as any[];
         if (!this.allowMultipleSelection) {
             values = [values];
         }
+        this.selectedItems.clear();
         const map = source.map((x) => {
             const item = this.newItem(x);
             if (values && values.length) {
@@ -125,6 +178,7 @@ export default class AtomSelectableList<T> {
         }
         this.items.replace(map, start, size);
         this.mValue = undefined;
+        this.updateBindings(true);
     }
 
     public find(item: T | ((i: T) => boolean)): ISelectableItem<T> {
@@ -166,7 +220,7 @@ export default class AtomSelectableList<T> {
         si.toggle();
     }
 
-    public replaceSeleted(va: T[]): void {
+    public replaceSelected(va: T[]): void {
         this.replaceSelectedInternal(va, true);
     }
 
@@ -186,10 +240,15 @@ export default class AtomSelectableList<T> {
             this.selectedItems.replace(newItems);
         }
 
+        this.updateBindings(refreshValue);
+    }
+
+    private updateBindings(refreshValue: boolean = true) {
         // to prevent recursive updates...
         if (refreshValue) {
             AtomBinder.refreshValue(this, "value");
         }
+
         AtomBinder.refreshValue(this, "label");
         AtomBinder.refreshValue(this, "selectAll");
         AtomBinder.refreshValue(this, "selectedItem");
@@ -218,11 +277,7 @@ export default class AtomSelectableList<T> {
                     self.selectedItems.remove(this);
                 }
                 AtomBinder.refreshValue(this, "selected");
-                AtomBinder.refreshValue(self, "value");
-                AtomBinder.refreshValue(self, "label");
-                AtomBinder.refreshValue(self, "selectAll");
-                AtomBinder.refreshValue(self, "selectedItem");
-                AtomBinder.refreshValue(self, "selectedIndex");
+                self.updateBindings(true);
             }
         };
         newItem.select = () => {
@@ -240,11 +295,9 @@ export default class AtomSelectableList<T> {
 
     private clearSelected() {
         if (!this.allowMultipleSelection) {
-            const items = this.selectedItems.map((s) => s);
+            const si = this.selectedItem;
             this.selectedItems.clear();
-            for (const iterator of items) {
-                AtomBinder.refreshValue(iterator, "selected");
-            }
+            AtomBinder.refreshValue(si, "selected");
         }
     }
 }
