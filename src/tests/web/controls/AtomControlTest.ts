@@ -11,7 +11,7 @@ import WebImage from "../../../core/WebImage";
 import { AtomTest } from "../../../unit/AtomTest";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 class TestViewModel {
 

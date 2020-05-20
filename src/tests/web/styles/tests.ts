@@ -5,7 +5,7 @@ import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { App } from "../../../App";
 import { MockApp } from "../../../MockApp";
 import { AtomTheme } from "../../../web/styles/AtomTheme";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 @Category("Styles")
 export class TestCase extends AtomWebTest {

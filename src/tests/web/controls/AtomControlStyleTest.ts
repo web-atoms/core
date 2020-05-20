@@ -5,7 +5,7 @@ import { AtomViewModel } from "../../../view-model/AtomViewModel";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomStyle } from "../../../web/styles/AtomStyle";
 import { IStyleDeclaration } from "../../../web/styles/IStyleDeclaration";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 class TestControl extends AtomControl {
 
