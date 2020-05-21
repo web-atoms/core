@@ -32,10 +32,8 @@ export class AtomTabbedPage extends AtomGridView
 
     public localViewModel: AtomTabViewModel;
 
-    @BindableProperty
     public tabChannelName: string = "app";
 
-    @BindableProperty
     public titleTemplate: IClassOf<AtomControl>;
 
     public presenter: HTMLElement;
@@ -80,13 +78,14 @@ export class AtomTabbedPage extends AtomGridView
     }
 
     protected preCreate(): void {
-
+        super.preCreate();
         this.defaultControlStyle = AtomTabbedPageStyle;
+        this.tabChannelName = "app";
+        this.titleTemplate = null;
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
         });
         this.localViewModel = this.resolve(AtomTabViewModel, () => ({ owner: this }));
-        this.titleTemplate = null;
         this.columns = "*";
         this.rows = "30,*";
 
