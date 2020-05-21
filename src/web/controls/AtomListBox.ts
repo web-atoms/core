@@ -6,9 +6,10 @@ import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomListBox extends AtomItemsControl {
 
-    public selectItemOnClick: boolean = true;
+    public selectItemOnClick: boolean;
 
     protected preCreate(): void {
+        this.selectItemOnClick = false;
         super.preCreate();
         this.defaultControlStyle = AtomListBoxStyle;
         this.registerItemClick();
