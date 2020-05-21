@@ -23,32 +23,6 @@ export class AtomComboBox extends AtomItemsControl {
         }
     }
 
-    // public onCollectionChanged(key: string, index: number, item: any): any {
-    //     const element = this.element as HTMLSelectElement;
-    //     const dataItems = this.items;
-    //     element.options.length = dataItems.length;
-
-    //     const lp = this.labelPath;
-    //     const vp = this.valuePath;
-    //     let label = null;
-    //     let value = null;
-    //     const selectedValue = this.value;
-    //     let i = 0;
-    //     for (const data of dataItems) {
-    //         label = data;
-    //         value = data;
-    //         if (lp) {
-    //             label = label[lp];
-    //         }
-    //         if (vp) {
-    //             value = value[vp];
-    //         }
-
-    //         // tslint:disable-next-line:triple-equals
-    //         element.options[i++] = new Option(label, value, false, value == selectedValue);
-    //     }
-    // }
-
     public updateSelectionBindings(): void {
         super.updateSelectionBindings();
 

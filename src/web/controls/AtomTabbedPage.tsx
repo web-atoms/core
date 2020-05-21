@@ -5,8 +5,10 @@ import { AtomList } from "../../core/AtomList";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomOnce } from "../../core/AtomOnce";
 import { AtomUri } from "../../core/AtomUri";
+import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
+import XNode from "../../core/XNode";
 import { Inject } from "../../di/Inject";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
@@ -20,8 +22,6 @@ import { AtomControl } from "./AtomControl";
 import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
 import { AtomPage } from "./AtomPage";
-import XNode from "../../core/XNode";
-import Bind from "../../core/Bind";
 
 const BindPage = Bind.forData<AtomPage>();
 
