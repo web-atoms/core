@@ -161,31 +161,22 @@ export class AtomWindow extends AtomControl {
         return getTemplateParent(this.element);
     }
 
-    @BindableProperty
     public title: string = "";
 
-    @BindableProperty
     public width: string = "";
 
-    @BindableProperty
     public height: string = "";
 
-    @BindableProperty
     public x: number = -1;
 
-    @BindableProperty
     public y: number = -1;
 
-    @BindableProperty
     public windowTemplate: IClassOf<AtomControl>;
 
-    @BindableProperty
     public commandTemplate: IClassOf<AtomControl>;
 
-    @BindableProperty
     public titleTemplate: IClassOf<AtomControl> = AtomWindowTitleTemplate;
 
-    @BindableProperty
     public frameTemplate: IClassOf<AtomWindowFrameTemplate> = AtomWindowFrameTemplate;
 
     private isReady: boolean = false;
@@ -268,6 +259,15 @@ export class AtomWindow extends AtomControl {
 
     protected preCreate() {
         this.defaultControlStyle = AtomWindowStyle;
+        this.title = null;
+        this.width = "";
+        this.height = "";
+        this.x = -1;
+        this.y = -1;
+        this.windowTemplate = null;
+        this.commandTemplate = null;
+        this.titleTemplate = AtomWindowTitleTemplate;
+        this.frameTemplate = AtomWindowFrameTemplate;
         super.preCreate();
         this.render(<div
             styleClass={Bind.oneTime(() => this.controlStyle.name)}
