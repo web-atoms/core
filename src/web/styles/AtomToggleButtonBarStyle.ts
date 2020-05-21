@@ -6,7 +6,6 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 
-    @BindableProperty
     public toggleColor: string = "blue";
 
     public get root(): IStyleDeclaration {

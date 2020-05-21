@@ -5,7 +5,6 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomListBoxStyle extends AtomStyle {
 
-    @BindableProperty
     public padding: number;
 
     public get root(): IStyleDeclaration {

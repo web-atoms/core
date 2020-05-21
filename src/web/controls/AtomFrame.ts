@@ -37,10 +37,8 @@ export class AtomFrame
 
     public name: string;
 
-    @BindableProperty
     public keepStack: boolean;
 
-    @BindableProperty
     public current: AtomControl;
 
     public pagePresenter: HTMLElement;

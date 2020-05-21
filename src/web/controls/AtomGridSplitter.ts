@@ -8,11 +8,14 @@ import { AtomGridView } from "./AtomGridView";
  */
 export class AtomGridSplitter extends AtomControl {
 
-    @BindableProperty
-    public direction: "vertical" | "horizontal" = "vertical";
+    public direction: "vertical" | "horizontal";
 
-    @BindableProperty
     public dragging: boolean = false;
+
+    protected preCreate() {
+        this.direction = "vertical";
+        this.dragging = false;
+    }
 
     protected create(): void {
         this.bind(this.element, "styleCursor", [["direction"]], false,

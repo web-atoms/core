@@ -7,7 +7,6 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomTabbedPageStyle extends AtomStyle {
 
-    @BindableProperty
     public padding: number;
 
     public get theme(): AtomTheme {
