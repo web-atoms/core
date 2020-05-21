@@ -58,10 +58,6 @@ export abstract class AtomStyle
         return this.styleText;
     }
 
-    protected toFullName(n: string): string {
-        return `${this.name}-${ StringHelper.fromCamelToHyphen(n)}`;
-    }
-
     private createStyleText(name: string, pairs: string[], styles: IStyleDeclaration): string[] {
         const styleList: any[] = [];
         for (const key in styles) {
@@ -79,7 +75,7 @@ export abstract class AtomStyle
                     for (const subclassKey in element) {
                         if (element.hasOwnProperty(subclassKey)) {
                             const ve = element[subclassKey];
-                            pairs = this.createStyleText(`${name}${subclassKey}`, pairs, ve);
+                            pairs = this.createStyleText(`${n}${subclassKey}`, pairs, ve);
                         }
                     }
                 } else {
@@ -96,7 +92,7 @@ export abstract class AtomStyle
         const styleClassName = `${this.name}${cname}`;
 
         if (styleList.length) {
-            pairs.push(`${styleClassName}: { ${styleList.join(";\r\n")}; }`);
+            pairs.push(`.${styleClassName}: { ${styleList.join(";\r\n")}; }`);
         }
         return pairs;
     }
