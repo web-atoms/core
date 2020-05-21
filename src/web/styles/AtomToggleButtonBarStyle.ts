@@ -11,7 +11,7 @@ export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
     public get root(): IStyleDeclaration {
         return {
             // tslint:disable-next-line: no-string-literal
-            ... super["root"],
+            ... this.getBaseProperty(AtomToggleButtonBarStyle , "root"),
             display: "inline-block",
             paddingInlineStart: 0
         };
