@@ -92,7 +92,7 @@ export abstract class AtomStyle
         const styleClassName = `${this.name}${cname}`;
 
         if (styleList.length) {
-            pairs.push(`.${styleClassName}: { ${styleList.join(";\r\n")}; }`);
+            pairs.push(`.${styleClassName} { ${styleList.join(";\r\n")}; }`);
         }
         return pairs;
     }
