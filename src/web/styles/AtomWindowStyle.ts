@@ -10,8 +10,7 @@ export class AtomWindowStyle extends AtomStyle {
             ... this.frameHost,
             subclasses: {
                 " .close-button": this.closeButton,
-                " .command-bar": this.closeButton,
-                " .command-bar-button": this.closeButton,
+                " .command-bar": this.commandBar,
                 " .content": this.content,
                 " .frame": this.frame,
                 " .title": this.title,
@@ -111,7 +110,10 @@ export class AtomWindowStyle extends AtomStyle {
             backgroundColor: "#d4d4d4",
             textAlign: "right",
             borderBottomRightRadius: "4px",
-            borderBottomLeftRadius: "4px"
+            borderBottomLeftRadius: "4px",
+            subclasses: {
+                " button": this.commandBarButton
+            }
         };
     }
 

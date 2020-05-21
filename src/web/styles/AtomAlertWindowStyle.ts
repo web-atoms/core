@@ -31,12 +31,11 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
             backgroundColor: "transparent",
             paddingBottom: "15px",
             subclasses: {
+                " div > button": this.buttonStyle,
                 " div > .yes-button": {
-                    ...this.buttonStyle,
                     backgroundColor: Colors.rgba(0, 128, 0)
                 },
                 " div > .no-button": {
-                    ...this.buttonStyle,
                     backgroundColor: Colors.rgba(255, 0, 0)
                 }
 
