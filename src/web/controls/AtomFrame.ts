@@ -253,7 +253,7 @@ export class AtomFrame
         this.pagePresenter = null;
         AtomUI.assignID(this.element);
         this.runAfterInit(() => {
-            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
         });
         this.backCommand = () => this.app.runAsync(() => this.onBackCommand());
 
