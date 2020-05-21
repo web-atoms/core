@@ -22,7 +22,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     public defaultControlStyle: any;
 
     private mControlStyle: AtomStyle;
-    public get controlStyle(): any {
+    public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
             const key = TypeKey.get(this.defaultControlStyle || this.constructor);
 
@@ -40,7 +40,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return this.mControlStyle;
     }
 
-    public set controlStyle(v: any) {
+    public set controlStyle(v: AtomStyle) {
         if (v instanceof AtomStyle) {
             this.mControlStyle = v;
         } else {
