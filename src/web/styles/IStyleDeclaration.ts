@@ -51,7 +51,7 @@ export type BackgroundSizeType = "" | "default" | "auto" | "0px" | "0px 0px" | "
 "contain" |"initial" | "inherit" | string | null;
 export type BorderStyleType = "" | "default" | "none" | "hidden" | "dotted" | "dashed" | "solid" | "double" |
 "groove" | "ridge" | "inset" | "outset" | "initial" | "inherit" | string | null;
-export type CommamWidthType = "" | "default" | "medium" | "thin" | "thick" | "initial" | "inherit" | string | null;
+export type CommonWidthType = "" | "default" | "medium" | "thin" | "thick" | "initial" | "inherit" | string | null;
 export type BorderCollapseType = "" | "default" | "separate" | "collapse" | "initial" | "inherit" | string | null;
 export type BorderImageRepeatType = "" | "default" | "stretch" | "repeat" | "round" | "space" | "initial" |
 "inherit" | string | null;
@@ -104,7 +104,7 @@ export type ObjectFitType = "" | "default" | "fill" | "contain" | "cover" | "non
 "initial" | "inherit" | string | null;
 export type ObjectPositionType = "" | "default" | "fill" | "contain" | "cover" | "none" | "scale-down" |
 "initial" | "inherit" | string | null;
-export type PageBreakCommanType = "" | "default" | "auto" | "always" | "avoid" | "left" | "right" |
+export type PageBreakCommonType = "" | "default" | "auto" | "always" | "avoid" | "left" | "right" |
 "initial" | "inherit" | string | null;
 export type PageBreakInsideType = "" | "default" | "auto"| "avoid" | "initial" | "inherit" | string | null;
 export type ResizeType = "" | "default" | "none" | "both" | "horizontal" | "vertical" | "initial" |
@@ -162,7 +162,7 @@ export interface IStyleDeclaration {
     borderBottomLeftRadius?: string | 0 | null;
     borderBottomRightRadius?: string | 0 | null;
     borderBottomStyle?: BorderStyleType;
-    borderBottomWidth?: CommamWidthType;
+    borderBottomWidth?: CommonWidthType;
     borderCollapse?: BorderCollapseType;
     borderColor?: string | null | ColorItem;
     borderImage?: string | null;
@@ -174,12 +174,12 @@ export interface IStyleDeclaration {
     borderLeft?: string | null;
     borderLeftColor?: string | null | ColorItem;
     borderLeftStyle?: BorderStyleType;
-    borderLeftWidth?: CommamWidthType;
+    borderLeftWidth?: CommonWidthType;
     borderRadius?: string | 0 | null;
     borderRight?: string | null;
     borderRightColor?: string | null | ColorItem;
     borderRightStyle?: BorderStyleType;
-    borderRightWidth?: CommamWidthType;
+    borderRightWidth?: CommonWidthType;
     borderSpacing?: BorderSpacingType;
     borderStyle?: BorderStyleType;
     borderTop?: string | null;
@@ -187,8 +187,8 @@ export interface IStyleDeclaration {
     borderTopLeftRadius?: string | 0 | null;
     borderTopRightRadius?: string | 0 | null;
     borderTopStyle?: BorderStyleType;
-    borderTopWidth?: CommamWidthType;
-    borderWidth?: CommamWidthType;
+    borderTopWidth?: CommonWidthType;
+    borderWidth?: CommonWidthType;
     bottom?: PositionType;
     boxShadow?: string | null;
     boxSizing?: BoxSizingType;
@@ -196,10 +196,6 @@ export interface IStyleDeclaration {
     breakBefore?: string | null;
     breakInside?: string | null;
     captionSide?: CaptionSideType;
-    /**
-     * Warning, do not use this
-     */
-    className?: string;
     clear?: ClearType;
     clip?: string | null;
     clipPath?: string | null;
@@ -212,7 +208,7 @@ export interface IStyleDeclaration {
     columnRule?: string | null;
     columnRuleColor?: any | ColorItem;
     columnRuleStyle?: BorderStyleType;
-    columnRuleWidth?: CommamWidthType;
+    columnRuleWidth?: CommonWidthType;
     columnSpan?: string | null;
     columnWidth?: any;
     columns?: string | null;
@@ -367,7 +363,7 @@ export interface IStyleDeclaration {
     outlineColor?: string | null | ColorItem;
     outlineOffset?: string | null;
     outlineStyle?: BorderStyleType;
-    outlineWidth?: CommamWidthType;
+    outlineWidth?: CommonWidthType;
     overflow?: OverFlowType;
     overflowX?: OverFlowType;
     overflowY?: OverFlowType;
@@ -378,8 +374,8 @@ export interface IStyleDeclaration {
     paddingTop?: number | string | null;
     paddingInlineStart?: number | string | null;
     paddingInlineEnd?: number | string | null;
-    pageBreakAfter?: PageBreakCommanType;
-    pageBreakBefore?: PageBreakCommanType;
+    pageBreakAfter?: PageBreakCommonType;
+    pageBreakBefore?: PageBreakCommonType;
     pageBreakInside?: PageBreakInsideType;
     readonly parentRule?: CSSRule;
     penAction?: string | null;

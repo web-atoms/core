@@ -261,7 +261,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected setElementClass(element: HTMLElement, value: any, clear?: boolean): void {
-        const s = value as IStyleDeclaration;
+        const s = value;
         if (s && typeof s === "object") {
             if (!s.className) {
                 if (clear) {
