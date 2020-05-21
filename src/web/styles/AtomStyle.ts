@@ -75,10 +75,11 @@ export abstract class AtomStyle
                 }
                 const keyName = StringHelper.fromCamelToHyphen(key);
                 if (key === "subclasses") {
+                    const n = name ? (name + "-") : name;
                     for (const subclassKey in element) {
                         if (element.hasOwnProperty(subclassKey)) {
                             const ve = element[subclassKey];
-                            pairs = this.createStyleText(`${name}-${subclassKey}`, pairs, ve);
+                            pairs = this.createStyleText(`${name}${subclassKey}`, pairs, ve);
                         }
                     }
                 } else {
