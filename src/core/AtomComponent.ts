@@ -1,9 +1,6 @@
 import { App } from "../App";
-import { Atom } from "../Atom";
-import { AtomBridge, BaseElementBridge } from "../core/AtomBridge";
-import { AtomDispatcher } from "../core/AtomDispatcher";
+import { AtomBridge } from "../core/AtomBridge";
 import { PropertyBinding } from "../core/PropertyBinding";
-import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
 import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
@@ -250,8 +247,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         if (this[name] !== undefined) {
             return true;
         }
-        const map = PropertyMap.from(this);
-        return map.map[name];
+        return false;
     }
 
     /**
