@@ -7,13 +7,13 @@ export class AtomWindowStyle extends AtomStyle {
 
     public get root(): IStyleDeclaration {
         return {
+            ... this.frameHost,
             subclasses: {
                 " .close-button": this.closeButton,
                 " .command-bar": this.closeButton,
                 " .command-bar-button": this.closeButton,
                 " .content": this.content,
                 " .frame": this.frame,
-                " .frame-host": this.frameHost,
                 " .title": this.title,
                 " .title-host": this.titleHost,
                 " .title-presenter": this.titlePresenter,
