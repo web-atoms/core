@@ -71,7 +71,7 @@ export abstract class AtomStyle
                 }
                 const keyName = StringHelper.fromCamelToHyphen(key);
                 if (key === "subclasses") {
-                    const n = name ? (name + "-") : name;
+                    const n = name;
                     for (const subclassKey in element) {
                         if (element.hasOwnProperty(subclassKey)) {
                             const ve = element[subclassKey];
