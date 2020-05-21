@@ -10,7 +10,10 @@ export class AtomListBoxStyle extends AtomStyle {
 
     public get root(): IStyleDeclaration {
         return {
-            // empty
+            subclasses: {
+                " .item": this.item,
+                " .selected-item": this.selectedItem
+            }
         };
     }
 

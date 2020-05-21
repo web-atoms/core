@@ -89,7 +89,7 @@ export default class AtomControlStyleTest extends AtomWebTest {
 
         await this.app.waitForPendingCalls();
 
-        tc.controlStyle = InheritedStyle;
+        tc.controlStyle = InheritedStyle as any;
 
         Assert.isTrue(tc.controlStyle instanceof InheritedStyle);
         Assert.equals( tc.controlStyle.root.className, tc.element.className);

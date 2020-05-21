@@ -42,9 +42,9 @@ export class AtomTheme extends AtomStyleSheet
     @BindableProperty
     public padding: number = 5;
 
-    public readonly window = this.createStyle(AtomWindow, AtomWindowStyle, "window");
+    // public readonly window = this.createStyle(AtomWindow, AtomWindowStyle, "window");
 
-    public readonly popup = this.createNamedStyle(AtomPopupStyle, "popup");
+    // public readonly popup = this.createNamedStyle(AtomPopupStyle, "popup");
 
     constructor(
         @Inject app: App,

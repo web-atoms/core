@@ -8,10 +8,6 @@ import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../../web/styles/AtomStyle";
 import { AtomStyleSheet } from "../../web/styles/AtomStyleSheet";
-import FormattedString from "../../core/FormattedString";
-import Markdown from "../../core/Markdown";
-
-// export { default as XFApp } from "../XFApp";
 
 declare var UMD: any;
 
@@ -35,24 +31,6 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                 return this.mControlStyle;
             }
 
-            // let c = Object.getPrototypeOf(this);
-            const t = this.theme;
-            let c = this.constructor;
-            while (c) {
-                const style = t.getDefaultStyle(c);
-                if (style) {
-                    this.mControlStyle = style;
-                    break;
-                }
-                if (this.defaultControlStyle) {
-                    break;
-                }
-                c = Object.getPrototypeOf(c);
-            }
-            if (this.mControlStyle) {
-                defaultStyleSheets[key] = this.mControlStyle;
-                return this.mControlStyle;
-            }
             if (this.defaultControlStyle) {
                 this.mControlStyle = defaultStyleSheets[key] ||
                 ( defaultStyleSheets[key] = this.theme.createNamedStyle(this.defaultControlStyle, key, 0));

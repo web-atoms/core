@@ -5,6 +5,22 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomWindowStyle extends AtomStyle {
 
+    public get root(): IStyleDeclaration {
+        return {
+            subclasses: {
+                " .close-button": this.closeButton,
+                " .command-bar": this.closeButton,
+                " .command-bar-button": this.closeButton,
+                " .content": this.content,
+                " .frame": this.frame,
+                " .frame-host": this.frameHost,
+                " .title": this.title,
+                " .title-host": this.titleHost,
+                " .title-presenter": this.titlePresenter,
+            }
+        };
+    }
+
     public get frameHost(): IStyleDeclaration {
         return {
             position: "absolute",
@@ -23,7 +39,6 @@ export class AtomWindowStyle extends AtomStyle {
             minWidth: "300px",
             margin: "auto",
             border: "solid 1px #808080",
-            fontFamily: "Arial",
             borderRadius: "5px",
             backgroundColor: "white"
         };

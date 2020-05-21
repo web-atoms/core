@@ -43,7 +43,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
         // remember, if you do not wish to use dynamic themes
         // then use one time binding
         this.render(<div
-            styleClass={Bind.oneWay(() => this.templateParent.controlStyle.frame)}
+            class="frame"
             styleWidth={Bind.oneWay(() => this.templateParent.width || undefined)}
             styleHeight={Bind.oneWay(() => this.templateParent.height || undefined)}
             styleLeft={Bind.oneWay(() => this.templateParent.x >= 0 ? `${this.templateParent.x}px` : undefined)}
@@ -53,14 +53,14 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
             styleMarginRight={Bind.oneWay(() => this.templateParent.x >= 0 ? "0" : undefined)}
             styleMarginBottom={Bind.oneWay(() => this.templateParent.x >= 0 ? "0" : undefined)}>
             <div
-                presenter={Bind.presenter("titlePresenter")}
-                styleClass={Bind.oneWay(() => this.templateParent.controlStyle.titlePresenter)}/>
+                class="title-presenter"
+                presenter={Bind.presenter("titlePresenter")}/>
             <div
-                presenter={Bind.presenter("contentPresenter")}
-                styleClass={Bind.oneWay(() => this.templateParent.controlStyle.content)}/>
+                class="content"
+                presenter={Bind.presenter("contentPresenter")}/>
             <div
-                presenter={Bind.presenter("commandPresenter")}
-                styleClass={Bind.oneWay(() => this.templateParent.controlStyle.commandBar)}/>
+                class="command-bar"
+                presenter={Bind.presenter("commandPresenter")}/>
         </div>);
         // this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
         // this.bind(this.element, "styleWidth", [["templateParent", "width"]], false, (v) => v || undefined);
@@ -110,13 +110,13 @@ class AtomWindowTitleTemplate extends AtomControl {
     protected create(): void {
 
         this.render(<div
-            styleClass={Bind.oneWay(() => this.templateParent.controlStyle.titleHost)}>
+            class="title-host">
             <span
-                styleClass={Bind.oneWay(() => this.templateParent.controlStyle.title)}
+                class="title"
                 text={Bind.oneWay(() => this.templateParent.title)}
                 />
             <button
-                styleClass={Bind.oneWay(() => this.templateParent.controlStyle.closeButton)}
+                class="close-button"
                 eventClick={Bind.event(() => this.templateParent.close())}
                 />
         </div>);
@@ -235,7 +235,7 @@ export class AtomWindow extends AtomControl {
 
         this.setupDragging(frame.titlePresenter);
 
-        this.element.classList.add(this.controlStyle.frameHost.className);
+        this.element.classList.add("frame-host");
 
         fe._logicalParent = this.element;
         fe._templateParent = this;
@@ -264,6 +264,14 @@ export class AtomWindow extends AtomControl {
             this.centerFrame(frame.element);
         }, 100);
         this.isReady = true;
+    }
+
+    protected preCreate() {
+        this.defaultControlStyle = AtomWindowStyle;
+        super.preCreate();
+        this.render(<div
+            styleClass={Bind.oneTime(() => this.controlStyle.name)}
+            ></div>);
     }
 
     private centerFrame(e: HTMLElement): void {

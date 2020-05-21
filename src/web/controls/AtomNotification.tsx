@@ -25,7 +25,7 @@ export default class AtomNotification extends AtomControl {
             formattedText={Bind.oneWay(() => this.viewModel.message )}
             timeout={Bind.oneWay(() => this.viewModel.timeout || 5000)}
             styleClass={Bind.oneWay(() => ({
-                [this.controlStyle.root]: 1,
+                [this.controlStyle.name]: 1,
                 error: this.viewModel.type && /error/i.test(this.viewModel.type),
                 warning: this.viewModel.type && /warn/i.test(this.viewModel.type),
             }))}

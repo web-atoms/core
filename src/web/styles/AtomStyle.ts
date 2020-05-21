@@ -18,15 +18,18 @@ declare var UMD: {
     resolvePath(path: string): string;
 };
 
-export class AtomStyle
+export abstract class AtomStyle
     implements IAtomStyle {
 
-    private isBuilt: boolean = false;
+    public abstract get root(): IStyleDeclaration;
+
+    private styleText: string = null;
 
     constructor(
         public readonly styleSheet: AtomStyleSheet,
         public readonly name: string
     ) {
+        this.name = this.name + "-root";
     }
 
     public getBaseProperty<T>(tc: IClassOf<T>, name: string): any {
@@ -44,100 +47,22 @@ export class AtomStyle
         } while (true);
     }
 
-    public toStyle(pairs?: INameValuePairs): INameValuePairs {
-
-        pairs = pairs || {};
-
-        const self = this as any;
-
-        for (const key in self) {
-            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme|styleElement)$/.test(key)) {
-                continue;
-            }
-            if (/^\_/.test(key)) {
-                continue;
-            }
-            const element = self[key];
-            // if it is nested style
-            if (element instanceof AtomStyle) {
-                pairs = element.toStyle(pairs);
-                continue;
-            }
-
-            // if it is class
-            const c = element as IStyleDeclaration;
-            if (c && typeof c === "object") {
-                if (emptyPrototype === Object.getPrototypeOf(c)) {
-                    pairs = this.createStyleText(key, pairs, c);
-                }
-                continue;
-            }
-        }
-        return pairs;
-    }
-
     public build(): void {
-        if (this.isBuilt) {
+        if (this.styleText) {
             return;
         }
-        this.isBuilt = true;
-        const self = this as any;
-        for (const key in self) {
-            if (/^(isBuilt|constructor|name|parent|styleSheet|defaults|theme|styleElement)$/.test(key)) {
-                continue;
-            }
-            if (/^\_\$\_/.test(key)) {
-                continue;
-            }
-            const element = self[key];
-            if (element instanceof AtomStyle) {
-                element.build();
-                continue;
-            }
-            const c = element as IStyleDeclaration;
-            if (c && typeof c === "object") {
-                if (emptyPrototype === Object.getPrototypeOf(c)) {
-                    const pv = AtomBinder.getPropertyDescriptor(this, key);
-                    if (!pv.get) {
-                        continue;
-                    }
-                    const fullName = this.toFullName(key);
-                    const descriptor: PropertyDescriptor = {
-                        get() {
-                            return {
-                                ... pv.get.apply(this),
-                                className: fullName,
-                                toString: () => fullName
-                            };
-                        }, configurable: true, enumerable: true
-                    };
-                    Object.defineProperty(this, key, descriptor);
-                }
-            }
-        }
-        this.isBuilt = true;
+        this.styleText = this.createStyleText("", [], this.root).join("\n");
     }
 
     public toString(): string {
-        const pairs = this.toStyle({});
-
-        const r = [];
-        for (const key in pairs) {
-            if (pairs.hasOwnProperty(key)) {
-                const element = pairs[key];
-                // sl.push([key,  element]);
-                r.push(`.${key} ${element}`);
-            }
-        }
-
-        return r.join("\n");
+        return this.styleText;
     }
 
     protected toFullName(n: string): string {
         return `${this.name}-${ StringHelper.fromCamelToHyphen(n)}`;
     }
 
-    private createStyleText(name: string, pairs: INameValuePairs, styles: IStyleDeclaration): INameValuePairs {
+    private createStyleText(name: string, pairs: string[], styles: IStyleDeclaration): string[] {
         const styleList: any[] = [];
         for (const key in styles) {
             if (styles.hasOwnProperty(key)) {
@@ -153,7 +78,7 @@ export class AtomStyle
                     for (const subclassKey in element) {
                         if (element.hasOwnProperty(subclassKey)) {
                             const ve = element[subclassKey];
-                            pairs = this.createStyleText(`${name}${subclassKey}`, pairs, ve);
+                            pairs = this.createStyleText(`${name}-${subclassKey}`, pairs, ve);
                         }
                     }
                 } else {
@@ -167,10 +92,10 @@ export class AtomStyle
         }
         const cname = StringHelper.fromCamelToHyphen(name);
 
-        const styleClassName = `${this.name}-${cname}`;
+        const styleClassName = `${this.name}${cname}`;
 
         if (styleList.length) {
-            pairs[styleClassName] = `{ ${styleList.join(";\r\n")}; }`;
+            pairs.push(`${styleClassName}: { ${styleList.join(";\r\n")}; }`);
         }
         return pairs;
     }

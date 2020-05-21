@@ -29,7 +29,10 @@ export class AtomTabbedPageStyle extends AtomStyle {
                     top: 0,
                     bottom: 0,
                     overflow: "auto"
-                }
+                },
+                " .tab-item": this.tabItem,
+                " .close-button": this.closeButton,
+                " .selected-tab-item": this.selectedTabItem,
             }
         };
     }

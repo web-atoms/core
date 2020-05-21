@@ -83,7 +83,7 @@ export class AtomTabbedPage extends AtomGridView
 
         this.defaultControlStyle = AtomTabbedPageStyle;
         this.runAfterInit(() => {
-            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
         });
         this.localViewModel = this.resolve(AtomTabViewModel, () => ({ owner: this }));
         this.titleTemplate = null;
@@ -94,15 +94,15 @@ export class AtomTabbedPage extends AtomGridView
             selectedPage={Bind.twoWays(() => this.localViewModel.selectedPage)}>
             <AtomTabbedPage.titleTemplate>
                 <div styleClass={BindPage.oneWay((x) => ({
-                    [this.controlStyle.tabItem.className]: 1,
-                    [this.controlStyle.selectedTabItem.className]: x.data === this.localViewModel.selectedPage
+                    "tab-item": 1,
+                    "selected-tab-item": x.data === this.localViewModel.selectedPage
                 }))}>
                     <div
                         eventClick={BindPage.event((x) => this.localViewModel.selectedPage = x.data)}
                         text={BindPage.oneWay((x) => x.data.title)}></div>
                     <img
-                        eventClick={BindPage.event((x) => this.localViewModel.closePage(x.data))}
-                        styleClass={this.controlStyle.closeButton}/>
+                        class="close-button"
+                        eventClick={BindPage.event((x) => this.localViewModel.closePage(x.data))}/>
                 </div>
             </AtomTabbedPage.titleTemplate>
             <AtomItemsControl
