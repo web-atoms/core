@@ -237,6 +237,10 @@ export class AtomGridView extends AtomControl {
         host.style.padding = "0";
         host.style.margin = "0";
 
+        if (this.rowSizes.length <= row || this.columnSizes.length <= column) {
+            return;
+        }
+
         const rowStart = this.rowSizes[row].offset;
         let rowSize = 0;
         for (let i = row; i < row + rowSpan; i++) {

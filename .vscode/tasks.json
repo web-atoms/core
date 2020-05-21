@@ -5,7 +5,7 @@
             "label": "Web Atoms Dev Server",
             "command": "node",
             "args": [
-                "${env:APPDATA}/npm/node_modules/web-atoms-dev-server/index.js"
+                "${env:APPDATA}/npm/node_modules/@web-atoms/dev-server/index.js"
             ],
             "problemMatcher": []
         },
