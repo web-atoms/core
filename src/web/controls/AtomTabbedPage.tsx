@@ -32,7 +32,7 @@ export class AtomTabbedPage extends AtomGridView
 
     public localViewModel: AtomTabViewModel;
 
-    public tabChannelName: string = "app";
+    public tabChannelName: string;
 
     public titleTemplate: IClassOf<AtomControl>;
 
@@ -82,6 +82,7 @@ export class AtomTabbedPage extends AtomGridView
         this.defaultControlStyle = AtomTabbedPageStyle;
         this.tabChannelName = "app";
         this.titleTemplate = null;
+        this.mSelectedPage = null;
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
         });
