@@ -244,7 +244,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public hasProperty(name: string): boolean {
-        if (this[name] !== undefined) {
+        if (/^(data|viewModel|localViewModel|element)$/.test(name) || this[name] !== undefined) {
             return true;
         }
         return false;
