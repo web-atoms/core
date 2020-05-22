@@ -863,7 +863,7 @@ export class AtomItemsControl extends AtomControl {
         this.uiVirtualize = false;
         this.mSelectAll = false;
         this.mItems = null;
-        this.mSelectedItems = [];
+        this.selectedItems = [];
         this.itemTemplate = AtomItemsControlItemTemplate;
         super.preCreate();
     }
