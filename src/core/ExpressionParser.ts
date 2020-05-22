@@ -90,9 +90,9 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     path = path.sort( (a, b) => b.localeCompare(a) );
 
-    const dups = path;
+    const duplicates = path;
     path = [];
-    for (const iterator of dups) {
+    for (const iterator of duplicates) {
         if (path.find( (px2) => px2 === iterator )) {
             continue;
         }
@@ -100,11 +100,11 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
     }
 
     const rp: string[] = [];
-    for (const rpitem of path) {
-        if (rp.find( (x) => x.startsWith(rpitem) )) {
+    for (const rpItem of path) {
+        if (rp.find( (x) => x.startsWith(rpItem) )) {
             continue;
         }
-        rp.push(rpitem);
+        rp.push(rpItem);
     }
 
     // tslint:disable-next-line: no-console
