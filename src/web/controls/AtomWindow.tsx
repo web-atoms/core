@@ -56,7 +56,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
                 class="title-presenter"
                 presenter={Bind.presenter("titlePresenter")}/>
             <div
-                class="content"
+                class="content-presenter"
                 presenter={Bind.presenter("contentPresenter")}/>
             <div
                 class="command-bar"
@@ -237,6 +237,7 @@ export class AtomWindow extends AtomControl {
 
         const content = new (this.windowTemplate)(this.app);
         (content.element)._templateParent = this;
+        this.setElementClass(content.element, { content: 1 });
         frame.contentPresenter.appendChild(content.element);
 
         if (this.commandTemplate) {

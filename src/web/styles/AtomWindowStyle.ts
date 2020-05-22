@@ -3,6 +3,10 @@ import closeButton from "@web-atoms/core/src/web/images/images/close-button.svg"
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
+/**
+ * Represents Window Style, in order to add more subclasses
+ * you can override content style
+ */
 export class AtomWindowStyle extends AtomStyle {
 
     public get root(): IStyleDeclaration {
@@ -11,6 +15,7 @@ export class AtomWindowStyle extends AtomStyle {
             subclasses: {
                 " .close-button": this.closeButton,
                 " .command-bar": this.commandBar,
+                " .content-presenter": this.contentPresenter,
                 " .content": this.content,
                 " .frame": this.frame,
                 " .title": this.title,
@@ -96,6 +101,12 @@ export class AtomWindowStyle extends AtomStyle {
 
     public get content(): IStyleDeclaration {
         return {
+        };
+    }
+
+    public get contentPresenter(): IStyleDeclaration {
+        return {
+            position: "relative",
             padding: "10px",
             background: "white"
         };

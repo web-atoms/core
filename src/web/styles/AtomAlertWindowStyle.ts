@@ -13,10 +13,10 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
         };
     }
 
-    public get content(): IStyleDeclaration {
+    public get contentPresenter(): IStyleDeclaration {
         return {
             // tslint:disable-next-line:no-string-literal
-            ... this.getBaseProperty(AtomAlertWindowStyle, "content"),
+            ... this.getBaseProperty(AtomAlertWindowStyle, "contentPresenter"),
             padding: "0px 10px 30px 10px",
             textAlign: "center",
             color: Colors.rgba(51, 51, 51)
