@@ -86,10 +86,10 @@ export default class AtomSelectableList<T> {
 
     private mValue: any = undefined;
     public get value(): any {
+        if (this.allowMultipleSelection && this.items.length) {
+            return this.selectedItems.map((x) => this.valuePath(x.item));
+        }
         if (this.selectedItems.length) {
-            if (this.allowMultipleSelection) {
-                return this.selectedItems.map((x) => this.valuePath(x.item));
-            }
             return this.valuePath(this.selectedItems[0].item);
         }
         return this.mValue;
