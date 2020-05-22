@@ -50,7 +50,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     str = str.substr(index + 1);
 
-    const regExp: string = `(?:(\b${p})(?:(\\.[a-zA-Z_][a-zA-Z_0-9]*)+)\\s?(?:(\\(|\\=\\=\\=|\\=\\=|\\=)?))`;
+    const regExp: string = `(?:(\\b${p})(?:(\\.[a-zA-Z_][a-zA-Z_0-9]*)+)\\s?(?:(\\(|\\=\\=\\=|\\=\\=|\\=)?))`;
 
     const re: RegExp = new RegExp(regExp, "gi");
 
