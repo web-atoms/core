@@ -37,7 +37,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     const isThis: boolean = parseThis === undefined ? (index === 0 || parseThis) : parseThis;
 
-    const p: string = (isThis ? "\\_this|this" : (str.substr(0, index) || "")).trim();
+    const p: string = (isThis ? "(\\_this|this)" : (str.substr(0, index) || "")).trim();
 
     /**
      * This is the case when there is no parameter to check and there `parseThis` is false
@@ -50,7 +50,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     str = str.substr(index + 1);
 
-    const regExp: string = `(?:(${p})(?:(\\.[a-zA-Z_][a-zA-Z_0-9]*)+)\\s?(?:(\\(|\\=\\=\\=|\\=\\=|\\=)?))`;
+    const regExp: string = `(?:(\b${p})(?:(\\.[a-zA-Z_][a-zA-Z_0-9]*)+)\\s?(?:(\\(|\\=\\=\\=|\\=\\=|\\=)?))`;
 
     const re: RegExp = new RegExp(regExp, "gi");
 
