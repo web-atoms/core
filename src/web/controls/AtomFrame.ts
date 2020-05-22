@@ -251,6 +251,7 @@ export class AtomFrame
         this.navigationService = this.app.resolve(NavigationService);
         this.defaultControlStyle = AtomFrameStyle;
         this.pagePresenter = null;
+        this.mUrl = null;
         AtomUI.assignID(this.element);
         this.runAfterInit(() => {
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
