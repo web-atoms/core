@@ -1,3 +1,4 @@
+import { Atom } from "../../Atom";
 import Colors from "../../core/Colors";
 import { AtomWindowStyle } from "./AtomWindowStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
@@ -6,7 +7,6 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
 
     public get titleHost(): IStyleDeclaration {
         return {
-            // tslint:disable-next-line:no-string-literal
                 ... this.getBaseProperty(AtomAlertWindowStyle, "titleHost"),
                 color: Colors.black,
                 backgroundColor: Colors.white
@@ -15,7 +15,6 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
 
     public get contentPresenter(): IStyleDeclaration {
         return {
-            // tslint:disable-next-line:no-string-literal
             ... this.getBaseProperty(AtomAlertWindowStyle, "contentPresenter"),
             padding: "0px 10px 30px 10px",
             textAlign: "center",
@@ -25,7 +24,6 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
 
     public get commandBar(): IStyleDeclaration {
         return {
-            // tslint:disable-next-line:no-string-literal
             ... this.getBaseProperty(AtomAlertWindowStyle, "commandBar"),
             textAlign: "center",
             subclasses: {

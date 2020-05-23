@@ -32,7 +32,7 @@ export abstract class AtomStyle
         this.name = this.name + "-root";
     }
 
-    public getBaseProperty<T>(tc: IClassOf<T>, name: string): any {
+    public getBaseProperty<T>(tc: IClassOf<T>, name: keyof this): any {
         let c = tc;
         do {
             c = Object.getPrototypeOf(c);
