@@ -24,6 +24,8 @@ export interface IClassOf<T> extends Function {
     new (... v: any[]): T;
 }
 
+export type IAnyInstanceType<T> = T extends { prototype: infer U } ? U : any;
+
 export type IAtomElement = HTMLElement | INativeComponent;
 
 export interface IUIElement {

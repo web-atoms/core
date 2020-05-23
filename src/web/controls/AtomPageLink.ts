@@ -78,7 +78,7 @@ export class AtomPageLink extends AtomControl {
             [["this", "isOpen"]],
             false ,
             (v) => ({
-                [this.controlStyle.root]: 1,
+                [this.controlStyle.name]: 1,
                 "is-open": v
             }),
             this);

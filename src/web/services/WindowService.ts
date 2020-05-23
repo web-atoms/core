@@ -18,6 +18,7 @@ import AtomAlertWindow from "../controls/AtomAlertWindow";
 import { AtomControl } from "../controls/AtomControl";
 import AtomNotification from "../controls/AtomNotification";
 import { AtomWindow } from "../controls/AtomWindow";
+import { AtomPopupStyle } from "../styles/AtomPopupStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 import { cssNumberToString } from "../styles/StyleBuilder";
@@ -349,7 +350,7 @@ export class WindowService extends NavigationService {
             }
         }
 
-        const theme = this.app.get(AtomStyleSheet).popup;
+        const theme = this.app.get(AtomStyleSheet).getNamedStyle(AtomPopupStyle);
 
         e.style.zIndex = 10000 + this.lastPopupID + "";
 
@@ -365,7 +366,7 @@ export class WindowService extends NavigationService {
             e.style.position = "absolute";
             e.style.left = x + "px";
             e.style.top = (y + h) + "px";
-            e.classList.add(theme.host.className);
+            e.classList.add(theme.name);
             this.popups.push(popup);
             disposables.add(() => {
                 this.popups.remove(popup);

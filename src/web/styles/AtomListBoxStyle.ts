@@ -5,12 +5,14 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomListBoxStyle extends AtomStyle {
 
-    @BindableProperty
     public padding: number;
 
     public get root(): IStyleDeclaration {
         return {
-            // empty
+            subclasses: {
+                " .item": this.item,
+                " .selected-item": this.selectedItem
+            }
         };
     }
 

@@ -5,8 +5,10 @@ import { AtomList } from "../../core/AtomList";
 import { AtomLoader } from "../../core/AtomLoader";
 import { AtomOnce } from "../../core/AtomOnce";
 import { AtomUri } from "../../core/AtomUri";
+import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
+import XNode from "../../core/XNode";
 import { Inject } from "../../di/Inject";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomViewModel, Watch } from "../../view-model/AtomViewModel";
@@ -21,13 +23,17 @@ import { AtomGridView } from "./AtomGridView";
 import { AtomItemsControl } from "./AtomItemsControl";
 import { AtomPage } from "./AtomPage";
 
+const BindPage = Bind.forData<AtomPage>();
+
 export class AtomTabbedPage extends AtomGridView
     implements INotifyPropertyChanged {
 
-    @BindableProperty
-    public tabChannelName: string = "app";
+    public static titleTemplate = XNode.prepare("titleTemplate", true, true);
 
-    @BindableProperty
+    public localViewModel: AtomTabViewModel;
+
+    public tabChannelName: string;
+
     public titleTemplate: IClassOf<AtomControl>;
 
     public presenter: HTMLElement;
@@ -72,35 +78,64 @@ export class AtomTabbedPage extends AtomGridView
     }
 
     protected preCreate(): void {
-
+        super.preCreate();
         this.defaultControlStyle = AtomTabbedPageStyle;
+        this.tabChannelName = "app";
+        this.titleTemplate = null;
+        this.mSelectedPage = null;
         this.runAfterInit(() => {
-            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
         });
         this.localViewModel = this.resolve(AtomTabViewModel, () => ({ owner: this }));
-        this.titleTemplate = TitleItemTemplateCreator(this);
         this.columns = "*";
         this.rows = "30,*";
 
-        const ul = new AtomItemsControl(this.app, document.createElement("div"));
-        this.append(ul);
-        ul.allowMultipleSelection = false;
-        ul.allowSelectFirst = true;
-        ul.bind(ul.element, "itemTemplate", [["this", "titleTemplate"]], false, null, this);
-        ul.bind(ul.element, "items", [["localViewModel", "pages"]]);
-        ul.bind(ul.element, "selectedItem", [["localViewModel", "selectedPage"]], true);
+        this.render(<section
+            selectedPage={Bind.twoWays(() => this.localViewModel.selectedPage)}>
+            <AtomTabbedPage.titleTemplate>
+                <div styleClass={BindPage.oneWay((x) => ({
+                    "tab-item": 1,
+                    "selected-tab-item": x.data === this.localViewModel.selectedPage
+                }))}>
+                    <div
+                        eventClick={BindPage.event((x) => this.localViewModel.selectedPage = x.data)}
+                        text={BindPage.oneWay((x) => x.data.title)}></div>
+                    <img
+                        class="close-button"
+                        eventClick={BindPage.event((x) => this.localViewModel.closePage(x.data))}/>
+                </div>
+            </AtomTabbedPage.titleTemplate>
+            <AtomItemsControl
+                allowMultipleSelection={false}
+                allowSelectFirst={true}
+                items={Bind.oneWay(() => this.localViewModel.pages)}
+                selectedItem={Bind.twoWays(() => this.localViewModel.selectedPage)}
+                itemTemplate={Bind.oneWay(() => this.titleTemplate)}></AtomItemsControl>
+            <div
+                row="1"
+                class="presenter"
+                presenter={Bind.presenter("presenter")}></div>
+        </section>);
+
+        // const ul = new AtomItemsControl(this.app, document.createElement("div"));
+        // this.append(ul);
+        // ul.allowMultipleSelection = false;
+        // ul.allowSelectFirst = true;
+        // ul.bind(ul.element, "itemTemplate", [["this", "titleTemplate"]], false, null, this);
+        // ul.bind(ul.element, "items", [["localViewModel", "pages"]]);
+        // ul.bind(ul.element, "selectedItem", [["localViewModel", "selectedPage"]], true);
 
         // const presenter = new AtomContentControl(this.app, document.createElement("section"));
         // this.append(presenter);
         // presenter.setPrimitiveValue(presenter.element, "row", "1");
         // presenter.bind(presenter.element, "content", [["localViewModel", "selectedPage"]]);
 
-        this.presenter = document.createElement("div");
-        this.append(this.presenter);
-        this.presenter.classList.add("presenter");
-        (this.presenter as any).row = "1";
+        // this.presenter = document.createElement("div");
+        // this.append(this.presenter);
+        // this.presenter.classList.add("presenter");
+        // (this.presenter as any).row = "1";
 
-        this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
+        // this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
 
         this.registerDisposable(this.windowService.registerHostForWindow((e) => this.getParentHost(e)));
 
@@ -118,44 +153,44 @@ export class AtomTabbedPage extends AtomGridView
     }
 }
 
-// tslint:disable-next-line:variable-name
-function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
-    return class TitleItemTemplate extends AtomControl {
+// // tslint:disable-next-line:variable-name
+// function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
+//     return class TitleItemTemplate extends AtomControl {
 
-        protected create(): void {
+//         protected create(): void {
 
-            // this.bind(this.element, "text", [["data", "title"]]);
-            this.bind(this.element, "styleClass", [
-                    ["data"],
-                    ["localViewModel", "selectedPage"],
-                    ["this", "controlStyle", "tabItem"],
-                    ["this", "controlStyle", "selectedTabItem"]
-                ],
-                false,
-                (data, selectedPage, tabItem, selectedTabItem) => ({
-                    [tabItem.className]: true,
-                    [selectedTabItem.className]: data === selectedPage
-                }),
-                __creator);
+//             // this.bind(this.element, "text", [["data", "title"]]);
+//             this.bind(this.element, "styleClass", [
+//                     ["data"],
+//                     ["localViewModel", "selectedPage"],
+//                     ["this", "controlStyle", "tabItem"],
+//                     ["this", "controlStyle", "selectedTabItem"]
+//                 ],
+//                 false,
+//                 (data, selectedPage, tabItem, selectedTabItem) => ({
+//                     [tabItem.className]: true,
+//                     [selectedTabItem.className]: data === selectedPage
+//                 }),
+//                 __creator);
 
-            const divTitle = document.createElement("div");
-            this.append(divTitle);
+//             const divTitle = document.createElement("div");
+//             this.append(divTitle);
 
-            this.bind(divTitle, "text", [["data", "title"]]);
+//             this.bind(divTitle, "text", [["data", "title"]]);
 
-            const closeButton = document.createElement("img");
-            this.bind(closeButton, "styleClass", [["this", "controlStyle", "closeButton"]], false, null, __creator);
-            // closeButton.textContent = "x";
-            this.append(closeButton);
+//             const closeButton = document.createElement("img");
+//             this.bind(closeButton, "styleClass", [["this", "controlStyle", "closeButton"]], false, null, __creator);
+//             // closeButton.textContent = "x";
+//             this.append(closeButton);
 
-            this.bindEvent(closeButton, "click", () => __creator.localViewModel.closePage(this.data));
+//             this.bindEvent(closeButton, "click", () => __creator.localViewModel.closePage(this.data));
 
-            this.bindEvent(divTitle, "click" , () => {
-                this.localViewModel.selectedPage = this.data;
-            });
-        }
-    };
-}
+//             this.bindEvent(divTitle, "click" , () => {
+//                 this.localViewModel.selectedPage = this.data;
+//             });
+//         }
+//     };
+// }
 
 // declare class UMD {
 //     public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;

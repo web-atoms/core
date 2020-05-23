@@ -84,7 +84,8 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
     public setupTwoWayBinding(): void {
 
         if (this.target instanceof AtomComponent) {
-            if (!(this.target.hasProperty(this.name) && !this.element || this.element === this.target.element )) {
+            if (this.element
+                && (this.element !== this.target.element || !this.target.hasProperty(this.name))) {
                 // most likely it has change event..
                 let events: string[] = [];
                 if (typeof this.twoWays !== "boolean") {

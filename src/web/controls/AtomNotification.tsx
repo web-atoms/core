@@ -1,4 +1,6 @@
+import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
+import XNode from "../../core/XNode";
 import AtomNotificationStyle from "../styles/AtomNotificationStyle";
 import { AtomControl } from "./AtomControl";
 
@@ -19,17 +21,15 @@ export default class AtomNotification extends AtomControl {
 
     public create(): void {
         this.defaultControlStyle = AtomNotificationStyle;
-        this.bind(this.element, "formattedText", [["this", "viewModel", "message"]], false, null, this);
-        this.bind(this.element, "timeout", [["this", "viewModel", "timeout"]], false, (v) => v || 5000 , this);
-        this.bind(this.element,
-            "styleClass",
-            [["this", "viewModel", "type"]],
-            false,
-            (type) => ({
-                [this.controlStyle.root]: true,
-                error: type && /error/i.test(type),
-                warning: type && /warn/i.test(type)
-            }), this);
+        this.render(<div
+            formattedText={Bind.oneWay(() => this.viewModel.message )}
+            timeout={Bind.oneWay(() => this.viewModel.timeout || 5000)}
+            styleClass={Bind.oneWay(() => ({
+                [this.controlStyle.name]: 1,
+                error: this.viewModel.type && /error/i.test(this.viewModel.type),
+                warning: this.viewModel.type && /warn/i.test(this.viewModel.type),
+            }))}
+            />);
     }
 
     protected setupTimeout(): void {

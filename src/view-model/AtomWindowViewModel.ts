@@ -44,7 +44,6 @@ import { AtomViewModel } from "./AtomViewModel";
  */
 export class AtomWindowViewModel extends AtomViewModel {
 
-    @BindableProperty
     public title: string;
 
     public closeWarning: string;
@@ -60,7 +59,6 @@ export class AtomWindowViewModel extends AtomViewModel {
      * @type {string}
      * @memberof AtomWindowViewModel
      */
-    @BindableProperty
     public windowName: string;
 
     /**

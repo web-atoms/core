@@ -1,11 +1,11 @@
 import Assert from "@web-atoms/unit-test/dist/Assert";
 import Category from "@web-atoms/unit-test/dist/Category";
 import Test from "@web-atoms/unit-test/dist/Test";
+import AtomWebTest from "../../../unit/AtomWebTest";
 import { AtomViewModel } from "../../../view-model/AtomViewModel";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomStyle } from "../../../web/styles/AtomStyle";
 import { IStyleDeclaration } from "../../../web/styles/IStyleDeclaration";
-import AtomWebTest from "../../../unit/AtomWebTest";
 
 class TestControl extends AtomControl {
 
@@ -13,7 +13,7 @@ class TestControl extends AtomControl {
         this.defaultControlStyle = TestStyle;
 
         this.runAfterInit(() => {
-            this.element.className = this.controlStyle.root.className;
+            this.element.className = this.controlStyle.name;
         });
     }
 
@@ -70,7 +70,7 @@ export default class AtomControlStyleTest extends AtomWebTest {
         await this.app.waitForPendingCalls();
 
         Assert.isTrue(tc.controlStyle instanceof TestStyle);
-        Assert.equals( tc.controlStyle.root.className, tc.element.className);
+        Assert.equals( tc.controlStyle.name, tc.element.className);
     }
 
     @Test
@@ -80,7 +80,7 @@ export default class AtomControlStyleTest extends AtomWebTest {
         await this.app.waitForPendingCalls();
 
         Assert.isTrue(tc.controlStyle instanceof TestStyle);
-        Assert.equals( tc.controlStyle.root.className, tc.element.className);
+        Assert.equals( tc.controlStyle.name, tc.element.className);
     }
 
     @Test
@@ -89,10 +89,10 @@ export default class AtomControlStyleTest extends AtomWebTest {
 
         await this.app.waitForPendingCalls();
 
-        tc.controlStyle = InheritedStyle;
+        tc.controlStyle = InheritedStyle as any;
 
         Assert.isTrue(tc.controlStyle instanceof InheritedStyle);
-        Assert.equals( tc.controlStyle.root.className, tc.element.className);
+        Assert.equals( tc.controlStyle.name, tc.element.className);
     }
 
     @Test

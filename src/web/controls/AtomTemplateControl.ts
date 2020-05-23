@@ -4,7 +4,6 @@ import { AtomControl } from "./AtomControl";
 
 export class AtomTemplateControl extends AtomControl {
 
-    @BindableProperty
     public contentTemplate: IClassOf<AtomControl>;
 
     private content: AtomControl;
@@ -23,6 +22,11 @@ export class AtomTemplateControl extends AtomControl {
         if (this.contentTemplate) {
             this.createContent();
         }
+    }
+
+    protected preCreate() {
+        this.contentTemplate = null;
+        this.content = null;
     }
 
     protected createContent(): void {

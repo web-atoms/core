@@ -3,13 +3,13 @@ import { AtomControl } from "./AtomControl";
 
 export class AtomPage extends AtomControl {
 
-    @BindableProperty
     public title: string;
 
-    @BindableProperty
     public tag: string;
 
     public preCreate(): void {
+        this.title = null;
+        this.tag = null;
         this.bind(this.element, "title", [["viewModel", "title"]]);
     }
 

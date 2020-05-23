@@ -1,10 +1,29 @@
 import { App } from "./App";
 import { AtomDispatcher } from "./core/AtomDispatcher";
-import { CancelToken, INameValuePairs } from "./core/types";
+import { CancelToken, IAnyInstanceType, INameValuePairs } from "./core/types";
 
 export class Atom {
 
-     public static designMode: boolean = false;
+    public static designMode: boolean = false;
+
+    // tslint:disable-next-line: ban-types
+    public static superProperty<T, T2>(
+        tc: T,
+        target: T2,
+        name: keyof T2): any {
+        let c = tc as any;
+        do {
+            c = Object.getPrototypeOf(c);
+            if (!c) {
+                throw new Error("No property descriptor found for " + name);
+            }
+            const pd = Object.getOwnPropertyDescriptor(c.prototype, name);
+            if (!pd) {
+                continue;
+            }
+            return pd.get.apply(target);
+        } while (true);
+    }
 
 //      public static set(arg0: any, arg1: any, arg2: any): any {
 //     throw new Error("Method not implemented.");
