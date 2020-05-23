@@ -30,6 +30,9 @@ declare global {
                 eventClick?: any;
                 eventBlur?: any;
                 eventFocus?: any;
+                eventKeydown?: any;
+                eventKeyup?: any;
+                eventKeypress?: any;
                 text?: string | any;
                 [key: string]: any
             }
