@@ -1,21 +1,43 @@
 {
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
+        {
+            "label": "All Build",
+            "dependsOn":[
+                "TypeScript Build Watch",
+                "Web Atoms Dev Server Alpha",
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "TypeScript Build Watch",
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "option": "watch",
+        },
         {
             "label": "Web Atoms Dev Server",
             "command": "node",
             "args": [
-                "${env:APPDATA}/npm/node_modules/@web-atoms/dev-server/index.js"
+                "${env:APPDATA}/npm/node_modules/@web-atoms/dev-server/index.js",
+                "https://test.webatoms.in"
             ],
             "problemMatcher": []
         },
         {
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "option": "watch",
-            "problemMatcher": [
-                "$tsc-watch"
-            ]
+            "label": "Web Atoms Dev Server Alpha",
+            "command": "node",
+            "args": [
+                "D:\\git\\akash\\github\\web-atoms\\dev-server\\index.js",
+                "https://test.webatoms.in"
+            ],
+            "problemMatcher": []
         }
     ]
 }

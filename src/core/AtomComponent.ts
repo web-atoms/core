@@ -2,7 +2,7 @@ import { App } from "../App";
 import { AtomBridge } from "../core/AtomBridge";
 import { PropertyBinding } from "../core/PropertyBinding";
 // tslint:disable-next-line:import-spacing
-import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
+import { ArrayHelper, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
@@ -512,8 +512,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     protected resolve<TService>(
-        c: IClassOf<TService>,
-        selfName?: string |  (() => any)): TService {
+        c: TService,
+        selfName?: string |  (() => any)): IAnyInstanceType<TService> {
         const result = this.app.resolve(c, true);
         if (selfName) {
             if (typeof selfName === "function") {

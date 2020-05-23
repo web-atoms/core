@@ -22,10 +22,12 @@ export default class AtomAlertWindowStyle extends AtomWindowStyle {
             color: Colors.rgba(51, 51, 51)
         };
     }
+
     public get commandBar(): IStyleDeclaration {
         return {
             // tslint:disable-next-line:no-string-literal
             ... this.getBaseProperty(AtomAlertWindowStyle, "commandBar"),
+            textAlign: "center",
             subclasses: {
                 " button": this.buttonStyle,
                 " .yes-button": {
