@@ -242,6 +242,12 @@ export class AtomItemsControl extends AtomControl {
         this.selectedItem = this.mItems[n];
     }
 
+    public hasProperty(name: string): boolean {
+        // tslint:disable-next-line: max-line-length
+        if (/^(items|itemsPresenter|value|valuePath|valueSeparator|label|labelPath|selectedItems|selectedItem|selectedIndex|uiVirtualize|viewModel|localViewModel|data)$/.test(name)) { return true; }
+        return super.hasProperty(name);
+    }
+
     public dispose(e?: HTMLElement): void {
         this.items = null;
         this.selectedItems = null;
