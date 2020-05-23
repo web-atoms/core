@@ -59,7 +59,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
                 class="content-presenter"
                 presenter={Bind.presenter("contentPresenter")}/>
             <div
-                class="command-bar"
+                class="command-bar-presenter"
                 presenter={Bind.presenter("commandPresenter")}/>
         </div>);
         // this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
@@ -247,6 +247,7 @@ export class AtomWindow extends AtomControl {
             }
             const command = new (this.commandTemplate)(this.app);
             (command.element)._templateParent = this;
+            this.setElementClass(command.element, { "command-bar": 1 });
             frame.commandPresenter.appendChild(command.element);
         }
         this.append(frame);

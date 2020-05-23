@@ -14,6 +14,7 @@ export class AtomWindowStyle extends AtomStyle {
             ... this.frameHost,
             subclasses: {
                 " .close-button": this.closeButton,
+                " .command-bar-presenter": this.commandBarPresenter,
                 " .command-bar": this.commandBar,
                 " .content-presenter": this.contentPresenter,
                 " .content": this.content,
@@ -112,7 +113,7 @@ export class AtomWindowStyle extends AtomStyle {
         };
     }
 
-    public get commandBar(): IStyleDeclaration {
+    public get commandBarPresenter(): IStyleDeclaration {
         return {
             left: 0,
             right: 0,
@@ -122,20 +123,21 @@ export class AtomWindowStyle extends AtomStyle {
             textAlign: "right",
             borderBottomRightRadius: "4px",
             borderBottomLeftRadius: "4px",
-            subclasses: {
-                " button": this.commandBarButton
-            }
         };
     }
 
-    public get commandBarButton(): IStyleDeclaration {
+    public get commandBar(): IStyleDeclaration {
         return {
-            borderRadius: "3px",
-            marginLeft: "5px",
-            marginRight: "5px",
-            padding: "4px 16px",
-            backgroundColor: "whitesmoke",
-            border: "1px solid gray"
+            subclasses: {
+                " button": {
+                    borderRadius: "3px",
+                    marginLeft: "5px",
+                    marginRight: "5px",
+                    padding: "4px 16px",
+                    backgroundColor: "whitesmoke",
+                    border: "1px solid gray"
+                }
+            },
         };
     }
 }
