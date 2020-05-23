@@ -6,11 +6,12 @@ import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 
-    @BindableProperty
     public toggleColor: string = "blue";
 
     public get root(): IStyleDeclaration {
         return {
+            // tslint:disable-next-line: no-string-literal
+            ... this.getBaseProperty(AtomToggleButtonBarStyle , "root"),
             display: "inline-block",
             paddingInlineStart: 0
         };

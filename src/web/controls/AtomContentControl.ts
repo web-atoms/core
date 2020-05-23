@@ -28,7 +28,7 @@ export class AtomContentControl extends AtomControl {
         super.preCreate();
         this.defaultControlStyle = AtomContentStyle;
         this.runAfterInit(() => {
-            this.element.classList.add(this.controlStyle.root.className);
+            this.element.classList.add(this.controlStyle.name);
         });
     }
 }

@@ -8,7 +8,7 @@ import { AtomTest } from "../../../unit/AtomTest";
 import { AtomControl } from "../../../web/controls/AtomControl";
 import { AtomWindow } from "../../../web/controls/AtomWindow";
 import { WindowService } from "../../../web/services/WindowService";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 function createEvent<T extends Event>(name, ... a: any[]): T {
     const e = document.createEvent(name);

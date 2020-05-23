@@ -1,11 +1,8 @@
 import { App } from "../App";
-import { Atom } from "../Atom";
-import { AtomBridge, BaseElementBridge } from "../core/AtomBridge";
-import { AtomDispatcher } from "../core/AtomDispatcher";
+import { AtomBridge } from "../core/AtomBridge";
 import { PropertyBinding } from "../core/PropertyBinding";
-import { PropertyMap } from "../core/PropertyMap";
 // tslint:disable-next-line:import-spacing
-import { ArrayHelper, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
+import { ArrayHelper, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
@@ -247,11 +244,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public hasProperty(name: string): boolean {
-        if (this[name] !== undefined) {
+        if (/^(data|viewModel|localViewModel|element)$/.test(name) || this[name] !== undefined) {
             return true;
         }
-        const map = PropertyMap.from(this);
-        return map.map[name];
+        return false;
     }
 
     /**
@@ -516,8 +512,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     protected resolve<TService>(
-        c: IClassOf<TService>,
-        selfName?: string |  (() => any)): TService {
+        c: TService,
+        selfName?: string |  (() => any)): IAnyInstanceType<TService> {
         const result = this.app.resolve(c, true);
         if (selfName) {
             if (typeof selfName === "function") {

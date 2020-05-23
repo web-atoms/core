@@ -3,7 +3,7 @@ import Test from "@web-atoms/unit-test/dist/Test";
 import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import Markdown from "../../../core/Markdown";
 import { AtomControl } from "../../../web/controls/AtomControl";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 class TestViewModel {
 

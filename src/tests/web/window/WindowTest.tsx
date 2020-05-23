@@ -6,7 +6,7 @@ import { MockNavigationService } from "../../../services/MockNavigationService";
 import { NavigationService } from "../../../services/NavigationService";
 import { AtomComboBox } from "../../../web/controls/AtomComboBox";
 import { AtomPageLink } from "../../../web/controls/AtomPageLink";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 export class TestCase extends AtomWebTest {
 

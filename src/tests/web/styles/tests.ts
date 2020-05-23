@@ -4,8 +4,8 @@ import Test from "@web-atoms/unit-test/dist/Test";
 import TestItem from "@web-atoms/unit-test/dist/TestItem";
 import { App } from "../../../App";
 import { MockApp } from "../../../MockApp";
+import AtomWebTest from "../../../unit/AtomWebTest";
 import { AtomTheme } from "../../../web/styles/AtomTheme";
-import AtomWebTest from "../AtomWebTest";
 
 @Category("Styles")
 export class TestCase extends AtomWebTest {
@@ -21,8 +21,8 @@ export class TestCase extends AtomWebTest {
 
         Assert.isTrue(theme.styleElement ? true : false);
 
-        const a = theme.window.frameHost;
-        Assert.isTrue(a.className ? true : false);
+        // const a = theme.window.frameHost;
+        // Assert.isTrue(a.className ? true : false);
 
         // tslint:disable-next-line:no-console
         // console.log(theme.styleElement.textContent);

@@ -1,13 +1,11 @@
-import { BindableProperty } from "../../core/BindableProperty";
-import CloseButtonDataUrl from "../images/CloseButtonDataUrl";
-import CloseButtonHoverDataUrl from "../images/CloseButtonHoverDataUrl";
+import CloseButtonDataUrl from "@web-atoms/core/src/web/images/close-button-hover.svg";
+import CloseButtonHoverDataUrl from "@web-atoms/core/src/web/images/close-button.svg";
 import { AtomStyle } from "./AtomStyle";
 import { AtomTheme } from "./AtomTheme";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
 export class AtomTabbedPageStyle extends AtomStyle {
 
-    @BindableProperty
     public padding: number;
 
     public get theme(): AtomTheme {
@@ -29,7 +27,10 @@ export class AtomTabbedPageStyle extends AtomStyle {
                     top: 0,
                     bottom: 0,
                     overflow: "auto"
-                }
+                },
+                " .tab-item": this.tabItem,
+                " .close-button": this.closeButton,
+                " .selected-tab-item": this.selectedTabItem,
             }
         };
     }

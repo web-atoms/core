@@ -7,7 +7,7 @@ import DISingleton from "../../di/DISingleton";
 import { Inject, InjectedTypes } from "../../di/Inject";
 import Action from "../../view-model/Action";
 import { AtomViewModel, Validate } from "../../view-model/AtomViewModel";
-import AtomWebTest from "../web/AtomWebTest";
+import AtomWebTest from "../../unit/AtomWebTest";
 
 interface IUser {
     name?: string;

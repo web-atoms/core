@@ -13,31 +13,25 @@ export class AtomItemsControl extends AtomControl {
     /** Item Template for displaying individual items */
     public static itemTemplate = XNode.prepare("itemTemplate", true, true);
 
-    @BindableProperty
-    public mAllowSelectFirst: boolean = false;
+    public mAllowSelectFirst: boolean;
 
-    @BindableProperty
-    public allowMultipleSelection: boolean = false;
+    public allowMultipleSelection: boolean;
 
-    @BindableProperty
-    public valuePath: string = "value";
+    public valuePath: string;
 
-    @BindableProperty
-    public labelPath: string = "label";
+    public labelPath: string;
 
-    @BindableProperty
     public itemTemplate: IClassOf<AtomControl>;
 
-    @BindableProperty
-    public version: number = 1;
+    public version: number;
 
-    public autoScrollToSelection: any = false;
+    public autoScrollToSelection: any;
 
-    public sort: string | ((a: any, b: any) => number) = null;
+    public sort: string | ((a: any, b: any) => number);
 
-    public valueSeparator: string = ", ";
+    public valueSeparator: string;
 
-    public uiVirtualize: any = false;
+    public uiVirtualize: any;
 
     private mValue: any = undefined;
 
@@ -53,7 +47,7 @@ export class AtomItemsControl extends AtomControl {
 
     private mFilter: any = undefined;
 
-    private mSelectAll: boolean = false;
+    private mSelectAll: boolean;
 
     private mItemsPresenter: HTMLElement;
 
@@ -95,7 +89,7 @@ export class AtomItemsControl extends AtomControl {
 
     private mPromises: any;
 
-    private mItems: any[] = undefined;
+    private mItems: any[];
 
     private mItemsDisposable: IDisposable = null;
 
@@ -246,6 +240,12 @@ export class AtomItemsControl extends AtomControl {
             return;
         }
         this.selectedItem = this.mItems[n];
+    }
+
+    public hasProperty(name: string): boolean {
+        // tslint:disable-next-line: max-line-length
+        if (/^(items|itemsPresenter|value|valuePath|valueSeparator|label|labelPath|selectedItems|selectedItem|selectedIndex|uiVirtualize|viewModel|localViewModel|data)$/.test(name)) { return true; }
+        return super.hasProperty(name);
     }
 
     public dispose(e?: HTMLElement): void {
@@ -858,8 +858,20 @@ export class AtomItemsControl extends AtomControl {
     }
 
     protected preCreate(): void {
-        super.preCreate();
+        this.mAllowSelectFirst = false;
+        this.allowMultipleSelection = false;
+        this.valuePath = "value";
+        this.labelPath = "label";
+        this.version = 1;
+        this.autoScrollToSelection = false;
+        this.sort = null;
+        this.valueSeparator = ", ";
+        this.uiVirtualize = false;
+        this.mSelectAll = false;
+        this.mItems = null;
+        this.selectedItems = [];
         this.itemTemplate = AtomItemsControlItemTemplate;
+        super.preCreate();
     }
 
     protected onCollectionChangedInternal(key: string, index: number, item: any): void {

@@ -1,9 +1,10 @@
 import { App } from "../../App";
+import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import { IClassOf, IDisposable, IRect } from "../../core/types";
 import XNode from "../../core/XNode";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
-import { AtomUI } from "../../web/core/AtomUI";
+import { AtomUI } from "../core/AtomUI";
 import { AtomTheme } from "../styles/AtomTheme";
 import { AtomWindowStyle } from "../styles/AtomWindowStyle";
 import { AtomControl } from "./AtomControl";
@@ -22,7 +23,7 @@ export function getTemplateParent(e: HTMLElement) {
 
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
-    public get templateParent() {
+    public get templateParent(): AtomWindow {
         return getTemplateParent(this.element);
     }
 
@@ -30,41 +31,71 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
     public titlePresenter: HTMLElement;
 
+    protected preCreate() {
+        this.titlePresenter = null;
+        this.commandPresenter = null;
+        this.contentPresenter = null;
+        super.preCreate();
+    }
+
     protected create(): void {
 
         // remember, if you do not wish to use dynamic themes
         // then use one time binding
-        this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
-        this.bind(this.element, "styleWidth", [["templateParent", "width"]], false, (v) => v || undefined);
-        this.bind(this.element, "styleHeight", [["templateParent", "height"]], false, (v) => v || undefined);
-        this.bind(this.element, "styleLeft", [["templateParent", "x"]],
-            false, (v) => v >= 0 ? v + "px" : undefined);
-        this.bind(this.element, "styleTop", [["templateParent", "y"]],
-            false, (v) => v >= 0 ? v + "px" : undefined);
-        this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
-        this.bind(this.element, "styleMarginLeft", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
-        this.bind(this.element, "styleMarginRight", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
-        this.bind(this.element, "styleMarginBottom", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
-        // add title host
-        const titlePresenter = document.createElement("div");
-        this.bind(titlePresenter, "styleClass", [["templateParent", "controlStyle", "titlePresenter"]]);
-        // titleHost.classList.add(style.titleHost.className);
-        this.titlePresenter = titlePresenter;
-        this.element.appendChild(titlePresenter);
+        this.render(<div
+            class="frame"
+            styleWidth={Bind.oneWay(() => this.templateParent.width || undefined)}
+            styleHeight={Bind.oneWay(() => this.templateParent.height || undefined)}
+            styleLeft={Bind.oneWay(() => this.templateParent.x >= 0 ? `${this.templateParent.x}px` : undefined)}
+            styleTop={Bind.oneWay(() => this.templateParent.y >= 0 ? `${this.templateParent.y}px` : undefined)}
+            styleMarginTop={Bind.oneWay(() => this.templateParent.x >= 0 ? "0" : undefined)}
+            styleMarginLeft={Bind.oneWay(() => this.templateParent.x >= 0 ? "0" : undefined)}
+            styleMarginRight={Bind.oneWay(() => this.templateParent.x >= 0 ? "0" : undefined)}
+            styleMarginBottom={Bind.oneWay(() => this.templateParent.x >= 0 ? "0" : undefined)}>
+            <div
+                class="title-presenter"
+                presenter={Bind.presenter("titlePresenter")}/>
+            <div
+                class="content-presenter"
+                presenter={Bind.presenter("contentPresenter")}/>
+            <div
+                class="command-bar-presenter"
+                presenter={Bind.presenter("commandPresenter")}/>
+        </div>);
+        // this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "frame"]]);
+        // this.bind(this.element, "styleWidth", [["templateParent", "width"]], false, (v) => v || undefined);
+        // this.bind(this.element, "styleHeight", [["templateParent", "height"]], false, (v) => v || undefined);
+        // this.bind(this.element, "styleLeft", [["templateParent", "x"]],
+        //     false, (v) => v >= 0 ? v + "px" : undefined);
+        // this.bind(this.element, "styleTop", [["templateParent", "y"]],
+        //     false, (v) => v >= 0 ? v + "px" : undefined);
+        // this.bind(this.element, "styleMarginTop", [["templateParent", "x"]], false, (v) => v >= 0 ? "0" : undefined);
+        // this.bind(this.element, "styleMarginLeft", [["templateParent", "x"]],
+        //  false, (v) => v >= 0 ? "0" : undefined);
+        // this.bind(this.element, "styleMarginRight", [["templateParent", "x"]],
+        // false, (v) => v >= 0 ? "0" : undefined);
+        // this.bind(this.element, "styleMarginBottom", [["templateParent", "x"]],
+        // false, (v) => v >= 0 ? "0" : undefined);
+        // // add title host
+        // const titlePresenter = document.createElement("div");
+        // this.bind(titlePresenter, "styleClass", [["templateParent", "controlStyle", "titlePresenter"]]);
+        // // titleHost.classList.add(style.titleHost.className);
+        // this.titlePresenter = titlePresenter;
+        // this.element.appendChild(titlePresenter);
 
-        // add content presenter
-        const cp = document.createElement("div");
-        this.bind(cp, "styleClass", [["templateParent", "controlStyle", "content"]]);
-        // cp.classList.add(style.content.className);
-        this.contentPresenter = cp;
-        this.element.appendChild(cp);
+        // // add content presenter
+        // const cp = document.createElement("div");
+        // this.bind(cp, "styleClass", [["templateParent", "controlStyle", "content"]]);
+        // // cp.classList.add(style.content.className);
+        // this.contentPresenter = cp;
+        // this.element.appendChild(cp);
 
-        // create command presenter
-        const cdp = document.createElement("div");
-        // cdp.classList.add(style.commandBar.className);
-        this.bind(cdp, "styleClass", [["templateParent", "controlStyle", "commandBar"]]);
-        this.commandPresenter = cdp;
-        this.element.appendChild(cdp);
+        // // create command presenter
+        // const cdp = document.createElement("div");
+        // // cdp.classList.add(style.commandBar.className);
+        // this.bind(cdp, "styleClass", [["templateParent", "controlStyle", "commandBar"]]);
+        // this.commandPresenter = cdp;
+        // this.element.appendChild(cdp);
 
     }
 
@@ -72,35 +103,47 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 
 class AtomWindowTitleTemplate extends AtomControl {
 
-    public get templateParent() {
+    public get templateParent(): AtomWindow {
         return getTemplateParent(this.element);
     }
 
     protected create(): void {
 
-        this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "titleHost"]]);
+        this.render(<div
+            class="title-host">
+            <span
+                class="title"
+                text={Bind.oneWay(() => this.templateParent.title)}
+                />
+            <button
+                class="close-button"
+                eventClick={Bind.event(() => this.templateParent.close())}
+                />
+        </div>);
 
-        // add title
+        // this.bind(this.element, "styleClass", [["templateParent", "controlStyle", "titleHost"]]);
 
-        const title = document.createElement("span");
-        this.bind(title, "styleClass", [["templateParent", "controlStyle", "title"]]);
-        // title.classList.add(style.title.className);
-        this.bind(title, "text", [["templateParent", "title"]], false);
+        // // add title
 
-        // add close button
-        const closeButton = document.createElement("button");
-        this.bind(closeButton, "styleClass", [["templateParent", "controlStyle", "closeButton"]]);
-        // closeButton.textContent = "x";
+        // const title = document.createElement("span");
+        // this.bind(title, "styleClass", [["templateParent", "controlStyle", "title"]]);
+        // // title.classList.add(style.title.className);
+        // this.bind(title, "text", [["templateParent", "title"]], false);
 
-        this.bindEvent(closeButton, "click", (e) => {
-            const w = getTemplateParent(this.element) as AtomWindow;
-            w.close();
-        });
+        // // add close button
+        // const closeButton = document.createElement("button");
+        // this.bind(closeButton, "styleClass", [["templateParent", "controlStyle", "closeButton"]]);
+        // // closeButton.textContent = "x";
 
-        // append title host > title
+        // this.bindEvent(closeButton, "click", (e) => {
+        //     const w = getTemplateParent(this.element) as AtomWindow;
+        //     w.close();
+        // });
 
-        this.append(title);
-        this.append(closeButton);
+        // // append title host > title
+
+        // this.append(title);
+        // this.append(closeButton);
     }
 }
 
@@ -118,31 +161,22 @@ export class AtomWindow extends AtomControl {
         return getTemplateParent(this.element);
     }
 
-    @BindableProperty
     public title: string = "";
 
-    @BindableProperty
     public width: string = "";
 
-    @BindableProperty
     public height: string = "";
 
-    @BindableProperty
     public x: number = -1;
 
-    @BindableProperty
     public y: number = -1;
 
-    @BindableProperty
     public windowTemplate: IClassOf<AtomControl>;
 
-    @BindableProperty
     public commandTemplate: IClassOf<AtomControl>;
 
-    @BindableProperty
     public titleTemplate: IClassOf<AtomControl> = AtomWindowTitleTemplate;
 
-    @BindableProperty
     public frameTemplate: IClassOf<AtomWindowFrameTemplate> = AtomWindowFrameTemplate;
 
     private isReady: boolean = false;
@@ -192,7 +226,7 @@ export class AtomWindow extends AtomControl {
 
         this.setupDragging(frame.titlePresenter);
 
-        this.element.classList.add(this.controlStyle.frameHost.className);
+        this.element.classList.add("frame-host");
 
         fe._logicalParent = this.element;
         fe._templateParent = this;
@@ -203,6 +237,7 @@ export class AtomWindow extends AtomControl {
 
         const content = new (this.windowTemplate)(this.app);
         (content.element)._templateParent = this;
+        this.setElementClass(content.element, { content: 1 });
         frame.contentPresenter.appendChild(content.element);
 
         if (this.commandTemplate) {
@@ -212,6 +247,7 @@ export class AtomWindow extends AtomControl {
             }
             const command = new (this.commandTemplate)(this.app);
             (command.element)._templateParent = this;
+            this.setElementClass(command.element, { "command-bar": 1 });
             frame.commandPresenter.appendChild(command.element);
         }
         this.append(frame);
@@ -221,6 +257,23 @@ export class AtomWindow extends AtomControl {
             this.centerFrame(frame.element);
         }, 100);
         this.isReady = true;
+    }
+
+    protected preCreate() {
+        this.defaultControlStyle = AtomWindowStyle;
+        this.title = null;
+        this.width = "";
+        this.height = "";
+        this.x = -1;
+        this.y = -1;
+        this.windowTemplate = null;
+        this.commandTemplate = null;
+        this.titleTemplate = AtomWindowTitleTemplate;
+        this.frameTemplate = AtomWindowFrameTemplate;
+        super.preCreate();
+        this.render(<div
+            styleClass={Bind.oneTime(() => this.controlStyle.name)}
+            ></div>);
     }
 
     private centerFrame(e: HTMLElement): void {

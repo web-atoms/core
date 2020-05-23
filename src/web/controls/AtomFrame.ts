@@ -37,10 +37,8 @@ export class AtomFrame
 
     public name: string;
 
-    @BindableProperty
     public keepStack: boolean;
 
-    @BindableProperty
     public current: AtomControl;
 
     public pagePresenter: HTMLElement;
@@ -250,12 +248,13 @@ export class AtomFrame
         this.current = null;
         this.currentDisposable = null;
         this.saveScrollPosition = false;
-        this.navigationService = this.app.resolve(NavigationService);
+        this.navigationService = this.app.resolve(NavigationService) as WindowService;
         this.defaultControlStyle = AtomFrameStyle;
         this.pagePresenter = null;
+        this.mUrl = null;
         AtomUI.assignID(this.element);
         this.runAfterInit(() => {
-            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.root);
+            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
         });
         this.backCommand = () => this.app.runAsync(() => this.onBackCommand());
 

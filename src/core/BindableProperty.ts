@@ -1,6 +1,11 @@
 import { AtomBinder } from "./AtomBinder";
 import { INotifyPropertyChanging } from "./types";
 
+/**
+ * Use this decorator only to watch property changes in `onPropertyChanged` method
+ * @param target control
+ * @param key name of property
+ */
 export function BindableProperty(target: any, key: string): any {
     // property value
     const iVal: any = target[key];

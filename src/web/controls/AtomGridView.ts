@@ -77,10 +77,8 @@ export class AtomGridView extends AtomControl {
         };
     }
 
-    @BindableProperty
     public columns: string;
 
-    @BindableProperty
     public rows: string;
 
     private columnSizes: IOffsetSize[];
@@ -212,6 +210,8 @@ export class AtomGridView extends AtomControl {
     }
 
     protected preCreate(): void {
+        this.columns = null;
+        this.rows = null;
         const style = this.element.style;
         style.position = "absolute";
         style.left = style.right = style.top = style.bottom = "0";
@@ -236,6 +236,10 @@ export class AtomGridView extends AtomControl {
         host.style.overflow = "hidden";
         host.style.padding = "0";
         host.style.margin = "0";
+
+        if (this.rowSizes.length <= row || this.columnSizes.length <= column) {
+            return;
+        }
 
         const rowStart = this.rowSizes[row].offset;
         let rowSize = 0;

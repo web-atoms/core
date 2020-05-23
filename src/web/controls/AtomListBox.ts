@@ -6,14 +6,15 @@ import { AtomItemsControl } from "./AtomItemsControl";
 
 export class AtomListBox extends AtomItemsControl {
 
-    public selectItemOnClick: boolean = true;
+    public selectItemOnClick: boolean;
 
     protected preCreate(): void {
+        this.selectItemOnClick = true;
         super.preCreate();
         this.defaultControlStyle = AtomListBoxStyle;
         this.registerItemClick();
         this.runAfterInit(() => this.setElementClass(this.element, {
-            [this.controlStyle.root.className]: 1,
+            [this.controlStyle.name]: 1,
             "atom-list-box": 1
         }));
     }
@@ -54,10 +55,10 @@ export class AtomListBox extends AtomItemsControl {
             (version, itemData, selectedItems: any[]) => {
                 return {
                     "list-item": true,
+                    "item": true,
+                    "selected-item": selectedItems
+                    && selectedItems.find((x) => x === itemData),
                     "selected-list-item": selectedItems
-                        && selectedItems.find((x) => x === itemData),
-                    [this.controlStyle.item.className]: true,
-                    [this.controlStyle.selectedItem.className]: selectedItems
                         && selectedItems.find((x) => x === itemData)
                 };
             },

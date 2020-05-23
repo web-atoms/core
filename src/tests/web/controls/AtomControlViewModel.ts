@@ -3,7 +3,7 @@ import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder";
 import { AtomViewModel } from "../../../view-model/AtomViewModel";
 import { AtomControl } from "../../../web/controls/AtomControl";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 class TestViewModel extends AtomViewModel {
 

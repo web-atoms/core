@@ -2,7 +2,7 @@ import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 export class AtomPopupStyle extends AtomStyle {
 
-    public get host(): IStyleDeclaration {
+    public get root(): IStyleDeclaration {
         return {
             backgroundColor: "white",
             border: "solid 1px lightgray",

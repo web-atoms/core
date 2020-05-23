@@ -1,7 +1,7 @@
 import Assert from "@web-atoms/unit-test/dist/Assert";
 import Test from "@web-atoms/unit-test/dist/Test";
 import { AtomControl } from "../../../web/controls/AtomControl";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 export class AtomControlDataTest extends AtomWebTest {
 

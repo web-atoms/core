@@ -3,7 +3,28 @@ import closeButton from "@web-atoms/core/src/web/images/images/close-button.svg"
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "./IStyleDeclaration";
 
+/**
+ * Represents Window Style, in order to add more subclasses
+ * you can override content style
+ */
 export class AtomWindowStyle extends AtomStyle {
+
+    public get root(): IStyleDeclaration {
+        return {
+            ... this.frameHost,
+            subclasses: {
+                " .close-button": this.closeButton,
+                " .command-bar-presenter": this.commandBarPresenter,
+                " .command-bar": this.commandBar,
+                " .content-presenter": this.contentPresenter,
+                " .content": this.content,
+                " .frame": this.frame,
+                " .title": this.title,
+                " .title-host": this.titleHost,
+                " .title-presenter": this.titlePresenter,
+            }
+        };
+    }
 
     public get frameHost(): IStyleDeclaration {
         return {
@@ -23,7 +44,6 @@ export class AtomWindowStyle extends AtomStyle {
             minWidth: "300px",
             margin: "auto",
             border: "solid 1px #808080",
-            fontFamily: "Arial",
             borderRadius: "5px",
             backgroundColor: "white"
         };
@@ -82,12 +102,18 @@ export class AtomWindowStyle extends AtomStyle {
 
     public get content(): IStyleDeclaration {
         return {
+        };
+    }
+
+    public get contentPresenter(): IStyleDeclaration {
+        return {
+            position: "relative",
             padding: "10px",
             background: "white"
         };
     }
 
-    public get commandBar(): IStyleDeclaration {
+    public get commandBarPresenter(): IStyleDeclaration {
         return {
             left: 0,
             right: 0,
@@ -96,18 +122,22 @@ export class AtomWindowStyle extends AtomStyle {
             backgroundColor: "#d4d4d4",
             textAlign: "right",
             borderBottomRightRadius: "4px",
-            borderBottomLeftRadius: "4px"
+            borderBottomLeftRadius: "4px",
         };
     }
 
-    public get commandBarButton(): IStyleDeclaration {
+    public get commandBar(): IStyleDeclaration {
         return {
-            borderRadius: "3px",
-            marginLeft: "5px",
-            marginRight: "5px",
-            padding: "4px 16px",
-            backgroundColor: "whitesmoke",
-            border: "1px solid gray"
+            subclasses: {
+                " button": {
+                    borderRadius: "3px",
+                    marginLeft: "5px",
+                    marginRight: "5px",
+                    padding: "4px 16px",
+                    backgroundColor: "whitesmoke",
+                    border: "1px solid gray"
+                }
+            },
         };
     }
 }

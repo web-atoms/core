@@ -4,7 +4,7 @@ import { AtomUri } from "../../core/AtomUri";
 import { AtomViewModel, BindableBroadcast,
     BindableReceive, Receive, Validate, waitForReady, Watch } from "../../view-model/AtomViewModel";
 import BindableUrlParameter from "../../view-model/BindableUrlParameter";
-import AtomWebTest from "../web/AtomWebTest";
+import AtomWebTest from "../../unit/AtomWebTest";
 
 declare var global: any;
 

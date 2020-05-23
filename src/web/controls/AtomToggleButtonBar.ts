@@ -11,13 +11,14 @@ export class AtomToggleButtonBar extends AtomListBox {
     }
 
     protected preCreate(): void {
+        super.preCreate();
         this.allowMultipleSelection = false;
         this.allowSelectFirst = true;
         this.itemTemplate = AtomToggleButtonBarItemTemplate;
         this.defaultControlStyle = AtomToggleButtonBarStyle;
         this.registerItemClick();
         this.runAfterInit(() => this.setElementClass(this.element, {
-            [this.controlStyle.root.className]: 1,
+            [this.controlStyle.name]: 1,
             "atom-toggle-button-bar": 1
         }, true ));
     }

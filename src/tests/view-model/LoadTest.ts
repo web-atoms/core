@@ -10,7 +10,7 @@ import { AtomTest } from "../../unit/AtomTest";
 import Action from "../../view-model/Action";
 import { AtomViewModel, Validate, waitForReady } from "../../view-model/AtomViewModel";
 import Load from "../../view-model/Load";
-import AtomWebTest from "../web/AtomWebTest";
+import AtomWebTest from "../../unit/AtomWebTest";
 
 @DISingleton()
 class RemoteService {

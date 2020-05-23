@@ -46,7 +46,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public defaultControlStyle: any;
 
     private mControlStyle: AtomStyle;
-    public get controlStyle(): any {
+    public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
             const key = TypeKey.get(this.defaultControlStyle || this.constructor);
 
@@ -55,24 +55,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 return this.mControlStyle;
             }
 
-            // let c = Object.getPrototypeOf(this);
-            const t = this.theme;
-            let c = this.constructor;
-            while (c) {
-                const style = t.getDefaultStyle(c);
-                if (style) {
-                    this.mControlStyle = style;
-                    break;
-                }
-                if (this.defaultControlStyle) {
-                    break;
-                }
-                c = Object.getPrototypeOf(c);
-            }
-            if (this.mControlStyle) {
-                defaultStyleSheets[key] = this.mControlStyle;
-                return this.mControlStyle;
-            }
             if (this.defaultControlStyle) {
                 this.mControlStyle = defaultStyleSheets[key] ||
                 ( defaultStyleSheets[key] = this.theme.createNamedStyle(this.defaultControlStyle, key));
@@ -82,7 +64,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         return this.mControlStyle;
     }
 
-    public set controlStyle(v: any) {
+    public set controlStyle(v: AtomStyle) {
         if (v instanceof AtomStyle) {
             this.mControlStyle = v;
         } else {
@@ -279,7 +261,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected setElementClass(element: HTMLElement, value: any, clear?: boolean): void {
-        const s = value as IStyleDeclaration;
+        const s = value;
         if (s && typeof s === "object") {
             if (!s.className) {
                 if (clear) {

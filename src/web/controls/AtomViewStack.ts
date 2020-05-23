@@ -3,7 +3,6 @@ import { AtomControl } from "./AtomControl";
 
 export class AtomViewStack extends AtomControl {
 
-    @BindableProperty
     public selectedIndex: number;
 
     public children: HTMLElement[];
@@ -29,6 +28,10 @@ export class AtomViewStack extends AtomControl {
 
         this.element.appendChild(ee);
         return this;
+    }
+
+    protected preCreate() {
+        this.selectedIndex = -1;
     }
 
 }

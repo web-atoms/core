@@ -6,7 +6,7 @@ import { App } from "../../../App";
 import { Atom } from "../../../Atom";
 import { AtomTest } from "../../../unit/AtomTest";
 import { AtomGridView } from "../../../web/controls/AtomGridView";
-import AtomWebTest from "../AtomWebTest";
+import AtomWebTest from "../../../unit/AtomWebTest";
 
 @Category("Grid view")
 export class TestCase extends AtomWebTest {

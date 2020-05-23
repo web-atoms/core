@@ -1,5 +1,5 @@
 import TransientDisposable from "../core/TransientDisposable";
-import { DI, IClassOf, IDisposable } from "../core/types";
+import { DI, IAnyInstanceType, IClassOf, IDisposable } from "../core/types";
 import { InjectedTypes } from "./Inject";
 import { Scope, ServiceCollection, ServiceDescription } from "./ServiceCollection";
 import { TypeKey } from "./TypeKey";
@@ -34,7 +34,8 @@ export class ServiceProvider implements IDisposable {
         this.instances[sd.id] = value;
     }
 
-    public resolve(key: any, create: boolean = false, defValue?: any): any {
+    public resolve<T>(
+        key: T, create: boolean = false, defValue?: IAnyInstanceType<T>): IAnyInstanceType<T> {
         const sd = ServiceCollection.instance.get(key);
 
         if (!sd) {
@@ -49,7 +50,7 @@ export class ServiceProvider implements IDisposable {
         }
 
         if (sd.type === ServiceProvider) {
-            return this;
+            return this as any;
         }
 
         if (sd.scope === Scope.Global) {
