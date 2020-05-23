@@ -248,7 +248,7 @@ export class AtomFrame
         this.current = null;
         this.currentDisposable = null;
         this.saveScrollPosition = false;
-        this.navigationService = this.app.resolve(NavigationService);
+        this.navigationService = this.app.resolve(NavigationService) as WindowService;
         this.defaultControlStyle = AtomFrameStyle;
         this.pagePresenter = null;
         this.mUrl = null;
