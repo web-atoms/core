@@ -8,6 +8,7 @@ import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
 import Bind from "./Bind";
 import XNode from "./XNode";
+import { PropertyMap } from "./PropertyMap";
 
 interface IEventObject<T> {
 
@@ -244,9 +245,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public hasProperty(name: string): boolean {
-        if (/^(data|viewModel|localViewModel|element)$/.test(name) || this[name] !== undefined) {
+        if (/^(data|viewModel|localViewModel|element)$/.test(name)) {
             return true;
         }
+        const map = PropertyMap.from(this);
+        if (map.map[name]) { return true; }
+        if (this[name] !== undefined) { return true; }
         return false;
     }
 

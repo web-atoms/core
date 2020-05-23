@@ -2,7 +2,10 @@ import { AtomBinder } from "./AtomBinder";
 import { INotifyPropertyChanging } from "./types";
 
 /**
- * Use this decorator only to watch property changes in `onPropertyChanged` method
+ * Use this decorator only to watch property changes in `onPropertyChanged` method.
+ * This decorator also makes enumerable property.
+ *
+ * Do not use this on anything except UI control
  * @param target control
  * @param key name of property
  */
