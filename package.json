@@ -1,6 +1,6 @@
 {
   "name": "@web-atoms/core",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@types/jquery": "^3.3.35",
     "@web-atoms/module-loader": "^1.0.428",
     "@web-atoms/unit-test": "^1.0.26",
     "colors": "^1.4.0",
