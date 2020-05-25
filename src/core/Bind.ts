@@ -110,6 +110,10 @@ export interface IBinder<T extends IAtomComponent> {
 
 export default class Bind {
 
+    public static forControl<C extends IAtomComponent>(): IBinder<C> {
+        return Bind as any;
+    }
+
     public static forData<D>(): IBinder<IData<D>> {
         return Bind as any;
     }
