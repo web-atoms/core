@@ -3,10 +3,10 @@ import { BindableProperty } from "../../core/BindableProperty";
 import { CancelToken, IClassOf } from "../../core/types";
 import XNode from "../../core/XNode";
 import { IPageOptions, NavigationService } from "../../services/NavigationService";
+import AtomPageLinkStyle from "../styles/AtomPageLinkStyle";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 import { AtomControl } from "./AtomControl";
-import AtomPageLinkStyle from "../styles/AtomPageLinkStyle";
 
 export class AtomPageLink extends AtomControl {
 
