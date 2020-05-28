@@ -308,6 +308,10 @@ export class WindowService extends NavigationService {
         const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
             url, this.app, true, () => this.app.resolve(AtomWindowViewModel, true));
 
+        if (options && options.onInit) {
+            options.onInit(popup);
+        }
+
         const cancelToken = options.cancelToken;
 
         if (cancelToken) {

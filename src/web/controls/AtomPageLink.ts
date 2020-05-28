@@ -108,6 +108,8 @@ export class AtomPageLink extends AtomControl {
 
         this.cancelToken = new CancelToken();
 
+        let o: IPageOptions = null;
+
         try {
             const navigationService = this.app.resolve(NavigationService) as NavigationService;
             const pt = this.page;
@@ -117,9 +119,13 @@ export class AtomPageLink extends AtomControl {
                 return;
             }
             this.isOpen = true;
-            const o = this.options ?
+            o = this.options ?
                 { ... this.options, cancelToken: this.cancelToken } :
                 { cancelToken: this.cancelToken };
+
+            o.onInit = (view: AtomControl) => {
+                view.setLocalValue(view.element, "styleClass", `${this.controlStyle.name} page` );
+            };
 
             const getParametersEvent = new CustomEvent("getParameters", { detail: {} as any});
 
@@ -139,6 +145,7 @@ export class AtomPageLink extends AtomControl {
         } finally {
             this.cancelToken = null;
             this.isOpen = false;
+            if (o) { o.onInit = null; }
         }
     }
 
