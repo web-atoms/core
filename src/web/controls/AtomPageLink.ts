@@ -6,13 +6,7 @@ import { IPageOptions, NavigationService } from "../../services/NavigationServic
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 import { AtomControl } from "./AtomControl";
-
-class EmptyStyle extends AtomStyle {
-
-    public get root(): IStyleDeclaration {
-        return {};
-    }
-}
+import AtomPageLinkStyle from "../styles/AtomPageLinkStyle";
 
 export class AtomPageLink extends AtomControl {
 
@@ -58,7 +52,7 @@ export class AtomPageLink extends AtomControl {
 
         this.toggle = true;
 
-        this.defaultControlStyle = EmptyStyle;
+        this.defaultControlStyle = AtomPageLinkStyle;
 
         super.preCreate();
 
