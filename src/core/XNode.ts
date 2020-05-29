@@ -143,6 +143,10 @@ export default class XNode {
         return cx;
     }
 
+    public static factory = (name, isProperty, isTemplate) => (a?: any, ... nodes: any[]) => {
+        return new XNode(name, a, nodes, isProperty, isTemplate);
+    }
+
     /**
      * Declares Root Namespace and Assembly. You can use return function to
      * to declare the type
