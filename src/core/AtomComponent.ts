@@ -7,8 +7,8 @@ import { ArrayHelper, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INo
 import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
 import Bind from "./Bind";
-import XNode from "./XNode";
 import { PropertyMap } from "./PropertyMap";
+import XNode from "./XNode";
 
 interface IEventObject<T> {
 

@@ -217,3 +217,7 @@ export default class XNode {
         return `name is of type ${typeof this.name}`;
     }
 }
+
+if (typeof bridge !== "undefined") {
+    bridge.XNode = XNode;
+}
