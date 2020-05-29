@@ -109,27 +109,20 @@ export default class XNode {
         } as any;
     }
 
-    public static template(): NodeFactory {
-        return {
-            factory: true,
-            isTemplate: true,
-        } as any;
-    }
+    // public static template(): NodeFactory {
+    //     return {
+    //         factory: true,
+    //         isTemplate: true,
+    //     } as any;
+    // }
 
-    /**
-     * This is only for intellisense...
-     */
-    public static attached(): AttachedNode {
-        return {
-            attached: true
-        } as any;
-    }
+    public static attached = (name: string): AttachedNode => (n) => ({ [name]: n });
 
-    public static property(): NodeFactory {
-        return {
-            factory: true
-        } as any;
-    }
+    // public static property(): NodeFactory {
+    //     return {
+    //         factory: true
+    //     } as any;
+    // }
 
     public static getClass(fullTypeName: string, assemblyName: string) {
         const n = fullTypeName + ";" + assemblyName;
