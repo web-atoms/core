@@ -23,6 +23,23 @@ export class AtomPageLink extends AtomControl {
     public options: IPageOptions;
 
     /**
+     * Fired after the result was received from popup/window successfully
+     */
+    public eventResult: any;
+
+    /**
+     * Fired after popup/window was cancelled
+     */
+    public eventError: any;
+
+    /**
+     * Fired before opening popup/window.
+     * In the event's detail object, you must set parameters property as shown below...
+     * eventGetParameters={Bind.event((e) => e.detail.parameters = ({}))}
+     */
+    public eventGerParameters: any;
+
+    /**
      * Block opening Popup/Page again till the opened page is closed or cancelled.
      * If set true, toggle will not work. Default is false.
      */
