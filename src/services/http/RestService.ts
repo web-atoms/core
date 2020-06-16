@@ -561,13 +561,17 @@ export class BaseService {
             const xhr = await this.ajax(url, options);
 
             if (/json/i.test(xhr.responseType)) {
-                const response = this.jsonService.parse(xhr.responseText, jsonOptions );
+                const text = xhr.responseText;
+                const response = this.jsonService.parse(text, jsonOptions );
 
                 if (xhr.status >= 400) {
                     throw new JsonError(
-                        response.exceptionMessage ||
-                        response.message ||
-                        "Json Server Error", response);
+                        typeof response === "string"
+                        ? response
+                        : ( response.exceptionMessage
+                        || response.message
+                        || text
+                        || "Json Server Error"), response);
                 }
                 if (methodOptions && methodOptions.returnHeaders) {
                     return {
