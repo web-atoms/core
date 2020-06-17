@@ -41,6 +41,9 @@ export interface IPageOptions {
      * If you want to cancel the window/frame, you can remove the window by calling cancel on given CancelToken
      */
     cancelToken?: CancelToken;
+
+    /** Initializer that will be invoked when page/popup/window is created */
+    onInit?: (view: any) => void;
 }
 
 declare var UMD: any;

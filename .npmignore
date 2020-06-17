@@ -4,3 +4,11 @@ html-report
 package-lock.json
 dist/tests
 src/tests
+.github
+.vscode
+core-docs
+tslint.json
+typedoc.js
+.travis.yml
+alpha.bat
+generated-cert-1

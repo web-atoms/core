@@ -3,16 +3,10 @@ import { BindableProperty } from "../../core/BindableProperty";
 import { CancelToken, IClassOf } from "../../core/types";
 import XNode from "../../core/XNode";
 import { IPageOptions, NavigationService } from "../../services/NavigationService";
+import AtomPageLinkStyle from "../styles/AtomPageLinkStyle";
 import { AtomStyle } from "../styles/AtomStyle";
 import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 import { AtomControl } from "./AtomControl";
-
-class EmptyStyle extends AtomStyle {
-
-    public get root(): IStyleDeclaration {
-        return {};
-    }
-}
 
 export class AtomPageLink extends AtomControl {
 
@@ -27,6 +21,23 @@ export class AtomPageLink extends AtomControl {
     public cancelToken: CancelToken;
 
     public options: IPageOptions;
+
+    /**
+     * Fired after the result was received from popup/window successfully
+     */
+    public eventResult: any;
+
+    /**
+     * Fired after popup/window was cancelled
+     */
+    public eventError: any;
+
+    /**
+     * Fired before opening popup/window.
+     * In the event's detail object, you must set parameters property as shown below...
+     * eventGetParameters={Bind.event((e) => e.detail.parameters = ({}))}
+     */
+    public eventGerParameters: any;
 
     /**
      * Block opening Popup/Page again till the opened page is closed or cancelled.
@@ -58,7 +69,7 @@ export class AtomPageLink extends AtomControl {
 
         this.toggle = true;
 
-        this.defaultControlStyle = EmptyStyle;
+        this.defaultControlStyle = AtomPageLinkStyle;
 
         super.preCreate();
 
@@ -79,7 +90,8 @@ export class AtomPageLink extends AtomControl {
             false ,
             (v) => ({
                 [this.controlStyle.name]: 1,
-                "is-open": v
+                "is-open": v,
+                "atom-page-link": 1
             }),
             this);
 
@@ -108,6 +120,8 @@ export class AtomPageLink extends AtomControl {
 
         this.cancelToken = new CancelToken();
 
+        let o: IPageOptions = null;
+
         try {
             const navigationService = this.app.resolve(NavigationService) as NavigationService;
             const pt = this.page;
@@ -117,9 +131,13 @@ export class AtomPageLink extends AtomControl {
                 return;
             }
             this.isOpen = true;
-            const o = this.options ?
+            o = this.options ?
                 { ... this.options, cancelToken: this.cancelToken } :
                 { cancelToken: this.cancelToken };
+
+            o.onInit = (view: AtomControl) => {
+                view.setLocalValue(view.element, "styleClass", `${this.controlStyle.name} page` );
+            };
 
             const getParametersEvent = new CustomEvent("getParameters", { detail: {} as any});
 
@@ -139,6 +157,7 @@ export class AtomPageLink extends AtomControl {
         } finally {
             this.cancelToken = null;
             this.isOpen = false;
+            if (o) { o.onInit = null; }
         }
     }
 

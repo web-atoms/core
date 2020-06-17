@@ -96,7 +96,7 @@ export default function Load(
              */
             let executing = init;
             const m = async (ctx?: CancelToken) => {
-                const ns = app.resolve(NavigationService) as NavigationService;
+                const ns = app.resolve(NavigationService);
                 try {
                     const pe = oldMethod.call(vm, ctx);
                     if (pe && pe.then) {
@@ -121,22 +121,29 @@ export default function Load(
             };
 
             if (watch) {
-                const fx = () =>
-                    app.runAsync(async () => {
-                        if (ct) { ct.cancel(); }
-                        const ct2 = ct = new CancelToken();
+                const fx = async (c1?: CancelToken) => {
+                    if (ct) { ct.cancel(); }
+                    const ct2 = ct = (c1 || new CancelToken());
 
-                        if (executing) {
-                            return;
+                    if (executing) {
+                        return;
+                    }
+                    executing = true;
+                    try {
+                        await m(ct2);
+                    } catch (ex1) {
+                        if (/^(cancelled|canceled)$/i.test(ex1.toString().trim())) {
+                            // tslint:disable-next-line: no-console
+                            console.warn(ex1);
+                        } else {
+                            // tslint:disable-next-line: no-console
+                            console.error(ex1);
                         }
-                        executing = true;
-                        try {
-                            await m(ct2);
-                        } finally {
-                            executing = false;
-                            ct = null;
-                        }
-                    });
+                    } finally {
+                        executing = false;
+                        ct = null;
+                    }
+                };
                 let timeout = null;
 
                 // get path stripped as we are passing CancelToken, it will not

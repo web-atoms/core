@@ -1,15 +1,30 @@
 import Bind from "./Bind";
-import { IClassOf } from "./types";
+import { IClassOf, IDisposable } from "./types";
 
 export interface IAttributes {
     [key: string]: string | number | null | any;
 }
 
+declare var bridge: any;
+
 export class RootObject {
+
     public get vsProps(): {
         [k in keyof this]?: this[k] | Bind
     } | { [k: string]: any } | {} {
         return undefined;
+    }
+
+    public addEventListener(name: string, handler: EventListenerOrEventListenerObject): IDisposable {
+        return bridge.addEventHandler(this, name, handler);
+    }
+
+    public appendChild(e: any) {
+        bridge.appendChild(this, e);
+    }
+
+    public dispatchEvent(evt: Event) {
+        bridge.dispatchEvent(evt);
     }
 }
 
@@ -30,6 +45,9 @@ declare global {
                 eventClick?: any;
                 eventBlur?: any;
                 eventFocus?: any;
+                eventKeydown?: any;
+                eventKeyup?: any;
+                eventKeypress?: any;
                 text?: string | any;
                 [key: string]: any
             }
@@ -58,6 +76,8 @@ export type NodeFactory = (a?: any, ... nodes: XNode[]) => XNode;
 export type AttachedNode = (n: any) => { [key: string]: any};
 
 export default class XNode {
+
+    public static classes: {[key: string]: any } = {};
 
     public static attach<T, T1 extends HTMLElementTagNameMap, K extends keyof T1>(
         n: IClassOf<T>,
@@ -89,26 +109,35 @@ export default class XNode {
         } as any;
     }
 
-    public static template(): NodeFactory {
-        return {
-            factory: true,
-            isTemplate: true,
-        } as any;
+    // public static template(): NodeFactory {
+    //     return {
+    //         factory: true,
+    //         isTemplate: true,
+    //     } as any;
+    // }
+
+    public static attached = (name: string): AttachedNode => (n) => ({ [name]: n });
+
+    // public static property(): NodeFactory {
+    //     return {
+    //         factory: true
+    //     } as any;
+    // }
+
+    public static getClass(fullTypeName: string, assemblyName: string) {
+        const n = fullTypeName + ";" + assemblyName;
+        const cx = XNode.classes[n] || (XNode.classes[n] =
+            bridge.getClass(
+                fullTypeName,
+                assemblyName,
+                RootObject,
+                (name, isProperty, isTemplate) =>
+                    (a?: any, ... nodes: any[]) => new XNode(name, a, nodes, isProperty, isTemplate )));
+        return cx;
     }
 
-    /**
-     * This is only for intellisense...
-     */
-    public static attached(): AttachedNode {
-        return {
-            attached: true
-        } as any;
-    }
-
-    public static property(): NodeFactory {
-        return {
-            factory: true
-        } as any;
+    public static factory = (name, isProperty, isTemplate) => (a?: any, ... nodes: any[]) => {
+        return new XNode(name, a, nodes, isProperty, isTemplate);
     }
 
     /**
@@ -119,6 +148,7 @@ export default class XNode {
     public static namespace(ns: string, assemblyName: string) {
         return (type: string, isTemplate?: boolean) => {
             return (c) => {
+                // static properties !!
                 for (const key in c) {
                     if (c.hasOwnProperty(key)) {
                         const element = c[key];
@@ -183,4 +213,8 @@ export default class XNode {
         }
         return `name is of type ${typeof this.name}`;
     }
+}
+
+if (typeof bridge !== "undefined") {
+    bridge.XNode = XNode;
 }

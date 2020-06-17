@@ -118,6 +118,10 @@ export default class XFNavigationService extends NavigationService {
             await AtomLoader.loadView(url, this.app, true,
                 () => this.app.resolve(AtomWindowViewModel, true));
 
+        if (options && options.onInit) {
+            options.onInit(popup);
+        }
+
         const cancelToken = options.cancelToken;
         if (cancelToken) {
             if (cancelToken.cancelled) {

@@ -110,6 +110,10 @@ export interface IBinder<T extends IAtomComponent> {
 
 export default class Bind {
 
+    public static forControl<C extends IAtomComponent>(): IBinder<C> {
+        return Bind as any;
+    }
+
     public static forData<D>(): IBinder<IData<D>> {
         return Bind as any;
     }
@@ -144,6 +148,21 @@ export default class Bind {
         sourcePath: bindingFunction<T>,
         events?: string[]): Bind {
         const b = new Bind(twoWays, sourcePath, null, events);
+        if (!(b.thisPathList  || b.pathList)) {
+            throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
+        }
+        return b;
+    }
+
+    /**
+     * Use this for HTML only, this will fire two way binding
+     * as soon as the input/textarea box is updated
+     * @param sourcePath binding lambda expression
+     */
+    public static twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: bindingFunction<T>): Bind {
+        const b = new Bind(twoWays, sourcePath, null,
+            ["change", "input", "paste"]);
         if (!(b.thisPathList  || b.pathList)) {
             throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
         }

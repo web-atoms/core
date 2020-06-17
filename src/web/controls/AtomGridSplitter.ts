@@ -43,7 +43,16 @@ export class AtomGridSplitter extends AtomControl {
 
             const {column, row} = AtomGridView.getCellInfo(this.element);
 
+            const ss = document.createElement("style");
+            ss.textContent = "iframe { pointer-events: none }";
+            document.head.appendChild(ss);
+
+            disposables.push({
+                dispose: () => ss.remove()
+            });
+
             disposables.push(this.bindEvent(document.body, "mousemove", (me: MouseEvent) => {
+
                 // do drag....
                 const { screenX, screenY } = me;
 

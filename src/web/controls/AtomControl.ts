@@ -1,20 +1,14 @@
 import { App } from "../../App";
-import { Atom } from "../../Atom";
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge, AtomElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
-import Bind from "../../core/Bind";
-import { BindableProperty } from "../../core/BindableProperty";
 import FormattedString from "../../core/FormattedString";
-import { IClassOf, UMD } from "../../core/types";
 import WebImage from "../../core/WebImage";
-import XNode from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
-import { IStyleDeclaration } from "../styles/IStyleDeclaration";
 
 // export { default as WebApp } from "../WebApp";
 
@@ -187,27 +181,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             name = name.substr(5);
             name = name.charAt(0).toLowerCase() + name.substr(1);
 
-            // element.style[name] = value;
             this.bindEvent(element, name, async (...e: any[]) => {
                 try {
-                    let pendingPromises = (element as any).pendingPromises;
-                    if (pendingPromises) {
-                        const last = pendingPromises[name];
-                        if (last) {
-                            if (UMD.debug) {
-                                // tslint:disable-next-line:no-console
-                                console.warn(`Previous promise exists for event ${name}`);
-                            }
-                            return;
-                        }
-                    }
                     const f = value as (...v: any[]) => any;
                     const pr = f.apply(this, e) as Promise<any>;
                     if (pr) {
-                        if (!pendingPromises) {
-                            (element as any).pendingPromises = pendingPromises = {};
-                        }
-                        pendingPromises[name] = pr;
                         try {
                             await pr;
                         } catch (error) {
@@ -217,8 +195,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
                             const nav: NavigationService = this.app.resolve(NavigationService);
                             await nav.alert(error, "Error");
-                        } finally {
-                            delete pendingPromises[name];
                         }
                     }
                 } catch (er1) {
