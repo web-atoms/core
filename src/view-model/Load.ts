@@ -96,7 +96,7 @@ export default function Load(
              */
             let executing = init;
             const m = async (ctx?: CancelToken) => {
-                const ns = app.resolve(NavigationService) as NavigationService;
+                const ns = app.resolve(NavigationService);
                 try {
                     const pe = oldMethod.call(vm, ctx);
                     if (pe && pe.then) {
