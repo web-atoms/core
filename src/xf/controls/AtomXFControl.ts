@@ -101,7 +101,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                         await p;
                     }
                 } catch (e) {
-                    if (/cancelled/i.test(e)) {
+                    if (/canceled|cancelled/i.test(e)) {
                         return;
                     }
                     const nav: NavigationService = this.app.resolve(NavigationService);
