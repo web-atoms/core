@@ -154,6 +154,21 @@ export default class Bind {
         return b;
     }
 
+    /**
+     * Use this for HTML only, this will fire two way binding
+     * as soon as the input/textarea box is updated
+     * @param sourcePath binding lambda expression
+     */
+    public static twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: bindingFunction<T>): Bind {
+        const b = new Bind(twoWays, sourcePath, null,
+            ["change", "input", "paste"]);
+        if (!(b.thisPathList  || b.pathList)) {
+            throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
+        }
+        return b;
+    }
+
     public readonly sourcePath: bindingFunction;
 
     public readonly pathList: string[][];
