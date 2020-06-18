@@ -105,7 +105,9 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                         return;
                     }
                     const nav: NavigationService = this.app.resolve(NavigationService);
-                    await nav.alert(e, "Error");
+                    nav.alert(e, "Error").catch(() => {
+                        // nothing...
+                    });
                 }
             });
             return;
