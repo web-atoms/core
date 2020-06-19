@@ -348,7 +348,7 @@ export class AtomBridge {
     public static instance: BaseElementBridge<IAtomElement>;
 
     public static createNode(iterator: XNode, app: any): { element?: any, control?: any } {
-        if (typeof iterator.name !== "function") {
+        if (typeof iterator.name === "string" || (iterator.name as any).factory) {
 
             return { element: AtomBridge.instance.create(iterator.name.toString(), iterator, app) };
         }
