@@ -73,6 +73,9 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         } else {
             px = px.substr(p.length + 1);
         }
+
+        px = px.split(".").filter((s) => !s.endsWith("(")).join(".");
+
         // console.log(px);
         if (!path.find((y) => y === px)) {
             path.push(px);
