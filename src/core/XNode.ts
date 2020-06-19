@@ -1,6 +1,5 @@
 import Bind from "./Bind";
 import { IClassOf, IDisposable } from "./types";
-import { dateFormatMSRegEx } from "../services/JsonService";
 
 export interface IAttributes {
     [key: string]: string | number | null | any;
