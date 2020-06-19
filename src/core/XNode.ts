@@ -1,5 +1,6 @@
 import Bind from "./Bind";
 import { IClassOf, IDisposable } from "./types";
+import { dateFormatMSRegEx } from "../services/JsonService";
 
 export interface IAttributes {
     [key: string]: string | number | null | any;
@@ -99,14 +100,24 @@ export default class XNode {
         n: any,
         isProperty?: boolean,
         isTemplate?: boolean): ((attributes: Partial<T>, ... nodes: XNode[]) => XNode) {
-        return {
-            factory(a: any, ... nodes: any[]) {
-                return new XNode(n, a, nodes, isProperty , isTemplate);
-            },
-            toString() {
-                return n;
-            }
-        } as any;
+        function px(v) {
+            return ({
+                [n]: v
+            });
+        }
+        px.factory = (a: any, ... nodes: any[]) => {
+            return new XNode(n, a, nodes, isProperty, isTemplate);
+        };
+        px.toString = () => n;
+        return px as any;
+        // return {
+        //     factory(a: any, ... nodes: any[]) {
+        //         return new XNode(n, a, nodes, isProperty , isTemplate);
+        //     },
+        //     toString() {
+        //         return n;
+        //     }
+        // } as any;
     }
 
     // public static template(): NodeFactory {
