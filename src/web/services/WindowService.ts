@@ -170,13 +170,20 @@ export class WindowService extends NavigationService {
         ServiceCollection.instance.register(type, null, Scope.Transient, id);
     }
 
-    public confirm(message: string | FormattedString, title: string): Promise<any> {
-        return this.openPage(AtomAlertWindow, {
-            okTitle: "Yes",
-            cancelTitle: "No",
-            title: title || "Confirm",
-            message
-        });
+    public async confirm(message: string | FormattedString, title: string): Promise<any> {
+        try {
+            return await this.openPage(AtomAlertWindow, {
+                okTitle: "Yes",
+                cancelTitle: "No",
+                title: title || "Confirm",
+                message
+            });
+        } catch (e) {
+            if (/canceled|cancelled/i.test(e)) {
+                return false;
+            }
+            throw e;
+        }
     }
 
     public alert(message: string | FormattedString | any, title?: string): Promise<any> {
