@@ -42,7 +42,7 @@ class InheritedStyle extends TestStyle {
 class InheritedTestControl extends TestControl {
     public create(): void {
         this.defaultControlStyle = TestStyle;
-        this.bind(this.element, "class", [["this", "controlStyle", "root", "className"]], false, null, this);
+        this.bind(this.element, "class", [["this", "controlStyle", "name"]], false, null, this);
     }
 }
 

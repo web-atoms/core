@@ -113,7 +113,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
     // tslint:disable-next-line: no-console
     // console.log(`Watching: ${path.join(", ")}`);
 
-    const pl = path.map( (p1) => p1.split("."));
+    const pl = path.filter((p1) => p1).map( (p1) => p1.split("."));
 
     viewModelParseWatchCache[key] = pl;
 
