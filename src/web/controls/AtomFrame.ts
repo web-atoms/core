@@ -181,10 +181,11 @@ export class AtomFrame
         this.setUrl(urlString);
         disposables.add({
             dispose: () => {
+                const closed = this.current === view;
                 e.innerHTML = "";
                 e.remove();
                 this.navigationService.currentTarget = null;
-                this.popStack(true);
+                this.popStack(closed);
             }
         });
         return view;
