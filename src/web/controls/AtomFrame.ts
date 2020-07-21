@@ -99,6 +99,11 @@ export class AtomFrame
         }
         const last = this.stack.pop();
         AtomBinder.refreshItems(this.stack);
+        if (this.current) {
+            this.navigationService.remove(this.current).catch((e) =>
+                // tslint:disable-next-line: no-console
+                console.log(e));
+        }
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
         this.setUrl(last.url);
