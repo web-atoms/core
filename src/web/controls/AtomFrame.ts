@@ -60,6 +60,7 @@ export class AtomFrame
         if (value === undefined) {
             return;
         }
+        this.mUrl = value;
         this.runAfterInit(() => {
             this.app.runAsync(() => this.loadForReturn(value === null ? null : new AtomUri(value), true));
         });
