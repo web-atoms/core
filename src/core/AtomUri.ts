@@ -31,9 +31,9 @@ export class AtomUri {
                 h.push(`${encodeURIComponent(key)}=${encodeURIComponent(element.toString())}`);
             }
         }
-        const qstr = q.length ? "?" + q.join("&")  : "";
+        const query = q.length ? "?" + q.join("&")  : "";
         const hash = h.length ? "#" + h.join("&") : "";
-        return `${this.path}${qstr}${hash}`;
+        return `${this.path}${query}${hash}`;
     }
 
     /**
