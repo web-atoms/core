@@ -33,7 +33,11 @@ export class AtomUri {
         }
         const query = q.length ? "?" + q.join("&")  : "";
         const hash = h.length ? "#" + h.join("&") : "";
-        return `${this.path}${query}${hash}`;
+        let path: string = this.path || "/";
+        if (path.startsWith("/")) {
+            path = path.substr(1);
+        }
+        return `${path}${query}${hash}`;
     }
 
     /**
@@ -89,10 +93,6 @@ export class AtomUri {
     public toString(): string {
 
         const port = this.port ? ":" + this.port : "";
-        let path: string = this.path || "/";
-        if (path.startsWith("/")) {
-            path = path.substr(1);
-        }
         return `${this.protocol}//${this.host}${port}/${this.pathAndQuery}`;
     }
 }
