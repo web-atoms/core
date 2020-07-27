@@ -202,8 +202,12 @@ export default class XNode {
         if ((name as any).isControl) {
             return new XNode(name as any, attributes, children);
         }
-        if (typeof name === "object") {
-            name = (name as any).toString();
+        switch (typeof name) {
+            case "object":
+                name = (name as any).toString();
+                break;
+            case "function":
+                return name(attributes, ... children);
         }
         return new XNode(name as any, attributes, children);
     }
