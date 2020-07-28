@@ -22,8 +22,11 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         str = str.substr("function (".length);
     } else if (str.startsWith("function(")) {
         str = str.substr("function(".length);
-    } else if (str.startsWith("(")) {
-        str = str.substr(1);
+    } else {
+        const sb = str.indexOf("(");
+        if (sb !== -1) {
+            str = str.substr(sb + 1);
+        }
     }
 
     str = str.trim();
