@@ -20,10 +20,10 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
 
     if (str.startsWith("function (")) {
         str = str.substr("function (".length);
-    }
-
-    if (str.startsWith("function(")) {
+    } else if (str.startsWith("function(")) {
         str = str.substr("function(".length);
+    } else if (str.startsWith("(")) {
+        str = str.substr(1);
     }
 
     str = str.trim();
@@ -81,12 +81,29 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
             path.push(px);
         }
 
-        path = path.filter( (f1) => f1.endsWith("==") || !(f1.endsWith("(") || f1.endsWith("=") ));
+        // path = path.filter( (f1) => f1.endsWith("==") || !(f1.endsWith("(") || f1.endsWith("=") ));
 
-        path = path.map(
-            (px2) => px2.endsWith("===") ? px2.substr(0, px2.length - 3) :
-                ( px2.endsWith("==") ? px2.substr(0, px2.length - 2) : px2 ) )
-                .map((px2) => px2.trim());
+        // path = path.map(
+        //     (px2) => (px2.endsWith("===") ? px2.substr(0, px2.length - 3) :
+        //         ( px2.endsWith("==") ? px2.substr(0, px2.length - 2) : px2 )).trim() );
+
+        const filtered = [];
+        for (const iterator of path) {
+            if (iterator.endsWith("==") || !(iterator.endsWith("(") || iterator.endsWith("="))) {
+                filtered.push((iterator.endsWith("===") ? iterator.substr(0, iterator.length - 3) :
+                    ( iterator.endsWith("==") ? iterator.substr(0, iterator.length - 2) : iterator )).trim());
+            }
+        }
+
+        path = filtered.filter((px11) => {
+            const search = px11 + ".";
+            for (const iterator of filtered) {
+                if (px11 !== iterator && iterator.indexOf(search) !== -1) {
+                    return false;
+                }
+            }
+            return true;
+        });
 
         return m;
     });
