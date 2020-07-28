@@ -45,6 +45,13 @@ export class ExpressionParserTest extends AtomTest {
     }
 
     @Test
+    public parseLambdaES6Text(): void {
+        const p = parsePath("(a) => a.firstName + ' ' + a.lastName");
+        Assert.equals(2, p.length);
+    }
+
+
+    @Test
     public parseLambdaTextWithSecondParameter(): void {
         const p = parsePath("function(a, b) { return a.firstName + ' ' + a.lastName; }");
         Assert.equals(2, p.length);
@@ -84,6 +91,24 @@ export class ExpressionParserTest extends AtomTest {
         }`);
 
         Assert.equals(1, p.thisPath.length);
+    }
+
+    @Test
+    public parseMultiPath(): void {
+        const p = parsePathLists(`function () {
+            return _this.viewModel && _this.viewModel.comboBox.searchText;
+        }`);
+
+        Assert.equals(1, p.thisPath.length);
+    }
+
+    @Test
+    public parseMultiPath2(): void {
+        const p = parsePathLists(`function () {
+            return _this.viewModel && _this.viewModel.comboBox.searchText && _this.viewModel.comboBox.searchText1;
+        }`);
+
+        Assert.equals(2, p.thisPath.length);
     }
 
 }
