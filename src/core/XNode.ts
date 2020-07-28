@@ -99,14 +99,24 @@ export default class XNode {
         n: any,
         isProperty?: boolean,
         isTemplate?: boolean): ((attributes: Partial<T>, ... nodes: XNode[]) => XNode) {
-        return {
-            factory(a: any, ... nodes: any[]) {
-                return new XNode(n, a, nodes, isProperty , isTemplate);
-            },
-            toString() {
-                return n;
-            }
-        } as any;
+        function px(v) {
+            return ({
+                [n]: v
+            });
+        }
+        px.factory = (a: any, ... nodes: any[]) => {
+            return new XNode(n, a, nodes, isProperty, isTemplate);
+        };
+        px.toString = () => n;
+        return px as any;
+        // return {
+        //     factory(a: any, ... nodes: any[]) {
+        //         return new XNode(n, a, nodes, isProperty , isTemplate);
+        //     },
+        //     toString() {
+        //         return n;
+        //     }
+        // } as any;
     }
 
     // public static template(): NodeFactory {
@@ -192,8 +202,12 @@ export default class XNode {
         if ((name as any).isControl) {
             return new XNode(name as any, attributes, children);
         }
-        if (typeof name === "object") {
-            name = (name as any).toString();
+        switch (typeof name) {
+            case "object":
+                name = (name as any).toString();
+                break;
+            case "function":
+                return name(attributes, ... children);
         }
         return new XNode(name as any, attributes, children);
     }

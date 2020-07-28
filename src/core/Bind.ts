@@ -201,6 +201,12 @@ export default class Bind {
             if (lists.thisPath.length) {
                 this.thisPathList = lists.thisPath;
             }
+
+            if (setupFunction === oneWay) {
+                if (!(this.combined || this.pathList || this.thisPathList)) {
+                    throw new Error(`Failed to setup binding for ${this.sourcePath}, parsing failed`);
+                }
+            }
         }
 
     }

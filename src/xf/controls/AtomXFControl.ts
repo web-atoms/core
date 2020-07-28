@@ -105,10 +105,29 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                         return;
                     }
                     const nav: NavigationService = this.app.resolve(NavigationService);
-                    await nav.alert(e, "Error");
+                    nav.alert(e, "Error").catch(() => {
+                        // nothing...
+                    });
                 }
             });
             return;
+        }
+        if (/^(class|styleClass)$/i.test(name)) {
+            let classes: string[];
+            if (typeof value === "object") {
+                classes = [];
+                for (const key in value) {
+                    if (value.hasOwnProperty(key)) {
+                        const e1 = value[key];
+                        if (e1) {
+                            classes.push(key);
+                        }
+                    }
+                }
+            } else {
+                classes = value.toString().split(" ");
+            }
+            value = classes.join(",");
         }
         AtomBridge.instance.setValue(element, name, value);
     }

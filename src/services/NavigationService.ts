@@ -76,13 +76,13 @@ export abstract class NavigationService {
 
     /**
      *
-     * @param pageName url
-     * @param p parameters
+     * @param pageName node style package url or a class
+     * @param viewModelParameters key value pair that will be injected on ViewModel when created
      * @param options {@link IPageOptions}
      */
     public openPage<T>(
         pageName: string | any,
-        p?: INameValuePairs,
+        viewModelParameters?: INameValuePairs,
         options?: IPageOptions): Promise<T> {
 
         options = options || {};
@@ -99,10 +99,10 @@ export abstract class NavigationService {
         }
 
         const url = new AtomUri(pageName);
-        if (p) {
-            for (const key in p) {
-                if (p.hasOwnProperty(key)) {
-                    const element = p[key];
+        if (viewModelParameters) {
+            for (const key in viewModelParameters) {
+                if (viewModelParameters.hasOwnProperty(key)) {
+                    const element = viewModelParameters[key];
                     if (element === undefined) {
                         continue;
                     }

@@ -10,6 +10,36 @@ export class AtomUri {
     public host: string;
     public port: string;
 
+    public get pathAndQuery() {
+        const q: string[] = [];
+        const h: string[] = [];
+        for (const key in this.query) {
+            if (this.query.hasOwnProperty(key)) {
+                const element = this.query[key];
+                if (element === undefined || element === null) {
+                    continue;
+                }
+                q.push(`${encodeURIComponent(key)}=${encodeURIComponent(element.toString())}`);
+            }
+        }
+        for (const key in this.hash) {
+            if (this.hash.hasOwnProperty(key)) {
+                const element = this.hash[key];
+                if (element === undefined || element === null) {
+                    continue;
+                }
+                h.push(`${encodeURIComponent(key)}=${encodeURIComponent(element.toString())}`);
+            }
+        }
+        const query = q.length ? "?" + q.join("&")  : "";
+        const hash = h.length ? "#" + h.join("&") : "";
+        let path: string = this.path || "/";
+        if (path.startsWith("/")) {
+            path = path.substr(1);
+        }
+        return `${path}${query}${hash}`;
+    }
+
     /**
      *
      */
@@ -61,33 +91,8 @@ export class AtomUri {
     }
 
     public toString(): string {
-        const q: string[] = [];
-        const h: string[] = [];
-        for (const key in this.query) {
-            if (this.query.hasOwnProperty(key)) {
-                const element = this.query[key];
-                if (element === undefined || element === null) {
-                    continue;
-                }
-                q.push(`${encodeURIComponent(key)}=${encodeURIComponent(element.toString())}`);
-            }
-        }
-        for (const key in this.hash) {
-            if (this.hash.hasOwnProperty(key)) {
-                const element = this.hash[key];
-                if (element === undefined || element === null) {
-                    continue;
-                }
-                h.push(`${encodeURIComponent(key)}=${encodeURIComponent(element.toString())}`);
-            }
-        }
-        const qstr = q.length ? "?" + q.join("&")  : "";
-        const hash = h.length ? "#" + h.join("&") : "";
+
         const port = this.port ? ":" + this.port : "";
-        let path: string = this.path || "/";
-        if (path.startsWith("/")) {
-            path = path.substr(1);
-        }
-        return `${this.protocol}//${this.host}${port}/${path}${qstr}${hash}`;
+        return `${this.protocol}//${this.host}${port}/${this.pathAndQuery}`;
     }
 }

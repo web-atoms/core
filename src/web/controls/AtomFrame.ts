@@ -60,6 +60,7 @@ export class AtomFrame
         if (value === undefined) {
             return;
         }
+        this.mUrl = value;
         this.runAfterInit(() => {
             this.app.runAsync(() => this.loadForReturn(value === null ? null : new AtomUri(value), true));
         });
@@ -98,8 +99,14 @@ export class AtomFrame
         }
         const last = this.stack.pop();
         AtomBinder.refreshItems(this.stack);
+        const old = this.current;
         this.current = last.page;
         (this.current.element as HTMLElement).style.display = "";
+        if (old) {
+            this.navigationService.remove(old).catch((e) =>
+                // tslint:disable-next-line: no-console
+                console.log(e));
+        }
         this.setUrl(last.url);
         if (this.saveScrollPosition) {
             setTimeout(() => {
@@ -163,7 +170,7 @@ export class AtomFrame
 
         const { view, disposables } =
             await AtomLoader.loadView<AtomControl>(url, this.app, true, () => new AtomWindowViewModel(this.app));
-        const urlString = url.toString();
+        const urlString = url.host ? url.toString() : url.pathAndQuery;
         (view as any)._$_url = urlString;
 
         this.push(view);
@@ -175,10 +182,11 @@ export class AtomFrame
         this.setUrl(urlString);
         disposables.add({
             dispose: () => {
+                const closed = this.current === view;
                 e.innerHTML = "";
                 e.remove();
                 this.navigationService.currentTarget = null;
-                this.popStack(true);
+                this.popStack(closed);
             }
         });
         return view;
