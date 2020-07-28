@@ -26,6 +26,12 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         const sb = str.indexOf("(");
         if (sb !== -1) {
             str = str.substr(sb + 1);
+        } else {
+            if (parseThis !== undefined && parseThis === false) {
+                return [];
+            } else {
+                parseThis = true;
+            }
         }
     }
 
