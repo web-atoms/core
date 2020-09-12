@@ -15,7 +15,7 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/          
       - run: npm install
-      - run: npm install -g typescript@3.9 typedocs codecov
+      - run: npm install -g typescript@4.0.2 typedocs codecov
       - run: npm install -D istanbul remap-istanbul
       - run: tsc
       # - run: typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
