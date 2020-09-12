@@ -48,6 +48,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     public readonly element: T;
 
     @InheritedProperty
+    public data: any;
+
+    @InheritedProperty
     public viewModel: any;
 
     @InheritedProperty
@@ -59,22 +62,22 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     private mPendingPromises: { [key: string]: Promise<any> } = {};
 
-    private mData: any = undefined;
-    public get data(): any {
-        if (this.mData !== undefined) {
-            return this.mData;
-        }
-        const parent = this.parent;
-        if (parent) {
-            return parent.data;
-        }
-        return undefined;
-    }
+    // private mData: any = undefined;
+    // public get data(): any {
+    //     if (this.mData !== undefined) {
+    //         return this.mData;
+    //     }
+    //     const parent = this.parent;
+    //     if (parent) {
+    //         return parent.data;
+    //     }
+    //     return undefined;
+    // }
 
-    public set data(v: any) {
-        this.mData = v;
-        AtomBridge.refreshInherited(this, "data");
-    }
+    // public set data(v: any) {
+    //     this.mData = v;
+    //     AtomBridge.refreshInherited(this, "data");
+    // }
 
     // private mViewModel: any = undefined;
     // public get viewModel(): any {
