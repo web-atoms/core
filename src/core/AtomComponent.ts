@@ -164,12 +164,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         source?: any): IDisposable {
 
         // remove existing binding if any
-        let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
-        if (binding) {
-            binding.dispose();
-            ArrayHelper.remove(this.bindings, (x) => x === binding);
-        }
-        binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc, source);
+        // let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
+        // if (binding) {
+        //     binding.dispose();
+        //     ArrayHelper.remove(this.bindings, (x) => x === binding);
+        // }
+        const binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc, source);
         this.bindings.push(binding);
 
         return {
