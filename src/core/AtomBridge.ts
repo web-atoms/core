@@ -63,6 +63,9 @@ export abstract class BaseElementBridge<T extends IAtomElement> {
         if (!fieldName) {
             fieldName = "m" + name[0].toUpperCase() + name.substr(1);
         }
+        if (!target.element) {
+            return;
+        }
         this.visitDescendents(target.element, (e, ac) => {
             if (ac) {
                 if (ac[fieldName] === undefined) {
@@ -401,6 +404,9 @@ export class AtomBridge {
         AtomBinder.refreshValue(target, name);
         if (!fieldName) {
             fieldName = "m" + name[0].toUpperCase() + name.substr(1);
+        }
+        if (!target.element) {
+            return;
         }
         AtomBridge.instance.visitDescendents(target.element, (e, ac) => {
             if (ac) {

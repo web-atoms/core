@@ -24,8 +24,8 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@web-atoms/module-loader": "^1.0.428",
-    "@web-atoms/unit-test": "^1.0.28",
+    "@web-atoms/module-loader": "^1.0.431",
+    "@web-atoms/unit-test": "^1.0.29",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
     "jsdom": "^15.2.1",
@@ -36,7 +36,7 @@
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
-    "@web-atoms/date-time": "^1.0.23",
+    "@web-atoms/date-time": "^1.0.26",
     "reflect-metadata": "^0.1.13"
   }
 }

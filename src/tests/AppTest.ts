@@ -39,9 +39,9 @@ export class AppTest extends AtomTest {
             message = m;
         });
 
-        app.broadcast("channel", "hellow world");
+        app.broadcast("channel", "hello world");
 
-        Assert.equals("hellow world", message);
+        Assert.equals("hello world", message);
 
         app.broadcast("nothing", "nothing");
 
