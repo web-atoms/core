@@ -7,6 +7,7 @@ import { ArrayHelper, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INo
 import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
 import Bind from "./Bind";
+import { InheritedProperty } from "./InheritedProperty";
 import { PropertyMap } from "./PropertyMap";
 import XNode from "./XNode";
 
@@ -46,70 +47,79 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public readonly element: T;
 
+    @InheritedProperty
+    public data: any;
+
+    @InheritedProperty
+    public viewModel: any;
+
+    @InheritedProperty
+    public localViewModel: any;
+
     protected pendingInits: Array<() => void>;
 
     private mInvalidated: any = 0;
 
     private mPendingPromises: { [key: string]: Promise<any> } = {};
 
-    private mData: any = undefined;
-    public get data(): any {
-        if (this.mData !== undefined) {
-            return this.mData;
-        }
-        const parent = this.parent;
-        if (parent) {
-            return parent.data;
-        }
-        return undefined;
-    }
+    // private mData: any = undefined;
+    // public get data(): any {
+    //     if (this.mData !== undefined) {
+    //         return this.mData;
+    //     }
+    //     const parent = this.parent;
+    //     if (parent) {
+    //         return parent.data;
+    //     }
+    //     return undefined;
+    // }
 
-    public set data(v: any) {
-        this.mData = v;
-        AtomBridge.refreshInherited(this, "data");
-    }
+    // public set data(v: any) {
+    //     this.mData = v;
+    //     AtomBridge.refreshInherited(this, "data");
+    // }
 
-    private mViewModel: any = undefined;
-    public get viewModel(): any {
-        if (this.mViewModel !== undefined) {
-            return this.mViewModel;
-        }
-        const parent = this.parent;
-        if (parent) {
-            return parent.viewModel;
-        }
-        return undefined;
-    }
+    // private mViewModel: any = undefined;
+    // public get viewModel(): any {
+    //     if (this.mViewModel !== undefined) {
+    //         return this.mViewModel;
+    //     }
+    //     const parent = this.parent;
+    //     if (parent) {
+    //         return parent.viewModel;
+    //     }
+    //     return undefined;
+    // }
 
-    public set viewModel(v: any) {
-        const old = this.mViewModel;
-        if (old && old.dispose) {
-            old.dispose();
-        }
-        this.mViewModel = v;
-        AtomBridge.refreshInherited(this, "viewModel");
-    }
+    // public set viewModel(v: any) {
+    //     const old = this.mViewModel;
+    //     if (old && old.dispose) {
+    //         old.dispose();
+    //     }
+    //     this.mViewModel = v;
+    //     AtomBridge.refreshInherited(this, "viewModel");
+    // }
 
-    private mLocalViewModel: any = undefined;
-    public get localViewModel(): any {
-        if (this.mLocalViewModel !== undefined) {
-            return this.mLocalViewModel;
-        }
-        const parent = this.parent;
-        if (parent) {
-            return parent.localViewModel;
-        }
-        return undefined;
-    }
+    // private mLocalViewModel: any = undefined;
+    // public get localViewModel(): any {
+    //     if (this.mLocalViewModel !== undefined) {
+    //         return this.mLocalViewModel;
+    //     }
+    //     const parent = this.parent;
+    //     if (parent) {
+    //         return parent.localViewModel;
+    //     }
+    //     return undefined;
+    // }
 
-    public set localViewModel(v: any) {
-        const old = this.mLocalViewModel;
-        if (old && old.dispose) {
-            old.dispose();
-        }
-        this.mLocalViewModel = v;
-        AtomBridge.refreshInherited(this, "localViewModel");
-    }
+    // public set localViewModel(v: any) {
+    //     const old = this.mLocalViewModel;
+    //     if (old && old.dispose) {
+    //         old.dispose();
+    //     }
+    //     this.mLocalViewModel = v;
+    //     AtomBridge.refreshInherited(this, "localViewModel");
+    // }
 
     public abstract get parent(): TC;
 
@@ -154,12 +164,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         source?: any): IDisposable {
 
         // remove existing binding if any
-        let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
-        if (binding) {
-            binding.dispose();
-            ArrayHelper.remove(this.bindings, (x) => x === binding);
-        }
-        binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc, source);
+        // let binding = this.bindings.find( (x) => x.name === name && (element ? x.element === element : true));
+        // if (binding) {
+        //     binding.dispose();
+        //     ArrayHelper.remove(this.bindings, (x) => x === binding);
+        // }
+        const binding = new PropertyBinding(this, element, name, path, twoWays, valueFunc, source);
         this.bindings.push(binding);
 
         return {
@@ -358,16 +368,16 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             AtomBridge.instance.dispose(this.element);
             (this as any).element = null;
 
-            const lvm = this.mLocalViewModel;
+            const lvm = this.localViewModel;
             if (lvm && lvm.dispose) {
                 lvm.dispose();
-                this.mLocalViewModel = null;
+                this.localViewModel = null;
             }
 
-            const vm = this.mViewModel;
+            const vm = this.viewModel;
             if (vm && vm.dispose) {
                 vm.dispose();
-                this.mViewModel = null;
+                this.viewModel = null;
             }
 
             this.disposables.dispose();

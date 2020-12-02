@@ -429,6 +429,7 @@ export interface IStyleDeclaration {
     translate?: string | null;
     unicodeBidi?: string | null;
     userSelect?: string | null;
+    userDrag?: string | null;
     verticalAlign?: string | null;
     visibility?: VisibilityType;
     webkitAlignContent?: string | null;
@@ -501,6 +502,7 @@ export interface IStyleDeclaration {
     webkitTransitionTimingFunction?: string | null;
     webkitUserModify?: string | null;
     webkitUserSelect?: string | null;
+    webkitUserDrag?: string | null;
     webkitWritingMode?: string | null;
     whiteSpace?: WhiteSpaceType;
     widows?: string | null;
@@ -516,4 +518,5 @@ export interface IStyleDeclaration {
 
     subclasses?: { [key: string]: IStyleDeclaration };
 
+    [key: string]: any;
 }

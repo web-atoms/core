@@ -37,7 +37,7 @@ export class AtomPageLink extends AtomControl {
      * In the event's detail object, you must set parameters property as shown below...
      * eventGetParameters={Bind.event((e) => e.detail.parameters = ({}))}
      */
-    public eventGerParameters: any;
+    public eventGetParameters: any;
 
     /**
      * Block opening Popup/Page again till the opened page is closed or cancelled.
