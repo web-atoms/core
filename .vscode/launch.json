@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "name": "Launch localhost",
             "type": "chrome",
@@ -15,8 +16,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "args": ["${workspaceFolder}/node_modules/@web-atoms/unit-test/index.js", "./dist/tests/"],
+            "name": "Test Selected File",
+            "args": ["${workspaceFolder}/node_modules/@web-atoms/unit-test/index.js", "./dist/tests/core/ExpressionParserTest.js"],
             "cwd": "${workspaceFolder}",
             "protocol": "inspector",
             "outFiles": [

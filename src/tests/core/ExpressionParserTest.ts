@@ -51,6 +51,18 @@ export class ExpressionParserTest extends AtomTest {
     }
 
     @Test
+    public parseLambdaES6TextPath(): void {
+        const p = parsePath("(x) => x.data.messages");
+        Assert.equals(1, p.length);
+    }
+
+    @Test
+    public parseLambdaES6TextPathWithoutParenthesis(): void {
+        const p = parsePath("x=>x.data.messages");
+        Assert.equals(1, p.length);
+    }
+
+    @Test
     public parseLambdaES6TextEmpty(): void {
         const p = parsePath(" => this.firstName + ' ' + this.lastName");
         Assert.equals(2, p.length);
