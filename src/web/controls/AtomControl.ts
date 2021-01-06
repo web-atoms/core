@@ -18,7 +18,13 @@ import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 // } else {
 //     console.log(`Platform is ${AtomBridge.platform}`);
 // }
-const bridge = AtomBridge.instance;
+
+declare var bridge;
+if (typeof bridge !== "undefined" && bridge.platform) {
+    throw new Error("AtomControl of Web should not be used with Xamarin Forms");
+}
+
+const bridgeInstance = AtomBridge.instance;
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -84,7 +90,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
     public set theme(v: AtomStyleSheet) {
         this.mTheme = v;
-        bridge.refreshInherited(this, "theme");
+        bridgeInstance.refreshInherited(this, "theme");
     }
 
     /**
@@ -134,7 +140,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public updateSize(): void {
         this.onUpdateSize();
-        bridge.visitDescendents(this.element, (e, ac) => {
+        bridgeInstance.visitDescendents(this.element, (e, ac) => {
             if (ac) {
                 ac.updateSize();
                 return false;
@@ -298,4 +304,4 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
 }
 
-bridge.controlFactory = AtomControl;
+bridgeInstance.controlFactory = AtomControl;
