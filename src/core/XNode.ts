@@ -207,7 +207,7 @@ export default class XNode {
                 name = (name as any).toString();
                 break;
             case "function":
-                return name(attributes, ... children);
+                return name(attributes || {}, ... children);
         }
         return new XNode(name as any, attributes, children);
     }
