@@ -73,7 +73,9 @@ export class JsonService {
                 return a.map( (x) => this.transformKeys(t, x));
             }
             const ra = [];
-            for (const iterator of a) {
+            // tslint:disable-next-line: prefer-for-of
+            for (let i = 0; i < a.length; i++) {
+                const iterator = a[i];
                 ra.push(this.transformKeys(t, iterator));
             }
             return ra;

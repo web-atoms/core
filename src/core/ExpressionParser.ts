@@ -2,6 +2,22 @@ import { PathList } from "./types";
 
 const viewModelParseWatchCache: {[key: string]: PathList[] } = {};
 
+function trimRegEx(t: string, r: RegExp): [boolean, string, string] {
+    const m = r.exec(t);
+    if (m && m.length) {
+        return [true, t.substring(m[0].length).trim(), m[0]];
+    }
+    return [false, t, ""];
+}
+
+function extractTill(text: string, search: string, returnOriginal: boolean = false) {
+    const index = text.indexOf(search);
+    if (index <= 0) {
+        return returnOriginal ? text : "";
+    }
+    return text.substring(0, index);
+}
+
 export function parsePath(f: any, parseThis?: boolean): PathList[] {
     let str: string = f.toString().trim();
 
@@ -18,26 +34,75 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         str = str.substr(0, str.length - 1);
     }
 
-    if (str.startsWith("function (")) {
-        str = str.substr("function (".length);
-    } else if (str.startsWith("function(")) {
-        str = str.substr("function(".length);
-    } else if (str.startsWith("(")) {
-        str = str.substr(1);
+    const functionRegEx = /^\w+\s*\(/;
+
+    const lambdaRegEx = /^\(?(\w+)?(\s?\,\s?\w+)*\)?\s?\=\>/;
+
+    let arg = "";
+
+    const original = str;
+
+    // tslint:disable-next-line: prefer-const
+    let [success, remaining] = trimRegEx(str, functionRegEx);
+    if (success) {
+        str = remaining;
+        remaining = extractTill(remaining, ")");
+        str = str.substring(remaining.length);
+        arg = extractTill(remaining, ",", true);
+    } else {
+        // this must be a lambda..
+        [success, str, remaining] = trimRegEx(str, lambdaRegEx);
+        if (success) {
+            remaining = remaining.trim();
+            remaining = remaining.substring(0, remaining.length - 2);
+            remaining = extractTill(remaining, ")", true);
+            arg = extractTill(remaining, ",", true);
+            if (arg.startsWith("(")) {
+                arg = arg.substring(1);
+            }
+        } else {
+            if (parseThis !== undefined && parseThis === false) {
+                return [];
+            } else {
+                parseThis = true;
+            }
+        }
     }
+
+    // if (str.startsWith("function (")) {
+    //     str = str.substr("function (".length);
+    // } else if (str.startsWith("function(")) {
+    //     str = str.substr("function(".length);
+    // } else {
+    //     const sb = str.indexOf("(");
+    //     if (sb !== -1) {
+    //         str = str.substr(sb + 1);
+    //     } else {
+    //         if (parseThis !== undefined && parseThis === false) {
+    //             return [];
+    //         } else {
+    //             parseThis = true;
+    //         }
+    //     }
+    // }
 
     str = str.trim();
 
-    let index: number = str.indexOf(")");
+    // const commaIndex = str.indexOf(",");
+    // if (commaIndex !== -1 && commaIndex < index) {
+    //     index = commaIndex;
+    // }
 
-    const commaIndex = str.indexOf(",");
-    if (commaIndex !== -1 && commaIndex < index) {
-        index = commaIndex;
-    }
+    // const lambdaIndex = str.indexOf("=>");
+    // if (lambdaIndex !== -1) {
+    //     index = lambdaIndex;
+    // }
 
-    const isThis: boolean = parseThis === undefined ? (index === 0 || parseThis) : parseThis;
+    const isThis: boolean = parseThis === undefined
+        ? ((arg ? false : true) || parseThis)
+        : parseThis;
 
-    const p: string = (isThis ? "(\\_this|this)" : (str.substr(0, index) || "")).trim();
+    const p: string = (isThis ? "(\\_this|this)" : (arg || "")).trim();
 
     /**
      * This is the case when there is no parameter to check and there `parseThis` is false
@@ -48,7 +113,7 @@ export function parsePath(f: any, parseThis?: boolean): PathList[] {
         return empty;
     }
 
-    str = str.substr(index + 1);
+    // str = str.substr(index + 1);
 
     const regExp: string = `(?:(\\b${p})(?:(\\.[a-zA-Z_][a-zA-Z_0-9]*)+)\\s?(?:(\\(|\\=\\=\\=|\\=\\=|\\=)?))`;
 
