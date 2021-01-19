@@ -42,6 +42,11 @@ export interface IPageOptions {
      */
     cancelToken?: CancelToken;
 
+    /**
+     * In mobile application, this will not add chrome/navigation headers on the page
+     */
+    frameLess?: boolean;
+
     /** Initializer that will be invoked when page/popup/window is created */
     onInit?: (view: any) => void;
 }
