@@ -466,7 +466,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                     const item = attr[key];
                     const isBind = objectHasOwnProperty.call(item, localBindSymbol);
                     if (isBind) {
-                        isBind(key, this, e, creator);
+                        item[isBind](key, this, e, creator);
                     } else if (objectHasOwnProperty.call(item, localXNodeSymbol)) {
                         // this is template..
                         if (item.isTemplate) {
