@@ -7,11 +7,11 @@ import { Inject } from "../di/Inject";
 import { AtomDisposableList } from "./AtomDisposableList";
 import { AtomOnce } from "./AtomOnce";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
-import Bind from "./Bind";
+import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode from "./XNode";
+import XNode, { xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -37,6 +37,13 @@ export interface IAtomComponent<T> {
     hasProperty(name: string);
     runAfterInit(f: () => void ): void;
 }
+
+const objectHasOwnProperty = Object.prototype.hasOwnProperty;
+
+const localBindSymbol = bindSymbol;
+const localXNodeSymbol = xnodeSymbol;
+
+const localBridge = AtomBridge.instance;
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
@@ -447,7 +454,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
         creator = creator || this;
 
-        const bridge = AtomBridge.instance;
         const app = this.app;
 
         const renderFirst = AtomBridge.platform === "xf";
@@ -458,9 +464,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             for (const key in attr) {
                 if (attr.hasOwnProperty(key)) {
                     const item = attr[key];
-                    if (item instanceof Bind) {
-                        item.setupFunction(key, item, this, e, creator);
-                    } else if (item instanceof XNode) {
+                    const isBind = objectHasOwnProperty.call(item, localBindSymbol);
+                    if (isBind) {
+                        isBind(key, this, e, creator);
+                    } else if (objectHasOwnProperty.call(item, localXNodeSymbol)) {
                         // this is template..
                         if (item.isTemplate) {
                             this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
@@ -496,7 +503,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                     // in Xamarin.Forms certain properties are required to be
                     // set in advance, so we append the element after setting
                     // all children properties
-                    (bridge as any).append(e, iterator.name, pc.element);
+                    (localBridge as any).append(e, iterator.name, pc.element);
                 }
                 continue;
             }
