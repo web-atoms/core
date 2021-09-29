@@ -245,7 +245,7 @@ export default class Bind {
             const lists = parsePathLists(sourcePath);
             if (lists.combined.length) {
                 // combined = lists.combined;
-                throw new Error("Cannot have combined binding for two ways")
+                throw new Error("Cannot have combined binding for two ways");
             }
             if (lists.pathList.length) {
                 pathList = lists.pathList;
