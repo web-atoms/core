@@ -43,7 +43,7 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
 
-const localBridge = AtomBridge.instance;
+const localBridge = AtomBridge;
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
@@ -503,7 +503,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                     // in Xamarin.Forms certain properties are required to be
                     // set in advance, so we append the element after setting
                     // all children properties
-                    (localBridge as any).append(e, iterator.name, pc.element);
+                    (localBridge as any).instance.append(e, iterator.name, pc.element);
                 }
                 continue;
             }
