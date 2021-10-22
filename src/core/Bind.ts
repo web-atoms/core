@@ -23,6 +23,8 @@ const isEvent = /^event/i;
 
 export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => any;
 
+export type bindingFunctionCommand<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => (p) => void;
+
 // function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
 //     control.runAfterInit(() => {
 //         control.setLocalValue(e, name, b.sourcePath(control, e));
@@ -177,6 +179,25 @@ export default class Bind {
                 });
             }
         };
+    }
+
+    public static command<T>(action: (p: T) => any) {
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any) {
+                e[name] = (p) => {
+                    const r = action(p);
+                    if (r.then) {
+                        r.catch((er) => {
+                            console.error(er);
+                        });
+                    }
+                };
+            }
+        };
+    }
+
+    public static oneWayCommand<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunctionCommand<T>) {
+        return this.oneWay(sourcePath);
     }
 
     public static oneWay<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): any {
