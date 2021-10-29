@@ -36,7 +36,11 @@ export default class WebApp extends App {
         const ce = new ChildEnumerator(pe);
         const de: HTMLElement[] = [];
         while (ce.next()) {
-            de.push(ce.current);
+            const current = ce.current;
+            if (current.style.display === "none") {
+                continue;
+            }
+            de.push(current);
         }
         for (const iterator of de) {
             iterator.remove();
