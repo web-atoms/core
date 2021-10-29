@@ -98,13 +98,14 @@ export default class WebApp extends App {
             });
         });
 
-        // registering font awesome
-        this.installStyleSheet("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.9.0/css/all.css");
-        this.installStyleSheet({
-            href: "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css",
-            integrity: "sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T",
-            crossOrigin: "anonymous"
-        });
+        // following must be done automatically by the user as we may need different and newer version
+        // // registering font awesome
+        // this.installStyleSheet("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.9.0/css/all.css");
+        // this.installStyleSheet({
+        //     href: "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css",
+        //     integrity: "sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T",
+        //     crossOrigin: "anonymous"
+        // });
     }
 
     public installStyleSheet(ssConfig: string |
