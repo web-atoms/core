@@ -37,7 +37,9 @@ export default class WebApp extends App {
         const de: HTMLElement[] = [];
         while (ce.next()) {
             const current = ce.current;
-            if (current.style.display === "none") {
+            if (current.tagName === "SCRIPT"
+            || current.tagName === "LINK"
+            || current.style.display === "none") {
                 continue;
             }
             de.push(current);
