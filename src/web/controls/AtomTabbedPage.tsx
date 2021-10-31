@@ -68,8 +68,6 @@ export class AtomTabbedPage extends AtomControl
 
         this.invalidate();
 
-        this.windowService.currentTarget = value.element;
-
         AtomBinder.refreshValue(this, "selectedPage");
     }
 
@@ -116,6 +114,7 @@ export class AtomTabbedPage extends AtomControl
         </section>);
         this.registerDisposable(this.windowService.registerHostForWindow((e) => this.getParentHost(e)));
 
+        this.windowService.currentTarget = this.presenter;
     }
 
     private getParentHost(e: HTMLElement): HTMLElement {

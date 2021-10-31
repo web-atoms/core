@@ -389,7 +389,7 @@ export class WindowService extends NavigationService {
             }
         } else {
 
-            const eHost = this.getHostForElement();
+            const eHost = options?.modal ? null : this.getHostForElement();
             if (eHost) {
                 eHost.appendChild(e);
             } else {
