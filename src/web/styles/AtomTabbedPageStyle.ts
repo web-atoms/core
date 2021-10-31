@@ -43,6 +43,7 @@ export class AtomTabbedPageStyle extends AtomStyle {
                     left: 0,
                     top: 0,
                     right: 0,
+                    overflow: "hidden",
                     height: "30px",
                     subclasses: {
                         " .tab-item": this.tabItem,
