@@ -255,6 +255,17 @@ class AtomTabViewModel extends AtomViewModel {
         const ch = this.owner.tabChannelName;
         this.storageKey = `${this.app.contextId}_${ch}`;
 
+        const d = this.navigationService.registerNavigationHook(
+            (uri, { target }) => {
+                if (
+                    target === this.owner.tabChannelName ||
+                    (uri.protocol === "tab:" && uri.host === this.owner.tabChannelName)) {
+                    return this.loadPageForReturn(uri);
+                }
+            }
+        );
+        this.registerDisposable(d);
+
         const urls = sessionStorage.getItem(this.storageKey) || "null";
         const urlState: ITabState = JSON.parse(urls) || {
             name,
@@ -273,17 +284,6 @@ class AtomTabViewModel extends AtomViewModel {
         if (!this.selectedPage) {
             this.selectedPage = this.pages[0];
         }
-
-        const d = this.navigationService.registerNavigationHook(
-            (uri, { target }) => {
-                if (
-                    target === this.owner.tabChannelName ||
-                    (uri.protocol === "tab:" && uri.host === this.owner.tabChannelName)) {
-                    return this.loadPageForReturn(uri);
-                }
-            }
-        );
-        this.registerDisposable(d);
     }
 
     @Watch
