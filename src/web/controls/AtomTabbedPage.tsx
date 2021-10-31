@@ -129,7 +129,6 @@ export class AtomTabbedPage extends AtomControl
     }
 }
 
-
 interface ITabState {
     urls: string[];
     selectedUrl: string;
