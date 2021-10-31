@@ -20,7 +20,7 @@ export class AtomTabbedPageStyle extends AtomStyle {
             top: 0,
             bottom: 0,
             subclasses: {
-                " .page-host": {
+                " .page-host > *": {
                     position: "absolute",
                     left: 0,
                     right: 0,
