@@ -120,7 +120,7 @@ export class AtomTabbedPage extends AtomControl
     private getParentHost(e: HTMLElement): HTMLElement {
         const pe = e._logicalParent || e.parentElement;
         if (pe === this.presenter) {
-            return e;
+            return e.parentElement;
         }
         if (!pe) {
             return null;
