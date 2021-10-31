@@ -114,27 +114,6 @@ export class AtomTabbedPage extends AtomControl
                 class="presenter page-host"
                 presenter={Bind.presenter("presenter")}></div>
         </section>);
-
-        // const ul = new AtomItemsControl(this.app, document.createElement("div"));
-        // this.append(ul);
-        // ul.allowMultipleSelection = false;
-        // ul.allowSelectFirst = true;
-        // ul.bind(ul.element, "itemTemplate", [["this", "titleTemplate"]], false, null, this);
-        // ul.bind(ul.element, "items", [["localViewModel", "pages"]]);
-        // ul.bind(ul.element, "selectedItem", [["localViewModel", "selectedPage"]], true);
-
-        // const presenter = new AtomContentControl(this.app, document.createElement("section"));
-        // this.append(presenter);
-        // presenter.setPrimitiveValue(presenter.element, "row", "1");
-        // presenter.bind(presenter.element, "content", [["localViewModel", "selectedPage"]]);
-
-        // this.presenter = document.createElement("div");
-        // this.append(this.presenter);
-        // this.presenter.classList.add("presenter");
-        // (this.presenter as any).row = "1";
-
-        // this.bind(this.element, "selectedPage", [["localViewModel", "selectedPage"]]);
-
         this.registerDisposable(this.windowService.registerHostForWindow((e) => this.getParentHost(e)));
 
     }
@@ -151,48 +130,6 @@ export class AtomTabbedPage extends AtomControl
     }
 }
 
-// // tslint:disable-next-line:variable-name
-// function TitleItemTemplateCreator(__creator: any): IClassOf<AtomControl> {
-//     return class TitleItemTemplate extends AtomControl {
-
-//         protected create(): void {
-
-//             // this.bind(this.element, "text", [["data", "title"]]);
-//             this.bind(this.element, "styleClass", [
-//                     ["data"],
-//                     ["localViewModel", "selectedPage"],
-//                     ["this", "controlStyle", "tabItem"],
-//                     ["this", "controlStyle", "selectedTabItem"]
-//                 ],
-//                 false,
-//                 (data, selectedPage, tabItem, selectedTabItem) => ({
-//                     [tabItem.className]: true,
-//                     [selectedTabItem.className]: data === selectedPage
-//                 }),
-//                 __creator);
-
-//             const divTitle = document.createElement("div");
-//             this.append(divTitle);
-
-//             this.bind(divTitle, "text", [["data", "title"]]);
-
-//             const closeButton = document.createElement("img");
-//             this.bind(closeButton, "styleClass", [["this", "controlStyle", "closeButton"]], false, null, __creator);
-//             // closeButton.textContent = "x";
-//             this.append(closeButton);
-
-//             this.bindEvent(closeButton, "click", () => __creator.localViewModel.closePage(this.data));
-
-//             this.bindEvent(divTitle, "click" , () => {
-//                 this.localViewModel.selectedPage = this.data;
-//             });
-//         }
-//     };
-// }
-
-// declare class UMD {
-//     public static resolveViewClassAsync(path: string): Promise<IClassOf<AtomControl>>;
-// }
 
 interface ITabState {
     urls: string[];
@@ -368,11 +305,6 @@ class AtomTabViewModel extends AtomViewModel {
                 return;
             }
             this.pages.remove(page);
-            // const pe = e.parentElement;
-            // if (pe) {
-            //     pe.remove();
-            // }
-            // e.innerHTML = "";
             e.remove();
             ws.currentTarget = null;
             if (this.selectedPage === page) {

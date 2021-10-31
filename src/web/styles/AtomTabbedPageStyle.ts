@@ -24,7 +24,7 @@ export class AtomTabbedPageStyle extends AtomStyle {
                     position: "absolute",
                     left: 0,
                     right: 0,
-                    top: 0,
+                    top: "30px",
                     bottom: 0,
                     overflow: "auto",
                     subclasses: {
