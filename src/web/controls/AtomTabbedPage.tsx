@@ -25,7 +25,7 @@ import { AtomPage } from "./AtomPage";
 
 const BindPage = Bind.forData<AtomPage>();
 
-export class AtomTabbedPage extends AtomGridView
+export class AtomTabbedPage extends AtomControl
     implements INotifyPropertyChanged {
 
     public static titleTemplate = XNode.prepare("titleTemplate", true, true);
@@ -74,7 +74,7 @@ export class AtomTabbedPage extends AtomGridView
     }
 
     constructor(app: App, e?: HTMLElement) {
-        super(app, e || document.createElement("section"));
+        super(app, e ?? document.createElement("section"));
     }
 
     protected preCreate(): void {
@@ -87,8 +87,6 @@ export class AtomTabbedPage extends AtomGridView
             this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
         });
         this.localViewModel = this.resolve(AtomTabViewModel, () => ({ owner: this }));
-        this.columns = "*";
-        this.rows = "30,*";
 
         this.render(<section
             selectedPage={Bind.twoWays(() => this.localViewModel.selectedPage)}>
@@ -106,13 +104,13 @@ export class AtomTabbedPage extends AtomGridView
                 </div>
             </AtomTabbedPage.titleTemplate>
             <AtomItemsControl
+                class="tabs"
                 allowMultipleSelection={false}
                 allowSelectFirst={true}
                 items={Bind.oneWay(() => this.localViewModel.pages)}
                 selectedItem={Bind.twoWays(() => this.localViewModel.selectedPage)}
                 itemTemplate={Bind.oneWay(() => this.titleTemplate)}></AtomItemsControl>
             <div
-                row="1"
                 class="presenter page-host"
                 presenter={Bind.presenter("presenter")}></div>
         </section>);
