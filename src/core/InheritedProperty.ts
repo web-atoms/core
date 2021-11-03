@@ -22,13 +22,17 @@ export function InheritedProperty(target: any, key: string): any {
 
     // property getter
     const getter: () => any = function(): any {
-        const p = this[keyName];
-        if (p !== undefined) {
-            return p;
-        }
-        if (this.element && this.parent) {
-            return this.parent[key];
-        }
+        let start = this;
+        do {
+            const p = start[keyName];
+            if (typeof p !== "undefined") {
+                return p;
+            }
+            if (!start.element) {
+                break;
+            }
+            start = start.parent;
+        } while (start);
         return undefined;
     };
 

@@ -59,14 +59,30 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     public get parent(): AtomXFControl {
-        return AtomBridge.instance.atomParent(this.element, true) as any;
+        let e = this.element as any;
+        e = e.parent;
+        while (e) {
+            const ac = e.atomControl;
+            if (ac) {
+                return ac;
+            }
+            e = e.parent;
+        }
     }
 
     private mTheme: AtomStyleSheet;
     private mCachedTheme: AtomStyleSheet;
 
     public atomParent(e: IAtomElement): AtomXFControl {
-        return AtomBridge.instance.atomParent(e, false) as any;
+        // return AtomBridge.instance.atomParent(e, false) as any;
+        let e1 = e as any;
+        while (e1) {
+            const ac = e1.atomControl;
+            if (ac) {
+                return ac;
+            }
+            e1 = e1.parent;
+        }
     }
 
     public append(element: any): AtomXFControl {
@@ -74,11 +90,11 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         return this;
     }
 
-    public dispose(e?: IAtomElement): void {
-        const el = this.element;
-        super.dispose(e);
-        AtomBridge.instance.dispose(el);
-    }
+    // public dispose(e?: IAtomElement): void {
+    //     const el = this.element;
+    //     super.dispose(e);
+    //     AtomBridge.instance.dispose(el);
+    // }
 
     public invokeEvent(event: { type: string, detail?: any }): void {
         (AtomBridge.instance as any).invokeEvent(this.element, event.type, event);

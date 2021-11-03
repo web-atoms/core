@@ -97,11 +97,17 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
      * Gets Parent AtomControl of this control.
      */
     public get parent(): AtomControl {
-        const ep = this.element._logicalParent || this.element.parentElement;
-        if (!ep) {
+        let e = this.element._logicalParent || this.element.parentElement;
+        if (!e) {
             return null;
         }
-        return this.atomParent(ep);
+        while (e) {
+            const ac = e.atomControl;
+            if (ac) {
+                return ac;
+            }
+            e = e._logicalParent || e.parentElement;
+        }
     }
 
     constructor(app: App, e?: HTMLElement) {
@@ -119,14 +125,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     public atomParent(e: HTMLElement): AtomControl {
-        if (!e) {
-            return;
+        while (e) {
+            const ac = e.atomControl;
+            if (ac) {
+                return ac;
+            }
+            e = e._logicalParent ?? e.parentElement;
         }
-        const ep = e;
-        if (ep.atomControl) {
-            return ep.atomControl;
-        }
-        return this.atomParent(ep._logicalParent || ep.parentElement as HTMLElement);
     }
 
     public append(element: AtomControl | HTMLElement | Text): AtomControl {

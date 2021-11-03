@@ -155,7 +155,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         this.bindings = [];
         this.eventHandlers = [];
         this.element = element as any;
-        AtomBridge.instance.attachControl(this.element, this as any);
+        // AtomBridge.instance.attachControl(this.element, this as any);
+        (this.element as any).atomControl = this;
         const a = this.beginEdit();
         this.preCreate();
         this.create();
@@ -374,7 +375,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             this.bindings.length = 0;
             (this as any).bindings = null;
-            AtomBridge.instance.dispose(this.element);
+            // AtomBridge.instance.dispose(this.element);
+            const e1 = this.element as any;
+            if (typeof e1.dispose === "function") {
+                e1.dispose();
+            }
             (this as any).element = null;
 
             const lvm = this.localViewModel;
