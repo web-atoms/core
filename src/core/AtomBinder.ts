@@ -50,7 +50,16 @@ export class AtomBinder {
         }
 
         const tw = target as IWatchableObject;
-        const bindables = (tw[symbolBindable] ?? (tw[symbolBindable] = {}));
+        let bindables = tw[symbolBindable];
+        if (bindables === undefined) {
+            bindables = {};
+            Object.defineProperty(tw, symbolBindable, {
+                value: bindables,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            });
+        }
         // if (!tw._$_bindable) {
         //     tw._$_bindable = {};
         // }
@@ -107,7 +116,16 @@ export class AtomBinder {
         if (target == null) {
             return null;
         }
-        const handlers = target[symbolHandlers] ?? ( target[symbolHandlers] = {});
+        let handlers = target[symbolHandlers];
+        if (handlers === undefined) {
+            handlers = {};
+            Object.defineProperty(target, symbolHandlers, {
+                value: handlers,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            });
+        }
         // if (!handlers) {
         //     handlers = {};
         //     target._$_handlers = handlers;
