@@ -118,14 +118,17 @@ export class AtomTabbedPage extends AtomControl
     }
 
     private getParentHost(e: HTMLElement): HTMLElement {
-        const pe = e._logicalParent || e.parentElement;
-        if (pe === this.presenter) {
-            return e.parentElement;
+        let start = e;
+        while (e) {
+            const pe = e._logicalParent || e.parentElement;
+            if (pe === this.presenter) {
+                return e.parentElement;
+            }
+            if (!pe) {
+                return null;
+            }
+            start = pe;
         }
-        if (!pe) {
-            return null;
-        }
-        return this.getParentHost(pe);
     }
 }
 
@@ -256,12 +259,14 @@ class AtomTabViewModel extends AtomViewModel {
         doNotSetSelected: boolean): Promise<AtomPage> {
 
         const uriString = url.toString();
+        const ws = this.navigationService as WindowService;
 
         const existing = this.pages.find((x) => x.tag === uriString);
         if (existing) {
             if (!doNotSetSelected) {
                 if (this.selectedPage !== existing) {
                     this.selectedPage = existing;
+                    // ws.currentTarget = existing.element;
                 }
             }
             return existing;
@@ -293,9 +298,7 @@ class AtomTabViewModel extends AtomViewModel {
 
         const e = page.element;
 
-        const ws = this.navigationService as WindowService;
-
-        ws.currentTarget = e;
+        // ws.currentTarget = e;
 
         disposables.add(() => {
             const index = this.pages.indexOf(page);
