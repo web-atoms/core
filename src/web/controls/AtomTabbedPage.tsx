@@ -109,7 +109,7 @@ export class AtomTabbedPage extends AtomControl
                 selectedItem={Bind.twoWays(() => this.localViewModel.selectedPage)}
                 itemTemplate={Bind.oneWay(() => this.titleTemplate)}></AtomItemsControl>
             <div
-                class="presenter page-host"
+                class="presenter page-host atom-tabbed-page-host"
                 presenter={Bind.presenter("presenter")}></div>
         </section>);
         this.registerDisposable(this.windowService.registerHostForWindow((e) => this.getParentHost(e)));
