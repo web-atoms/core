@@ -11,22 +11,31 @@ const Once = (timeInMS: number = 100) =>
                 const oldMethod = vm[key] as Function;
                 const keyTimer = vm[timerSymbol] ??= {};
 
+                let running = false;
+
                 // tslint:disable-next-line:only-arrow-functions
-                vm[key] = async ( ... a: any[]) => {
+                vm[key] = ( ... a: any[]) => {
+                    if (running) {
+                        return;
+                    }
                     const pending = keyTimer[key];
                     if (pending) {
                         clearTimeout(pending);
                     }
                     keyTimer[key] = setTimeout((... b: any[]) => {
+                        running = true;
                         delete keyTimer[key];
                         const r = oldMethod.apply(vm, b);
                         if (r && r.then) {
                             r.then(() => {
-                                // do nothing...
+                                running = false;
                             }, (e) => {
+                                running = false;
                                 // tslint:disable-next-line: no-console
                                 console.warn(e);
                             });
+                        } else {
+                            running = false;
                         }
                     }, timeInMS, ... a);
                 };
