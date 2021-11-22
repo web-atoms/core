@@ -469,20 +469,23 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             for (const key in attr) {
                 if (attr.hasOwnProperty(key)) {
                     const item = attr[key];
-                    const isBind = objectHasOwnProperty.call(item, localBindSymbol);
-                    if (isBind) {
-                        item[localBindSymbol](key, this, e, creator);
-                    } else if (objectHasOwnProperty.call(item, localXNodeSymbol)) {
-                        // this is template..
-                        if (item.isTemplate) {
-                            this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
-                        } else {
-                            const child = AtomBridge.createNode(item, app);
-                            this.setLocalValue(e, key, child.element);
+                    const isObject = typeof item === "object";
+                    if (isObject) {
+                        if (objectHasOwnProperty.call(item, localBindSymbol)) {
+                            item[localBindSymbol](key, this, e, creator);
+                            continue;
                         }
-                    } else {
-                        this.setLocalValue(e, key, item);
+                        if (objectHasOwnProperty.call(item, localXNodeSymbol)) {
+                            if (item.isTemplate) {
+                                this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
+                            } else {
+                                const child = AtomBridge.createNode(item, app);
+                                this.setLocalValue(e, key, child.element);
+                            }
+                            continue;
+                        }
                     }
+                    this.setLocalValue(e, key, item);
                 }
             }
         }
