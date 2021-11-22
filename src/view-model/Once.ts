@@ -9,7 +9,11 @@ const Once = (timeInMS: number = 100) =>
             registerInit(target, (vm) => {
                 // tslint:disable-next-line: ban-types
                 const oldMethod = vm[key] as Function;
-                const keyTimer = vm[timerSymbol] ??= {};
+                let keyTimer = vm[timerSymbol];
+                if (typeof keyTimer === "undefined") {
+                    keyTimer = {};
+                    vm[timerSymbol] = keyTimer;
+                }
 
                 let running = false;
 
