@@ -1,3 +1,4 @@
+import Colors from "../../core/Colors";
 import DISingleton from "../../di/DISingleton";
 import { AtomControl } from "../controls/AtomControl";
 import { AtomStyle } from "../styles/AtomStyle";
@@ -9,6 +10,7 @@ export class PopupStyle extends AtomStyle {
     public get root(): IStyleDeclaration {
         return {
             padding: "5px",
+            backgroundColor: Colors.white,
             border: "solid 1px lightgray",
             borderRadius: "5px",
             boxShadow: "rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;",
@@ -56,7 +58,7 @@ export default class PopupService {
                 // we have reached top...
                 break;
             }
-            if (host.classList.contains("atom-tabbed-page-host")) {
+            if (host.classList.contains("page-host")) {
                 // we have reached popup host...
                 host = current;
                 break;
@@ -72,7 +74,7 @@ export default class PopupService {
         }
 
         const style = container.element.style;
-        style.display = "absolute";
+        style.position = "absolute";
         style.left = offset.x + "px";
         style.top = offset.y + "px";
         style.zIndex = "1000";
