@@ -44,7 +44,7 @@ export default class PopupService {
         popup[containerKey] = container;
 
         const offset = {
-            x: 0,
+            x: opener.offsetLeft,
             y: opener.offsetHeight,
             handler: null
         };
