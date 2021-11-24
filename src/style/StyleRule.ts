@@ -7,7 +7,7 @@ export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "cen
 export type FloatPosition = "" | "default" | "none" | "left" | "right" | "initial" | "inherit";
 export type OverFlowType = "" | "default" | "visible" | "hidden" | "scroll" | "auto";
 export type ItemAlignType =  "" | "default" | "stretch" | "center" |"flex-start" | "flex-end" | "baseline" |
-"initial" | "inherit";
+"initial" | "inherit" | "start" | "end";
 export type SelfAlignType =  "" | "default" | "auto" | "stretch" | "center" |"flex-start" | "flex-end" | "baseline" |
 "initial" | "inherit";
 export type ContentAlignType =  "" | "default" | "stretch" | "center" |"flex-start" | "flex-end" | "space-between" |
@@ -946,6 +946,7 @@ export class AtomStyleRules {
 
     public fontSize(value: number): AtomStyleRules;
     public fontSize(value: TextSize): AtomStyleRules;
+    public fontSize(value: string): AtomStyleRules;
     public fontSize(value: number | string | TextSize, unit: Units = "px") {
         if (value !== undefined && value !== null) {
             this.style.fontSize = toUnit(value, unit);

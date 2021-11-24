@@ -32,11 +32,31 @@ class PopupContainer extends AtomControl {
 
 }
 
+export interface IPopupOptions {
+    /**
+     * Popup alignment, default is left, auto isn't yet supported
+     */
+    alignment?: "left" | "right" | "auto";
+    popupStyle?: PopupStyle;
+}
+
 @DISingleton({})
 export default class PopupService {
 
-    public show(opener: HTMLElement, popup: AtomControl, popupStyle?: PopupStyle) {
+    /**
+     * Display given popup attached to given opener and returns
+     * disposable that can be used to dispose the popup
+     * @param opener Element which opens this popup
+     * @param popup Popup Control
+     * @param options IPopupOptions
+     * @returns IDisposable
+     */
+    public show(
+        opener: HTMLElement,
+        popup: AtomControl,
+        options?: IPopupOptions) {
         const container = new PopupContainer(popup.app);
+        const popupStyle = options?.popupStyle;
         if (popupStyle) {
             container.controlStyle = popupStyle;
         }
@@ -75,7 +95,11 @@ export default class PopupService {
 
         const style = container.element.style;
         style.position = "absolute";
-        style.left = offset.x + "px";
+        if (options?.alignment === "right") {
+            style.right = `${(opener.offsetLeft + opener.offsetWidth)}px`;
+        } else {
+            style.left = offset.x + "px";
+        }
         style.top = offset.y + "px";
         style.zIndex = "1000";
 
@@ -100,6 +124,12 @@ export default class PopupService {
         };
 
         host.addEventListener("click", offset.handler);
+
+        return {
+            dispose: () => {
+                this.hide(popup);
+            }
+        };
     }
 
     public hide(popup: AtomControl) {
