@@ -258,7 +258,7 @@ export class WindowService extends NavigationService {
     }
 
     public refresh(): void {
-        location.reload(true);
+        location.reload();
     }
 
     public getHostForElement(): HTMLElement {

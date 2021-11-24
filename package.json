@@ -33,7 +33,6 @@
     "path": "^0.12.7",
     "remap-istanbul": "^0.11.1",
     "test-dom": "^1.0.0",
-    "typedoc": "^0.15.8",
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
