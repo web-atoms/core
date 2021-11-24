@@ -478,10 +478,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         if (objectHasOwnProperty.call(item, localXNodeSymbol)) {
                             if (item.isTemplate) {
                                 this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
-                            } else {
-                                const child = AtomBridge.createNode(item, app);
-                                this.setLocalValue(e, key, child.element);
+                                continue;
                             }
+
+                            const child = AtomBridge.createNode(item, app);
+                            this.setLocalValue(e, key, child.element);
                             continue;
                         }
                     }

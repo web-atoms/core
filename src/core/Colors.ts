@@ -286,4 +286,5 @@ export default class Colors {
     public static whiteSmoke: ColorItem = new ColorItem ( "#f5f5f5", "whitesmoke" ) ;
     public static yellowGreen: ColorItem = new ColorItem ( "#9acd32", "yellowgreen" ) ;
     public static rebeccaPurple: ColorItem = new ColorItem ( "#663399", "rebeccapurple" );
+    public static transparent: ColorItem = new ColorItem("#00000000", "transparent");
 }
