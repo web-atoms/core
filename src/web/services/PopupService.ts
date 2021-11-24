@@ -103,13 +103,17 @@ export default class PopupService {
             if (offset.x + opener.offsetWidth < (host.offsetWidth / 2)) {
                 style.left = offset.x + "px";
             } else {
-                style.right = `${(offset.x + opener.offsetWidth)}px`;
+                style.right = `${(host.offsetWidth - offset.x + opener.offsetWidth)}px`;
             }
 
-            if (offset.y + opener.offsetHeight < host.offsetHeight / 2) {
+            const hostHeight = host.offsetHeight
+                ?? host.clientHeight
+                ?? (host.firstElementChild as HTMLElement).offsetHeight;
+
+            if (offset.y + opener.offsetHeight < hostHeight / 2) {
                 style.top = offset.y + "px";
             } else {
-                style.bottom = `${offset.y + opener.offsetHeight}px`;
+                style.bottom = `${hostHeight - offset.y + opener.offsetHeight}px`;
             }
 
         } else {
