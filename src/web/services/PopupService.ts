@@ -107,8 +107,8 @@ export default class PopupService {
             }
 
             const hostHeight = host.offsetHeight
-                ?? host.clientHeight
-                ?? (host.firstElementChild as HTMLElement).offsetHeight;
+                || host.clientHeight
+                || (host.firstElementChild as HTMLElement).offsetHeight;
 
             if (offset.y + opener.offsetHeight < hostHeight / 2) {
                 style.top = offset.y + "px";
