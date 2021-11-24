@@ -43,6 +43,8 @@ export interface IPopupOptions {
 @DISingleton({})
 export default class PopupService {
 
+    private id = 1001;
+
     /**
      * Display given popup attached to given opener and returns
      * disposable that can be used to dispose the popup
@@ -101,7 +103,7 @@ export default class PopupService {
             style.left = offset.x + "px";
         }
         style.top = offset.y + "px";
-        style.zIndex = "1000";
+        style.zIndex = `${this.id++}`;
 
         host.appendChild(container.element);
         container.registerDisposable({
