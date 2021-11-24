@@ -118,7 +118,6 @@ export class AtomTabbedPage extends AtomControl
     }
 
     private getParentHost(e: HTMLElement): HTMLElement {
-        let start = e;
         while (e) {
             const pe = e._logicalParent || e.parentElement;
             if (pe === this.presenter) {
@@ -127,7 +126,7 @@ export class AtomTabbedPage extends AtomControl
             if (!pe) {
                 return null;
             }
-            start = pe;
+            e = pe;
         }
     }
 }
