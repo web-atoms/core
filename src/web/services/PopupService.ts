@@ -95,6 +95,10 @@ export default class PopupService {
             return;
         }
 
+        const hostHeight = host.offsetHeight
+        || host.clientHeight
+        || (host.firstElementChild as HTMLElement).offsetHeight;
+
         const style = container.element.style;
         style.position = "absolute";
         if (!options || options?.alignment === "auto") {
@@ -103,22 +107,18 @@ export default class PopupService {
             if (offset.x + opener.offsetWidth < (host.offsetWidth / 2)) {
                 style.left = offset.x + "px";
             } else {
-                style.right = `${(host.offsetWidth - offset.x + opener.offsetWidth)}px`;
+                style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
             }
-
-            const hostHeight = host.offsetHeight
-                || host.clientHeight
-                || (host.firstElementChild as HTMLElement).offsetHeight;
 
             if (offset.y + opener.offsetHeight < hostHeight / 2) {
                 style.top = offset.y + "px";
             } else {
-                style.bottom = `${hostHeight - offset.y + opener.offsetHeight}px`;
+                style.bottom = `${hostHeight - (offset.y + opener.offsetHeight)}px`;
             }
 
         } else {
             if (options?.alignment === "right") {
-                style.right = `${(opener.offsetLeft + opener.offsetWidth)}px`;
+                style.right = `${(host.offsetWidth - (opener.offsetLeft + opener.offsetWidth))}px`;
             } else {
                 style.left = offset.x + "px";
             }
