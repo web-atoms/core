@@ -34,9 +34,9 @@ class PopupContainer extends AtomControl {
 
 export interface IPopupOptions {
     /**
-     * Popup alignment, default is left, auto isn't yet supported
+     * Popup alignment, default is auto starting with right and below
      */
-    alignment?: "left" | "right" | "auto";
+    alignment?: "left" | "right" | "auto" | "above" | "below";
     popupStyle?: PopupStyle;
 }
 
@@ -97,12 +97,28 @@ export default class PopupService {
 
         const style = container.element.style;
         style.position = "absolute";
-        if (options?.alignment === "right") {
-            style.right = `${(opener.offsetLeft + opener.offsetWidth)}px`;
+        if (!options || options?.alignment === "auto") {
+
+            // check where is more space??
+            if (offset.x + opener.offsetWidth < (host.offsetWidth / 2)) {
+                style.left = offset.x + "px";
+            } else {
+                style.right = `${(offset.x + opener.offsetWidth)}px`;
+            }
+
+            if (offset.y + opener.offsetHeight < host.offsetHeight / 2) {
+                style.top = offset.y + "px";
+            } else {
+                style.bottom = `${offset.y + opener.offsetHeight}px`;
+            }
+
         } else {
-            style.left = offset.x + "px";
+            if (options?.alignment === "right") {
+                style.right = `${(opener.offsetLeft + opener.offsetWidth)}px`;
+            } else {
+                style.left = offset.x + "px";
+            }
         }
-        style.top = offset.y + "px";
         style.zIndex = `${this.id++}`;
 
         host.appendChild(container.element);
