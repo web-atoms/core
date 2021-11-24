@@ -28,7 +28,7 @@ jobs:
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      - run: node ./typedoc.js  --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name @web-atoms/core --excludePrivate --excludeNotExported --exclude "**/tests/**/*"
+      - run: npx typedoc  --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name @web-atoms/core --excludePrivate --excludeNotExported --exclude "**/tests/**/*"
       - run: node ./core-docs/change-name.js
       - run: npm publish --access public
         env:
