@@ -3027,6 +3027,43 @@ export class AtomStyleRules {
         const list = createStyleText(this.name, [], this.style);
         return list.join("\n");
     }
+
+    public hideNested( ... names: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const name of names) {
+            const n = " " + name;
+            const hide = sc[n] ??= {};
+            hide.display = "none";
+        }
+    }
+
+    public showNested( ... names: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const name of names) {
+            const n = " " + name;
+            const hide = sc[n] ??= {};
+            hide.display = "initial";
+        }
+    }
+
+    public hideChild( ... names: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const name of names) {
+            const n = " > " + name;
+            const hide = sc[n] ??= {};
+            hide.display = "none";
+        }
+    }
+
+    public showChild( ... names: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const name of names) {
+            const n = " > " + name;
+            const hide = sc[n] ??= {};
+            hide.display = "initial";
+        }
+    }
+
 }
 
 /**
