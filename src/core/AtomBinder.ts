@@ -1,12 +1,15 @@
 import { ArrayHelper, IDisposable  } from "./types";
 
+export const symbolHandlers = Symbol.for("handlers");
+export const symbolBindable = Symbol.for("bindable");
+
 export type WatchFunction = (target: any, key: string, index?: number, item?: any) => void;
 export interface IWatchFunctionCollection {
     [key: string]: WatchFunction[];
 }
 export interface IWatchableObject {
-    _$_handlers?: IWatchFunctionCollection;
-    _$_bindable?: { [key: string]: 0 | 1 };
+    [symbolHandlers]?: IWatchFunctionCollection;
+    [symbolBindable]?: {[key: string]: 0 | 1};
 }
 
 export class AtomBinder {
@@ -47,15 +50,25 @@ export class AtomBinder {
         }
 
         const tw = target as IWatchableObject;
-        if (!tw._$_bindable) {
-            tw._$_bindable = {};
+        let bindables = tw[symbolBindable];
+        if (bindables === undefined) {
+            bindables = {};
+            Object.defineProperty(tw, symbolBindable, {
+                value: bindables,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            });
         }
-        if (!tw._$_bindable[key]) {
-            tw._$_bindable[key] = 1;
+        // if (!tw._$_bindable) {
+        //     tw._$_bindable = {};
+        // }
+        if (!bindables[key]) {
+            bindables[key] = 1;
 
             const o = target[key];
 
-            const nk = `_$_${key}`;
+            const nk = Symbol.for(key);
             target[nk] = o;
 
             const set = function(v: any) {
@@ -103,11 +116,20 @@ export class AtomBinder {
         if (target == null) {
             return null;
         }
-        let handlers = target._$_handlers;
-        if (!handlers) {
+        let handlers = target[symbolHandlers];
+        if (handlers === undefined) {
             handlers = {};
-            target._$_handlers = handlers;
+            Object.defineProperty(target, symbolHandlers, {
+                value: handlers,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            });
         }
+        // if (!handlers) {
+        //     handlers = {};
+        //     target._$_handlers = handlers;
+        // }
         let handlersForKey = handlers[key];
         if (handlersForKey === undefined || handlersForKey == null) {
             handlersForKey = [];
@@ -123,24 +145,25 @@ export class AtomBinder {
         if (target == null) {
             return;
         }
-        if (!target._$_handlers) {
+        const handlers = target[symbolHandlers];
+        if (typeof handlers === "undefined") {
             return;
         }
-        const handlersForKey = target._$_handlers[key];
+        const handlersForKey = target[symbolHandlers][key];
         if (handlersForKey === undefined || handlersForKey == null) {
             return;
         }
         // handlersForKey = handlersForKey.filter( (f) => f !== handler);
         ArrayHelper.remove(handlersForKey, (f) => f === handler);
         if (!handlersForKey.length) {
-            target._$_handlers[key] = null;
-            delete target._$_handlers[key];
+            handlers[key] = null;
+            delete handlers[key];
         }
     }
 
     public static invokeItemsEvent(target: any[], mode: string, index: number, item: any) {
         const key = "_items";
-        const handlers = AtomBinder.get_WatchHandler(target as IWatchableObject, key);
+        const handlers = AtomBinder.get_WatchHandler(target as any as IWatchableObject, key);
         if (!handlers) {
             return;
         }
@@ -161,7 +184,7 @@ export class AtomBinder {
         if (handler == null) {
             throw new Error("Target handle to watch an Array cannot be null");
         }
-        const handlers = AtomBinder.get_WatchHandler(target as IWatchableObject, "_items");
+        const handlers = AtomBinder.get_WatchHandler(target as any as IWatchableObject, "_items");
         handlers.push(handler);
         return { dispose: () => {
                 AtomBinder.remove_CollectionChanged(target, handler);
@@ -173,19 +196,20 @@ export class AtomBinder {
         if (t == null) {
             return;
         }
-        const target = t as IWatchableObject;
-        if (!target._$_handlers) {
+        const target = t as any as IWatchableObject;
+        const handlers = target[symbolHandlers];
+        if (typeof handlers === "undefined") {
             return;
         }
         const key = "_items";
-        const handlersForKey = target._$_handlers[key];
+        const handlersForKey = handlers[key];
         if (handlersForKey === undefined || handlersForKey == null) {
             return;
         }
         ArrayHelper.remove(handlersForKey, (f) => f === handler);
         if (!handlersForKey.length) {
-            target._$_handlers[key] = null;
-            delete target._$_handlers[key];
+            handlers[key] = null;
+            delete handlers[key];
         }
     }
 

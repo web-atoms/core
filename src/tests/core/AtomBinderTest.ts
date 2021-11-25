@@ -1,6 +1,6 @@
 import Assert from "@web-atoms/unit-test/dist/Assert";
 import Test from "@web-atoms/unit-test/dist/Test";
-import { AtomBinder, IWatchableObject } from "../../core/AtomBinder";
+import { AtomBinder, IWatchableObject, symbolBindable } from "../../core/AtomBinder";
 import { AtomList } from "../../core/AtomList";
 import { AtomWatcher } from "../../core/AtomWatcher";
 import { AtomTest } from "../../unit/AtomTest";
@@ -110,7 +110,7 @@ export class AtomBinderTest extends AtomTest {
         };
 
         const bindable = c as IWatchableObject;
-        let ba = bindable._$_bindable;
+        let ba = bindable[symbolBindable];
 
         Assert.isTrue(!ba);
 
@@ -122,7 +122,7 @@ export class AtomBinderTest extends AtomTest {
 
         Assert.equals("Akash Kava", c.name);
 
-        ba =  bindable._$_bindable;
+        ba =  bindable[symbolBindable];
         Assert.isTrue(ba ? true : false);
 
         const i = ba.firstName;

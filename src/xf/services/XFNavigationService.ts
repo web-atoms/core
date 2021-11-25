@@ -58,7 +58,7 @@ export default class XFNavigationService extends NavigationService {
         super(app);
     }
 
-    public alert(message: string | any, title?: string): Promise<any> {
+    public alert(message: string | any, title?: string): Promise<void> {
         if (typeof message !== "string") {
             message = message.toString();
         }

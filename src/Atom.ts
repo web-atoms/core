@@ -45,8 +45,8 @@ export class Atom {
      * @param n
      * @param ct
      */
-    public static delay(n: number, ct?: CancelToken): Promise<any> {
-        return new Promise((resolve, reject) => {
+    public static delay(n: number, ct?: CancelToken): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             const h: any = {};
             h.id = setTimeout(() => {
                 // if (ct && ct.cancelled) {

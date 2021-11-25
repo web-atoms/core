@@ -258,7 +258,7 @@ export class WindowService extends NavigationService {
     }
 
     public refresh(): void {
-        location.reload(true);
+        location.reload();
     }
 
     public getHostForElement(): HTMLElement {
@@ -389,7 +389,7 @@ export class WindowService extends NavigationService {
             }
         } else {
 
-            const eHost = this.getHostForElement();
+            const eHost = options?.modal ? null : this.getHostForElement();
             if (eHost) {
                 eHost.appendChild(e);
             } else {

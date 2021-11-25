@@ -51,7 +51,7 @@ export class AtomDispatcher {
         }
     }
 
-    public waitForAll(): Promise<any> {
+    public waitForAll(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.callLater(() => {
                 resolve();

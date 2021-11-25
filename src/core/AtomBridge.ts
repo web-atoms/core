@@ -353,7 +353,7 @@ export class AtomBridge {
     public static createNode(iterator: XNode, app: any): { element?: any, control?: any } {
         if (typeof iterator.name === "string" || (iterator.name as any).factory) {
 
-            return { element: AtomBridge.instance.create(iterator.name.toString(), iterator, app) };
+            return { element: AtomBridge.instance.create(iterator.name as any, iterator, app) };
         }
         const fx = iterator.attributes ? iterator.attributes.for : undefined;
         const c = new (iterator.name as any)(app,

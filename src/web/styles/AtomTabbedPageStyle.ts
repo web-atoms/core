@@ -24,13 +24,33 @@ export class AtomTabbedPageStyle extends AtomStyle {
                     position: "absolute",
                     left: 0,
                     right: 0,
-                    top: 0,
+                    top: "30px",
                     bottom: 0,
-                    overflow: "auto"
+                    overflow: "auto",
+                    subclasses: {
+                        " > *": {
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            overflow: "auto",
+                        }
+                    }
                 },
-                " .tab-item": this.tabItem,
-                " .close-button": this.closeButton,
-                " .selected-tab-item": this.selectedTabItem,
+                " .tabs": {
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    overflow: "hidden",
+                    height: "30px",
+                    subclasses: {
+                        " .tab-item": this.tabItem,
+                        " .close-button": this.closeButton,
+                        " .selected-tab-item": this.selectedTabItem,
+                    }
+                },
             }
         };
     }

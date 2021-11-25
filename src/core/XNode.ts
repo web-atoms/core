@@ -75,6 +75,8 @@ export type NodeFactory = (a?: any, ... nodes: XNode[]) => XNode;
 
 export type AttachedNode = (n: any) => { [key: string]: any};
 
+export const xnodeSymbol = Symbol("XNode");
+
 export default class XNode {
 
     public static classes: {[key: string]: any } = {};
@@ -207,7 +209,7 @@ export default class XNode {
                 name = (name as any).toString();
                 break;
             case "function":
-                return name(attributes, ... children);
+                return name(attributes || {}, ... children);
         }
         return new XNode(name as any, attributes, children);
     }
@@ -219,6 +221,7 @@ export default class XNode {
         public children: XNode[] | XNode[][] | any[],
         public isProperty?: boolean,
         public isTemplate?: boolean) {
+        this[xnodeSymbol] = true;
     }
 
     public toString(): string {

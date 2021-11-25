@@ -9,6 +9,7 @@
         "Scroller",
         "Selectable",
         "Simmi",
+        "bindables",
         "bodyformmodel",
         "downlevel",
         "grayscale",

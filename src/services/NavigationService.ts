@@ -42,6 +42,16 @@ export interface IPageOptions {
      */
     cancelToken?: CancelToken;
 
+    /**
+     * In mobile application, this will not add chrome/navigation headers on the page
+     */
+    frameLess?: boolean;
+
+    /**
+     * Set to true if you want to open modal window blocking entire app.
+     */
+    modal?: boolean;
+
     /** Initializer that will be invoked when page/popup/window is created */
     onInit?: (view: any) => void;
 }

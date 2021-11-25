@@ -1,4 +1,5 @@
 import { parsePath, parsePathLists } from "./ExpressionParser";
+import { IValueConverter } from "./IValueConverter";
 
 export interface IAtomComponent {
     element: any;
@@ -22,72 +23,80 @@ const isEvent = /^event/i;
 
 export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => any;
 
-function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control.runAfterInit(() => {
-        control.setLocalValue(e, name, b.sourcePath(control, e));
-    });
-}
+export type bindingFunctionCommand<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => (p) => void;
 
-function event(name: string, b: Bind, control: IAtomComponent, e: any) {
-    control.runAfterInit(() => {
-        if (isEvent.test(name)) {
-            name = name.substr(5);
-            name = (name[0].toLowerCase() + name.substr(1));
-        }
-        control.bindEvent(e, name, (e1) => {
-            return (b.sourcePath as any)(control, e1);
-        });
-    });
-}
+// function oneTime(name: string, b: Bind, control: IAtomComponent, e: any) {
+//     control.runAfterInit(() => {
+//         control.setLocalValue(e, name, b.sourcePath(control, e));
+//     });
+// }
 
-function oneWay(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
-    if (b.pathList) {
-        control.bind(e, name, b.pathList , false, () => {
-            // tslint:disable-next-line: ban-types
-            return (b.sourcePath as Function).call(creator, control, e);
-        });
-        return;
-    }
-    if (b.combined) {
-        const a = {
+// function event(name: string, b: Bind, control: IAtomComponent, e: any) {
+//     control.runAfterInit(() => {
+//         if (isEvent.test(name)) {
+//             name = name.substr(5);
+//             name = (name[0].toLowerCase() + name.substr(1));
+//         }
+//         control.bindEvent(e, name, (e1) => {
+//             return (b.sourcePath as any)(control, e1);
+//         });
+//     });
+// }
 
-            // it is `this`
-            t: creator,
-            // it is first parameter
-            x: control
-        };
-        control.bind(e, name, b.combined , false, () => {
-            // tslint:disable-next-line: ban-types
-            return (b.sourcePath as Function).call(creator, control, e);
-        }, a);
-        return;
-    }
-    if (b.thisPathList) {
-        control.bind(e, name, b.thisPathList , false, () => {
-            // tslint:disable-next-line: ban-types
-            return (b.sourcePath as Function).call(creator, control, e);
-        }, creator);
-        return;
-    }
-}
+// function oneWay(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
+//     if (b.pathList) {
+//         control.bind(e, name, b.pathList , false, () => {
+//             // tslint:disable-next-line: ban-types
+//             return (b.sourcePath as Function).call(creator, control, e);
+//         });
+//         return;
+//     }
+//     if (b.combined) {
+//         const a = {
 
-function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
+//             // it is `this`
+//             t: creator,
+//             // it is first parameter
+//             x: control
+//         };
+//         control.bind(e, name, b.combined , false, () => {
+//             // tslint:disable-next-line: ban-types
+//             return (b.sourcePath as Function).call(creator, control, e);
+//         }, a);
+//         return;
+//     }
+//     if (b.thisPathList) {
+//         control.bind(e, name, b.thisPathList , false, () => {
+//             // tslint:disable-next-line: ban-types
+//             return (b.sourcePath as Function).call(creator, control, e);
+//         }, creator);
+//         return;
+//     }
+// }
+
+// function twoWays(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
+//     control.bind(e,
+//         name,
+//         b.thisPathList || b.pathList, (b.eventList as any) || true, null, b.thisPathList ? creator : undefined);
+// }
+
+function twoWaysConvert(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
     control.bind(e,
         name,
         b.thisPathList || b.pathList, (b.eventList as any) || true, null, b.thisPathList ? creator : undefined);
 }
 
-function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
-    const n = b.name || name;
-    let c = control.element as any;
-    while (c) {
-        if (c.atomControl && c.atomControl[n] !== undefined) {
-            break;
-        }
-        c = c._logicalParent || c.parentElement;
-    }
-    ((c && c.atomControl) || control)[n] = e;
-}
+// function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
+//     const n = b.name || name;
+//     let c = control.element as any;
+//     while (c) {
+//         if (c.atomControl && c.atomControl[n] !== undefined) {
+//             break;
+//         }
+//         c = c._logicalParent || c.parentElement;
+//     }
+//     ((c && c.atomControl) || control)[n] = e;
+// }
 
 export interface IData<T> extends IAtomComponent {
     data: T;
@@ -108,6 +117,8 @@ export interface IBinder<T extends IAtomComponent> {
     twoWays(path: bindingFunction<T>, events?: string[]): Bind;
 }
 
+export const bindSymbol = Symbol("Bind");
+
 export default class Bind {
 
     public static forControl<C extends IAtomComponent>(): IBinder<C> {
@@ -126,33 +137,167 @@ export default class Bind {
         return Bind as any;
     }
 
-    public static presenter(name?: string): Bind {
-        return new Bind(presenter, null, name as any);
+    public static presenter(name?: string): any {
+        return {
+            [bindSymbol](cn: string, control: IAtomComponent, e: any, creator: any) {
+                const n = name || cn;
+                let c = control.element as any;
+                while (c) {
+                    if (c.atomControl && c.atomControl[n] !== undefined) {
+                        break;
+                    }
+                    c = c._logicalParent || c.parentElement;
+                }
+                ((c && c.atomControl) || control)[n] = e;
+            }
+        };
     }
 
     // tslint:disable-next-line: ban-types
     public static event<T extends IAtomComponent = IAtomComponent>(
         sourcePath: (control: T, e?: CustomEvent) => void): any {
-        return new Bind(event, sourcePath as any);
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any) {
+                control.runAfterInit(() => {
+                    if (isEvent.test(name)) {
+                        name = name.substr(5);
+                        name = (name[0].toLowerCase() + name.substr(1));
+                    }
+                    control.bindEvent(e, name, (e1) => {
+                        return (sourcePath as any)(control, e1);
+                    });
+                });
+            }
+        };
     }
 
-    public static oneTime<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
-        return new Bind(oneTime, sourcePath);
+    public static oneTime<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): any {
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any) {
+                control.runAfterInit(() => {
+                    control.setLocalValue(e, name, sourcePath(control as any, e));
+                });
+            }
+        };
     }
 
-    public static oneWay<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): Bind {
-        return new Bind(oneWay, sourcePath);
+    public static command<T>(action: (p: T) => any) {
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any) {
+                e[name] = (p) => {
+                    const r = action(p);
+                    if (r.then) {
+                        r.catch((er) => {
+                            console.error(er);
+                        });
+                    }
+                };
+            }
+        };
+    }
+
+    public static oneWayCommand<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunctionCommand<T>) {
+        return this.oneWay(sourcePath);
+    }
+
+    public static oneWay<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): any {
+
+        let pathList;
+        let combined;
+        let thisPathList;
+
+        if (Array.isArray(sourcePath)) {
+            pathList = sourcePath as any;
+        } else {
+            const lists = parsePathLists(sourcePath);
+            if (lists.combined.length) {
+                combined = lists.combined;
+            }
+            if (lists.pathList.length) {
+                pathList = lists.pathList;
+            }
+            if (lists.thisPath.length) {
+                thisPathList = lists.thisPath;
+            }
+        }
+
+        if (!(combined || pathList || thisPathList)) {
+            throw new Error(`Failed to setup binding for ${sourcePath}, parsing failed`);
+        }
+
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                if (pathList) {
+                    control.bind(e, name, pathList, false, () => {
+                        return sourcePath.call(creator, control, e);
+                    });
+                    return;
+                }
+                if (combined) {
+                    const a = {
+                        t: creator,
+                        x: control
+                    };
+                    control.bind(e, name, combined, false, () => {
+                        return sourcePath.call(creator, control, e);
+                    }, a);
+                }
+                if (thisPathList) {
+                    control.bind(e, name, thisPathList, false, () => {
+                        return sourcePath.call(creator, control, e);
+                    }, creator);
+                }
+            }
+        };
     }
 
     public static twoWays<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
-        events?: string[]): Bind {
-        const b = new Bind(twoWays, sourcePath, null, events);
-        if (!(b.thisPathList  || b.pathList)) {
+        events?: string[],
+        converter?: IValueConverter): any {
+
+        let pathList;
+        // let combined;
+        let thisPathList;
+
+        if (Array.isArray(sourcePath)) {
+            pathList = sourcePath as any;
+        } else {
+            const lists = parsePathLists(sourcePath);
+            if (lists.combined.length) {
+                // combined = lists.combined;
+                throw new Error("Cannot have combined binding for two ways");
+            }
+            if (lists.pathList.length) {
+                pathList = lists.pathList;
+            }
+            if (lists.thisPath.length) {
+                thisPathList = lists.thisPath;
+            }
+        }
+        if (!(thisPathList  || pathList)) {
             throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
         }
-        return b;
+
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                control.bind(e, name,
+                    thisPathList || pathList,
+                    (events as any) || true,
+                    converter,
+                    thisPathList ? creator : undefined);
+            }
+        };
     }
+
+    // public static twoWaysConvert<T extends IAtomComponent = IAtomComponent>(
+    //     sourcePath: bindingFunction<T>): Bind {
+    //     const b = new Bind(twoWays, sourcePath, null, events);
+    //     if (!(b.thisPathList  || b.pathList)) {
+    //         throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
+    //     }
+    //     return b;
+    // }
 
     /**
      * Use this for HTML only, this will fire two way binding
@@ -160,13 +305,14 @@ export default class Bind {
      * @param sourcePath binding lambda expression
      */
     public static twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
-        sourcePath: bindingFunction<T>): Bind {
-        const b = new Bind(twoWays, sourcePath, null,
-            ["change", "input", "paste"]);
-        if (!(b.thisPathList  || b.pathList)) {
-            throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
-        }
-        return b;
+        sourcePath: bindingFunction<T>): any {
+        return this.twoWays(sourcePath, ["change", "input", "paste"]);
+        // const b = new Bind(twoWays, sourcePath, null,
+        //     ["change", "input", "paste"]);
+        // if (!(b.thisPathList  || b.pathList)) {
+        //     throw new Error(`Failed to setup twoWay binding on ${sourcePath}`);
+        // }
+        // return b;
     }
 
     public readonly sourcePath: bindingFunction;
@@ -184,6 +330,7 @@ export default class Bind {
         public readonly eventList?: string[]
         ) {
         this.sourcePath = sourcePath;
+        this[bindSymbol] = true;
         if (!this.sourcePath) {
             return;
         }
@@ -202,11 +349,11 @@ export default class Bind {
                 this.thisPathList = lists.thisPath;
             }
 
-            if (setupFunction === oneWay) {
-                if (!(this.combined || this.pathList || this.thisPathList)) {
-                    throw new Error(`Failed to setup binding for ${this.sourcePath}, parsing failed`);
-                }
-            }
+            // if (setupFunction === oneWay) {
+            //     if (!(this.combined || this.pathList || this.thisPathList)) {
+            //         throw new Error(`Failed to setup binding for ${this.sourcePath}, parsing failed`);
+            //     }
+            // }
         }
 
     }

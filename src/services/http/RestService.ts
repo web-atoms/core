@@ -397,6 +397,8 @@ export class BaseService {
 
     public jsonOptions: IJsonParserOptions = null;
 
+    public headers: {[key: string]: string | number | null | undefined} = null;
+
     constructor(
         @Inject protected readonly app: App,
         @Inject public readonly jsonService: JsonService
@@ -469,7 +471,11 @@ export class BaseService {
                 options.dataType = methodOptions.accept;
             }
 
-            const headers = options.headers = options.headers || {};
+            const methodHeaders = (options.headers = options.headers || {});
+
+            const headers = this.headers
+                ? ({ ... this.headers, ...  methodHeaders })
+                : methodHeaders;
 
             // this is necessary to support IsAjaxRequest in ASP.NET MVC
             if (!headers["X-Requested-With"]) {

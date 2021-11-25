@@ -94,7 +94,7 @@ export class AtomControlViewModel extends AtomWebTest {
 
         await this.app.waitForPendingCalls();
 
-        const watches = AtomBinder.get_WatchHandler(tv as IWatchableObject, "name");
+        const watches = AtomBinder.get_WatchHandler(tv as any as IWatchableObject, "name");
         Assert.equals(watches.length, 1);
 
         Assert.equals("a", control.data);

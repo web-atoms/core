@@ -51,6 +51,24 @@ export class ExpressionParserTest extends AtomTest {
     }
 
     @Test
+    public parseLambdaES6TextPath(): void {
+        const p = parsePath("(x) => x.data.messages");
+        Assert.equals(1, p.length);
+    }
+
+    @Test
+    public parseLambdaES6TextPathWithoutParenthesis(): void {
+        const p = parsePath("x=>x.data.messages");
+        Assert.equals(1, p.length);
+    }
+
+    @Test
+    public parseLambdaES6TextEmpty(): void {
+        const p = parsePath(" => this.firstName + ' ' + this.lastName");
+        Assert.equals(2, p.length);
+    }
+
+    @Test
     public parseLambdaTextWithSecondParameter(): void {
         const p = parsePath("function(a, b) { return a.firstName + ' ' + a.lastName; }");
         Assert.equals(2, p.length);
@@ -108,6 +126,13 @@ export class ExpressionParserTest extends AtomTest {
         }`);
 
         Assert.equals(2, p.thisPath.length);
+    }
+
+    @Test
+    public parseLambdaEvent(): void {
+        const p = parsePathLists(`(x) => { var _a; return (_a = x.viewModel) === null
+            || _a === void 0 ? void 0 : _a.cancel(); }) })`);
+        Assert.equals(0, p.thisPath.length);
     }
 
 }
