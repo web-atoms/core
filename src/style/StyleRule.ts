@@ -3028,73 +3028,23 @@ export class AtomStyleRules {
         return list.join("\n");
     }
 
-    public hideNested( ... names: string[]) {
+    public toggle(display: string, hide: string) {
         const sc = this.style.subclasses ??= {};
-        for (const name of names) {
-            const n = " " + name;
-            const hide = sc[n] ??= {};
-            hide.display = "none";
-        }
-        return this;
-    }
-
-    public showNested( ... names: string[]) {
-        const sc = this.style.subclasses ??= {};
-        for (const name of names) {
-            const n = " " + name;
-            const hide = sc[n] ??= {};
-            hide.display = "initial";
-        }
-        return this;
-    }
-
-    public hideChild( ... names: string[]) {
-        const sc = this.style.subclasses ??= {};
-        for (const name of names) {
-            const n = " > " + name;
-            const hide = sc[n] ??= {};
-            hide.display = "none";
-        }
-        return this;
-    }
-
-    public showChild( ... names: string[]) {
-        const sc = this.style.subclasses ??= {};
-        for (const name of names) {
-            const n = " > " + name;
-            const hide = sc[n] ??= {};
-            hide.display = "initial";
-        }
-        return this;
-    }
-
-    public hideAnd( ... names: string[]) {
-        const sc = this.style.subclasses ??= {};
-        for (const n of names) {
-            const hide = sc[n] ??= {};
-            hide.display = "none";
-        }
-        return this;
-    }
-
-    public showAnd( ... names: string[]) {
-        const sc = this.style.subclasses ??= {};
-        for (const n of names) {
-            const hide = sc[n] ??= {};
-            hide.display = "initial";
-        }
-        return this;
+        const d = sc[display] ??= {};
+        const h = sc[hide] ??= {};
+        d.display = "initial";
+        d.display = "none";
     }
 
 }
 
 /**
  * Creates new style rule
- * @param name [optional] name of child subclass
+ * @param selector [optional] name of child subclass
  * @returns StyleRuleClass
  */
-function StyleRule(name?: string): AtomStyleRules {
-    return new AtomStyleRules(name);
+function StyleRule(selector?: string): AtomStyleRules {
+    return new AtomStyleRules(selector);
 }
 
 export default StyleRule;
