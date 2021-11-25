@@ -3064,6 +3064,22 @@ export class AtomStyleRules {
         }
     }
 
+    public hideAnd( ... names: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const n of names) {
+            const hide = sc[n] ??= {};
+            hide.display = "none";
+        }
+    }
+
+    public showAnd( ... names: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const n of names) {
+            const hide = sc[n] ??= {};
+            hide.display = "initial";
+        }
+    }
+
 }
 
 /**
