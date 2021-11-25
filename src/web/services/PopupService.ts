@@ -104,13 +104,13 @@ export default class PopupService {
         if (!options || options?.alignment === "auto") {
 
             // check where is more space??
-            if (offset.x + opener.offsetWidth < (host.offsetWidth / 2)) {
+            if (offset.x < (host.offsetWidth / 2)) {
                 style.left = offset.x + "px";
             } else {
                 style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
             }
 
-            if (offset.y + opener.offsetHeight < hostHeight / 2) {
+            if (offset.y < (hostHeight / 2)) {
                 style.top = offset.y + "px";
             } else {
                 style.bottom = `${hostHeight - (offset.y + opener.offsetHeight)}px`;
