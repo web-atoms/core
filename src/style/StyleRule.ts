@@ -3035,6 +3035,7 @@ export class AtomStyleRules {
             const hide = sc[n] ??= {};
             hide.display = "none";
         }
+        return this;
     }
 
     public showNested( ... names: string[]) {
@@ -3044,6 +3045,7 @@ export class AtomStyleRules {
             const hide = sc[n] ??= {};
             hide.display = "initial";
         }
+        return this;
     }
 
     public hideChild( ... names: string[]) {
@@ -3053,6 +3055,7 @@ export class AtomStyleRules {
             const hide = sc[n] ??= {};
             hide.display = "none";
         }
+        return this;
     }
 
     public showChild( ... names: string[]) {
@@ -3062,6 +3065,7 @@ export class AtomStyleRules {
             const hide = sc[n] ??= {};
             hide.display = "initial";
         }
+        return this;
     }
 
     public hideAnd( ... names: string[]) {
@@ -3070,6 +3074,7 @@ export class AtomStyleRules {
             const hide = sc[n] ??= {};
             hide.display = "none";
         }
+        return this;
     }
 
     public showAnd( ... names: string[]) {
@@ -3078,6 +3083,7 @@ export class AtomStyleRules {
             const hide = sc[n] ??= {};
             hide.display = "initial";
         }
+        return this;
     }
 
 }
