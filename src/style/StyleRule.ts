@@ -3033,7 +3033,7 @@ export class AtomStyleRules {
         const d = sc[display] ??= {};
         const h = sc[hide] ??= {};
         d.display = "initial";
-        d.hide = "none";
+        h.display = "none";
         return this;
     }
 
