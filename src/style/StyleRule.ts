@@ -3034,6 +3034,7 @@ export class AtomStyleRules {
         const h = sc[hide] ??= {};
         d.display = "initial";
         d.display = "none";
+        return this;
     }
 
 }
