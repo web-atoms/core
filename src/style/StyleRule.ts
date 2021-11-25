@@ -3028,10 +3028,10 @@ export class AtomStyleRules {
         return list.join("\n");
     }
 
-    public toggle(display: string, hide: string) {
+    public toggle(showSelector: string, hideSelector: string) {
         const sc = this.style.subclasses ??= {};
-        const h = sc[hide] ??= {};
-        const d = sc[display] ??= {};
+        const h = sc[hideSelector] ??= {};
+        const d = sc[showSelector] ??= {};
         d.display = "initial";
         h.display = "none";
         return this;
