@@ -3030,8 +3030,8 @@ export class AtomStyleRules {
 
     public toggle(display: string, hide: string) {
         const sc = this.style.subclasses ??= {};
-        const d = sc[display] ??= {};
         const h = sc[hide] ??= {};
+        const d = sc[display] ??= {};
         d.display = "initial";
         h.display = "none";
         return this;
