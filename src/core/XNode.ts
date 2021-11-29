@@ -1,4 +1,4 @@
-import Bind from "./Bind";
+import Bind, { bindSymbol } from "./Bind";
 import { IClassOf, IDisposable } from "./types";
 
 export interface IAttributes {
@@ -84,6 +84,8 @@ export const isFactory = Symbol("isFactory");
 export default class XNode {
 
     public static elementFactory = isFactory;
+
+    public static bindSymbol = bindSymbol;
 
     public static classes: {[key: string]: any } = {};
 
@@ -223,6 +225,8 @@ export default class XNode {
         }
         return new XNode(name as any, attributes, children);
     }
+
+    public nameArgs: any;
 
     constructor(
         // tslint:disable-next-line: ban-types

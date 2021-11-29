@@ -477,11 +477,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                     const item = attr[key];
                     const isObject = typeof item === "object";
                     if (isObject) {
-                        if (objectHasOwnProperty.call(item, localBindSymbol)) {
-                            item[localBindSymbol](key, this, e, creator);
+                        const localSymbol = item[localBindSymbol];
+                        if (localSymbol) {
+                            localSymbol(key, this, e, creator);
                             continue;
                         }
-                        if (objectHasOwnProperty.call(item, localXNodeSymbol)) {
+                        const localXNode = item[localXNodeSymbol];
+                        if (localXNode) {
                             if (item.isTemplate) {
                                 this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
                                 continue;

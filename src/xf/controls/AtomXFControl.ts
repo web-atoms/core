@@ -144,8 +144,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                 classes = value.toString().split(" ");
             }
             value = classes.join(",");
+            name = "class";
         }
-        AtomBridge.instance.setValue(element, name, value);
+        // AtomBridge.instance.setValue(element, name, value);
+        element[name] = value;
     }
 
 }
