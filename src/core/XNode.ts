@@ -77,6 +77,8 @@ export type AttachedNode = (n: any) => { [key: string]: any};
 
 export const xnodeSymbol = Symbol("XNode");
 
+export const isControl = Symbol("isControl");
+
 export const ElementFactorySymbol = Symbol("ElementFactory");
 
 export default class XNode {
@@ -205,7 +207,7 @@ export default class XNode {
         if ((name as any).factory) {
             return ((name as any).factory)(attributes, ... children);
         }
-        if ((name as any).isControl) {
+        if ((name as any)[isControl]) {
             return new XNode(name as any, attributes, children);
         }
         switch (typeof name) {

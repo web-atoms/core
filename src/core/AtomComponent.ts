@@ -11,7 +11,7 @@ import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { ElementFactorySymbol, xnodeSymbol } from "./XNode";
+import XNode, { ElementFactorySymbol, isControl, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -46,9 +46,6 @@ const localXNodeSymbol = xnodeSymbol;
 const elementFactory = ElementFactorySymbol;
 
 const localBridge = AtomBridge;
-
-const isControl = Symbol("isControl");
-
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
