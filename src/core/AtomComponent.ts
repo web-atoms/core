@@ -529,6 +529,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             const attributes = iterator.attributes;
             if (typeof name === "string") {
                 // document.createElement...
+                // const element = document.createElement(name);
+                console.log(`Creating ${name}`);
                 const element = document.createElement(name);
                 e.appendChild(element);
                 this.render(iterator, element, creator);
