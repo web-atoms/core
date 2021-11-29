@@ -77,7 +77,11 @@ export type AttachedNode = (n: any) => { [key: string]: any};
 
 export const xnodeSymbol = Symbol("XNode");
 
+export const ElementFactorySymbol = Symbol("ElementFactory");
+
 export default class XNode {
+
+    public static elementFactory = ElementFactorySymbol;
 
     public static classes: {[key: string]: any } = {};
 

@@ -11,7 +11,7 @@ import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { xnodeSymbol } from "./XNode";
+import XNode, { ElementFactorySymbol, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -43,13 +43,17 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
 
+const elementFactory = ElementFactorySymbol;
+
 const localBridge = AtomBridge;
+
+const isControl = Symbol("isControl");
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
 
-    public static readonly isControl = true;
+    public static readonly [isControl] = true;
 
     // public element: T;
     public readonly disposables: AtomDisposableList;
@@ -524,6 +528,39 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
                 continue;
             }
+            const name = iterator.name;
+            const attributes = iterator.attributes;
+            if (typeof name === "string") {
+                // document.createElement...
+                const element = document.createElement(name);
+                e.appendChild(element);
+                this.render(iterator, element, creator);
+                continue;
+            }
+
+            if (name[isControl]) {
+                const forName = attributes?.for;
+                const ctrl = new (name)(this.app,
+                    forName ? document.createElement(forName) : undefined);
+                const element = ctrl.element ;
+                if (renderFirst) {
+                    ctrl.render(iterator, element, creator);
+                    e.appendChild(element);
+                    continue;
+                }
+                e.appendChild(element);
+                ctrl.render(iterator, element, creator);
+                continue;
+            }
+
+            if (name[elementFactory]) {
+                const element = new (name)();
+                this.render(iterator, element, creator);
+                e.appendChild(element);
+                continue;
+            }
+            // throw new Error("Invalid name type");
+
             const c = AtomBridge.createNode(iterator, app);
             if (renderFirst) {
                 (c.control || this).render(iterator, c.element, creator);
