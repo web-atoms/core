@@ -79,11 +79,11 @@ export const xnodeSymbol = Symbol("XNode");
 
 export const isControl = Symbol("isControl");
 
-export const ElementFactorySymbol = Symbol("ElementFactory");
+export const isFactory = Symbol("isFactory");
 
 export default class XNode {
 
-    public static elementFactory = ElementFactorySymbol;
+    public static elementFactory = isFactory;
 
     public static classes: {[key: string]: any } = {};
 
@@ -204,11 +204,15 @@ export default class XNode {
         name: string | Function,
         attributes: IAttributes,
         ... children: Array<XNode | XNode[] | any>): XNode {
+
+        if (typeof name === "string") {
+            return new XNode(name, attributes, children);
+        }
+        if ((name as any)[isFactory]) {
+            return new XNode(name as any, attributes, children);
+        }
         if ((name as any).factory) {
             return ((name as any).factory)(attributes, ... children);
-        }
-        if ((name as any)[isControl]) {
-            return new XNode(name as any, attributes, children);
         }
         switch (typeof name) {
             case "object":

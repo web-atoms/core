@@ -11,7 +11,7 @@ import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { ElementFactorySymbol, isControl, xnodeSymbol } from "./XNode";
+import XNode, { isControl, isFactory, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -43,7 +43,9 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
 
-const elementFactory = ElementFactorySymbol;
+const elementFactory = isFactory;
+
+const isAtomControl = isControl;
 
 const localBridge = AtomBridge;
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
@@ -51,6 +53,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     INotifyPropertyChanged {
 
     public static readonly [isControl] = true;
+
+    public static readonly [isFactory] = true;
 
     // public element: T;
     public readonly disposables: AtomDisposableList;
@@ -537,7 +541,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 continue;
             }
 
-            if (name[isControl]) {
+            if (name[isAtomControl]) {
                 const forName = attributes?.for;
                 const ctrl = new (name)(this.app,
                     forName ? document.createElement(forName) : undefined);
