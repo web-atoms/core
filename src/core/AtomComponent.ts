@@ -48,6 +48,9 @@ const elementFactory = isFactory;
 const isAtomControl = isControl;
 
 const localBridge = AtomBridge;
+
+const renderFirst = AtomBridge.platform === "xf";
+
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
@@ -466,8 +469,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
         const app = this.app;
 
-        const renderFirst = AtomBridge.platform === "xf";
-
         e = e || this.element;
         const attr = node.attributes;
         if (attr) {
@@ -486,8 +487,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                                 continue;
                             }
 
-                            const child = AtomBridge.createNode(item, app);
-                            this.setLocalValue(e, key, child.element);
+                            // const child = AtomBridge.createNode(item, app);
+                            this.setLocalValue(e, key, this.createNode(app, e, item, creator));
                             continue;
                         }
                     }
@@ -547,54 +548,57 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
                 continue;
             }
-            const name = iterator.name;
-            const attributes = iterator.attributes;
-            if (typeof name === "string") {
-                // document.createElement...
-                // const element = document.createElement(name);
-                // tslint:disable-next-line: no-console
-                console.log(`Creating ${name}`);
-                const element = document.createElement(name);
-                e.appendChild(element);
-                this.render(iterator, element, creator);
-                continue;
-            }
 
-            if (name[isAtomControl]) {
-                const forName = attributes?.for;
-                const ctrl = new (name)(this.app,
-                    forName ? document.createElement(forName) : undefined);
-                const element = ctrl.element ;
-                if (renderFirst) {
-                    ctrl.render(iterator, element, creator);
-                    e.appendChild(element);
-                    continue;
-                }
-                e.appendChild(element);
-                ctrl.render(iterator, element, creator);
-                continue;
-            }
+            this.createNode(app, e, iterator, creator);
 
-            if (name[elementFactory]) {
-                const element = new (name)();
-                this.render(iterator, element, creator);
-                e.appendChild(element);
-                continue;
-            }
-            // throw new Error("Invalid name type");
+            // const name = iterator.name;
+            // const attributes = iterator.attributes;
+            // if (typeof name === "string") {
+            //     // document.createElement...
+            //     // const element = document.createElement(name);
+            //     // tslint:disable-next-line: no-console
+            //     console.log(`Creating ${name}`);
+            //     const element = document.createElement(name);
+            //     e.appendChild(element);
+            //     this.render(iterator, element, creator);
+            //     continue;
+            // }
 
-            const c = AtomBridge.createNode(iterator, app);
-            if (renderFirst) {
-                (c.control || this).render(iterator, c.element, creator);
-            }
-            if (this.element === e) {
-                this.append(c.control || c.element);
-            } else {
-                e.appendChild(c.element);
-            }
-            if (!renderFirst) {
-                (c.control || this).render(iterator, c.element, creator);
-            }
+            // if (name[isAtomControl]) {
+            //     const forName = attributes?.for;
+            //     const ctrl = new (name)(this.app,
+            //         forName ? document.createElement(forName) : undefined);
+            //     const element = ctrl.element ;
+            //     if (renderFirst) {
+            //         ctrl.render(iterator, element, creator);
+            //         e.appendChild(element);
+            //         continue;
+            //     }
+            //     e.appendChild(element);
+            //     ctrl.render(iterator, element, creator);
+            //     continue;
+            // }
+
+            // if (name[elementFactory]) {
+            //     const element = new (name)();
+            //     this.render(iterator, element, creator);
+            //     e.appendChild(element);
+            //     continue;
+            // }
+            // // throw new Error("Invalid name type");
+
+            // const c = AtomBridge.createNode(iterator, app);
+            // if (renderFirst) {
+            //     (c.control || this).render(iterator, c.element, creator);
+            // }
+            // if (this.element === e) {
+            //     this.append(c.control || c.element);
+            // } else {
+            //     e.appendChild(c.element);
+            // }
+            // if (!renderFirst) {
+            //     (c.control || this).render(iterator, c.element, creator);
+            // }
         }
 
     }
@@ -636,6 +640,45 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
         }
         return result;
+    }
+
+    private createNode(app, e, iterator, creator) {
+        const name = iterator.name;
+        const attributes = iterator.attributes;
+        if (typeof name === "string") {
+            // document.createElement...
+            // const element = document.createElement(name);
+            // tslint:disable-next-line: no-console
+            console.log(`Creating ${name}`);
+            const element = document.createElement(name);
+            e.appendChild(element);
+            this.render(iterator, element, creator);
+            return element;
+        }
+
+        if (name[isAtomControl]) {
+            const forName = attributes?.for;
+            const ctrl = new (name)(app,
+                forName ? document.createElement(forName) : undefined);
+            const element = ctrl.element ;
+            if (renderFirst) {
+                ctrl.render(iterator, element, creator);
+                e.appendChild(element);
+                return;
+            }
+            e.appendChild(element);
+            ctrl.render(iterator, element, creator);
+            return element;
+        }
+
+        if (name[elementFactory]) {
+            const element = new (name)();
+            this.render(iterator, element, creator);
+            e.appendChild(element);
+            return element;
+        }
+
+        throw new Error(`not implemented create for ${iterator.name}`);
     }
 
 }
