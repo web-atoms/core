@@ -519,13 +519,26 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             if (iterator.isProperty) {
                 for (const child of iterator.children) {
-                    const pc = AtomBridge.createNode(child, app);
-                    (pc.control || this).render(child, pc.element, creator);
 
-                    // in Xamarin.Forms certain properties are required to be
-                    // set in advance, so we append the element after setting
-                    // all children properties
-                    (localBridge as any).instance.append(e, iterator.name, pc.element);
+                    // this case of Xamarin Forms only..
+                    const childName = child.name;
+                    if (childName[isControl]) {
+                        const c1 = new (childName)(this.app);
+                        c1.render(child, c1.element, creator);
+                        (localBridge as any).instance.append(e, iterator.name, c1.element);
+                        continue;
+                    }
+
+                    const c2 = new (childName)();
+                    this.render(child, c2.element, creator);
+                    (localBridge as any).instance.append(e, iterator.name, c2.element);
+                    // const pc = AtomBridge.createNode(child, app);
+                    // (pc.control || this).render(child, pc.element, creator);
+
+                    // // in Xamarin.Forms certain properties are required to be
+                    // // set in advance, so we append the element after setting
+                    // // all children properties
+                    // (localBridge as any).instance.append(e, iterator.name, pc.element);
                 }
                 continue;
             }
@@ -539,6 +552,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             if (typeof name === "string") {
                 // document.createElement...
                 // const element = document.createElement(name);
+                // tslint:disable-next-line: no-console
                 console.log(`Creating ${name}`);
                 const element = document.createElement(name);
                 e.appendChild(element);
