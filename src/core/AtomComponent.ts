@@ -531,8 +531,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                     }
 
                     const c2 = new (childName)();
-                    this.render(child, c2.element, creator);
-                    (localBridge as any).instance.append(e, iterator.name, c2.element);
+                    this.render(child, c2, creator);
+                    (localBridge as any).instance.append(e, iterator.name, c2);
                     // const pc = AtomBridge.createNode(child, app);
                     // (pc.control || this).render(child, pc.element, creator);
 
