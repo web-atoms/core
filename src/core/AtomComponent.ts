@@ -614,9 +614,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             return element;
         }
 
-        if (name[elementFactory]) {
+        if (objectHasOwnProperty.call(name, elementFactory)) {
 
-            if (objectHasOwnProperty.apply(name, [constructorNeedsArguments])) {
+            if (objectHasOwnProperty.call(name, constructorNeedsArguments)) {
                 // look for Arguments..
                 const firstChild = iterator.children?.[0];
                 const childName = firstChild?.name;
