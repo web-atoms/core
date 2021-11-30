@@ -110,6 +110,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
     }
 
+    protected get factory() {
+        return AtomControl;
+    }
+
     constructor(app: App, e?: HTMLElement) {
         super(app, e || document.createElement("div"));
     }

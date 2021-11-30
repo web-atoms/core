@@ -519,10 +519,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             if (iterator.isProperty) {
                 if (iterator.isTemplate) {
-                    this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(app, iterator.children[0], creator));
-                } else {
-                    this.createNode(app, e, iterator, creator);
+                    this.setLocalValue(e, iterator.name, this.toTemplate(app, iterator.children[0], creator));
+                    continue;
                 }
+                this.createNode(app, e, iterator, creator);
                 continue;
             }
             if (iterator.isProperty) {
@@ -662,6 +662,49 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
         throw new Error(`not implemented create for ${iterator.name}`);
     }
+
+    protected toTemplate(app, iterator, creator) {
+        const name = iterator.name;
+        if (typeof name === "string") {
+            const b = this.factory;
+            return class Template extends (b) {
+                constructor(a, e) {
+                    super(a ?? app, e ?? document.createElement(name));
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, null, creator);
+                }
+            };
+        }
+
+        if (name[isAtomControl]) {
+            return class Template extends (name as any) {
+                constructor(a, e) {
+                    super(a ?? app, e ?? document.createElement(name));
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, null, creator);
+                }
+            };
+        }
+        const f = this.factory;
+        return class ElementTemplate extends (f as any) {
+            constructor(a, e) {
+                super(a ?? app, e ?? document.createElement(name));
+            }
+
+            public create() {
+                super.create();
+                this.render(iterator, null, creator);
+            }
+        };
+    }
+
+    protected abstract get factory(): any;
 
 }
 

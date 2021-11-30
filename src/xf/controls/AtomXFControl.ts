@@ -70,6 +70,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         }
     }
 
+    protected get factory() {
+        return AtomXFControl;
+    }
+
     private mTheme: AtomStyleSheet;
     private mCachedTheme: AtomStyleSheet;
 
