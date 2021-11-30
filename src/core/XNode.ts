@@ -83,13 +83,19 @@ export const isFactory = Symbol("isFactory");
 
 export const attached = Symbol("attached");
 
+const attach = (name, attacher) => {
+    const fx = () => ({[`:${name}`]: attacher});
+    fx[attached] = attacher;
+    return fx;
+};
+
 export default class XNode {
 
     public static elementFactory = isFactory;
 
     public static bindSymbol = bindSymbol;
 
-    public static attached = attached;
+    public static prepareAttached = attach;
 
     public static classes: {[key: string]: any } = {};
 
