@@ -616,18 +616,18 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
         if (name[elementFactory]) {
 
-            if (objectHasOwnProperty.call(name, constructorNeedsArguments)) {
+            if (objectHasOwnProperty.apply(name, [constructorNeedsArguments])) {
                 // look for Arguments..
                 const firstChild = iterator.children?.[0];
                 const childName = firstChild?.name;
                 if (childName !== "WebAtoms.AtomX:Arguments") {
                     throw new Error("Arguments expected");
                 }
-                const pv = [null];
+                const pv = [];
                 for (const child of firstChild.children) {
                     pv.push(this.createNode(app, e, child, creator));
                 }
-                const element1 = new (name.bind.apply(name, pv))();
+                const element1 = name(... pv);
                 e?.appendChild(element1);
                 return element1;
             }
