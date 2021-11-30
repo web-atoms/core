@@ -11,7 +11,8 @@ import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol, isControl, isFactory, xnodeSymbol } from "./XNode";
+import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol,
+    elementFactorySymbol, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -43,7 +44,9 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
 
-const elementFactory = isFactory;
+const elementFactory = elementFactorySymbol;
+
+const isFactory = isFactorySymbol;
 
 const isAtomControl = isControl;
 
@@ -61,7 +64,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public static readonly [isControl] = true;
 
-    public static readonly [isFactory] = true;
+    public static readonly [isFactorySymbol] = true;
 
     // public element: T;
     public readonly disposables: AtomDisposableList;

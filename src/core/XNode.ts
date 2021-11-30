@@ -79,7 +79,9 @@ export const xnodeSymbol = Symbol("XNode");
 
 export const isControl = Symbol("isControl");
 
-export const isFactory = Symbol("isFactory");
+export const elementFactorySymbol = Symbol("elementFactory");
+
+export const isFactorySymbol = Symbol("isFactory");
 
 export const attachedSymbol = Symbol("attached");
 
@@ -89,13 +91,15 @@ const attach = (name, attacher) => {
     const key = `:${name}`;
     const fx = () => ({[key]: attacher});
     fx[attachedSymbol] = attacher;
-    fx[isFactory] = key;
+    fx[isFactorySymbol] = key;
     return fx;
 };
 
 export default class XNode {
 
-    public static elementFactory = isFactory;
+    public static isFactory = isFactorySymbol;
+
+    public static elementFactory = elementFactorySymbol;
 
     public static bindSymbol = bindSymbol;
 
@@ -226,7 +230,7 @@ export default class XNode {
         if (typeof name === "string") {
             return new XNode(name, attributes, children);
         }
-        if ((name as any)[isFactory]) {
+        if ((name as any)[isFactorySymbol]) {
             return new XNode(name as any, attributes, children);
         }
         if ((name as any).factory) {
