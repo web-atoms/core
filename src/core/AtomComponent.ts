@@ -11,7 +11,7 @@ import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { isControl, isFactory, xnodeSymbol } from "./XNode";
+import XNode, { attachedSymbol, isControl, isFactory, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -51,7 +51,7 @@ const localBridge = AtomBridge;
 
 const renderFirst = AtomBridge.platform === "xf";
 
-const attached = XNode.attached;
+const attached = attachedSymbol;
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,

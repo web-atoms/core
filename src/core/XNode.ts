@@ -81,11 +81,11 @@ export const isControl = Symbol("isControl");
 
 export const isFactory = Symbol("isFactory");
 
-export const attached = Symbol("attached");
+export const attachedSymbol = Symbol("attached");
 
 const attach = (name, attacher) => {
     const fx = () => ({[`:${name}`]: attacher});
-    fx[attached] = attacher;
+    fx[attachedSymbol] = attacher;
     return fx;
 };
 
