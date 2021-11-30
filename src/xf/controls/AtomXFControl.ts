@@ -3,7 +3,7 @@ import { AtomBridge, BaseElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import Bind from "../../core/Bind";
 import { IAtomElement } from "../../core/types";
-import XNode from "../../core/XNode";
+import XNode, { attachedProperties } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../../web/styles/AtomStyle";
@@ -111,7 +111,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     protected setElementValue(element: any, name: string, value: any): void {
         if (name.startsWith(":")) {
             // value is a function...
-            AtomBridge.instance.setValue(element, name, value);
+            attachedProperties[name](element, value);
             return;
         }
         if (/^event/.test(name)) {

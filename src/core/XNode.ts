@@ -87,13 +87,18 @@ export const attachedSymbol = Symbol("attached");
 
 export const constructorNeedsArgumentsSymbol = Symbol("constructorNeedsArguments");
 
+export const attachedProperties: { [key: string]: (e, v) => void } = {};
+
+let attachedId = 1;
+
 const attach = (name, attacher) => {
-    const key = `:${name}`;
+    const key = `:${attachedId++}`;
     const fx = (v) => {
         return {
             [key]: v
         };
     };
+    attachedProperties[key] = attacher;
     fx[attachedSymbol] = attacher;
     fx[isFactorySymbol] = key;
     return fx;
