@@ -11,7 +11,7 @@ import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { attachedSymbol, isControl, isFactory, xnodeSymbol } from "./XNode";
+import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol, isControl, isFactory, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -52,6 +52,8 @@ const localBridge = AtomBridge;
 const renderFirst = AtomBridge.platform === "xf";
 
 const attached = attachedSymbol;
+
+const constructorNeedsArguments = constructorNeedsArgumentsSymbol;
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
@@ -679,6 +681,21 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             const element = new (name)();
             this.render(iterator, element, creator);
             e.appendChild(element);
+            return element;
+        }
+
+        if (name[constructorNeedsArguments]) {
+            // look for Arguments..
+            const firstChild = iterator.children?.[0];
+            const childName = firstChild?.name;
+            if (childName !== "WebAtoms.AtomX:Arguments") {
+                throw new Error("Arguments expected");
+            }
+            const pv = [null];
+            for (const child of firstChild.children) {
+                pv.push(this.createNode(app, e, child, creator));
+            }
+            const element = new (name.bind.apply(name, pv))();
             return element;
         }
 
