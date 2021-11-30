@@ -495,9 +495,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                                 this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
                                 continue;
                             }
-
-                            // const child = AtomBridge.createNode(item, app);
-                            this.setLocalValue(e, key, this.createNode(app, e, item, creator));
+                            this.setLocalValue(e, key, this.createNode(app, null, item, creator));
                             continue;
                         }
                     }
@@ -523,7 +521,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 if (iterator.isTemplate) {
                     this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(app, iterator.children[0], creator));
                 } else {
-                    e.appendChild(this.createNode(app, e, iterator, creator));
+                    this.createNode(app, e, iterator, creator);
                 }
                 continue;
             }
@@ -559,55 +557,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
 
             this.createNode(app, e, iterator, creator);
-
-            // const name = iterator.name;
-            // const attributes = iterator.attributes;
-            // if (typeof name === "string") {
-            //     // document.createElement...
-            //     // const element = document.createElement(name);
-            //     // tslint:disable-next-line: no-console
-            //     console.log(`Creating ${name}`);
-            //     const element = document.createElement(name);
-            //     e.appendChild(element);
-            //     this.render(iterator, element, creator);
-            //     continue;
-            // }
-
-            // if (name[isAtomControl]) {
-            //     const forName = attributes?.for;
-            //     const ctrl = new (name)(this.app,
-            //         forName ? document.createElement(forName) : undefined);
-            //     const element = ctrl.element ;
-            //     if (renderFirst) {
-            //         ctrl.render(iterator, element, creator);
-            //         e.appendChild(element);
-            //         continue;
-            //     }
-            //     e.appendChild(element);
-            //     ctrl.render(iterator, element, creator);
-            //     continue;
-            // }
-
-            // if (name[elementFactory]) {
-            //     const element = new (name)();
-            //     this.render(iterator, element, creator);
-            //     e.appendChild(element);
-            //     continue;
-            // }
-            // // throw new Error("Invalid name type");
-
-            // const c = AtomBridge.createNode(iterator, app);
-            // if (renderFirst) {
-            //     (c.control || this).render(iterator, c.element, creator);
-            // }
-            // if (this.element === e) {
-            //     this.append(c.control || c.element);
-            // } else {
-            //     e.appendChild(c.element);
-            // }
-            // if (!renderFirst) {
-            //     (c.control || this).render(iterator, c.element, creator);
-            // }
         }
 
     }
@@ -660,22 +609,15 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             // tslint:disable-next-line: no-console
             console.log(`Creating ${name}`);
             const element = document.createElement(name);
-            e.appendChild(element);
+            e?.appendChild(element);
             this.render(iterator, element, creator);
             return element;
-        }
-
-        const a = name[attached];
-        if (a) {
-            const child = this.createNode(app, e, iterator.children[0], creator);
-            a(e, child);
-            return e;
         }
 
         if (name[elementFactory]) {
             const element = new (name)();
             this.render(iterator, element, creator);
-            e.appendChild(element);
+            e?.appendChild(element);
             return element;
         }
 
@@ -686,10 +628,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             const element = ctrl.element ;
             if (renderFirst) {
                 ctrl.render(iterator, element, creator);
-                e.appendChild(element);
+                e?.appendChild(element);
                 return;
             }
-            e.appendChild(element);
+            e?.appendChild(element);
             ctrl.render(iterator, element, creator);
             return element;
         }
@@ -706,7 +648,15 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 pv.push(this.createNode(app, e, child, creator));
             }
             const element = new (name.bind.apply(name, pv))();
+            e?.appendChild(element);
             return element;
+        }
+
+        const a = name[attached];
+        if (a) {
+            const child = this.createNode(app, null, iterator.children[0], creator);
+            a(e, child);
+            return e;
         }
 
         throw new Error(`not implemented create for ${iterator.name}`);
