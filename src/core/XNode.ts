@@ -89,7 +89,11 @@ export const constructorNeedsArgumentsSymbol = Symbol("constructorNeedsArguments
 
 const attach = (name, attacher) => {
     const key = `:${name}`;
-    const fx = (v) => ({[key]: (e) => attacher(e, v)});
+    const fx = (v) => {
+        return {
+            [key]: v
+        };
+    };
     fx[attachedSymbol] = attacher;
     fx[isFactorySymbol] = key;
     return fx;

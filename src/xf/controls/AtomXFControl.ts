@@ -111,7 +111,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     protected setElementValue(element: any, name: string, value: any): void {
         if (name.startsWith(":")) {
             // value is a function...
-            value(element);
+            AtomBridge.instance.setValue(element, name, value);
             return;
         }
         if (/^event/.test(name)) {
