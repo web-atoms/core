@@ -665,6 +665,20 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             return element;
         }
 
+        const a = name[attached];
+        if (a) {
+            const child = this.createNode(app, e, iterator.children[0], creator);
+            a(e, child);
+            return e;
+        }
+
+        if (name[elementFactory]) {
+            const element = new (name)();
+            this.render(iterator, element, creator);
+            e.appendChild(element);
+            return element;
+        }
+
         if (name[isAtomControl]) {
             const forName = attributes?.for;
             const ctrl = new (name)(app,
@@ -677,13 +691,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             e.appendChild(element);
             ctrl.render(iterator, element, creator);
-            return element;
-        }
-
-        if (name[elementFactory]) {
-            const element = new (name)();
-            this.render(iterator, element, creator);
-            e.appendChild(element);
             return element;
         }
 
@@ -700,13 +707,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             const element = new (name.bind.apply(name, pv))();
             return element;
-        }
-
-        const a = name[attached];
-        if (a) {
-            const child = this.createNode(app, e, iterator.children[0], creator);
-            a(e, child);
-            return e;
         }
 
         throw new Error(`not implemented create for ${iterator.name}`);
