@@ -600,7 +600,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return result;
     }
 
-    private createNode(app, e, iterator, creator) {
+    protected createNode(app, e, iterator, creator) {
         const name = iterator.name;
         const attributes = iterator.attributes;
         if (typeof name === "string") {
@@ -615,6 +615,23 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
 
         if (name[elementFactory]) {
+
+            if (name[constructorNeedsArguments]) {
+                // look for Arguments..
+                const firstChild = iterator.children?.[0];
+                const childName = firstChild?.name;
+                if (childName !== "WebAtoms.AtomX:Arguments") {
+                    throw new Error("Arguments expected");
+                }
+                const pv = [null];
+                for (const child of firstChild.children) {
+                    pv.push(this.createNode(app, e, child, creator));
+                }
+                const element1 = new (name.bind.apply(name, pv))();
+                e?.appendChild(element1);
+                return element1;
+            }
+
             const element = new (name)();
             this.render(iterator, element, creator);
             e?.appendChild(element);
@@ -633,22 +650,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
             e?.appendChild(element);
             ctrl.render(iterator, element, creator);
-            return element;
-        }
-
-        if (name[constructorNeedsArguments]) {
-            // look for Arguments..
-            const firstChild = iterator.children?.[0];
-            const childName = firstChild?.name;
-            if (childName !== "WebAtoms.AtomX:Arguments") {
-                throw new Error("Arguments expected");
-            }
-            const pv = [null];
-            for (const child of firstChild.children) {
-                pv.push(this.createNode(app, e, child, creator));
-            }
-            const element = new (name.bind.apply(name, pv))();
-            e?.appendChild(element);
             return element;
         }
 
