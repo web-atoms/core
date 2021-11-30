@@ -519,11 +519,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 e.appendChild(document.createTextNode(iterator));
                 continue;
             }
-            if (iterator.isTemplate) {
-                if (iterator.isProperty) {
+            if (iterator.isProperty) {
+                if (iterator.isTemplate) {
                     this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(app, iterator.children[0], creator));
                 } else {
-                    e.appendChild(AtomBridge.toTemplate(app, iterator, creator));
+                    e.appendChild(this.createNode(app, e, iterator, creator));
                 }
                 continue;
             }
