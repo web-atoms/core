@@ -86,9 +86,11 @@ export const attachedSymbol = Symbol("attached");
 export const constructorNeedsArgumentsSymbol = Symbol("constructorNeedsArguments");
 
 const attach = (name, attacher) => {
-    const fx = () => ({[`:${name}`]: attacher});
+    const key = `:${name}`;
+    const fx = () => ({[key]: attacher});
     fx[attachedSymbol] = attacher;
     fx[isFactory] = fx;
+    fx.name = key;
     return fx;
 };
 
