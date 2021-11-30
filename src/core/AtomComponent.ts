@@ -51,6 +51,8 @@ const localBridge = AtomBridge;
 
 const renderFirst = AtomBridge.platform === "xf";
 
+const attached = XNode.attached;
+
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
@@ -678,6 +680,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             this.render(iterator, element, creator);
             e.appendChild(element);
             return element;
+        }
+
+        const a = name[attached];
+        if (a) {
+            const child = this.createNode(app, e, iterator.children[0], creator);
+            a(e, child);
+            return e;
         }
 
         throw new Error(`not implemented create for ${iterator.name}`);

@@ -109,6 +109,11 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     protected setElementValue(element: any, name: string, value: any): void {
+        if (name.startsWith(":")) {
+            // value is a function...
+            value(element);
+            return;
+        }
         if (/^event/.test(name)) {
             this.bindEvent(element, name.substr(5), async () => {
                 try {

@@ -81,11 +81,15 @@ export const isControl = Symbol("isControl");
 
 export const isFactory = Symbol("isFactory");
 
+export const attached = Symbol("attached");
+
 export default class XNode {
 
     public static elementFactory = isFactory;
 
     public static bindSymbol = bindSymbol;
+
+    public static attached = attached;
 
     public static classes: {[key: string]: any } = {};
 
@@ -136,7 +140,7 @@ export default class XNode {
     //     } as any;
     // }
 
-    public static attached = (name: string): AttachedNode => (n) => ({ [name]: n });
+    // public static attached = (name: string): AttachedNode => (n) => ({ [name]: n });
 
     // public static property(): NodeFactory {
     //     return {
