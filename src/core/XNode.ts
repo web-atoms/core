@@ -89,8 +89,7 @@ const attach = (name, attacher) => {
     const key = `:${name}`;
     const fx = () => ({[key]: attacher});
     fx[attachedSymbol] = attacher;
-    fx[isFactory] = fx;
-    fx.name = key;
+    fx[isFactory] = key;
     return fx;
 };
 
