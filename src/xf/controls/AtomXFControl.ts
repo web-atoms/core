@@ -201,9 +201,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
             if (objectHasOwnProperty.call(name, constructorNeedsArguments)) {
 
-                if (objectHasOwnProperty.call(name, isTemplate)) {
+                const templateFactory = name[isTemplate];
+                if (templateFactory) {
                     const template = this.toTemplate(app, iterator, creator);
-                    return new (name)(template);
+                    return templateFactory(template);
                 }
 
                 // look for Arguments..
