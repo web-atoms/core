@@ -181,7 +181,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     protected createNode(app, e, iterator, creator) {
-        const name = iterator.name;
+        let name = iterator.name;
         const attributes = iterator.attributes;
         if (typeof name === "string") {
             e.appendChild(name);
@@ -210,12 +210,15 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                 // look for Arguments..
                 const firstChild = iterator.children?.[0];
                 const childName = firstChild?.name;
-                if (childName !== "WebAtoms.AtomX:Arguments") {
-                    throw new Error("Arguments expected");
-                }
-                const pv = [];
-                for (const child of firstChild.children) {
-                    pv.push(this.createNode(app, e, child, creator));
+                let pv: any[];
+                if (childName === "WebAtoms.AtomX:Arguments") {
+                    pv = [];
+                    for (const child of firstChild.children) {
+                        pv.push(this.createNode(app, e, child, creator));
+                    }
+                } else {
+                    pv = iterator.children;
+                    name = [constructorNeedsArguments];
                 }
                 const element1 = name(... pv);
                 e?.appendChild(element1);
