@@ -134,7 +134,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     protected setElementValue(element: any, name: string, value: any): void {
-        if (name.startsWith(":")) {
+        if (typeof name === "number") {
             // value is a function...
             attachedProperties[name](element, value);
             return;
@@ -249,7 +249,9 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     protected toTemplate(app, iterator, creator): any {
-        const name = iterator.name;
+        const childNode = iterator.children[0];
+
+        const name = childNode.name;
         if (typeof name === "string") {
             throw new Error(`Creating Template from string not supported, are you missing something?`);
         }
@@ -259,7 +261,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
                 public create() {
                     super.create();
-                    this.render(iterator, null, creator);
+                    this.render(childNode, null, creator);
                 }
             };
         }
@@ -271,7 +273,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
             public create() {
                 super.create();
-                this.render(iterator, null, creator);
+                this.render(childNode, null, creator);
             }
         };
     }

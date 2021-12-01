@@ -89,12 +89,12 @@ export const isTemplateSymbol = Symbol("isTemplate");
 
 export const constructorNeedsArgumentsSymbol = Symbol("constructorNeedsArguments");
 
-export const attachedProperties: { [key: string]: (e, v) => void } = {};
+export const attachedProperties: Array<(e,v) => void> = [];
 
-let attachedId = 1;
+let attachedId = 0;
 
 const attach = (name, attacher) => {
-    const key = `:${attachedId++}`;
+    const key = attachedId++;
     const fx = (v) => {
         return {
             [key]: v
