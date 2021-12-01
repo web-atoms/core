@@ -218,7 +218,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                     }
                 } else {
                     pv = iterator.children;
-                    name = [constructorNeedsArguments];
+                    name = name[constructorNeedsArguments];
                 }
                 const element1 = name(... pv);
                 e?.appendChild(element1);
