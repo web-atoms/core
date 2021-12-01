@@ -134,7 +134,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     protected setElementValue(element: any, name: string, value: any): void {
-        if (typeof name === "number") {
+        if (name.startsWith(":")) {
             // value is a function...
             attachedProperties[name](element, value);
             return;
