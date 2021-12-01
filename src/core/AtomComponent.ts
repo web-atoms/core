@@ -483,7 +483,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 if (attr.hasOwnProperty(key)) {
                     const item = attr[key];
                     const isObject = typeof item === "object";
-                    if (isObject) {
+                    // a bug in JavaScript, null is an object
+                    if (isObject && item !== null) {
                         const localSymbol = item[localBindSymbol];
                         if (localSymbol) {
                             localSymbol(key, this, e, creator);
