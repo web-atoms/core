@@ -85,6 +85,8 @@ export const isFactorySymbol = Symbol("isFactory");
 
 export const attachedSymbol = Symbol("attached");
 
+export const isTemplateSymbol = Symbol("isTemplate");
+
 export const constructorNeedsArgumentsSymbol = Symbol("constructorNeedsArguments");
 
 export const attachedProperties: { [key: string]: (e, v) => void } = {};
@@ -111,6 +113,8 @@ export default class XNode {
     public static elementFactory = elementFactorySymbol;
 
     public static bindSymbol = bindSymbol;
+
+    public static isTemplate = isTemplateSymbol;
 
     public static prepareAttached = attach;
 

@@ -529,17 +529,21 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 for (const child of iterator.children) {
 
                     // this case of Xamarin Forms only..
-                    const childName = child.name;
-                    if (childName[isControl]) {
-                        const c1 = new (childName)(this.app);
-                        c1.render(child, c1.element, creator);
-                        (localBridge as any).instance.append(e, iterator.name, c1.element);
-                        continue;
-                    }
 
-                    const c2 = new (childName)();
-                    this.render(child, c2, creator);
-                    (localBridge as any).instance.append(e, iterator.name, c2);
+                    const e1 = this.createNode(app, null, child, creator);
+                    this.setLocalValue(e, iterator.name, e1);
+
+                    // const childName = child.name;
+                    // if (childName[isControl]) {
+                    //     const c1 = new (childName)(this.app);
+                    //     c1.render(child, c1.element, creator);
+                    //     (localBridge as any).instance.append(e, iterator.name, c1.element);
+                    //     continue;
+                    // }
+
+                    // const c2 = new (childName)();
+                    // this.render(child, c2, creator);
+                    // (localBridge as any).instance.append(e, iterator.name, c2);
                     // const pc = AtomBridge.createNode(child, app);
                     // (pc.control || this).render(child, pc.element, creator);
 
@@ -600,109 +604,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return result;
     }
 
-    protected createNode(app, e, iterator, creator) {
-        const name = iterator.name;
-        const attributes = iterator.attributes;
-        if (typeof name === "string") {
-            // document.createElement...
-            // const element = document.createElement(name);
-            // tslint:disable-next-line: no-console
-            console.log(`Creating ${name}`);
-            const element = document.createElement(name);
-            e?.appendChild(element);
-            this.render(iterator, element, creator);
-            return element;
-        }
+    protected abstract createNode(app, e, iterator, creator);
 
-        if (objectHasOwnProperty.call(name, elementFactory)) {
-
-            if (objectHasOwnProperty.call(name, constructorNeedsArguments)) {
-                // look for Arguments..
-                const firstChild = iterator.children?.[0];
-                const childName = firstChild?.name;
-                if (childName !== "WebAtoms.AtomX:Arguments") {
-                    throw new Error("Arguments expected");
-                }
-                const pv = [];
-                for (const child of firstChild.children) {
-                    pv.push(this.createNode(app, e, child, creator));
-                }
-                const element1 = name(... pv);
-                e?.appendChild(element1);
-                return element1;
-            }
-
-            const element = new (name)();
-            this.render(iterator, element, creator);
-            e?.appendChild(element);
-            return element;
-        }
-
-        if (name[isAtomControl]) {
-            const forName = attributes?.for;
-            const ctrl = new (name)(app,
-                forName ? document.createElement(forName) : undefined);
-            const element = ctrl.element ;
-            if (renderFirst) {
-                ctrl.render(iterator, element, creator);
-                e?.appendChild(element);
-                return;
-            }
-            e?.appendChild(element);
-            ctrl.render(iterator, element, creator);
-            return element;
-        }
-
-        const a = name[attached];
-        if (a) {
-            const child = this.createNode(app, null, iterator.children[0], creator);
-            a(e, child);
-            return e;
-        }
-
-        throw new Error(`not implemented create for ${iterator.name}`);
-    }
-
-    protected toTemplate(app, iterator, creator) {
-        const name = iterator.name;
-        if (typeof name === "string") {
-            const b = this.factory;
-            return class Template extends (b) {
-                constructor(a, e) {
-                    super(a ?? app, e ?? document.createElement(name));
-                }
-
-                public create() {
-                    super.create();
-                    this.render(iterator, null, creator);
-                }
-            };
-        }
-
-        if (name[isAtomControl]) {
-            return class Template extends (name as any) {
-                constructor(a, e) {
-                    super(a ?? app, e ?? document.createElement(name));
-                }
-
-                public create() {
-                    super.create();
-                    this.render(iterator, null, creator);
-                }
-            };
-        }
-        const f = this.factory;
-        return class ElementTemplate extends (f as any) {
-            constructor(a, e) {
-                super(a ?? app, e ?? document.createElement(name));
-            }
-
-            public create() {
-                super.create();
-                this.render(iterator, null, creator);
-            }
-        };
-    }
+    protected abstract toTemplate(app, iterator, creator);
 
     protected abstract get factory(): any;
 

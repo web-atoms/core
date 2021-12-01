@@ -5,10 +5,13 @@ import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import FormattedString from "../../core/FormattedString";
 import WebImage from "../../core/WebImage";
+import { isControl } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
+
+const isAtomControl = isControl;
 
 // export { default as WebApp } from "../WebApp";
 
@@ -311,6 +314,60 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
     }
 
+    protected createNode(app, e, iterator, creator) {
+        const name = iterator.name;
+        const attributes = iterator.attributes;
+        if (typeof name === "string") {
+            const element = document.createElement(name);
+            e?.appendChild(element);
+            this.render(iterator, element, creator);
+            return element;
+        }
+
+        if (name[isAtomControl]) {
+            const forName = attributes?.for;
+            const ctrl = new (name)(app,
+                forName ? document.createElement(forName) : undefined);
+            const element = ctrl.element ;
+            e?.appendChild(element);
+            ctrl.render(iterator, element, creator);
+            return element;
+        }
+
+        throw new Error(`not implemented create for ${iterator.name}`);
+    }
+
+    protected toTemplate(app, iterator, creator) {
+        const name = iterator.name;
+        if (typeof name === "string") {
+            return class Template extends AtomControl {
+                constructor(a, e) {
+                    super(a ?? app, e ?? document.createElement(name));
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, null, creator);
+                }
+            };
+        }
+
+        if (name[isAtomControl]) {
+            return class Template extends (name as any) {
+                constructor(a, e) {
+                    super(a ?? app, e ?? document.createElement(name));
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, null, creator);
+                }
+            };
+        }
+
+        throw new Error(`Creating template from ${name} not supported`);
+
+    }
 }
 
 bridgeInstance.controlFactory = AtomControl;

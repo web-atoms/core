@@ -1,9 +1,9 @@
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge, BaseElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
-import Bind from "../../core/Bind";
+import Bind, { bindSymbol } from "../../core/Bind";
 import { IAtomElement } from "../../core/types";
-import XNode, { attachedProperties } from "../../core/XNode";
+import XNode, { attachedProperties, attachedSymbol, constructorNeedsArgumentsSymbol, elementFactorySymbol, isControl, isFactorySymbol, isTemplateSymbol, xnodeSymbol } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../../web/styles/AtomStyle";
@@ -16,6 +16,27 @@ UMD.viewPrefix = "xf";
 AtomBridge.platform = "xf";
 
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
+
+const isAtomControl = isControl;
+
+const isTemplate = isTemplateSymbol;
+
+const objectHasOwnProperty = Object.prototype.hasOwnProperty;
+
+const localBindSymbol = bindSymbol;
+const localXNodeSymbol = xnodeSymbol;
+
+const elementFactory = elementFactorySymbol;
+
+const isFactory = isFactorySymbol;
+
+const localBridge = AtomBridge;
+
+const renderFirst = AtomBridge.platform === "xf";
+
+const attached = attachedSymbol;
+
+const constructorNeedsArguments = constructorNeedsArgumentsSymbol;
 
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
@@ -157,6 +178,101 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         }
         // AtomBridge.instance.setValue(element, name, value);
         element[name] = value;
+    }
+
+    protected createNode(app, e, iterator, creator) {
+        const name = iterator.name;
+        const attributes = iterator.attributes;
+        if (typeof name === "string") {
+            e.appendChild(name);
+            return e;
+            // throw new Error("not supported");
+            // // document.createElement...
+            // // const element = document.createElement(name);
+            // // tslint:disable-next-line: no-console
+            // console.log(`Creating ${name}`);
+            // const element = document.createElement(name);
+            // e?.appendChild(element);
+            // this.render(iterator, element, creator);
+            // return element;
+        }
+
+        if (objectHasOwnProperty.call(name, elementFactory)) {
+
+            if (objectHasOwnProperty.call(name, constructorNeedsArguments)) {
+
+                if (objectHasOwnProperty.call(name, isTemplate)) {
+                    const template = this.toTemplate(app, iterator, creator);
+                    return new (name)(template);
+                }
+
+                // look for Arguments..
+                const firstChild = iterator.children?.[0];
+                const childName = firstChild?.name;
+                if (childName !== "WebAtoms.AtomX:Arguments") {
+                    throw new Error("Arguments expected");
+                }
+                const pv = [];
+                for (const child of firstChild.children) {
+                    pv.push(this.createNode(app, e, child, creator));
+                }
+                const element1 = name(... pv);
+                e?.appendChild(element1);
+                return element1;
+            }
+
+            const element = new (name)();
+            this.render(iterator, element, creator);
+            e?.appendChild(element);
+            return element;
+        }
+
+        if (name[isAtomControl]) {
+            const forName = attributes?.for;
+            const ctrl = new (name)(app,
+                forName ? document.createElement(forName) : undefined);
+            const element = ctrl.element ;
+            ctrl.render(iterator, element, creator);
+            e?.appendChild(element);
+            return element;
+        }
+
+        const a = name[attached];
+        if (a) {
+            const child = this.createNode(app, null, iterator.children[0], creator);
+            a(e, child);
+            return e;
+        }
+
+        throw new Error(`not implemented create for ${name}`);
+    }
+
+    protected toTemplate(app, iterator, creator): any {
+        const name = iterator.name;
+        if (typeof name === "string") {
+            throw new Error(`Creating Template from string not supported, are you missing something?`);
+        }
+
+        if (name[isAtomControl]) {
+            return class Template extends (name as any) {
+
+                public create() {
+                    super.create();
+                    this.render(iterator, null, creator);
+                }
+            };
+        }
+
+        return class ElementTemplate extends AtomXFControl {
+            constructor(a, e) {
+                super(a ?? app, e ?? new (name)());
+            }
+
+            public create() {
+                super.create();
+                this.render(iterator, null, creator);
+            }
+        };
     }
 
 }
