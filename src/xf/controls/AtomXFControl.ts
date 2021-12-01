@@ -229,9 +229,7 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         }
 
         if (name[isAtomControl]) {
-            const forName = attributes?.for;
-            const ctrl = new (name)(app,
-                forName ? document.createElement(forName) : undefined);
+            const ctrl = new (name)(app);
             const element = ctrl.element ;
             ctrl.render(iterator, element, creator);
             e?.appendChild(element);
@@ -258,6 +256,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
         if (name[isAtomControl]) {
             return class Template extends (name as any) {
+
+                constructor(a, e) {
+                    super(a ?? app, e);
+                }
 
                 public create() {
                     super.create();
