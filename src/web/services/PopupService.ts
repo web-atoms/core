@@ -72,10 +72,10 @@ export default class PopupService {
         };
 
         // find host...
-        let host = opener.parentElement as HTMLElement;
+        let host = opener.offsetParent as HTMLElement;
         while (host) {
             const current = host;
-            host = host.parentElement as HTMLElement;
+            host = host.offsetParent as HTMLElement;
             if (host === document.body) {
                 // we have reached top...
                 break;
