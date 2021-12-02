@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es6",
         "module":"umd",
+        "incremental": true,
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
