@@ -156,7 +156,7 @@ export class AtomStyleRules {
         if (typeof name === "string") {
             this.name = name;
         } else {
-            this.style = name;
+            this.style = name ?? {};
         }
     }
 
