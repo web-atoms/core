@@ -150,7 +150,15 @@ export class AtomStyleRules {
 
     public style: IStyleDeclaration = {};
 
-    constructor(public name: string) {}
+    public name: string;
+
+    constructor(name: string | object) {
+        if (typeof name === "string") {
+            this.name = name;
+        } else {
+            this.style = name;
+        }
+    }
 
     public alignContent(value: ContentAlignType) {
         if (value !== undefined && value !== null) {
@@ -3087,7 +3095,7 @@ function createStyleText(name: string, pairs: string[], styles: IStyleDeclaratio
     }
 
     if (!name) {
-        return styleList;
+        return [styleList.join(";")];
     }
 
     const cname = fromCamelToHyphen(name);
