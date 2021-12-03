@@ -25,7 +25,7 @@ function createStyleText(name: string, styles: IStyleDeclaration): string[] {
                 for (const subclassKey in element) {
                     if (element.hasOwnProperty(subclassKey)) {
                         const ve = element[subclassKey];
-                        subclasses.push(createStyleText(`${n}${subclassKey}`, ve));
+                        subclasses.push( ... createStyleText(`${n}${subclassKey}`, ve));
                     }
                 }
             } else {
