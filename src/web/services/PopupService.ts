@@ -67,7 +67,7 @@ export default class PopupService {
 
         const offset = {
             x: opener.offsetLeft,
-            y: opener.offsetHeight,
+            y: opener.offsetTop + opener.offsetHeight,
             handler: null
         };
 
@@ -133,6 +133,9 @@ export default class PopupService {
         offset.handler = (e: Event) => {
             let start = e.target as HTMLElement;
             while (start) {
+                if (start === host) {
+                    break;
+                }
                 if (start === opener) {
                     return;
                 }
