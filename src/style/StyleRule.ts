@@ -997,7 +997,7 @@ export class AtomStyleRules {
         return this;
     }
 
-    public gap(value: number, unit: Units = "px") {
+    public gap(value: number | string, unit: Units = "px") {
         if (value !== undefined && value !== null) {
             this.style.gap = toUnit(value, unit);
         }
