@@ -173,6 +173,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
+        if (/^data\-/.test(name)) {
+            name = name.substring(5);
+            element.dataset[name] = value;
+            return;
+        }
+
         if (/^style/.test(name)) {
 
             if (name.length === 5) {
