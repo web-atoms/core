@@ -41,7 +41,7 @@ function createStyleText(name: string, pairs: string[], styles: IStyleDeclaratio
     const styleClassName = `${cname}`;
 
     if (styleList.length) {
-        pairs.push(`.${styleClassName} { ${styleList.join(";\r\n")}; }`);
+        return [`.${styleClassName} { ${styleList.join(";\r\n")}; }`, ... pairs];
     }
     return pairs;
 }
@@ -62,4 +62,3 @@ export default function CSS(style: IStyleDeclaration | AtomStyleRules): string {
     document.head.appendChild(s);
     return name;
 }
-
