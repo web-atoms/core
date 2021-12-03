@@ -42,7 +42,7 @@ function createStyleText(name: string, styles: IStyleDeclaration): string[] {
     const styleClassName = `${cname}`;
 
     if (styleList.length) {
-        return [`.${styleClassName} { ${styleList.join(";\r\n")}; }`, ... subclasses];
+        return [`.${styleClassName} {\r\n ${styleList.join(";\r\n")}; }`, ... subclasses];
     }
     return subclasses;
 }
