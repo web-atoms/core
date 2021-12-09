@@ -32,6 +32,13 @@ function getParent(e: HTMLElement): AtomControl {
     }
 }
 
+export interface IPopup {
+    element: HTMLElement;
+    disposables: AtomDisposableList;
+    dispose();
+    registerDisposable(f: any);
+}
+
 @DISingleton({})
 export default class PopupService {
 
@@ -48,8 +55,8 @@ export default class PopupService {
     public show(
         opener: HTMLElement,
         popup: HTMLElement,
-        options?: IPopupOptions) {
-        const container = {
+        options?: IPopupOptions): IPopup {
+        const container: IPopup = {
             element: document.createElement("div"),
             disposables: new AtomDisposableList(),
             registerDisposable: null,
