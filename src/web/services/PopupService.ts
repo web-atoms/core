@@ -1,3 +1,4 @@
+import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Colors from "../../core/Colors";
 import DISingleton from "../../di/DISingleton";
 import StyleRule from "../../style/StyleRule";
@@ -50,8 +51,11 @@ export default class PopupService {
         options?: IPopupOptions) {
         const container = {
             element: document.createElement("div"),
-            dispose: null
+            disposables: new AtomDisposableList(),
+            registerDisposable: null,
+            dispose: null,
         };
+        container.registerDisposable = (f) => container.disposables.add(f);
         const popupStyle = options?.popupStyle ?? popupCss;
         container.element._logicalParent = opener;
         container.element.classList.add(popupStyle);
@@ -118,6 +122,7 @@ export default class PopupService {
 
         host.appendChild(container.element);
         container.dispose = () => {
+            container.disposables.dispose();
             host.removeEventListener("click", offset.handler);
             const parent = getParent(opener);
             parent.dispose(container.element);
