@@ -1,43 +1,34 @@
 import Colors from "../../core/Colors";
 import DISingleton from "../../di/DISingleton";
+import StyleRule from "../../style/StyleRule";
 import { AtomControl } from "../controls/AtomControl";
-import { AtomStyle } from "../styles/AtomStyle";
-import { IStyleDeclaration } from "../styles/IStyleDeclaration";
+import CSS from "../styles/CSS";
 
-const containerKey = Symbol("popupContainer");
-
-export class PopupStyle extends AtomStyle {
-    public get root(): IStyleDeclaration {
-        return {
-            padding: "5px",
-            backgroundColor: Colors.white,
-            border: "solid 1px lightgray",
-            borderRadius: "5px",
-            boxShadow: "rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;",
-            display: "inline-block"
-        };
-    }
-}
-
-class PopupContainer extends AtomControl {
-
-    public preCreate() {
-        super.preCreate();
-        this.defaultControlStyle = PopupStyle;
-
-        this.runAfterInit(() => {
-            this.element.classList.add(this.controlStyle.name);
-        });
-    }
-
-}
+const popupCss = CSS(StyleRule("popup")
+    .padding(5)
+    .backgroundColor(Colors.white)
+    .border("solid 1px lightgray")
+    .borderRadius(5)
+    .boxShadow("rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;")
+    .display("inline-block")
+);
 
 export interface IPopupOptions {
     /**
      * Popup alignment, default is auto starting with right and below
      */
     alignment?: "left" | "right" | "auto" | "above" | "below";
-    popupStyle?: PopupStyle;
+    popupStyle?: string;
+}
+
+function getParent(e: HTMLElement): AtomControl {
+    let start = e;
+    while (start) {
+        if (start.atomControl) {
+            return start.atomControl;
+        }
+        start = start._logicalParent ?? start.parentElement;
+    }
 }
 
 @DISingleton({})
@@ -49,22 +40,22 @@ export default class PopupService {
      * Display given popup attached to given opener and returns
      * disposable that can be used to dispose the popup
      * @param opener Element which opens this popup
-     * @param popup Popup Control
+     * @param popup Popup Element, it must be rendered within the opener's parent
      * @param options IPopupOptions
      * @returns IDisposable
      */
     public show(
         opener: HTMLElement,
-        popup: AtomControl,
+        popup: HTMLElement,
         options?: IPopupOptions) {
-        const container = new PopupContainer(popup.app);
-        const popupStyle = options?.popupStyle;
-        if (popupStyle) {
-            container.controlStyle = popupStyle;
-        }
-        container.element.appendChild(popup.element);
-        popup[containerKey] = container;
-
+        const container = {
+            element: document.createElement("div"),
+            dispose: null
+        };
+        const popupStyle = options?.popupStyle ?? popupCss;
+        container.element._logicalParent = opener;
+        container.element.classList.add(popupStyle);
+        container.element.appendChild(popup);
         const offset = {
             x: opener.offsetLeft,
             y: opener.offsetTop + opener.offsetHeight,
@@ -126,9 +117,12 @@ export default class PopupService {
         style.zIndex = `${this.id++}`;
 
         host.appendChild(container.element);
-        container.registerDisposable({
-            dispose: () => host.removeEventListener("click", offset.handler)
-        });
+        container.dispose = () => {
+            host.removeEventListener("click", offset.handler);
+            const parent = getParent(opener);
+            parent.dispose(container.element);
+            container.element.remove();
+        };
 
         offset.handler = (e: Event) => {
             let start = e.target as HTMLElement;
@@ -150,17 +144,7 @@ export default class PopupService {
 
         host.addEventListener("click", offset.handler);
 
-        return {
-            dispose: () => {
-                this.hide(popup);
-            }
-        };
-    }
-
-    public hide(popup: AtomControl) {
-        const container = popup[containerKey] as PopupContainer;
-        container?.element?.remove();
-        container?.dispose();
+        return container;
     }
 
 }
