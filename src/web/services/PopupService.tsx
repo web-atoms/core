@@ -1,7 +1,7 @@
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Colors from "../../core/Colors";
 import { CancelToken, IClassOf } from "../../core/types";
-import XNode from "../../core/XNode";
+import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
 import DISingleton from "../../di/DISingleton";
 import StyleRule from "../../style/StyleRule";
 import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
@@ -127,6 +127,7 @@ export default class PopupService {
                     } else {
                         reject();
                     }
+                    control.element.remove();
                     control.dispose();
                 }
             };
