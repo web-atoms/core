@@ -105,7 +105,7 @@ export default class PopupService {
     public showWindow<T>(
         opener: HTMLElement,
         popupClass: IClassOf<PopupWindow>,
-        popupOptions: IDialogOptions
+        popupOptions?: IDialogOptions
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const parent = getParent(opener);
