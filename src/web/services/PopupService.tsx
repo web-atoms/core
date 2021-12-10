@@ -2,7 +2,7 @@ import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import Colors from "../../core/Colors";
-import { CancelToken, IClassOf } from "../../core/types";
+import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
 import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
 import DISingleton from "../../di/DISingleton";
 import StyleRule from "../../style/StyleRule";
@@ -111,6 +111,39 @@ export class PopupWindow extends AtomControl {
             </div>
             { node }
         </div>);
+    }
+
+    private setupDragging(tp: HTMLElement): void {
+        this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
+            startEvent.preventDefault();
+            const disposables: IDisposable[] = [];
+            // const offset = AtomUI.screenOffset(tp);
+            const offset = { x: tp.parentElement.offsetLeft, y: tp.parentElement.offsetTop };
+            const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
+            const cursor = tp.style.cursor;
+            tp.style.cursor = "move";
+            disposables.push(this.bindEvent(document.body, "mousemove", (moveEvent: MouseEvent) => {
+                const { clientX, clientY } = moveEvent;
+                const dx = clientX - rect.x;
+                const dy = clientY - rect.y;
+
+                offset.x += dx;
+                offset.y += dy;
+
+                this.element.style.left = offset.x + "px";
+                this.element.style.top = offset.y + "px";
+                this.element.style.transform = "";
+
+                rect.x = clientX;
+                rect.y = clientY;
+            }));
+            disposables.push(this.bindEvent(document.body, "mouseup", (endEvent: MouseEvent) => {
+                tp.style.cursor = cursor;
+                for (const iterator of disposables) {
+                    iterator.dispose();
+                }
+            }));
+        });
     }
 
 }
