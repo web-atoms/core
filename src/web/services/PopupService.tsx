@@ -102,7 +102,7 @@ export class PopupWindow extends AtomControl {
         }
         this.hostCreated = true;
         super.render(<div class={dialogCss}>
-            <div class="title">
+            <div class="title title-host">
                 <span class="title-text" text={Bind.oneWay(() => this.title)}/>
                 <button
                     class="close-button"
@@ -111,6 +111,8 @@ export class PopupWindow extends AtomControl {
             </div>
             { node }
         </div>);
+        const host = this.element.getElementsByClassName("title-host")[0];
+        this.setupDragging(host as HTMLElement);
     }
 
     private setupDragging(tp: HTMLElement): void {
