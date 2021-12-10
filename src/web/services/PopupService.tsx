@@ -246,6 +246,9 @@ export default class PopupService {
             let isModal = false;
 
             if (popupOptions) {
+                if (popupOptions.title) {
+                    vm.title = popupOptions.title;
+                }
                 const viewModelParameters = popupOptions.parameters;
                 if (viewModelParameters) {
                     for (const key in viewModelParameters) {
