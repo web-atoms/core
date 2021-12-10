@@ -1,4 +1,6 @@
 import { AtomDisposableList } from "../../core/AtomDisposableList";
+import Bind from "../../core/Bind";
+import { BindableProperty } from "../../core/BindableProperty";
 import Colors from "../../core/Colors";
 import { CancelToken, IClassOf } from "../../core/types";
 import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
@@ -75,14 +77,24 @@ const dialogCss = CSS(StyleRule()
     )
 );
 
-class PopupWindowControl extends AtomControl {
+export class PopupWindow extends AtomControl {
 
-}
+    @BindableProperty
+    public title?: string;
 
-export function PopupWindow({}, ... nodes: XNode[]) {
-    return <PopupWindowControl>
-        { ... nodes }
-    </PopupWindowControl>;
+    protected render(node: XNode, e?: any, creator?: any): void {
+        super.render(<div class={dialogCss}>
+            <div class="title">
+                <span class="title-text" text={Bind.oneWay(() => this.title)}/>
+                <button
+                    class="close-button"
+                    text="x"
+                    eventClick={Bind.event(() => this.viewModel.cancel())}/>
+            </div>
+            { node }
+        </div>, e, creator);
+    }
+
 }
 
 @DISingleton({})
@@ -92,21 +104,17 @@ export default class PopupService {
 
     public showWindow<T>(
         opener: HTMLElement,
-        {
-            title,
-            parameters,
-            cancelToken,
-            controlClass
-        }: IDialogOptions,
-        ... nodes: XNode[]
+        popupClass: IClassOf<PopupWindow>,
+        viewModelParameters: {[key: string]: any},
+        cancelToken?: CancelToken
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const parent = getParent(opener);
-            const control = new (controlClass ?? AtomControl)(parent.app, document.createElement("div"));
+            const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
-            for (const key in parameters) {
-                if (Object.prototype.hasOwnProperty.call(parameters, key)) {
-                    const element = parameters[key];
+            for (const key in viewModelParameters) {
+                if (Object.prototype.hasOwnProperty.call(viewModelParameters, key)) {
+                    const element = viewModelParameters[key];
                     vm[key] = element;
                 }
             }
@@ -122,17 +130,6 @@ export default class PopupService {
                     control.dispose();
                 }
             };
-
-            (control as any).render(<div class={dialogCss}>
-                <div class="title">
-                    <span class="title-text" text={title}/>
-                    <button
-                        class="close-button"
-                        text="x"
-                        eventClick={() => finalize()}/>
-                </div>
-                { ... nodes}
-            </div>);
 
             const host = this.findHhost(opener);
             host.appendChild(control.element);
