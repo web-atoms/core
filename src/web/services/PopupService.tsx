@@ -140,7 +140,7 @@ export default class PopupService {
 
             vm.cancel = finalize;
             vm.close = finalize;
-            cancelToken.registerForCancel(finalize);
+            cancelToken?.registerForCancel(finalize);
 
             this.closeHandler(host, opener, control, finalize);
         });
