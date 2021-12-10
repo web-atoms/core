@@ -179,16 +179,20 @@ export default class PopupService {
 
             let resolved = false;
             const finalize = (r?) => {
-                if (!resolved) {
-                    resolved = true;
-                    if (r) {
-                        resolve(r);
-                    } else {
-                        reject();
+                // this is to allow binding events
+                // to refresh the data
+                setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        if (r) {
+                            resolve(r);
+                        } else {
+                            reject();
+                        }
+                        control.element.remove();
+                        control.dispose();
                     }
-                    control.element.remove();
-                    control.dispose();
-                }
+                }, 1);
             };
 
             let isModal = false;
