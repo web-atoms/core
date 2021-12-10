@@ -1,5 +1,6 @@
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Colors from "../../core/Colors";
+import { CancelToken } from "../../core/types";
 import DISingleton from "../../di/DISingleton";
 import StyleRule from "../../style/StyleRule";
 import { AtomControl } from "../controls/AtomControl";
@@ -18,8 +19,9 @@ export interface IPopupOptions {
     /**
      * Popup alignment, default is auto starting with right and below
      */
-    alignment?: "left" | "right" | "auto" | "above" | "below";
+    alignment?: "left" | "right" | "auto" | "above" | "below" | "centerOfScreen";
     popupStyle?: string;
+    cancelToken?: CancelToken;
 }
 
 function getParent(e: HTMLElement): AtomControl {
@@ -103,26 +105,32 @@ export default class PopupService {
 
         const style = container.element.style;
         style.position = "absolute";
-        if (!options || options?.alignment === "auto") {
 
-            // check where is more space??
-            if (offset.x < (host.offsetWidth / 2)) {
-                style.left = offset.x + "px";
-            } else {
-                style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
-            }
-
-            if (offset.y < (hostHeight / 2)) {
-                style.top = offset.y + "px";
-            } else {
-                style.bottom = `${hostHeight - (offset.y + opener.offsetHeight)}px`;
-            }
-
+        if (options?.alignment === "centerOfScreen") {
+            style.margin = "auto";
         } else {
-            if (options?.alignment === "right") {
-                style.right = `${(host.offsetWidth - (opener.offsetLeft + opener.offsetWidth))}px`;
+
+            if (!options || options?.alignment === "auto") {
+
+                // check where is more space??
+                if (offset.x < (host.offsetWidth / 2)) {
+                    style.left = offset.x + "px";
+                } else {
+                    style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
+                }
+
+                if (offset.y < (hostHeight / 2)) {
+                    style.top = offset.y + "px";
+                } else {
+                    style.bottom = `${hostHeight - (offset.y + opener.offsetHeight)}px`;
+                }
+
             } else {
-                style.left = offset.x + "px";
+                if (options?.alignment === "right") {
+                    style.right = `${(host.offsetWidth - (opener.offsetLeft + opener.offsetWidth))}px`;
+                } else {
+                    style.left = offset.x + "px";
+                }
             }
         }
         style.zIndex = `${this.id++}`;
@@ -155,6 +163,11 @@ export default class PopupService {
         };
 
         host.addEventListener("click", offset.handler);
+
+        const ct = options?.cancelToken;
+        if (ct) {
+            ct.registerForCancel(() => container.dispose());
+        }
 
         return container;
     }
