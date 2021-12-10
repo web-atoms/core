@@ -110,19 +110,7 @@ export default class PopupService {
                     vm[key] = element;
                 }
             }
-            (control as any).render(<div class={dialogCss}>
-                <div class="title">
-                    <span class="title-text" text={title}/>
-                    <button class="close-button" text="x"/>
-                </div>
-                { ... nodes}
-            </div>);
-
-            const host = this.findHhost(opener);
-            host.appendChild(control.element);
-            let resolved = false;
-
-            const finalize = (r) => {
+            const finalize = (r?) => {
                 if (!resolved) {
                     resolved = true;
                     if (r) {
@@ -134,6 +122,21 @@ export default class PopupService {
                     control.dispose();
                 }
             };
+
+            (control as any).render(<div class={dialogCss}>
+                <div class="title">
+                    <span class="title-text" text={title}/>
+                    <button
+                        class="close-button"
+                        text="x"
+                        eventClick={() => finalize()}/>
+                </div>
+                { ... nodes}
+            </div>);
+
+            const host = this.findHhost(opener);
+            host.appendChild(control.element);
+            let resolved = false;
 
             vm.cancel = finalize;
             vm.close = finalize;
