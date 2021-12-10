@@ -90,12 +90,6 @@ export default class PopupService {
             const parent = getParent(opener);
             const control = new (controlClass ?? AtomControl)(parent.app, document.createElement("div"));
             const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
-            vm.cancel = () => {
-                reject();
-            };
-            vm.close = (e) => {
-                resolve(e);
-            };
             for (const key in parameters) {
                 if (Object.prototype.hasOwnProperty.call(parameters, key)) {
                     const element = parameters[key];
@@ -114,8 +108,23 @@ export default class PopupService {
                 alignment: "centerOfScreen",
                 cancelToken
             });
-            popup.registerDisposable(control);
-            return popup;
+            let resolved = false;
+
+            const finalize = (r) => {
+                if (!resolved) {
+                    resolved = true;
+                    if (r) {
+                        resolve(r);
+                    } else {
+                        reject();
+                    }
+                }
+                popup.dispose();
+            };
+
+            vm.cancel = finalize;
+            vm.close = finalize;
+            popup.registerDisposable(finalize);
             });
     }
 
@@ -212,6 +221,10 @@ export default class PopupService {
 
         host.appendChild(container.element);
         container.dispose = () => {
+            if (!container.disposables) {
+                return;
+            }
+            container.disposables = null;
             container.disposables.dispose();
             host.removeEventListener("click", offset.handler);
             const parent = getParent(opener);
