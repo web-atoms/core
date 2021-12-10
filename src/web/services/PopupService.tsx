@@ -67,6 +67,7 @@ const dialogCss = CSS(StyleRule()
         .padding(5)
         .child(
             StyleRule(".title-text")
+            .cursor("move")
             .flexStretch()
         )
         .child(StyleRule(".close-button")
