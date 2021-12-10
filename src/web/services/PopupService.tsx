@@ -49,7 +49,7 @@ export interface IDialogOptions {
     title?: string;
     parameters?: {[key: string]: any};
     cancelToken?: CancelToken;
-    controlClass?: IClassOf<AtomControl>;
+    modal?: boolean;
 }
 
 const dialogCss = CSS(StyleRule()
@@ -105,19 +105,13 @@ export default class PopupService {
     public showWindow<T>(
         opener: HTMLElement,
         popupClass: IClassOf<PopupWindow>,
-        viewModelParameters: {[key: string]: any},
-        cancelToken?: CancelToken
+        popupOptions: IDialogOptions
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
-            for (const key in viewModelParameters) {
-                if (Object.prototype.hasOwnProperty.call(viewModelParameters, key)) {
-                    const element = viewModelParameters[key];
-                    vm[key] = element;
-                }
-            }
+
             const finalize = (r?) => {
                 if (!resolved) {
                     resolved = true;
@@ -131,15 +125,32 @@ export default class PopupService {
                 }
             };
 
+            let isModal = false;
+
+            if (popupOptions) {
+                const viewModelParameters = popupOptions.parameters;
+                if (viewModelParameters) {
+                    for (const key in viewModelParameters) {
+                        if (Object.prototype.hasOwnProperty.call(viewModelParameters, key)) {
+                            const element = viewModelParameters[key];
+                            vm[key] = element;
+                        }
+                    }
+                }
+                popupOptions.cancelToken?.registerForCancel(finalize);
+                isModal = popupOptions.modal;
+            }
+
             const host = this.findHhost(opener);
             host.appendChild(control.element);
             let resolved = false;
 
             vm.cancel = finalize;
             vm.close = finalize;
-            cancelToken?.registerForCancel(finalize);
 
-            this.closeHandler(host, opener, control, finalize);
+            if (!isModal) {
+                this.closeHandler(host, opener, control, finalize);
+            }
         });
     }
 
