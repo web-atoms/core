@@ -162,12 +162,60 @@ export class PopupWindow extends AtomControl {
 
 }
 
-@DISingleton({})
+function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLElement {
+    // find host...
+    let host = opener.offsetParent as HTMLElement;
+    while (host) {
+        const current = host;
+        if (host === document.body) {
+            // we have reached top...
+            break;
+        }
+        host = host.offsetParent as HTMLElement;
+        if (host.classList.contains("page-host")) {
+            // we have reached popup host...
+            host = current;
+            break;
+        }
+        if (!host) {
+            continue;
+        }
+        offset.x += host.offsetLeft;
+        offset.y += host.offsetTop;
+    }
+    return host;
+}
+
+function closeHandler(
+    host: HTMLElement,
+    opener: HTMLElement,
+    container, close) {
+    let handler: any = null;
+    handler = (e: Event) => {
+        let start = e.target as HTMLElement;
+        while (start) {
+            if (start === host) {
+                break;
+            }
+            if (start === opener) {
+                return;
+            }
+            if (start === container.element) {
+                return;
+            }
+            start = start.parentElement;
+        }
+        host.removeEventListener("click", handler);
+        close();
+    };
+    host.addEventListener("click", handler);
+}
+
+let popupId = 1001;
+
 export default class PopupService {
 
-    private id = 1001;
-
-    public showWindow<T>(
+    public static showWindow<T>(
         opener: HTMLElement,
         popupClass: IClassOf<PopupWindow>,
         popupOptions?: IDialogOptions
@@ -211,14 +259,14 @@ export default class PopupService {
                 isModal = popupOptions.modal;
             }
 
-            const host = this.findHhost(opener);
+            const host = findHost(opener);
             host.appendChild(control.element);
 
             vm.cancel = finalize;
             vm.close = finalize;
 
             if (!isModal) {
-                this.closeHandler(host, opener, control, finalize);
+                closeHandler(host, opener, control, finalize);
             }
         });
     }
@@ -231,7 +279,7 @@ export default class PopupService {
      * @param options IPopupOptions
      * @returns IDisposable
      */
-    public show(
+    public static show(
         opener: HTMLElement,
         popup: HTMLElement,
         options?: IPopupOptions): IPopup {
@@ -253,7 +301,7 @@ export default class PopupService {
         };
 
         // find host...
-        const host = this.findHhost(opener, offset);
+        const host = findHost(opener, offset);
         if (!host) {
             // tslint:disable-next-line: no-console
             console.warn("Aborting popup display as host no longer exists");
@@ -296,7 +344,7 @@ export default class PopupService {
                 }
             }
         }
-        style.zIndex = `${this.id++}`;
+        style.zIndex = `${popupId++}`;
 
         host.appendChild(container.element);
         container.dispose = () => {
@@ -310,7 +358,7 @@ export default class PopupService {
             container.disposables = null;
         };
 
-        this.closeHandler(host, opener, container, () => {
+        closeHandler(host, opener, container, () => {
             container.element.remove();
             container.dispose();
         });
@@ -321,55 +369,6 @@ export default class PopupService {
         }
 
         return container;
-    }
-
-    private closeHandler(
-        host: HTMLElement,
-        opener: HTMLElement,
-        container, close) {
-        let handler: any = null;
-        handler = (e: Event) => {
-            let start = e.target as HTMLElement;
-            while (start) {
-                if (start === host) {
-                    break;
-                }
-                if (start === opener) {
-                    return;
-                }
-                if (start === container.element) {
-                    return;
-                }
-                start = start.parentElement;
-            }
-            host.removeEventListener("click", handler);
-            close();
-        };
-        host.addEventListener("click", handler);
-    }
-
-    private findHhost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLElement {
-        // find host...
-        let host = opener.offsetParent as HTMLElement;
-        while (host) {
-            const current = host;
-            if (host === document.body) {
-                // we have reached top...
-                break;
-            }
-            host = host.offsetParent as HTMLElement;
-            if (host.classList.contains("page-host")) {
-                // we have reached popup host...
-                host = current;
-                break;
-            }
-            if (!host) {
-                continue;
-            }
-            offset.x += host.offsetLeft;
-            offset.y += host.offsetTop;
-        }
-        return host;
     }
 
 }
