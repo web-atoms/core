@@ -67,12 +67,16 @@ const dialogCss = CSS(StyleRule()
     )
 );
 
+class PopupWindowControl extends AtomControl {
+
+}
+
 @DISingleton({})
 export default class PopupService {
 
     private id = 1001;
 
-    public showWindow(
+    public showWindow<T>(
         opener: HTMLElement,
         {
             title,
@@ -81,30 +85,38 @@ export default class PopupService {
             controlClass
         }: IDialogOptions,
         ... nodes: XNode[]
-    ): IPopup {
-        const parent = getParent(opener);
-        const control = new (controlClass ?? AtomControl)(parent.app, document.createElement("div"));
-        const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
-        for (const key in parameters) {
-            if (Object.prototype.hasOwnProperty.call(parameters, key)) {
-                const element = parameters[key];
-                vm[key] = element;
+    ): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            const parent = getParent(opener);
+            const control = new (controlClass ?? AtomControl)(parent.app, document.createElement("div"));
+            const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
+            vm.cancel = () => {
+                reject();
+            };
+            vm.close = (e) => {
+                resolve(e);
+            };
+            for (const key in parameters) {
+                if (Object.prototype.hasOwnProperty.call(parameters, key)) {
+                    const element = parameters[key];
+                    vm[key] = element;
+                }
             }
-        }
-        (control as any).render(<div class={dialogCss}>
-            <div class="title">
-                <span class="title-text" text={title}/>
-                <button class="close-button" text="x"/>
-            </div>
-            { ... nodes}
-        </div>);
+            (control as any).render(<div class={dialogCss}>
+                <div class="title">
+                    <span class="title-text" text={title}/>
+                    <button class="close-button" text="x"/>
+                </div>
+                { ... nodes}
+            </div>);
 
-        const popup = this.show(opener, control.element, {
-            alignment: "centerOfScreen",
-            cancelToken
-        });
-        popup.registerDisposable(control);
-        return popup;
+            const popup = this.show(opener, control.element, {
+                alignment: "centerOfScreen",
+                cancelToken
+            });
+            popup.registerDisposable(control);
+            return popup;
+            });
     }
 
     /**
@@ -168,7 +180,9 @@ export default class PopupService {
         style.position = "absolute";
 
         if (options?.alignment === "centerOfScreen") {
-            style.margin = "auto";
+            style.left = "50%";
+            style.top = "50%";
+            style.transform = "translate(-50%,-50%)";
         } else {
 
             if (!options || options?.alignment === "auto") {
