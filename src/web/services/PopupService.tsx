@@ -130,6 +130,7 @@ export default class PopupService {
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
 
+            let resolved = false;
             const finalize = (r?) => {
                 if (!resolved) {
                     resolved = true;
@@ -161,7 +162,6 @@ export default class PopupService {
 
             const host = this.findHhost(opener);
             host.appendChild(control.element);
-            let resolved = false;
 
             vm.cancel = finalize;
             vm.close = finalize;
@@ -278,7 +278,6 @@ export default class PopupService {
         container, close) {
         let handler: any = null;
         handler = (e: Event) => {
-            host.removeEventListener("click", handler);
             let start = e.target as HTMLElement;
             while (start) {
                 if (start === host) {
@@ -292,6 +291,7 @@ export default class PopupService {
                 }
                 start = start.parentElement;
             }
+            host.removeEventListener("click", handler);
             close();
         };
         host.addEventListener("click", handler);
