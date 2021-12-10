@@ -82,7 +82,13 @@ export class PopupWindow extends AtomControl {
     @BindableProperty
     public title?: string;
 
+    private hostCreated = false;
+
     protected render(node: XNode, e?: any, creator?: any): void {
+        if (this.hostCreated) {
+            return super.render(node, e, creator);
+        }
+        this.hostCreated = true;
         super.render(<div class={dialogCss}>
             <div class="title">
                 <span class="title-text" text={Bind.oneWay(() => this.title)}/>
@@ -92,7 +98,7 @@ export class PopupWindow extends AtomControl {
                     eventClick={Bind.event(() => this.viewModel.cancel())}/>
             </div>
             { node }
-        </div>, e, creator);
+        </div>);
     }
 
 }
