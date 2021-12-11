@@ -173,6 +173,53 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
+        switch (name) {
+            case "text":
+                element.textContent = value;
+                break;
+            case "class":
+                this.setElementClass(element, value, true);
+                break;
+            case "alt":
+                (element as any).alt = value;
+                break;
+            case "src":
+                if (value && /^http\:/i.test(value)) {
+                    (element as any).src = value.substr(5);
+                } else {
+                    (element as any).src = value;
+                }
+                break;
+            case "styleClass":
+                this.setElementClass(element, value);
+                break;
+            case "title":
+                element.title = value;
+                break;
+            case "formattedText":
+                if (value instanceof FormattedString) {
+                    (value as FormattedString).applyTo(this.app, element);
+                } else {
+                    element.textContent = (value || "").toString();
+                }
+                break;
+            case "disabled":
+                if (value) {
+                    element.setAttribute("disabled", "");
+                } else {
+                    element.removeAttribute("disabled");
+                }
+                break;
+            case "autofocus":
+                this.app.callLater(() => {
+                    const ie = element as HTMLInputElement;
+                    if (ie) { ie.focus(); }
+                });
+            case "style":
+                element.setAttribute("style", value);
+                break;
+        }
+
         if (/^data\-/.test(name)) {
             name = name.substring(5);
             element.dataset[name] = value;
@@ -181,19 +228,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
         if (/^style/.test(name)) {
 
-            if (name.length === 5) {
-                element.setAttribute("style", value);
-                return;
-            }
+            name = name.substring(5);
+            name = name.charAt(0).toLowerCase() + name.substring(1);
 
-            name = name.substr(5);
-            name = name.charAt(0).toLowerCase() + name.substr(1);
-
-            // this is style class...
-            if (name === "class") {
-                this.setElementClass(element, value);
-                return;
-            }
             if (value instanceof WebImage) {
                 value = `url(${value})`;
             }
@@ -202,8 +239,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
 
         if (/^event/.test(name)) {
-            name = name.substr(5);
-            name = name.charAt(0).toLowerCase() + name.substr(1);
+            name = name.substring(5);
+            name = name.charAt(0).toLowerCase() + name.substring(1);
 
             this.bindEvent(element, name, async (...e: any[]) => {
                 try {
@@ -229,42 +266,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        switch (name) {
-            case "text":
-                element.textContent = value;
-                break;
-            case "formattedText":
-                if (value instanceof FormattedString) {
-                    (value as FormattedString).applyTo(this.app, element);
-                } else {
-                    element.textContent = (value || "").toString();
-                }
-                break;
-            case "class":
-                this.setElementClass(element, value, true);
-                break;
-            case "disabled":
-                if (value) {
-                    element.setAttribute("disabled", "");
-                } else {
-                    element.removeAttribute("disabled");
-                }
-                break;
-            case "autofocus":
-                this.app.callLater(() => {
-                    const ie = element as HTMLInputElement;
-                    if (ie) { ie.focus(); }
-                });
-            case "src":
-                if (value && /^http\:/i.test(value)) {
-                    (element as any).src = value.substr(5);
-                } else {
-                    (element as any).src = value;
-                }
-                break;
-            default:
-                element[name] = value;
-        }
+        element[name] = value;
     }
 
     protected setElementClass(element: HTMLElement, value: any, clear?: boolean): void {
