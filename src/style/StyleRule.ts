@@ -3045,6 +3045,31 @@ export class AtomStyleRules {
         return this;
     }
 
+    public toString() {
+        const list = [];
+        if (this.style) {
+            for (const key in this.style) {
+                if (Object.prototype.hasOwnProperty.call(this.style, key)) {
+                    const element = this.style[key];
+                    if (key === "subclasses") {
+                        throw new Error("Single AtomStyleRule cannot contain subclasses");
+                    }
+                    if (key === "toString") {
+                        continue;
+                    }
+                    if (!element) {
+                        continue;
+                    }
+                    if (element.url) {
+                        list.push(`${key}: url(${element.url})`);
+                        continue;
+                    }
+                    list.push(`${key}: ${element}`);
+                }
+            }
+        }
+        return list.join(";");
+    }
 }
 
 /**
