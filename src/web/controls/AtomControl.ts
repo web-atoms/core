@@ -243,6 +243,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             case "class":
                 this.setElementClass(element, value, true);
                 break;
+            case "disabled":
+                if (value) {
+                    element.setAttribute("disabled", "");
+                } else {
+                    element.removeAttribute("disabled");
+                }
+                break;
             case "autofocus":
                 this.app.callLater(() => {
                     const ie = element as HTMLInputElement;
