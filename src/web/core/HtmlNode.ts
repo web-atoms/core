@@ -1,5 +1,6 @@
-import XNode from "../../core/XNode";
+import XNode, { elementFactorySymbol } from "../../core/XNode";
 import { AtomStyleRules } from "../../style/StyleRule";
+import { ElementValueSetters } from "../controls/AtomControl";
 import Encoder from "./Encoder";
 export const encoder = Encoder("entity");
 
@@ -100,8 +101,51 @@ function renderChildren(node: XNode, children: any[]): string[] {
     return content;
 }
 
+const setters = ElementValueSetters;
+
+function render(node: XNode, root: HTMLElement): void {
+    const a = node.attributes;
+    if (a) {
+        for (const key in a) {
+            if (Object.prototype.hasOwnProperty.call(a, key)) {
+                const element = a[key];
+                const setter = setters[key];
+                if (setter !== void 0) {
+                    setter(null, root, element);
+                    continue;
+                }
+                if (key.length > 5 && /^style/.test(key)) {
+                    root.style[key.substring(5)] = element;
+                    continue;
+                }
+                root[key] = element;
+            }
+        }
+    }
+    const children = node.children;
+    if (!children) {
+        return;
+    }
+    for (const iterator of children) {
+        if (!iterator) {
+            continue;
+        }
+        if (typeof iterator === "string") {
+            root.appendChild(document.createTextNode(iterator));
+            continue;
+        }
+        const name = iterator.name;
+        const child = document.createElement(name);
+        render(iterator, child);
+        root.appendChild(child);
+    }
+}
+
 export default class HtmlNode {
+    public static render = render;
+
     public static convert(node: XNode): string {
         return convertToText(node);
     }
+
 }
