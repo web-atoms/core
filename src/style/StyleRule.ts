@@ -3060,11 +3060,12 @@ export class AtomStyleRules {
                     if (!element) {
                         continue;
                     }
+                    const name = fromCamelToHyphen(key);
                     if (element.url) {
-                        list.push(`${key}: url(${element.url})`);
+                        list.push(`${name}: url(${element.url})`);
                         continue;
                     }
-                    list.push(`${key}: ${element}`);
+                    list.push(`${name}: ${element}`);
                 }
             }
         }
