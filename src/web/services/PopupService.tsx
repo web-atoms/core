@@ -10,6 +10,11 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomControl } from "../controls/AtomControl";
 import CSS from "../styles/CSS";
 
+let lastTarget = null;
+document.body.addEventListener("click", (e) => {
+    lastTarget = e.target;
+});
+
 const popupCss = CSS(StyleRule("popup")
     .padding(5)
     .backgroundColor(Colors.white)
@@ -103,6 +108,16 @@ const dialogCss = CSS(StyleRule()
 );
 
 export class PopupWindow extends AtomControl {
+
+    public static async showWindow<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions) {
+        return PopupService.showWindow<T>(lastTarget, window, options);
+    }
+
+    public static async showModal<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions) {
+        options ??= {};
+        options.modal ??= true;
+        return PopupService.showWindow<T>(lastTarget, window, options);
+    }
 
     @BindableProperty
     public title?: string;
