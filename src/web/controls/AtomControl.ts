@@ -78,6 +78,10 @@ export const ElementValueSetters: ISetters = {
         e.textContent = value;
     },
     ["class"](ctrl: AtomControl, e: HTMLElement, value: any) {
+        if (typeof value === "string") {
+            e.className = value;
+            return;
+        }
         (ctrl as any).setElementClass(e, value, true);
     },
     alt: setAttribute("alt"),

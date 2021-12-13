@@ -20,7 +20,7 @@ export function mergeStyles(a: IKeyValuePair): IKeyValuePair {
             }
             if (/^style\-/i.test(key)) {
                 const style = r.style || (r.style = "");
-                const newStyle = `${key.substr(6)}: ${encoder.htmlEncode(element, false)};`;
+                const newStyle = `${key.substring(6)}: ${encoder.htmlEncode(element, false)};`;
                 r.style = style ? `${style} ${newStyle}` : newStyle;
                 continue;
             }
