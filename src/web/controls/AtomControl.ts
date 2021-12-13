@@ -356,6 +356,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
         if (/^data\-/.test(name)) {
             name = name.substring(5);
+            if (typeof value === "object") {
+                value = JSON.stringify(value);
+            }
             element.dataset[name] = value;
             return;
         }
