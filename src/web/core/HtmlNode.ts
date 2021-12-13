@@ -108,7 +108,7 @@ function render(node: XNode, root: HTMLElement): void {
     if (a) {
         for (const key in a) {
             if (Object.prototype.hasOwnProperty.call(a, key)) {
-                const element = a[key];
+                let element = a[key];
                 const setter = setters[key];
                 if (setter !== void 0) {
                     setter(null, root, element);
@@ -116,6 +116,13 @@ function render(node: XNode, root: HTMLElement): void {
                 }
                 if (key.length > 5 && /^style/.test(key)) {
                     root.style[key.substring(5)] = element;
+                    continue;
+                }
+                if (/^data-/i.test(key)) {
+                    if (typeof element === "object") {
+                        element = JSON.stringify(element);
+                    }
+                    root.dataset[key.substring(5)] = element;
                     continue;
                 }
                 root[key] = element;
