@@ -8,6 +8,8 @@ export interface IKeyValuePair {
     [key: string]: string | IKeyValuePair;
 }
 
+const fromHyphenToCamel = (input: string) => input.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+
 export function mergeStyles(a: IKeyValuePair): IKeyValuePair {
     const r = {} as IKeyValuePair;
     for (const key in a) {
@@ -115,14 +117,14 @@ function render(node: XNode, root: HTMLElement): void {
                     continue;
                 }
                 if (key.length > 5 && /^style/.test(key)) {
-                    root.style[key.substring(5)] = element;
+                    root.style[fromHyphenToCamel(key.substring(5))] = element;
                     continue;
                 }
                 if (/^data-/i.test(key)) {
                     if (typeof element === "object") {
                         element = JSON.stringify(element);
                     }
-                    root.dataset[key.substring(5)] = element;
+                    root.dataset[fromHyphenToCamel(key.substring(5))] = element;
                     continue;
                 }
                 root[key] = element;

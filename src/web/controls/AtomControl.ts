@@ -22,6 +22,8 @@ const isAtomControl = isControl;
 //     console.log(`Platform is ${AtomBridge.platform}`);
 // }
 
+const fromHyphenToCamel = (input: string) => input.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+
 declare var bridge;
 if (typeof bridge !== "undefined" && bridge.platform) {
     throw new Error("AtomControl of Web should not be used with Xamarin Forms");
@@ -355,7 +357,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
 
         if (/^data\-/.test(name)) {
-            name = name.substring(5);
+            name = fromHyphenToCamel(name.substring(5));
             if (typeof value === "object") {
                 value = JSON.stringify(value);
             }
