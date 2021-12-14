@@ -76,7 +76,7 @@ const dialogCss = CSS(StyleRule()
             .cursor("move")
             .flexStretch()
         )
-        .child(StyleRule(".close-button")
+        .child(StyleRule(".popup-close-button")
             .fontFamily("arial")
             .fontSize(15)
             .cursor("pointer")
@@ -138,7 +138,7 @@ export class PopupWindow extends AtomControl {
             <div class="title title-host">
                 <span class="title-text" text={Bind.oneWay(() => this.title)}/>
                 <button
-                    class="close-button"
+                    class="popup-close-button"
                     text="x"
                     eventClick={Bind.event(() => this.viewModel.cancel())}/>
             </div>
