@@ -2,6 +2,7 @@ import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import Colors from "../../core/Colors";
+import { sleep } from "../../core/sleep";
 import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
 import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
 import DISingleton from "../../di/DISingleton";
@@ -110,12 +111,16 @@ const dialogCss = CSS(StyleRule()
 export class PopupWindow extends AtomControl {
 
     public static async showWindow<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions) {
+        // this will force lastTarget to be set
+        await sleep(1);
         return PopupService.showWindow<T>(lastTarget, window, options);
     }
 
     public static async showModal<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions) {
         options ??= {};
         options.modal ??= true;
+        // this will force lastTarget to be set
+        await sleep(1);
         return PopupService.showWindow<T>(lastTarget, window, options);
     }
 
