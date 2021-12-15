@@ -3055,7 +3055,7 @@ export class AtomStyleRules {
     }
 
     /**
-     * Creates vertical flex layout
+     * Creates vertical flex layout with 5px gap
      * @param p defaults { direction: "column", alignItems: "center", justifyContent: "center" }
      * @param units px
      */
@@ -3065,7 +3065,7 @@ export class AtomStyleRules {
     }
 
     /**
-     * Creates flex layout
+     * Creates flex layout with 5px gap
      * @param p defaults { direction: "row", alignItems: "center", justifyContent: "center" }
      * @param units px
      */
