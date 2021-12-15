@@ -3077,7 +3077,7 @@ export class AtomStyleRules {
         stretch,
         inline,
         gap = 5
-    }: IFlexAttributes,
+    }: IFlexAttributes = {},
     units: Units = "px") {
         if (direction !== void 0) {
             this.style.flexDirection = direction;
