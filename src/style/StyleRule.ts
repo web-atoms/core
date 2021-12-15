@@ -130,6 +130,15 @@ export type WordWrapType = "" | "default" | "normal" | "break-word" | "initial" 
 
 export type Units = "" | "px" | "pt" | "%" | "rem";
 
+export interface IFlexAttributes {
+    direction?: FlexDirectionType;
+    alignItems?: ItemAlignType;
+    justifyContent?: JustifyContentType;
+    stretch?: boolean;
+    inline?: boolean;
+    gap?: number;
+}
+
 export function toUnit(n: number | string, unit: string) {
     if (!unit) {
         unit = "";
@@ -3043,6 +3052,40 @@ export class AtomStyleRules {
         d.display = "initial";
         h.display = "none";
         return this;
+    }
+
+    public verticalFlexLayout(a: IFlexAttributes, units: Units = "px") {
+        a.direction ??= "column";
+        a.justifyContent ??= "space-around";
+        return this.flexLayout(a, units);
+    }
+
+    public flexLayout(
+    {
+        direction = "row",
+        alignItems = "center",
+        justifyContent = "space-around",
+        stretch,
+        inline,
+        gap = 5
+    }: IFlexAttributes,
+    units: Units = "px") {
+        if (direction !== void 0) {
+            this.style.flexDirection = direction;
+        }
+        if (alignItems !== void 0) {
+            this.style.alignItems = alignItems;
+        }
+        if (justifyContent !== void 0) {
+            this.style.justifyContent = justifyContent;
+        }
+        if (stretch) {
+            this.style.flex = "1 1 100%";
+        }
+        if (gap) {
+            this.style.gap = toUnit(gap, units);
+        }
+        this.style.display = inline ? "inline-flex" : "flex";
     }
 
     public toString() {
