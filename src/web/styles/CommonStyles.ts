@@ -2,10 +2,6 @@ import Colors from "../../core/Colors";
 import StyleRule, { AtomStyleRules } from "../../style/StyleRule";
 import CSS from "./CSS";
 
-import Colors from "@web-atoms/core/dist/core/Colors";
-import StyleRule from "@web-atoms/core/dist/style/StyleRule";
-import CSS from "@web-atoms/core/dist/web/styles/CSS";
-
 export function combine(... names: any[]) {
     const r = [];
     for (const iterator of names) {
