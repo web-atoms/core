@@ -3095,6 +3095,7 @@ export class AtomStyleRules {
             this.style.gap = toUnit(gap, units);
         }
         this.style.display = inline ? "inline-flex" : "flex";
+        return this;
     }
 
     public toString() {
