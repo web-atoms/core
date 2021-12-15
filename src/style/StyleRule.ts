@@ -3054,12 +3054,21 @@ export class AtomStyleRules {
         return this;
     }
 
-    public verticalFlexLayout(a: IFlexAttributes, units: Units = "px") {
+    /**
+     * Creates vertical flex layout
+     * @param p defaults { direction: "column", alignItems: "center", justifyContent: "center" }
+     * @param units px
+     */
+     public verticalFlexLayout(a?: IFlexAttributes, units: Units = "px") {
         a.direction ??= "column";
-        a.justifyContent ??= "space-around";
         return this.flexLayout(a, units);
     }
 
+    /**
+     * Creates flex layout
+     * @param p defaults { direction: "row", alignItems: "center", justifyContent: "center" }
+     * @param units px
+     */
     public flexLayout(
     {
         direction = "row",
