@@ -3059,7 +3059,7 @@ export class AtomStyleRules {
      * @param p defaults { direction: "column", alignItems: "center", justifyContent: "space-around" }
      * @param units px
      */
-     public verticalFlexLayout(a?: IFlexAttributes, units: Units = "px") {
+     public verticalFlexLayout(a: IFlexAttributes = {}, units: Units = "px") {
         a.direction ??= "column";
         return this.flexLayout(a, units);
     }
