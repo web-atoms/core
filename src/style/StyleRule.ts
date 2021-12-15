@@ -3056,7 +3056,7 @@ export class AtomStyleRules {
 
     /**
      * Creates vertical flex layout with 5px gap
-     * @param p defaults { direction: "column", alignItems: "center", justifyContent: "center" }
+     * @param p defaults { direction: "column", alignItems: "center", justifyContent: "space-around" }
      * @param units px
      */
      public verticalFlexLayout(a?: IFlexAttributes, units: Units = "px") {
@@ -3066,7 +3066,7 @@ export class AtomStyleRules {
 
     /**
      * Creates flex layout with 5px gap
-     * @param p defaults { direction: "row", alignItems: "center", justifyContent: "center" }
+     * @param p defaults { direction: "row", alignItems: "center", justifyContent: "space-around" }
      * @param units px
      */
     public flexLayout(
