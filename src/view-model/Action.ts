@@ -1,7 +1,7 @@
 import { App } from "../App";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
-import { NavigationService } from "../services/NavigationService";
+import { NavigationService, NotifyType } from "../services/NavigationService";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
@@ -101,8 +101,8 @@ export default function Action(
                     if (pe && pe.then) {
                         const result = await pe;
                         if (close) {
-                            ns.notify(success, successTitle);
-                            await sleep(5);
+                            ns.notify(success, successTitle, NotifyType.Information, 3000);
+                            await sleep(5500);
                             vm.close?.(result);
                             return result;
                         }
