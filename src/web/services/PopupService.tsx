@@ -2,7 +2,7 @@ import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import Colors from "../../core/Colors";
-import { sleep } from "../../core/sleep";
+import sleep from "../../core/sleep";
 import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
 import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
 import DISingleton from "../../di/DISingleton";

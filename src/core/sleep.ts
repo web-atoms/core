@@ -1,6 +1,6 @@
 import { CancelToken } from "./types";
 
-export function sleep(timeInMS: number, ct?: CancelToken) {
+export default function sleep(timeInMS: number, ct?: CancelToken) {
     let token = 0;
     return new Promise<void>((resolve, reject) => {
         ct?.registerForCancel((reason) => {
