@@ -518,9 +518,22 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
             const forName = name.attributes?.for;
 
+            if (forName) {
+                return class Template extends (name as any) {
+                    constructor(a, e) {
+                        super(a ?? app, e ?? document.createElement(forName));
+                    }
+
+                    public create() {
+                        super.create();
+                        this.render(iterator, null, creator);
+                    }
+                };
+            }
+
             return class Template extends (name as any) {
                 constructor(a, e) {
-                    super(a ?? app, e ?? (forName ? document.createElement(forName) : undefined));
+                    super(a ?? app, e);
                 }
 
                 public create() {
