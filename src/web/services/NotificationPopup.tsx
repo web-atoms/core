@@ -7,8 +7,6 @@ import { PopupWindow } from "./PopupService";
 
 const css = CSS(StyleRule("notification-popup")
     .padding(5)
-    .borderRadius(5)
-    .border("solid 1px lightgray")
     .fontSize("larger")
     .nested(StyleRule(".error")
         .color(Colors.red)
