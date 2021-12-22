@@ -102,7 +102,7 @@ export default function Action(
                         const result = await pe;
                         if (close) {
                             ns.notify(success, successTitle, NotifyType.Information, 3000);
-                            await sleep(5500);
+                            await sleep(3500);
                             vm.close?.(result);
                             return result;
                         }
