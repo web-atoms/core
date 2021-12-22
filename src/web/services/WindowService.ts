@@ -293,6 +293,7 @@ export class WindowService extends NavigationService {
         const notification = NotificationPopup({ message, type });
         const cancelToken = new CancelToken(delay ?? 5000);
         this.app.runAsync(() => PopupService.showWindow(null, notification, {
+            title,
             cancelToken
         }));
         // this.app.runAsync(() => this.openPage(AtomNotification, {
