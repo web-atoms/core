@@ -82,7 +82,7 @@ export class AtomTabbedPage extends AtomControl
         this.titleTemplate = null;
         this.mSelectedPage = null;
         this.runAfterInit(() => {
-            this.setPrimitiveValue(this.element, "styleClass", this.controlStyle.name);
+            this.setPrimitiveValue(this.element, "styleClass", `atom-tabbed-page ${this.controlStyle.name}`);
         });
         this.localViewModel = this.resolve(AtomTabViewModel, () => ({ owner: this }));
 
