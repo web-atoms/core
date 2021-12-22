@@ -292,7 +292,7 @@ export class WindowService extends NavigationService {
         delay?: number): void {
         const notification = NotificationPopup({ message, type });
         const cancelToken = new CancelToken(delay ?? 5000);
-        this.app.runAsync(() => PopupService.showWindow(null, notification, {
+        this.app.runAsync(() => notification.showWindow(notification, {
             title,
             cancelToken
         }));

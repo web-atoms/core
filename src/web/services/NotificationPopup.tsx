@@ -22,7 +22,7 @@ const css = CSS(StyleRule("notification-popup")
 export default function NotificationPopup({
     message,
     type
-}): any {
+}): typeof PopupWindow {
 
     return class Notification extends PopupWindow {
 
