@@ -22,6 +22,8 @@ import { AtomPopupStyle } from "../styles/AtomPopupStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 import { AtomTheme } from "../styles/AtomTheme";
 import { cssNumberToString } from "../styles/StyleBuilder";
+import NotificationPopup from "./NotificationPopup";
+import PopupService from "./PopupService";
 
 export type HostForElementFunc = ((e: HTMLElement) => HTMLElement);
 
@@ -288,12 +290,17 @@ export class WindowService extends NavigationService {
         title?: string,
         type?: NotifyType,
         delay?: number): void {
-        this.app.runAsync(() => this.openPage(AtomNotification, {
-            message,
-            title,
-            type: type || NotifyType.Information,
-            timeout: delay
+        const notification = NotificationPopup({ message, type });
+        const cancelToken = new CancelToken(delay ?? 5000);
+        this.app.runAsync(() => PopupService.showWindow(null, notification, {
+            cancelToken
         }));
+        // this.app.runAsync(() => this.openPage(AtomNotification, {
+        //     message,
+        //     title,
+        //     type: type || NotifyType.Information,
+        //     timeout: delay
+        // }));
     }
 
     protected registerForPopup(): void {
