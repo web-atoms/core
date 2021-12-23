@@ -3002,6 +3002,12 @@ export class AtomStyleRules {
         return this;
     }
 
+    public focus(style: AtomStyleRules) {
+        const sc = this.style.subclasses ??= {};
+        sc[":focus"] = { ... sc[":focus"], ... style.style };
+        return this;
+    }
+
     public hoverBackgroundColor(color: ColorItem | string) {
         const sc = this.style.subclasses ??= {};
         const hover = sc[":hover"] ??= {};
