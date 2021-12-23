@@ -3055,7 +3055,7 @@ export class AtomStyleRules {
         const sc = this.style.subclasses ??= {};
         const h = sc[hideSelector] ??= {};
         const d = sc[showSelector] ??= {};
-        d.display = "initial";
+        d.display = "inherit";
         h.display = "none";
         return this;
     }
