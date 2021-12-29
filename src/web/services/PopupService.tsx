@@ -110,8 +110,11 @@ const dialogCss = CSS(StyleRule()
 
 export class PopupWindow extends AtomControl {
 
-    public static async showWindow<T>(options?: IDialogOptions);
-    public static async showWindow<T>(window: IClassOf<PopupWindow> | IDialogOptions, options?: IDialogOptions) {
+    public static async showWindow<T>(options?: IDialogOptions): Promise<T>;
+    public static async showWindow<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions): Promise<T>;
+    public static async showWindow<T>(
+        window: IClassOf<PopupWindow> | IDialogOptions,
+        options?: IDialogOptions): Promise<T> {
         if (arguments.length <= 2) {
             options = arguments[0];
             window = this;
@@ -121,8 +124,11 @@ export class PopupWindow extends AtomControl {
         return PopupService.showWindow<T>(lastTarget, window as any, options);
     }
 
-    public static async showModal<T>(options?: IDialogOptions);
-    public static async showModal<T>(window: IClassOf<PopupWindow> | IDialogOptions, options?: IDialogOptions) {
+    public static async showModal<T>(options?: IDialogOptions): Promise<T>;
+    public static async showModal<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions): Promise<T>;
+    public static async showModal<T>(
+        window: IClassOf<PopupWindow> | IDialogOptions,
+        options?: IDialogOptions): Promise<T> {
         if (arguments.length <= 2) {
             options = arguments[0];
             window = this;
