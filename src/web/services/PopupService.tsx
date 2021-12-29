@@ -110,18 +110,28 @@ const dialogCss = CSS(StyleRule()
 
 export class PopupWindow extends AtomControl {
 
-    public static async showWindow<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions) {
+    public static async showWindow<T>(options?: IDialogOptions);
+    public static async showWindow<T>(window: IClassOf<PopupWindow> | IDialogOptions, options?: IDialogOptions) {
+        if (arguments.length <= 2) {
+            options = arguments[0];
+            window = this;
+        }
         // this will force lastTarget to be set
         await sleep(1);
-        return PopupService.showWindow<T>(lastTarget, window, options);
+        return PopupService.showWindow<T>(lastTarget, window as any, options);
     }
 
-    public static async showModal<T>(window: IClassOf<PopupWindow>, options?: IDialogOptions) {
+    public static async showModal<T>(options?: IDialogOptions);
+    public static async showModal<T>(window: IClassOf<PopupWindow> | IDialogOptions, options?: IDialogOptions) {
+        if (arguments.length <= 2) {
+            options = arguments[0];
+            window = this;
+        }
         options ??= {};
         options.modal ??= true;
         // this will force lastTarget to be set
         await sleep(1);
-        return PopupService.showWindow<T>(lastTarget, window, options);
+        return PopupService.showWindow<T>(lastTarget, window as any, options);
     }
 
     @BindableProperty
