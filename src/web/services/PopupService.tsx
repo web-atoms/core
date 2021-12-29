@@ -357,7 +357,8 @@ export default class PopupService {
                 if (offset.y < (hostHeight / 2)) {
                     style.top = offset.y + "px";
                 } else {
-                    style.bottom = `${hostHeight - (offset.y + opener.offsetHeight)}px`;
+                    style.top = `${offset.y - opener.offsetHeight}px`;
+                    style.transform = "translate(0, -100%)";
                 }
 
             } else {
