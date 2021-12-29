@@ -1,6 +1,7 @@
 import { App } from "../App";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
+import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
@@ -115,6 +116,10 @@ export default function Action(
                     if (/^(cancelled|canceled|timeout)$/i.test(e.toString().trim())) {
                         // tslint:disable-next-line: no-console
                         console.warn(e);
+                        return;
+                    }
+                    if (e instanceof JsonError && e.json?.detail) {
+                        await ns.alert(e.json.detail, e.message);
                         return;
                     }
                     await ns.alert(e, "Error");
