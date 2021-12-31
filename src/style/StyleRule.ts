@@ -3066,6 +3066,7 @@ export class AtomStyleRules {
             const d = sc[iterator] ??= {};
             d.display = "none";
         }
+        return this;
     }
 
     public displayInherit(... selectors: string[]) {
@@ -3074,6 +3075,7 @@ export class AtomStyleRules {
             const d = sc[iterator] ??= {};
             d.display = "inherit";
         }
+        return this;
     }
 
 
