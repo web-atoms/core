@@ -3060,6 +3060,23 @@ export class AtomStyleRules {
         return this;
     }
 
+    public displayNone(... selectors: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const iterator of selectors) {
+            const d = sc[iterator] ??= {};
+            d.display = "none";
+        }
+    }
+
+    public displayInherit(... selectors: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const iterator of selectors) {
+            const d = sc[iterator] ??= {};
+            d.display = "inherit";
+        }
+    }
+
+
     /**
      * Creates vertical flex layout with 5px gap
      * @param p defaults { direction: "column", alignItems: "center", justifyContent: "space-around" }
