@@ -217,6 +217,9 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
         if (!host) {
             continue;
         }
+        if (!offset) {
+            continue;
+        }
         offset.x += host.offsetLeft;
         offset.y += host.offsetTop;
     }
