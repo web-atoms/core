@@ -63,11 +63,15 @@ export default function CSS(style: IStyleDeclaration | AtomStyleRules, selectorN
         }
         style = style.style;
     }
-    selectorName ??= `.wa-style-${styleId++}${styleName}`;
+    let className = selectorName;
+    if (!selectorName) {
+        className = "wa-style-${styleId++}${styleName}";
+        selectorName = `.${className}`;
+    }
     const s = document.createElement("style");
     s.id = selectorName;
     const list = createStyleText(selectorName, style);
     s.textContent = list.join("\r\n");
     document.head.appendChild(s);
-    return selectorName;
+    return className;
 }
