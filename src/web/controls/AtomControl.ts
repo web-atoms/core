@@ -126,6 +126,13 @@ export const ElementValueSetters: ISetters = {
     styleClass(ctrl: any, e: any, value: any) {
         ctrl.setElementClass(e, value);
     },
+    bindClass(ctrl: any, e: any, value: any) {
+        if (typeof value === "string") {
+            e.className = value;
+            return;
+        }
+        ctrl.setElementClass(e, value, true);
+    },
     styleDisplay(ctrl: AtomControl, e: HTMLElement, value) {
         if (typeof value === "boolean") {
             e.style.display = value ? "" : "none";
