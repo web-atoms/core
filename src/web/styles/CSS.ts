@@ -47,7 +47,14 @@ function createStyleText(name: string, styles: IStyleDeclaration): string[] {
     return subclasses;
 }
 
-export default function CSS(style: IStyleDeclaration | AtomStyleRules): string {
+/**
+ * It will add custom stylesheet to the document and
+ * it will create a new unique scope class if selectorName was not provided
+ * @param style AtomStyleRules | IStyleDeclaration
+ * @param selectorName name of the selector (only use for CustomElement, do not use for components)
+ * @returns string
+ */
+export default function CSS(style: IStyleDeclaration | AtomStyleRules, selectorName?: string): string {
     let styleName = "";
     if (style instanceof AtomStyleRules) {
         styleName = style.name || "";
@@ -56,10 +63,10 @@ export default function CSS(style: IStyleDeclaration | AtomStyleRules): string {
         }
         style = style.style;
     }
-    const name = `wa-style-${styleId++}${styleName}`;
+    selectorName ??= `wa-style-${styleId++}${styleName}`;
     const s = document.createElement("style");
-    const list = createStyleText(name, style);
+    const list = createStyleText(selectorName, style);
     s.textContent = list.join("\r\n");
     document.head.appendChild(s);
-    return name;
+    return selectorName;
 }
