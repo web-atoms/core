@@ -3051,6 +3051,12 @@ export class AtomStyleRules {
         return list.join("\n");
     }
 
+    /**
+     * @deprecated Please use `displayNone(":not(XX) > A.XX")` format
+     * @param showSelector showSelector
+     * @param hideSelector hideSelector
+     * @returns AtomStyleRule
+     */
     public toggle(showSelector: string, hideSelector: string) {
         const sc = this.style.subclasses ??= {};
         const h = sc[hideSelector] ??= {};
@@ -3068,16 +3074,6 @@ export class AtomStyleRules {
         }
         return this;
     }
-
-    public displayInherit(... selectors: string[]) {
-        const sc = this.style.subclasses ??= {};
-        for (const iterator of selectors) {
-            const d = sc[iterator] ??= {};
-            d.display = "inherit";
-        }
-        return this;
-    }
-
 
     /**
      * Creates vertical flex layout with 5px gap
