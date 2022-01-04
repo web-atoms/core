@@ -65,7 +65,7 @@ export default function CSS(style: IStyleDeclaration | AtomStyleRules, selectorN
     }
     let className = selectorName;
     if (!selectorName) {
-        className = "wa-style-${styleId++}${styleName}";
+        className = `wa-style-${styleId++}${styleName}`;
         selectorName = `.${className}`;
     }
     const s = document.createElement("style");
