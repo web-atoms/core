@@ -25,7 +25,7 @@ function createStyleText(name: string, styles: IStyleDeclaration): string[] {
                 for (const subclassKey in element) {
                     if (element.hasOwnProperty(subclassKey)) {
                         const ve = element[subclassKey];
-                        subclasses.push( ... createStyleText(`${n}${subclassKey}`, ve));
+                        subclasses.push( ... createStyleText(`.${n}${subclassKey}`, ve));
                     }
                 }
             } else {
@@ -42,7 +42,7 @@ function createStyleText(name: string, styles: IStyleDeclaration): string[] {
     const styleClassName = `${cname}`;
 
     if (styleList.length) {
-        return [`.${styleClassName} {\r\n${styleList.join(";\r\n")}; }`, ... subclasses];
+        return [`${styleClassName} {\r\n${styleList.join(";\r\n")}; }`, ... subclasses];
     }
     return subclasses;
 }
@@ -63,8 +63,9 @@ export default function CSS(style: IStyleDeclaration | AtomStyleRules, selectorN
         }
         style = style.style;
     }
-    selectorName ??= `wa-style-${styleId++}${styleName}`;
+    selectorName ??= `.wa-style-${styleId++}${styleName}`;
     const s = document.createElement("style");
+    s.id = selectorName;
     const list = createStyleText(selectorName, style);
     s.textContent = list.join("\r\n");
     document.head.appendChild(s);
