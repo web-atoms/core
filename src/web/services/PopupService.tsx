@@ -272,6 +272,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
+                        lastTarget = opener;
                         if (r) {
                             resolve(r);
                         } else {
