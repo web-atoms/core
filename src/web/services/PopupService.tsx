@@ -328,6 +328,7 @@ export default class PopupService {
         opener: HTMLElement,
         popup: HTMLElement,
         options?: IPopupOptions): IPopup {
+        const previousTarget = lastTarget;
         const container: IPopup = {
             element: document.createElement("div"),
             disposables: new AtomDisposableList(),
@@ -397,6 +398,7 @@ export default class PopupService {
             if (!container.disposables) {
                 return;
             }
+            lastTarget = previousTarget;
             container.disposables.dispose();
             const parent = getParent(opener);
             parent.dispose(container.element);
