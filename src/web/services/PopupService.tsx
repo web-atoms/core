@@ -261,6 +261,7 @@ export default class PopupService {
         popupOptions?: IDialogOptions
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
+            const previousTarget = lastTarget;
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
@@ -272,7 +273,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        lastTarget = opener;
+                        lastTarget = previousTarget;
                         if (r) {
                             resolve(r);
                         } else {
