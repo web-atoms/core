@@ -13,7 +13,9 @@ import CSS from "../styles/CSS";
 
 let lastTarget = null;
 document.body.addEventListener("click", (e) => {
-    lastTarget = e.target;
+    if ((e.target as HTMLElement).offsetParent) {
+        lastTarget = e.target;
+    }
 });
 
 const popupCss = CSS(StyleRule("popup")
