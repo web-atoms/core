@@ -261,7 +261,7 @@ export default class PopupService {
         popupOptions?: IDialogOptions
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            const previousTarget = lastTarget;
+            const previousTarget = opener;
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
@@ -328,7 +328,7 @@ export default class PopupService {
         opener: HTMLElement,
         popup: HTMLElement,
         options?: IPopupOptions): IPopup {
-        const previousTarget = lastTarget;
+        const previousTarget = opener;
         const container: IPopup = {
             element: document.createElement("div"),
             disposables: new AtomDisposableList(),
