@@ -44,7 +44,10 @@ export class AtomLoader {
             returnPromise?: Promise<any>,
             id?: string}> {
 
-        const busyIndicator = app.createBusyIndicator();
+        const busyIndicator = app.createBusyIndicator({
+            title: url.toString(),
+            description: `Loading View ${url}`
+        });
 
         try {
             const view = await AtomLoader.load<T>(url, app);

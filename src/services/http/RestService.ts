@@ -457,7 +457,10 @@ export class BaseService {
             }
         }
 
-        const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
+        const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator({
+            title: url,
+            description: `${method} ${url}`
+        }) ) : null;
 
         try {
 
