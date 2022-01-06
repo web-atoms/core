@@ -29,6 +29,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
         const divStyle = host.style;
         divStyle.position = "absolute";
+        divStyle.overflow = "hidden";
         divStyle.left = divStyle.right = divStyle.bottom = divStyle.top = "0";
         divStyle.zIndex = (this.zIndex ++) + "";
         const spanStyle = span.style;

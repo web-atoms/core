@@ -5,7 +5,7 @@ import { IScreen } from "./core/IScreen";
 import { IDisposable } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
-import { BusyIndicatorService } from "./services/BusyIndicatorService";
+import { BusyIndicatorService, IBackgroundTaskInfo } from "./services/BusyIndicatorService";
 
 export type AtomAction = (channel: string, data: any) => void;
 
@@ -78,10 +78,10 @@ export class App extends ServiceProvider {
         }, 5);
     }
 
-    public createBusyIndicator(): IDisposable {
+    public createBusyIndicator(taskInfo?: IBackgroundTaskInfo ): IDisposable {
         this.busyIndicatorService = this.busyIndicatorService
             || this.resolve(BusyIndicatorService);
-        return this.busyIndicatorService.createIndicator();
+        return this.busyIndicatorService.createIndicator(taskInfo);
     }
 
     public syncUrl(): void {
