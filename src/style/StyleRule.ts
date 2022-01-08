@@ -136,6 +136,7 @@ export interface IFlexAttributes {
     justifyContent?: JustifyContentType;
     stretch?: boolean;
     inline?: boolean;
+    /** Try to keep gap an even number as it hides borders of input/textarea for odd numbers */
     gap?: number;
 }
 
@@ -3097,7 +3098,7 @@ export class AtomStyleRules {
         justifyContent = "space-around",
         stretch,
         inline,
-        gap = 5
+        gap = 4
     }: IFlexAttributes = {},
     units: Units = "px") {
         if (direction !== void 0) {
