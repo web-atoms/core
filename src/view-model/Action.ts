@@ -22,6 +22,8 @@ export interface IActionOptions {
      */
     successTitle?: string;
 
+    successMode?: "alert" | "notify";
+
     /**
      * Ask for confirmation before invoking this method
      * @default null
@@ -65,6 +67,7 @@ export default function Action(
     {
         success = null,
         successTitle = "Done",
+        successMode = "notify",
         confirm = null,
         confirmTitle = null,
         validate = false,
@@ -108,8 +111,13 @@ export default function Action(
                             return result;
                         }
                         if (success) {
+                            if (successMode === "notify") {
+                                await ns.notify(success, successTitle, NotifyType.Information, 3000);
+                                return result;
+                            }
                             await ns.alert(success, successTitle);
-                        }
+                            return result;
+                    }
                         return result;
                     }
                 } catch (e) {
