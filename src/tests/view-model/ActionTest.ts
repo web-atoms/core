@@ -49,7 +49,11 @@ class ActionViewModel extends AtomViewModel {
         this.model.email = "";
     }
 
-    @Action({ success: "Operation completed successfully", validate: true })
+    @Action({
+        success: "Operation completed successfully",
+        validate: true,
+        successMode: "alert"
+    })
     public async signUp(): Promise<void> {
         this.result = await this.remoteService.signUp(this.model);
     }
