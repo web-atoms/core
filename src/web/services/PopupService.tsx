@@ -349,7 +349,8 @@ export default class PopupService {
         };
 
         // find host...
-        const host = findHost(opener, offset);
+        // const host = findHost(opener, offset);
+        const host = opener.offsetParent as HTMLElement;
         if (!host) {
             // tslint:disable-next-line: no-console
             console.warn("Aborting popup display as host no longer exists");
