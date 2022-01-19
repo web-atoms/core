@@ -202,19 +202,26 @@ export class PopupWindow extends AtomControl {
 }
 
 function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLElement {
+
+    // let us find scrollable larget offsetParent
+
     // find host...
     let host = opener.offsetParent as HTMLElement;
     while (host) {
         const current = host;
         if (host === document.body) {
             // we have reached top...
-            break;
+            return host;
+        }
+        if (host.scrollHeight > host.offsetHeight) {
+            // let us use this..
+            return host;
         }
         host = host.offsetParent as HTMLElement;
         if (host.classList.contains("page-host")) {
             // we have reached popup host...
             host = current;
-            break;
+            return host;
         }
         if (!host) {
             continue;
@@ -350,7 +357,7 @@ export default class PopupService {
 
         // find host...
         // const host = findHost(opener, offset);
-        const host = opener.offsetParent as HTMLElement;
+        const host = findHost(opener, offset);
         if (!host) {
             // tslint:disable-next-line: no-console
             console.warn("Aborting popup display as host no longer exists");
