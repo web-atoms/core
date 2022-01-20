@@ -217,10 +217,10 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
             // let us use this..
             return host;
         }
-        host = host.offsetParent as HTMLElement;
         if (host.dataset.popUpHost === "yes") {
             return host;
         }
+        host = host.offsetParent as HTMLElement;
         if (host.classList.contains("page-host")) {
             // we have reached popup host...
             host = current;
