@@ -52,39 +52,39 @@ declare global {
                 eventKeypress?: any;
                 text?: string | any;
                 [key: string]: any;
-                "event-click": (e: MouseEvent) => void;
-                "event-blur": (e: Event) => void;
-                "event-focus": (e: Event) => void;
+                "event-click"?: (e: MouseEvent) => void;
+                "event-blur"?: (e: Event) => void;
+                "event-focus"?: (e: Event) => void;
                 /**
                  * If display is set to true, it will be set as empty string,
                  * which will unset the value and it will inherit the style from stylesheet.
                  * If it is set to false, it will be set to "none"
                  */
-                "style-display": boolean | string;
+                "style-display"?: boolean | string;
 
                 /** number will be converted to pixels */
-                "style-left": number | string;
+                "style-left"?: number | string;
                 /** number will be converted to pixels */
-                "style-top": number | string;
+                "style-top"?: number | string;
                 /** number will be converted to pixels */
-                "style-bottom": number | string;
+                "style-bottom"?: number | string;
                 /** number will be converted to pixels */
-                "style-right": number | string;
+                "style-right"?: number | string;
                 /** number will be converted to pixels */
-                "style-width": number | string;
+                "style-width"?: number | string;
                 /** number will be converted to pixels */
-                "style-height": number | string;
+                "style-height"?: number | string;
                 /** number will be converted to pixels */
-                "style-position": ObjectPositionType;
+                "style-position"?: ObjectPositionType;
                 /** number will be converted to pixels */
-                "style-font-size": number | string;
-                "style-font-family": string;
-                "style-font-weight": string;
-                "style-border": string;
-                "style-border-width": string;
-                "style-border-color": string | ColorItem;
-                "style-color": string | ColorItem;
-                "style-background-color": string | ColorItem;
+                "style-font-size"?: number | string;
+                "style-font-family"?: string;
+                "style-font-weight"?: string;
+                "style-border"?: string;
+                "style-border-width"?: string;
+                "style-border-color"?: string | ColorItem;
+                "style-color"?: string | ColorItem;
+                "style-background-color"?: string | ColorItem;
 
             }
         };
