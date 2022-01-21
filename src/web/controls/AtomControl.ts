@@ -421,7 +421,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             try {
                 const f = value as (...v: any[]) => any;
                 const pr = f.apply(this, e) as Promise<any>;
-                if (pr) {
+                if (pr?.then) {
                     try {
                         await pr;
                     } catch (error) {
