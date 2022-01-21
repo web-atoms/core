@@ -155,6 +155,23 @@ export const ElementValueSetters: ISetters = {
     }
 };
 
+ElementValueSetters["style-display"] = ElementValueSetters.styleDisplay;
+ElementValueSetters["style-left"] = ElementValueSetters.styleLeft;
+ElementValueSetters["style-top"] = ElementValueSetters.styleTop;
+ElementValueSetters["style-bottom"] = ElementValueSetters.styleBottom;
+ElementValueSetters["style-right"] = ElementValueSetters.styleRight;
+ElementValueSetters["style-width"] = ElementValueSetters.styleWidth;
+ElementValueSetters["style-height"] = ElementValueSetters.styleHeight;
+ElementValueSetters["style-position"] = ElementValueSetters.stylePosition;
+ElementValueSetters["style-font-size"] = ElementValueSetters.styleFontSize;
+ElementValueSetters["style-font-family"] = ElementValueSetters.styleFontFamily;
+ElementValueSetters["style-font-weight"] = ElementValueSetters.styleFontWeight;
+ElementValueSetters["style-border"] = ElementValueSetters.styleBorder;
+ElementValueSetters["style-border-width"] = ElementValueSetters.styleBorderWidth;
+ElementValueSetters["style-border-color"] = ElementValueSetters.styleBorderColor;
+ElementValueSetters["style-color"] = ElementValueSetters.styleColor;
+ElementValueSetters["style-background-color"] = ElementValueSetters.styleBackgroundColor;
+
 /**
  * AtomControl class represents UI Component for a web browser.
  */
