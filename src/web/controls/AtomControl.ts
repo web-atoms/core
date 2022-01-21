@@ -370,9 +370,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
 
         if (/^style/.test(name)) {
-
             name = name.substring(5);
-            name = name.charAt(0).toLowerCase() + name.substring(1);
+            if (name.startsWith("-")) {
+                name = fromHyphenToCamel(name.substring(1));
+            } else {
+                name = name.charAt(0).toLowerCase() + name.substring(1);
+            }
 
             if (value instanceof WebImage) {
                 value = `url(${value})`;
@@ -382,10 +385,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
 
         if (/^event/.test(name)) {
+            name = name.substring(5);
             if (name.startsWith("-")) {
                 name = fromHyphenToCamel(name.substring(1));
             } else {
-                name = name.substring(5);
                 name = name.charAt(0).toLowerCase() + name.substring(1);
             }
 
