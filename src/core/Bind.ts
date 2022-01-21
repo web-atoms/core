@@ -181,7 +181,7 @@ export default class Bind {
                     if (isEvent.test(name)) {
                         name = name.substring(5);
                         if (name.startsWith("-")) {
-                            name = name.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                            name = name.substring(1).replace(/-([a-z])/g, (g) => g[1].toUpperCase());
                         } else {
                             name = (name[0].toLowerCase() + name.substring(1));
                         }
