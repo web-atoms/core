@@ -2025,7 +2025,7 @@ export class AtomStyleRules {
     public scrollBarWidth(value: number | string, unit?: Units) {
         this.style["scrollbar-width"] = toUnit(value, unit);
         this.style.subclasses ??= {};
-        const ws = this.style.subclasses["::-webkit::scrollbar"] ??= {};
+        const ws = this.style.subclasses["::-webkit-scrollbar"] ??= {};
         ws.width = toUnit(value, unit);
         return this;
     }
@@ -2033,7 +2033,7 @@ export class AtomStyleRules {
     public scrollBarColor(thumb: ColorItem | string, bg: ColorItem | string) {
         this.style["scrollbar-color"] = `${thumb} ${bg}`;
         this.style.subclasses ??= {};
-        const ws = this.style.subclasses["::-webkit::scrollbar-thumb"] ??= {};
+        const ws = this.style.subclasses["::-webkit-scrollbar-thumb"] ??= {};
         ws.backgroundColor = bg;
         ws.borderRadius = "20px";
         ws.border = `3px solid ${thumb}`;
