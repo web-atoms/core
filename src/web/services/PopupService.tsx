@@ -213,7 +213,7 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
             // we have reached top...
             return host;
         }
-        if (host.scrollHeight > host.offsetHeight) {
+        if (host.classList.contains("popup-host")) {
             // let us use this..
             return host;
         }
