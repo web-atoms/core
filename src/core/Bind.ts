@@ -248,9 +248,10 @@ export default class Bind {
         const lists = parsePath(path, false).map((x) => ["this", ... x]);
         return {
             [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                const source  = { control, item };
                 control.bind(e, name, lists, false, () => {
-                    return path.call(undefined, control, item);
-                }, { control, item });
+                    return path.call(source, source);
+                }, source);
                 if (typeof now !== "undefined") {
                     control.setLocalValue(e, name, now);
                 }
