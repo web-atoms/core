@@ -234,6 +234,32 @@ export default class Bind {
     }
 
     /**
+     * Bind the expression one way with source, you cannot reference
+     * `this` inside this context, it will not watch `this`
+     * @param path Lambda Expression for binding
+     * @param source source to watch
+     * @param now Default value to set immediately
+     */
+    public static oneWaySource<T>(
+        path: (owner: IAtomComponent, item: T) => any,
+        source: T,
+        now?: any): any {
+
+        const lists = parsePath(path, false);
+
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                control.bind(e, name, lists, false, () => {
+                    return path.call(undefined, control, source);
+                }, source);
+                if (typeof now !== "undefined") {
+                    control.setLocalValue(e, name, now);
+                }
+            }
+        };
+    }
+
+    /**
      * Bind the expression one way
      * @param sourcePath Lambda Expression for binding
      * @param now Default value to set immediately
