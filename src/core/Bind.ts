@@ -241,17 +241,16 @@ export default class Bind {
      * @param now Default value to set immediately
      */
     public static oneWaySource<T>(
-        path: (owner: IAtomComponent, item: T) => any,
+        path: (x: { control: IAtomComponent, source: T }) => any,
         source: T,
         now?: any): any {
 
-        const lists = parsePath(path, false);
-
+        const lists = parsePath(path, false).map((x) => ["this", ... x]);
         return {
             [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
                 control.bind(e, name, lists, false, () => {
                     return path.call(undefined, control, source);
-                }, source);
+                }, { control, source });
                 if (typeof now !== "undefined") {
                     control.setLocalValue(e, name, now);
                 }
