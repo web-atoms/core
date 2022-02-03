@@ -233,7 +233,7 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
             continue;
         }
         offset.x += host.offsetLeft;
-        offset.y += host.offsetTop;
+        offset.y += host.offsetTop - host.scrollTop;
     }
     return host;
 }
