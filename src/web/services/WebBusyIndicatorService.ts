@@ -19,6 +19,8 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
     private zIndex: number = 50000;
 
+    private indicators: number = 0;
+
     public createIndicator(): IDisposable {
 
         const host = document.createElement("div");
@@ -29,6 +31,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
         const divStyle = host.style;
         divStyle.position = "absolute";
+        divStyle.overflow = "hidden";
         divStyle.left = divStyle.right = divStyle.bottom = divStyle.top = "0";
         divStyle.zIndex = (this.zIndex ++) + "";
         const spanStyle = span.style;
@@ -36,6 +39,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
         spanStyle.margin = "auto";
         spanStyle.width = "16px";
         spanStyle.height = "16px";
+        spanStyle.overflow = "hidden";
         spanStyle.maxHeight = "100%";
         spanStyle.maxWidth = "100%";
         spanStyle.left = spanStyle.right = spanStyle.bottom = spanStyle.top = "0";

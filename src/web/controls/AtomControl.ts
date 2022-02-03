@@ -5,10 +5,13 @@ import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import FormattedString from "../../core/FormattedString";
 import WebImage from "../../core/WebImage";
+import { elementFactorySymbol, isControl } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
 import { AtomStyleSheet } from "../styles/AtomStyleSheet";
+
+const isAtomControl = isControl;
 
 // export { default as WebApp } from "../WebApp";
 
@@ -18,6 +21,8 @@ import { AtomStyleSheet } from "../styles/AtomStyleSheet";
 // } else {
 //     console.log(`Platform is ${AtomBridge.platform}`);
 // }
+
+const fromHyphenToCamel = (input: string) => input.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 
 declare var bridge;
 if (typeof bridge !== "undefined" && bridge.platform) {
@@ -36,6 +41,136 @@ declare global {
 }
 
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
+
+function setAttribute(name: string) {
+    return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+        e.setAttribute(name, value);
+    };
+}
+
+function setEvent(name: string) {
+    return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+        (ctrl as any).bindElementEvent(e, name, value);
+    };
+}
+
+function setStyle(name: string, applyUnit?: string) {
+    if (applyUnit) {
+        return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+            if (typeof value === "number") {
+                e.style[name] = value + applyUnit;
+                return;
+            }
+            e.style[name] = value;
+        };
+    }
+    return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+        e.style[name] = value;
+    };
+}
+
+export interface ISetters {
+    [key: string]: (ctrl: AtomControl, e: HTMLElement, value: any) => void;
+}
+
+export const ElementValueSetters: ISetters = {
+    text(ctrl: AtomControl, e: HTMLElement, value: any) {
+        e.textContent = value;
+    },
+    ["class"](ctrl: AtomControl, e: HTMLElement, value: any) {
+        if (typeof value === "string") {
+            e.className = value;
+            return;
+        }
+        (ctrl as any).setElementClass(e, value, true);
+    },
+    alt: setAttribute("alt"),
+    title: setAttribute("title"),
+    href: setAttribute("href"),
+    target: setAttribute("target"),
+    style: setAttribute("style"),
+    styleLeft: setStyle("left", "px"),
+    styleTop: setStyle("top", "px"),
+    styleBottom: setStyle("bottom", "px"),
+    styleRight: setStyle("right", "px"),
+    styleWidth: setStyle("width", "px"),
+    styleHeight: setStyle("height", "px"),
+    stylePosition: setStyle("position"),
+    styleFontSize: setStyle("fontSize", "px"),
+    styleFontFamily: setStyle("fontFamily"),
+    styleFontWeight: setStyle("fontWeight"),
+    styleBorder: setStyle("border"),
+    styleBorderWidth: setStyle("borderWidth", "px"),
+    styleBorderColor: setStyle("borderColor"),
+    styleColor: setStyle("color"),
+    styleBackgroundColor: setStyle("backgroundColor"),
+    dir: setAttribute("dir"),
+    name: setAttribute("name"),
+    tabIndex: setAttribute("tabIndex"),
+    contentEditable: setAttribute("contentEditable"),
+    eventClick: setEvent("click"),
+    eventKeydown: setEvent("keydown"),
+    eventKeyup: setEvent("keyup"),
+    eventKeypress: setEvent("keypress"),
+    eventMousedown: setEvent("mousedown"),
+    eventMouseup: setEvent("mouseup"),
+    eventMousemove: setEvent("mousemove"),
+
+    src(ctrl: AtomControl, e: any, value: any) {
+        if (value && /^http\:/i.test(value)) {
+            e.src = value.substring(5);
+            return;
+        }
+        e.src = value;
+    },
+    styleClass(ctrl: any, e: any, value: any) {
+        ctrl.setElementClass(e, value);
+    },
+    styleDisplay(ctrl: AtomControl, e: HTMLElement, value) {
+        if (typeof value === "boolean") {
+            e.style.display = value ? "" : "none";
+            return;
+        }
+        e.style.display = value;
+    },
+    formattedText(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value instanceof FormattedString) {
+            (value as FormattedString).applyTo(ctrl.app, e);
+        } else {
+            e.textContent = (value || "").toString();
+        }
+    },
+    disabled(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value) {
+            e.setAttribute("disabled", "");
+            return;
+        }
+        e.removeAttribute("disabled");
+    },
+    autofocus(ctrl: AtomControl, element: HTMLElement, value) {
+        ctrl.app.callLater(() => {
+            const ie = element as HTMLInputElement;
+            if (ie) { ie.focus(); }
+        });
+    }
+};
+
+ElementValueSetters["style-display"] = ElementValueSetters.styleDisplay;
+ElementValueSetters["style-left"] = ElementValueSetters.styleLeft;
+ElementValueSetters["style-top"] = ElementValueSetters.styleTop;
+ElementValueSetters["style-bottom"] = ElementValueSetters.styleBottom;
+ElementValueSetters["style-right"] = ElementValueSetters.styleRight;
+ElementValueSetters["style-width"] = ElementValueSetters.styleWidth;
+ElementValueSetters["style-height"] = ElementValueSetters.styleHeight;
+ElementValueSetters["style-position"] = ElementValueSetters.stylePosition;
+ElementValueSetters["style-font-size"] = ElementValueSetters.styleFontSize;
+ElementValueSetters["style-font-family"] = ElementValueSetters.styleFontFamily;
+ElementValueSetters["style-font-weight"] = ElementValueSetters.styleFontWeight;
+ElementValueSetters["style-border"] = ElementValueSetters.styleBorder;
+ElementValueSetters["style-border-width"] = ElementValueSetters.styleBorderWidth;
+ElementValueSetters["style-border-color"] = ElementValueSetters.styleBorderColor;
+ElementValueSetters["style-color"] = ElementValueSetters.styleColor;
+ElementValueSetters["style-background-color"] = ElementValueSetters.styleBackgroundColor;
 
 /**
  * AtomControl class represents UI Component for a web browser.
@@ -110,6 +245,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
     }
 
+    protected get factory() {
+        return AtomControl;
+    }
+
     constructor(app: App, e?: HTMLElement) {
         super(app, e || document.createElement("div"));
     }
@@ -166,21 +305,95 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
+        // switch (name) {
+        //     case "text":
+        //         element.textContent = value;
+        //         return;
+        //     case "class":
+        //         this.setElementClass(element, value, true);
+        //         return;
+        //     case "alt":
+        //         (element as any).alt = value;
+        //         return;
+        //     case "src":
+        //         if (value && /^http\:/i.test(value)) {
+        //             (element as any).src = value.substr(5);
+        //         } else {
+        //             (element as any).src = value;
+        //         }
+        //         return;
+        //     case "styleClass":
+        //         this.setElementClass(element, value);
+        //         return;
+        //     case "styleDisplay":
+        //         if (typeof value === "boolean") {
+        //             element.style.display = value ? "" : "none";
+        //         } else {
+        //             element.style.display = value;
+        //         }
+        //         return;
+        //     case "title":
+        //         element.title = value;
+        //         return;
+        //     case "formattedText":
+        //         if (value instanceof FormattedString) {
+        //             (value as FormattedString).applyTo(this.app, element);
+        //         } else {
+        //             element.textContent = (value || "").toString();
+        //         }
+        //         return;
+        //     case "disabled":
+        //         if (value) {
+        //             element.setAttribute("disabled", "");
+        //         } else {
+        //             element.removeAttribute("disabled");
+        //         }
+        //         return;
+        //     case "autofocus":
+        //         this.app.callLater(() => {
+        //             const ie = element as HTMLInputElement;
+        //             if (ie) { ie.focus(); }
+        //         });
+        //     case "style":
+        //         element.setAttribute("style", value);
+        //         return;
+        //     case "eventClick":
+        //         this.bindElementEvent(element, "click", value);
+        //         return;
+        //     case "eventKeydown":
+        //         this.bindElementEvent(element, "keydown", value);
+        //         return;
+        //     case "eventKeypress":
+        //         this.bindElementEvent(element, "keypress", value);
+        //         return;
+        //     case "eventKeyup":
+        //         this.bindElementEvent(element, "keyup", value);
+        //         return;
+        // }
+
+        const setter = ElementValueSetters[name];
+        if (setter !== void 0) {
+            setter(this, element, value);
+            return;
+        }
+
+        if (/^data\-/.test(name)) {
+            name = fromHyphenToCamel(name.substring(5));
+            if (typeof value === "object") {
+                value = JSON.stringify(value);
+            }
+            element.dataset[name] = value;
+            return;
+        }
+
         if (/^style/.test(name)) {
-
-            if (name.length === 5) {
-                element.setAttribute("style", value);
-                return;
+            name = name.substring(5);
+            if (name.startsWith("-")) {
+                name = fromHyphenToCamel(name.substring(1));
+            } else {
+                name = name.charAt(0).toLowerCase() + name.substring(1);
             }
 
-            name = name.substr(5);
-            name = name.charAt(0).toLowerCase() + name.substr(1);
-
-            // this is style class...
-            if (name === "class") {
-                this.setElementClass(element, value);
-                return;
-            }
             if (value instanceof WebImage) {
                 value = `url(${value})`;
             }
@@ -189,62 +402,42 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
 
         if (/^event/.test(name)) {
-            name = name.substr(5);
-            name = name.charAt(0).toLowerCase() + name.substr(1);
+            name = name.substring(5);
+            if (name.startsWith("-")) {
+                name = fromHyphenToCamel(name.substring(1));
+            } else {
+                name = name.charAt(0).toLowerCase() + name.substring(1);
+            }
 
-            this.bindEvent(element, name, async (...e: any[]) => {
-                try {
-                    const f = value as (...v: any[]) => any;
-                    const pr = f.apply(this, e) as Promise<any>;
-                    if (pr) {
-                        try {
-                            await pr;
-                        } catch (error) {
-                            if (/canceled|cancelled/i.test(error)) {
-                                return;
-                            }
-
-                            const nav: NavigationService = this.app.resolve(NavigationService);
-                            await nav.alert(error, "Error");
-                        }
-                    }
-                } catch (er1) {
-                    // tslint:disable-next-line:no-console
-                    console.error(er1);
-                }
-            });
+            this.bindElementEvent(element, name, value);
             return;
         }
 
-        switch (name) {
-            case "text":
-                element.textContent = value;
-                break;
-            case "formattedText":
-                if (value instanceof FormattedString) {
-                    (value as FormattedString).applyTo(this.app, element);
-                } else {
-                    element.textContent = (value || "").toString();
+        element[name] = value;
+    }
+
+    protected bindElementEvent(element: HTMLElement, name: string, value: any) {
+        this.bindEvent(element, name, async (...e: any[]) => {
+            try {
+                const f = value as (...v: any[]) => any;
+                const pr = f.apply(this, e) as Promise<any>;
+                if (pr?.then) {
+                    try {
+                        await pr;
+                    } catch (error) {
+                        if (/canceled|cancelled/i.test(error)) {
+                            return;
+                        }
+
+                        const nav: NavigationService = this.app.resolve(NavigationService);
+                        await nav.alert(error, "Error");
+                    }
                 }
-                break;
-            case "class":
-                this.setElementClass(element, value, true);
-                break;
-            case "autofocus":
-                this.app.callLater(() => {
-                    const ie = element as HTMLInputElement;
-                    if (ie) { ie.focus(); }
-                });
-            case "src":
-                if (value && /^http\:/i.test(value)) {
-                    (element as any).src = value.substr(5);
-                } else {
-                    (element as any).src = value;
-                }
-                break;
-            default:
-                element[name] = value;
-        }
+            } catch (er1) {
+                // tslint:disable-next-line:no-console
+                console.error(er1);
+            }
+        });
     }
 
     protected setElementClass(element: HTMLElement, value: any, clear?: boolean): void {
@@ -307,6 +500,76 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
     }
 
+    protected createNode(app, e, iterator, creator) {
+        const name = iterator.name;
+        const attributes = iterator.attributes;
+        if (typeof name === "string") {
+            const element = document.createElement(name);
+            e?.appendChild(element);
+            this.render(iterator, element, creator);
+            return element;
+        }
+
+        if (name[isAtomControl]) {
+            const forName = attributes?.for;
+            const ctrl = new (name)(app,
+                forName ? document.createElement(forName) : undefined);
+            const element = ctrl.element ;
+            e?.appendChild(element);
+            ctrl.render(iterator, element, creator);
+            return element;
+        }
+
+        throw new Error(`not implemented create for ${iterator.name}`);
+    }
+
+    protected toTemplate(app, iterator, creator) {
+        const name = iterator.name;
+        if (typeof name === "string") {
+            return class Template extends AtomControl {
+                constructor(a, e) {
+                    super(a ?? app, e ?? document.createElement(name));
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, null, creator);
+                }
+            };
+        }
+
+        if (name[isAtomControl]) {
+
+            const forName = name.attributes?.for;
+
+            if (forName) {
+                return class Template extends (name as any) {
+                    constructor(a, e) {
+                        super(a ?? app, e ?? document.createElement(forName));
+                    }
+
+                    public create() {
+                        super.create();
+                        this.render(iterator, null, creator);
+                    }
+                };
+            }
+
+            return class Template extends (name as any) {
+                constructor(a, e) {
+                    super(a ?? app, e);
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, null, creator);
+                }
+            };
+        }
+
+        throw new Error(`Creating template from ${name} not supported`);
+
+    }
 }
 
 bridgeInstance.controlFactory = AtomControl;

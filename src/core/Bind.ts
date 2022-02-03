@@ -111,9 +111,28 @@ export interface ILVM<T> extends IAtomComponent {
 
 export interface IBinder<T extends IAtomComponent> {
     presenter(name?: string): Bind;
+
     event(handler: (control: T, e?: CustomEvent) => void): any;
-    oneTime(path: bindingFunction<T>): Bind;
-    oneWay(path: bindingFunction<T>): Bind;
+
+    /**
+     * Bind the expression one time
+     * @param path Lambda Expression for binding
+     * @param now Default value to set immediately
+     */
+    oneTime(path: bindingFunction<T>, now?: any): Bind;
+
+    /**
+     * Bind the expression one way
+     * @param path Lambda Expression for binding
+     * @param now Default value to set immediately
+     */
+    oneWay(path: bindingFunction<T>, now?: any): Bind;
+
+    /**
+     * Setup two way binding with given expression
+     * @param path Lambda Expression for binding
+     * @param events events on auto refresh
+     */
     twoWays(path: bindingFunction<T>, events?: string[]): Bind;
 }
 
@@ -160,8 +179,12 @@ export default class Bind {
             [bindSymbol](name: string, control: IAtomComponent, e: any) {
                 control.runAfterInit(() => {
                     if (isEvent.test(name)) {
-                        name = name.substr(5);
-                        name = (name[0].toLowerCase() + name.substr(1));
+                        name = name.substring(5);
+                        if (name.startsWith("-")) {
+                            name = name.substring(1).replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                        } else {
+                            name = (name[0].toLowerCase() + name.substring(1));
+                        }
                     }
                     control.bindEvent(e, name, (e1) => {
                         return (sourcePath as any)(control, e1);
@@ -171,12 +194,22 @@ export default class Bind {
         };
     }
 
-    public static oneTime<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): any {
+    /**
+     * Bind the expression one time
+     * @param sourcePath Lambda Expression for binding
+     * @param now Default value to set immediately
+     */
+     public static oneTime<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: bindingFunction<T>,
+        now?: any): any {
         return {
             [bindSymbol](name: string, control: IAtomComponent, e: any) {
                 control.runAfterInit(() => {
                     control.setLocalValue(e, name, sourcePath(control as any, e));
                 });
+                if (typeof now !== "undefined") {
+                    control.setLocalValue(e, name, now);
+                }
             }
         };
     }
@@ -200,7 +233,40 @@ export default class Bind {
         return this.oneWay(sourcePath);
     }
 
-    public static oneWay<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunction<T>): any {
+    /**
+     * Bind the expression one way with source, you cannot reference
+     * `this` inside this context, it will not watch `this`
+     * @param source source to watch
+     * @param path Lambda Expression for binding
+     * @param now Default value to set immediately
+     */
+    public static source<T>(
+        source: T,
+        path: (x: { control: IAtomComponent, source: T }) => any,
+        now?: any): any {
+
+        const lists = parsePath(path, false).map((x) => ["this", ... x]);
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                const self = { control, source };
+                control.bind(e, name, lists, false, () => {
+                    return path.call(self, self);
+                }, self);
+                if (typeof now !== "undefined") {
+                    control.setLocalValue(e, name, now);
+                }
+            }
+        };
+    }
+
+    /**
+     * Bind the expression one way
+     * @param sourcePath Lambda Expression for binding
+     * @param now Default value to set immediately
+     */
+     public static oneWay<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: bindingFunction<T>,
+        now?: any): any {
 
         let pathList;
         let combined;
@@ -231,6 +297,9 @@ export default class Bind {
                     control.bind(e, name, pathList, false, () => {
                         return sourcePath.call(creator, control, e);
                     });
+                    if (typeof now !== "undefined") {
+                        control.setLocalValue(e, name, now);
+                    }
                     return;
                 }
                 if (combined) {
@@ -241,17 +310,28 @@ export default class Bind {
                     control.bind(e, name, combined, false, () => {
                         return sourcePath.call(creator, control, e);
                     }, a);
+                    if (typeof now !== "undefined") {
+                        control.setLocalValue(e, name, now);
+                    }
+                    return;
                 }
-                if (thisPathList) {
-                    control.bind(e, name, thisPathList, false, () => {
-                        return sourcePath.call(creator, control, e);
-                    }, creator);
+                control.bind(e, name, thisPathList, false, () => {
+                    return sourcePath.call(creator, control, e);
+                }, creator);
+                if (typeof now !== "undefined") {
+                    control.setLocalValue(e, name, now);
                 }
             }
         };
     }
 
-    public static twoWays<T extends IAtomComponent = IAtomComponent>(
+    /**
+     * Setup two way binding with given expression
+     * @param sourcePath Lambda Expression for binding
+     * @param events events on auto refresh
+     * @param converter IValueConverter for value conversion
+     */
+     public static twoWays<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         events?: string[],
         converter?: IValueConverter): any {

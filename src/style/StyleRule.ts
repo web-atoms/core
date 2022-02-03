@@ -130,6 +130,16 @@ export type WordWrapType = "" | "default" | "normal" | "break-word" | "initial" 
 
 export type Units = "" | "px" | "pt" | "%" | "rem";
 
+export interface IFlexAttributes {
+    direction?: FlexDirectionType;
+    alignItems?: ItemAlignType;
+    justifyContent?: JustifyContentType;
+    stretch?: boolean;
+    inline?: boolean;
+    /** Try to keep gap an even number as it hides borders of input/textarea for odd numbers */
+    gap?: number;
+}
+
 export function toUnit(n: number | string, unit: string) {
     if (!unit) {
         unit = "";
@@ -150,7 +160,15 @@ export class AtomStyleRules {
 
     public style: IStyleDeclaration = {};
 
-    constructor(public name: string) {}
+    public name: string;
+
+    constructor(name: string | object) {
+        if (typeof name === "string") {
+            this.name = name;
+        } else {
+            this.style = name ?? {};
+        }
+    }
 
     public alignContent(value: ContentAlignType) {
         if (value !== undefined && value !== null) {
@@ -989,9 +1007,9 @@ export class AtomStyleRules {
         return this;
     }
 
-    public gap(value: string) {
+    public gap(value: number | string, unit: Units = "px") {
         if (value !== undefined && value !== null) {
-            this.style.gap = value;
+            this.style.gap = toUnit(value, unit);
         }
         return this;
     }
@@ -1997,6 +2015,31 @@ export class AtomStyleRules {
         return this;
     }
 
+    public custom(name: string, value: string) {
+        this.style[name] = value;
+        return this;
+    }
+
+    public scrollBarWidth(value: string): AtomStyleRules;
+    public scrollBarWidth(value: number, unit?: Units): AtomStyleRules;
+    public scrollBarWidth(value: number | string, unit?: Units) {
+        this.style["scrollbar-width"] = toUnit(value, unit);
+        this.style.subclasses ??= {};
+        const ws = this.style.subclasses["::-webkit-scrollbar"] ??= {};
+        ws.width = toUnit(value, unit);
+        return this;
+    }
+
+    public scrollBarColor(thumb: ColorItem | string, bg: ColorItem | string) {
+        this.style["scrollbar-color"] = `${thumb} ${bg}`;
+        this.style.subclasses ??= {};
+        const ws = this.style.subclasses["::-webkit-scrollbar-thumb"] ??= {};
+        ws.backgroundColor = bg;
+        ws.borderRadius = "20px";
+        ws.border = `3px solid ${thumb}`;
+        return this;
+    }
+
     public stopColor(value: string | ColorItem) {
         if (value !== undefined && value !== null) {
             this.style.stopColor = value;
@@ -2985,6 +3028,12 @@ export class AtomStyleRules {
         return this;
     }
 
+    public focus(style: AtomStyleRules) {
+        const sc = this.style.subclasses ??= {};
+        sc[":focus"] = { ... sc[":focus"], ... style.style };
+        return this;
+    }
+
     public hoverBackgroundColor(color: ColorItem | string) {
         const sc = this.style.subclasses ??= {};
         const hover = sc[":hover"] ??= {};
@@ -3027,15 +3076,110 @@ export class AtomStyleRules {
         const list = createStyleText(this.name, [], this.style);
         return list.join("\n");
     }
+
+    /**
+     * @deprecated Please use `displayNone(":not(XX) > A.XX")` format
+     * @param showSelector showSelector
+     * @param hideSelector hideSelector
+     * @returns AtomStyleRule
+     */
+    public toggle(showSelector: string, hideSelector: string) {
+        const sc = this.style.subclasses ??= {};
+        const h = sc[hideSelector] ??= {};
+        const d = sc[showSelector] ??= {};
+        d.display = "inherit";
+        h.display = "none";
+        return this;
+    }
+
+    public displayNone(... selectors: string[]) {
+        const sc = this.style.subclasses ??= {};
+        for (const iterator of selectors) {
+            const d = sc[iterator] ??= {};
+            d.display = "none";
+        }
+        return this;
+    }
+
+    /**
+     * Creates vertical flex layout with 5px gap
+     * @param p defaults { direction: "column", alignItems: "center", justifyContent: "space-around" }
+     * @param units px
+     */
+     public verticalFlexLayout(a: IFlexAttributes = {}, units: Units = "px") {
+        a.direction ??= "column";
+        return this.flexLayout(a, units);
+    }
+
+    /**
+     * Creates flex layout with 5px gap
+     * @param p defaults { direction: "row", alignItems: "center", justifyContent: "space-around" }
+     * @param units px
+     */
+    public flexLayout(
+    {
+        direction = "row",
+        alignItems = "center",
+        justifyContent = "space-around",
+        stretch,
+        inline,
+        gap = 4
+    }: IFlexAttributes = {},
+    units: Units = "px") {
+        if (direction !== void 0) {
+            this.style.flexDirection = direction;
+        }
+        if (alignItems !== void 0) {
+            this.style.alignItems = alignItems;
+        }
+        if (justifyContent !== void 0) {
+            this.style.justifyContent = justifyContent;
+        }
+        if (stretch) {
+            this.style.flex = "1 1 100%";
+        }
+        if (gap) {
+            this.style.gap = toUnit(gap, units);
+        }
+        this.style.display = inline ? "inline-flex" : "flex";
+        return this;
+    }
+
+    public toString() {
+        const list = [];
+        if (this.style) {
+            for (const key in this.style) {
+                if (Object.prototype.hasOwnProperty.call(this.style, key)) {
+                    const element = this.style[key];
+                    if (key === "subclasses") {
+                        throw new Error("Single AtomStyleRule cannot contain subclasses");
+                    }
+                    if (key === "toString") {
+                        continue;
+                    }
+                    if (!element) {
+                        continue;
+                    }
+                    const name = fromCamelToHyphen(key);
+                    if (element.url) {
+                        list.push(`${name}: url(${element.url})`);
+                        continue;
+                    }
+                    list.push(`${name}: ${element}`);
+                }
+            }
+        }
+        return list.join(";");
+    }
 }
 
 /**
  * Creates new style rule
- * @param name [optional] name of child subclass
+ * @param selector [optional] name of child subclass
  * @returns StyleRuleClass
  */
-function StyleRule(name?: string): AtomStyleRules {
-    return new AtomStyleRules(name);
+function StyleRule(selector?: string): AtomStyleRules {
+    return new AtomStyleRules(selector);
 }
 
 export default StyleRule;
@@ -3077,7 +3221,7 @@ function createStyleText(name: string, pairs: string[], styles: IStyleDeclaratio
     }
 
     if (!name) {
-        return styleList;
+        return [styleList.join(";")];
     }
 
     const cname = fromCamelToHyphen(name);

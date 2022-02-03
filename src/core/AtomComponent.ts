@@ -11,7 +11,8 @@ import Bind, { bindSymbol } from "./Bind";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { xnodeSymbol } from "./XNode";
+import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol,
+    elementFactorySymbol, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -43,13 +44,27 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
 
+const elementFactory = elementFactorySymbol;
+
+const isFactory = isFactorySymbol;
+
+const isAtomControl = isControl;
+
 const localBridge = AtomBridge;
+
+const renderFirst = AtomBridge.platform === "xf";
+
+const attached = attachedSymbol;
+
+const constructorNeedsArguments = constructorNeedsArgumentsSymbol;
 
 export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
     implements IAtomComponent<IAtomElement>,
     INotifyPropertyChanged {
 
-    public static readonly isControl = true;
+    public static readonly [isControl] = true;
+
+    public static readonly [isFactorySymbol] = true;
 
     // public element: T;
     public readonly disposables: AtomDisposableList;
@@ -461,8 +476,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
         const app = this.app;
 
-        const renderFirst = AtomBridge.platform === "xf";
-
         e = e || this.element;
         const attr = node.attributes;
         if (attr) {
@@ -470,19 +483,20 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 if (attr.hasOwnProperty(key)) {
                     const item = attr[key];
                     const isObject = typeof item === "object";
-                    if (isObject) {
-                        if (objectHasOwnProperty.call(item, localBindSymbol)) {
-                            item[localBindSymbol](key, this, e, creator);
+                    // a bug in JavaScript, null is an object
+                    if (isObject && item !== null) {
+                        const localSymbol = item[localBindSymbol];
+                        if (localSymbol) {
+                            localSymbol(key, this, e, creator);
                             continue;
                         }
-                        if (objectHasOwnProperty.call(item, localXNodeSymbol)) {
+                        const localXNode = item[localXNodeSymbol];
+                        if (localXNode) {
                             if (item.isTemplate) {
                                 this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
                                 continue;
                             }
-
-                            const child = AtomBridge.createNode(item, app);
-                            this.setLocalValue(e, key, child.element);
+                            this.setLocalValue(e, key, this.createNode(app, null, item, creator));
                             continue;
                         }
                     }
@@ -491,7 +505,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             }
         }
 
-        for (const iterator of node.children) {
+        const children = node.children;
+        if (children === void 0) {
+            return;
+        }
+
+        for (const iterator of children) {
             if (iterator === void 0) {
                 continue;
             }
@@ -499,23 +518,40 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 e.appendChild(document.createTextNode(iterator));
                 continue;
             }
-            if (iterator.isTemplate) {
-                if (iterator.isProperty) {
-                    this.setLocalValue(e, iterator.name, AtomBridge.toTemplate(app, iterator.children[0], creator));
-                } else {
-                    e.appendChild(AtomBridge.toTemplate(app, iterator, creator));
+            if (iterator.isProperty) {
+                if (iterator.isTemplate) {
+                    this.setLocalValue(e, iterator.name, this.toTemplate(app, iterator.children[0], creator));
+                    continue;
                 }
+                this.createNode(app, e, iterator, creator);
                 continue;
             }
             if (iterator.isProperty) {
                 for (const child of iterator.children) {
-                    const pc = AtomBridge.createNode(child, app);
-                    (pc.control || this).render(child, pc.element, creator);
 
-                    // in Xamarin.Forms certain properties are required to be
-                    // set in advance, so we append the element after setting
-                    // all children properties
-                    (localBridge as any).instance.append(e, iterator.name, pc.element);
+                    // this case of Xamarin Forms only..
+
+                    const e1 = this.createNode(app, null, child, creator);
+                    this.setLocalValue(e, iterator.name, e1);
+
+                    // const childName = child.name;
+                    // if (childName[isControl]) {
+                    //     const c1 = new (childName)(this.app);
+                    //     c1.render(child, c1.element, creator);
+                    //     (localBridge as any).instance.append(e, iterator.name, c1.element);
+                    //     continue;
+                    // }
+
+                    // const c2 = new (childName)();
+                    // this.render(child, c2, creator);
+                    // (localBridge as any).instance.append(e, iterator.name, c2);
+                    // const pc = AtomBridge.createNode(child, app);
+                    // (pc.control || this).render(child, pc.element, creator);
+
+                    // // in Xamarin.Forms certain properties are required to be
+                    // // set in advance, so we append the element after setting
+                    // // all children properties
+                    // (localBridge as any).instance.append(e, iterator.name, pc.element);
                 }
                 continue;
             }
@@ -524,18 +560,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
                 continue;
             }
-            const c = AtomBridge.createNode(iterator, app);
-            if (renderFirst) {
-                (c.control || this).render(iterator, c.element, creator);
-            }
-            if (this.element === e) {
-                this.append(c.control || c.element);
-            } else {
-                e.appendChild(c.element);
-            }
-            if (!renderFirst) {
-                (c.control || this).render(iterator, c.element, creator);
-            }
+
+            this.createNode(app, e, iterator, creator);
         }
 
     }
@@ -578,6 +604,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
         return result;
     }
+
+    protected abstract createNode(app, e, iterator, creator);
+
+    protected abstract toTemplate(app, iterator, creator);
+
+    protected abstract get factory(): any;
 
 }
 

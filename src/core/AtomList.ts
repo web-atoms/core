@@ -145,11 +145,12 @@ import { IDisposable } from "./types";
          * @param {number} i
          * @memberof AtomList
          */
-        public removeAt(i: number): void {
+        public removeAt(i: number): T {
             const item: T = this[i];
             this.splice(i, 1);
             AtomBinder.invokeItemsEvent(this, "remove", i, item);
             AtomBinder.refreshValue(this, "length");
+            return item;
         }
 
         /**
@@ -238,7 +239,7 @@ declare global {
         refresh?():void;
         insert?(index: number, item: T): void;
         remove?(item: T | ((i:T) => boolean)):boolean;
-        removeAt?(i: number):void;
+        removeAt?(i: number):T;
         watch?(
             f: (target: any, key: string, index?: number, item?: any) => void,
             wrap?: boolean): IDisposable;

@@ -1,9 +1,9 @@
 import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge, BaseElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
-import Bind from "../../core/Bind";
+import Bind, { bindSymbol } from "../../core/Bind";
 import { IAtomElement } from "../../core/types";
-import XNode from "../../core/XNode";
+import XNode, { attachedProperties, attachedSymbol, constructorNeedsArgumentsSymbol, elementFactorySymbol, isControl, isFactorySymbol, isTemplateSymbol, xnodeSymbol } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../../web/styles/AtomStyle";
@@ -16,6 +16,27 @@ UMD.viewPrefix = "xf";
 AtomBridge.platform = "xf";
 
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
+
+const isAtomControl = isControl;
+
+const isTemplate = isTemplateSymbol;
+
+const objectHasOwnProperty = Object.prototype.hasOwnProperty;
+
+const localBindSymbol = bindSymbol;
+const localXNodeSymbol = xnodeSymbol;
+
+const elementFactory = elementFactorySymbol;
+
+const isFactory = isFactorySymbol;
+
+const localBridge = AtomBridge;
+
+const renderFirst = AtomBridge.platform === "xf";
+
+const attached = attachedSymbol;
+
+const constructorNeedsArguments = constructorNeedsArgumentsSymbol;
 
 export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
 
@@ -70,6 +91,10 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
         }
     }
 
+    protected get factory() {
+        return AtomXFControl;
+    }
+
     private mTheme: AtomStyleSheet;
     private mCachedTheme: AtomStyleSheet;
 
@@ -109,6 +134,11 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
     }
 
     protected setElementValue(element: any, name: string, value: any): void {
+        if (name.startsWith(":")) {
+            // value is a function...
+            attachedProperties[name](element, value);
+            return;
+        }
         if (/^event/.test(name)) {
             this.bindEvent(element, name.substr(5), async () => {
                 try {
@@ -144,8 +174,113 @@ export class AtomXFControl extends AtomComponent<IAtomElement, AtomXFControl> {
                 classes = value.toString().split(" ");
             }
             value = classes.join(",");
+            name = "class";
         }
-        AtomBridge.instance.setValue(element, name, value);
+        // AtomBridge.instance.setValue(element, name, value);
+        element[name] = value;
+    }
+
+    protected createNode(app, e, iterator, creator) {
+        let name = iterator.name;
+        const attributes = iterator.attributes;
+        if (typeof name === "string") {
+            e.appendChild(name);
+            return e;
+            // throw new Error("not supported");
+            // // document.createElement...
+            // // const element = document.createElement(name);
+            // // tslint:disable-next-line: no-console
+            // console.log(`Creating ${name}`);
+            // const element = document.createElement(name);
+            // e?.appendChild(element);
+            // this.render(iterator, element, creator);
+            // return element;
+        }
+
+        if (objectHasOwnProperty.call(name, elementFactory)) {
+
+            if (objectHasOwnProperty.call(name, constructorNeedsArguments)) {
+
+                const templateFactory = name[isTemplate];
+                if (templateFactory) {
+                    const template = this.toTemplate(app, iterator, creator);
+                    return templateFactory(template);
+                }
+
+                // look for Arguments..
+                const firstChild = iterator.children?.[0];
+                const childName = firstChild?.name;
+                let pv: any[];
+                if (childName === "WebAtoms.AtomX:Arguments") {
+                    pv = [];
+                    for (const child of firstChild.children) {
+                        pv.push(this.createNode(app, e, child, creator));
+                    }
+                } else {
+                    pv = iterator.children;
+                    name = name[constructorNeedsArguments];
+                }
+                const element1 = name(... pv);
+                e?.appendChild(element1);
+                return element1;
+            }
+
+            const element = new (name)();
+            this.render(iterator, element, creator);
+            e?.appendChild(element);
+            return element;
+        }
+
+        if (name[isAtomControl]) {
+            const ctrl = new (name)(app);
+            const element = ctrl.element ;
+            ctrl.render(iterator, element, creator);
+            e?.appendChild(element);
+            return element;
+        }
+
+        const a = name[attached];
+        if (a) {
+            const child = this.createNode(app, null, iterator.children[0], creator);
+            a(e, child);
+            return e;
+        }
+
+        throw new Error(`not implemented create for ${name}`);
+    }
+
+    protected toTemplate(app, iterator, creator): any {
+        const childNode = iterator.children[0];
+
+        const name = childNode.name;
+        if (typeof name === "string") {
+            throw new Error(`Creating Template from string not supported, are you missing something?`);
+        }
+
+        if (name[isAtomControl]) {
+            return class Template extends (name as any) {
+
+                constructor(a, e) {
+                    super(a ?? app, e);
+                }
+
+                public create() {
+                    super.create();
+                    this.render(childNode, null, creator);
+                }
+            };
+        }
+
+        return class ElementTemplate extends AtomXFControl {
+            constructor(a, e) {
+                super(a ?? app, e ?? new (name)());
+            }
+
+            public create() {
+                super.create();
+                this.render(childNode, null, creator);
+            }
+        };
     }
 
 }

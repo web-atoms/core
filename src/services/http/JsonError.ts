@@ -6,4 +6,7 @@ export default class JsonError extends Error {
         super(message);
     }
 
+    public get errors(): Array<{name: string, reason: string}> {
+        return this.json.paramErrors ?? [];
+    }
 }

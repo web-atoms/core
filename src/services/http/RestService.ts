@@ -457,7 +457,10 @@ export class BaseService {
             }
         }
 
-        const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator() ) : null;
+        const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator({
+            title: url,
+            description: `${method} ${url}`
+        }) ) : null;
 
         try {
 
@@ -574,10 +577,12 @@ export class BaseService {
                     throw new JsonError(
                         typeof response === "string"
                         ? response
-                        : ( response.exceptionMessage
-                        || response.message
-                        || text
-                        || "Json Server Error"), response);
+                        : ( response.title
+                        ?? response.detail
+                        ?? response.message
+                        ?? response.exceptionMessage
+                        ?? text
+                        ?? "Json Server Error"), response);
                 }
                 if (methodOptions && methodOptions.returnHeaders) {
                     return {

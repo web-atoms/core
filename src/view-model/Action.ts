@@ -1,6 +1,8 @@
 import { App } from "../App";
 import FormattedString from "../core/FormattedString";
-import { NavigationService } from "../services/NavigationService";
+import sleep from "../core/sleep";
+import JsonError from "../services/http/JsonError";
+import { NavigationService, NotifyType } from "../services/NavigationService";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
@@ -19,6 +21,8 @@ export interface IActionOptions {
      * @default Done
      */
     successTitle?: string;
+
+    successMode?: "alert" | "notify";
 
     /**
      * Ask for confirmation before invoking this method
@@ -43,6 +47,11 @@ export interface IActionOptions {
      * @default Error
      */
     validateTitle?: string;
+
+    /**
+     * Closes the current popup/window by calling viewModel.close, returned result will be sent in close
+     */
+    close?: boolean;
 }
 
 /**
@@ -58,10 +67,12 @@ export default function Action(
     {
         success = null,
         successTitle = "Done",
+        successMode = "notify",
         confirm = null,
         confirmTitle = null,
         validate = false,
-        validateTitle = null
+        validateTitle = null,
+        close = false
     }: IActionOptions = {}) {
     // tslint:disable-next-line: only-arrow-functions
     return function(target: AtomViewModel, key: string | symbol): void {
@@ -93,15 +104,30 @@ export default function Action(
                     const pe = oldMethod.apply(vm, a);
                     if (pe && pe.then) {
                         const result = await pe;
-                        if (success) {
-                            await ns.alert(success, successTitle);
+                        if (close) {
+                            ns.notify(success, successTitle, NotifyType.Information, 3000);
+                            await sleep(3500);
+                            vm.close?.(result);
+                            return result;
                         }
+                        if (success) {
+                            if (successMode === "notify") {
+                                await ns.notify(success, successTitle, NotifyType.Information, 3000);
+                                return result;
+                            }
+                            await ns.alert(success, successTitle);
+                            return result;
+                    }
                         return result;
                     }
                 } catch (e) {
-                    if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
+                    if (/^(cancelled|canceled|timeout)$/i.test(e.toString().trim())) {
                         // tslint:disable-next-line: no-console
                         console.warn(e);
+                        return;
+                    }
+                    if (e instanceof JsonError && e.json?.detail) {
+                        await ns.alert(e.json.detail, e.message);
                         return;
                     }
                     await ns.alert(e, "Error");

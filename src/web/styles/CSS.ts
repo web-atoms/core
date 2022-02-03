@@ -7,8 +7,9 @@ function fromCamelToHyphen(input: string): string {
     return input.replace( /([a-z])([A-Z])/g, "$1-$2" ).toLowerCase();
 }
 
-function createStyleText(name: string, pairs: string[], styles: IStyleDeclaration): string[] {
+function createStyleText(name: string, styles: IStyleDeclaration): string[] {
     const styleList: any[] = [];
+    const subclasses = [];
     for (const key in styles) {
         if (styles.hasOwnProperty(key)) {
             if (/^(\_\$\_|className$|toString$)/i.test(key)) {
@@ -24,7 +25,7 @@ function createStyleText(name: string, pairs: string[], styles: IStyleDeclaratio
                 for (const subclassKey in element) {
                     if (element.hasOwnProperty(subclassKey)) {
                         const ve = element[subclassKey];
-                        pairs = createStyleText(`${n}${subclassKey}`, pairs, ve);
+                        subclasses.push( ... createStyleText(`${n}${subclassKey}`, ve));
                     }
                 }
             } else {
@@ -41,12 +42,19 @@ function createStyleText(name: string, pairs: string[], styles: IStyleDeclaratio
     const styleClassName = `${cname}`;
 
     if (styleList.length) {
-        pairs.push(`.${styleClassName} { ${styleList.join(";\r\n")}; }`);
+        return [`${styleClassName} {\r\n${styleList.join(";\r\n")}; }`, ... subclasses];
     }
-    return pairs;
+    return subclasses;
 }
 
-export default function CSS(style: IStyleDeclaration | AtomStyleRules): string {
+/**
+ * It will add custom stylesheet to the document and
+ * it will create a new unique scope class if selectorName was not provided
+ * @param style AtomStyleRules | IStyleDeclaration
+ * @param selectorName name of the selector (only use for CustomElement, do not use for components)
+ * @returns string
+ */
+export default function CSS(style: IStyleDeclaration | AtomStyleRules, selectorName?: string): string {
     let styleName = "";
     if (style instanceof AtomStyleRules) {
         styleName = style.name || "";
@@ -55,11 +63,15 @@ export default function CSS(style: IStyleDeclaration | AtomStyleRules): string {
         }
         style = style.style;
     }
-    const name = `wa-style-${styleId++}${styleName}`;
+    let className = selectorName;
+    if (!selectorName) {
+        className = `wa-style-${styleId++}${styleName}`;
+        selectorName = `.${className}`;
+    }
     const s = document.createElement("style");
-    const list = createStyleText(name, [], style);
+    s.id = selectorName;
+    const list = createStyleText(selectorName, style);
     s.textContent = list.join("\r\n");
     document.head.appendChild(s);
-    return name;
+    return className;
 }
-

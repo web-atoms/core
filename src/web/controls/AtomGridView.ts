@@ -107,9 +107,13 @@ export class AtomGridView extends AtomControl {
 
         // this.removeAllChildren(this.element);
 
+        const c1 = this.children ??= [];
+        c1.length = 0;
+
         let child = this.element.firstElementChild;
         while (child) {
             const c = child;
+            c1.push(c as any);
             child = child.nextElementSibling;
             c.remove();
         }

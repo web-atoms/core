@@ -1,4 +1,6 @@
-import Bind from "./Bind";
+import type { ObjectPositionType } from "../style/StyleRule";
+import Bind, { bindSymbol } from "./Bind";
+import type { ColorItem } from "./Colors";
 import { IClassOf, IDisposable } from "./types";
 
 export interface IAttributes {
@@ -49,7 +51,41 @@ declare global {
                 eventKeyup?: any;
                 eventKeypress?: any;
                 text?: string | any;
-                [key: string]: any
+                [key: string]: any;
+                "event-click"?: (e: MouseEvent) => void;
+                "event-blur"?: (e: Event) => void;
+                "event-focus"?: (e: Event) => void;
+                /**
+                 * If display is set to true, it will be set as empty string,
+                 * which will unset the value and it will inherit the style from stylesheet.
+                 * If it is set to false, it will be set to "none"
+                 */
+                "style-display"?: boolean | string;
+
+                /** number will be converted to pixels */
+                "style-left"?: number | string;
+                /** number will be converted to pixels */
+                "style-top"?: number | string;
+                /** number will be converted to pixels */
+                "style-bottom"?: number | string;
+                /** number will be converted to pixels */
+                "style-right"?: number | string;
+                /** number will be converted to pixels */
+                "style-width"?: number | string;
+                /** number will be converted to pixels */
+                "style-height"?: number | string;
+                /** number will be converted to pixels */
+                "style-position"?: ObjectPositionType;
+                /** number will be converted to pixels */
+                "style-font-size"?: number | string;
+                "style-font-family"?: string;
+                "style-font-weight"?: string;
+                "style-border"?: string;
+                "style-border-width"?: string;
+                "style-border-color"?: string | ColorItem;
+                "style-color"?: string | ColorItem;
+                "style-background-color"?: string | ColorItem;
+
             }
         };
 
@@ -77,7 +113,48 @@ export type AttachedNode = (n: any) => { [key: string]: any};
 
 export const xnodeSymbol = Symbol("XNode");
 
+export const isControl = Symbol("isControl");
+
+export const elementFactorySymbol = Symbol("elementFactory");
+
+export const isFactorySymbol = Symbol("isFactory");
+
+export const attachedSymbol = Symbol("attached");
+
+export const isTemplateSymbol = Symbol("isTemplate");
+
+export const constructorNeedsArgumentsSymbol = Symbol("constructorNeedsArguments");
+
+export const attachedProperties: { [key: string]: (e, v) => void } = {};
+
+let attachedId = 1;
+
+const attach = (name, attacher) => {
+    const key = `:${attachedId++}`;
+    const fx = (v) => {
+        return {
+            [key]: v
+        };
+    };
+    attachedProperties[key] = attacher;
+    fx[attachedSymbol] = attacher;
+    fx[isFactorySymbol] = key;
+    return fx;
+};
+
 export default class XNode {
+
+    public static isFactory = isFactorySymbol;
+
+    public static elementFactory = elementFactorySymbol;
+
+    public static bindSymbol = bindSymbol;
+
+    public static isTemplate = isTemplateSymbol;
+
+    public static prepareAttached = attach;
+
+    public static constructorNeedsArguments = constructorNeedsArgumentsSymbol;
 
     public static classes: {[key: string]: any } = {};
 
@@ -128,7 +205,7 @@ export default class XNode {
     //     } as any;
     // }
 
-    public static attached = (name: string): AttachedNode => (n) => ({ [name]: n });
+    // public static attached = (name: string): AttachedNode => (n) => ({ [name]: n });
 
     // public static property(): NodeFactory {
     //     return {
@@ -198,11 +275,15 @@ export default class XNode {
         name: string | Function,
         attributes: IAttributes,
         ... children: Array<XNode | XNode[] | any>): XNode {
+
+        if (typeof name === "string") {
+            return new XNode(name, attributes, children);
+        }
+        if ((name as any)[isFactorySymbol]) {
+            return new XNode(name as any, attributes, children);
+        }
         if ((name as any).factory) {
             return ((name as any).factory)(attributes, ... children);
-        }
-        if ((name as any).isControl) {
-            return new XNode(name as any, attributes, children);
         }
         switch (typeof name) {
             case "object":
@@ -213,6 +294,8 @@ export default class XNode {
         }
         return new XNode(name as any, attributes, children);
     }
+
+    public nameArgs: any;
 
     constructor(
         // tslint:disable-next-line: ban-types
