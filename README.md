@@ -1,23 +1,20 @@
 [![Action Status](https://github.com/web-atoms/core/workflows/Build/badge.svg)](https://github.com/web-atoms/core/actions) [![npm version](https://badge.fury.io/js/%40web-atoms%2Fcore.svg)](https://badge.fury.io/js/%40web-atoms%2Fcore) [![codecov](https://codecov.io/gh/web-atoms/core/branch/master/graph/badge.svg)](https://codecov.io/gh/web-atoms/core)
 
 # Web-Atoms Core
-Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to design modern web and mobile applications.
+Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to design modern webpplications.
 
-## Xamarin.Forms Features
-1. Use VS Code to develop Xamarin.Forms
-2. Write TypeScript instead of C#
-3. Write TSX (JSX) instead of Xaml
-4. Live hot reload for published app
+> Note, Xamarin Forms support is now deprecated, as we are migrating to new mobile framework.
 
 ## Web Features
-1. Abstract Atom Component
-2. Abstract Device API (Browser Service, Message Broadcast)
-3. Theme and styles support without CSS
-4. One time, One way and Two way binding support
-5. Simple dependency Injection
-6. In built simple unit testing framework
-7. UMD module support
-8. Full featured MVVM Framework with powerful validation
+1. Functional Components
+2. Abstract Atom Component
+3. Abstract Device API (Browser Service, Message Broadcast)
+4. Theme and styles support without CSS
+5. One time, One way and Two way binding support
+6. Simple dependency Injection
+7. In built simple unit testing framework
+8. UMD module support
+9. Full featured MVVM Framework with powerful validation
 
 ## Folder structure
 1. All views for web must be placed under "web" folder inside "src" folder.
@@ -34,14 +31,9 @@ src
 |  +--TaskEditorViewModel.ts
 |
 +--web
-|  +--tasks
-|     +--TaskListView.tsx
-|     +--TaskEditorView.tsx
-|
-+--xf
    +--tasks
       +--TaskListView.tsx
-      +--TaskEditorView.tsx 
+      +--TaskEditorView.tsx
 ```
 
 ### Example View Model
