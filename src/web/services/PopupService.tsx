@@ -354,7 +354,7 @@ export default class PopupService {
         container.element.appendChild(popup);
         const offset = {
             x: opener.offsetLeft,
-            y: opener.offsetTop + opener.offsetHeight,
+            y: opener.offsetTop + opener.offsetHeight - opener.scrollTop,
             handler: null
         };
 
