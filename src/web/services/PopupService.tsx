@@ -233,7 +233,7 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
             continue;
         }
         offset.x += host.offsetLeft;
-        offset.y += host.offsetTop - host.scrollTop;
+        offset.y += host.offsetTop - host.offsetParent.scrollTop;
     }
     return host;
 }
@@ -354,7 +354,7 @@ export default class PopupService {
         container.element.appendChild(popup);
         const offset = {
             x: opener.offsetLeft,
-            y: opener.offsetTop + opener.offsetHeight - opener.scrollTop,
+            y: opener.offsetTop + opener.offsetHeight - opener.offsetParent.scrollTop,
             handler: null
         };
 
