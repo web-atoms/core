@@ -511,7 +511,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
 
         for (const iterator of children) {
-            if (iterator === void 0) {
+            if (!iterator) {
                 continue;
             }
             if (typeof iterator === "string") {
@@ -526,35 +526,35 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 this.createNode(app, e, iterator, creator);
                 continue;
             }
-            if (iterator.isProperty) {
-                for (const child of iterator.children) {
+            // if (iterator.isProperty) {
+            //     for (const child of iterator.children) {
 
-                    // this case of Xamarin Forms only..
+            //         // this case of Xamarin Forms only..
 
-                    const e1 = this.createNode(app, null, child, creator);
-                    this.setLocalValue(e, iterator.name, e1);
+            //         const e1 = this.createNode(app, null, child, creator);
+            //         this.setLocalValue(e, iterator.name, e1);
 
-                    // const childName = child.name;
-                    // if (childName[isControl]) {
-                    //     const c1 = new (childName)(this.app);
-                    //     c1.render(child, c1.element, creator);
-                    //     (localBridge as any).instance.append(e, iterator.name, c1.element);
-                    //     continue;
-                    // }
+            //         // const childName = child.name;
+            //         // if (childName[isControl]) {
+            //         //     const c1 = new (childName)(this.app);
+            //         //     c1.render(child, c1.element, creator);
+            //         //     (localBridge as any).instance.append(e, iterator.name, c1.element);
+            //         //     continue;
+            //         // }
 
-                    // const c2 = new (childName)();
-                    // this.render(child, c2, creator);
-                    // (localBridge as any).instance.append(e, iterator.name, c2);
-                    // const pc = AtomBridge.createNode(child, app);
-                    // (pc.control || this).render(child, pc.element, creator);
+            //         // const c2 = new (childName)();
+            //         // this.render(child, c2, creator);
+            //         // (localBridge as any).instance.append(e, iterator.name, c2);
+            //         // const pc = AtomBridge.createNode(child, app);
+            //         // (pc.control || this).render(child, pc.element, creator);
 
-                    // // in Xamarin.Forms certain properties are required to be
-                    // // set in advance, so we append the element after setting
-                    // // all children properties
-                    // (localBridge as any).instance.append(e, iterator.name, pc.element);
-                }
-                continue;
-            }
+            //         // // in Xamarin.Forms certain properties are required to be
+            //         // // set in advance, so we append the element after setting
+            //         // // all children properties
+            //         // (localBridge as any).instance.append(e, iterator.name, pc.element);
+            //     }
+            //     continue;
+            // }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
                 this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
