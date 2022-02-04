@@ -511,7 +511,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
 
         for (const iterator of children) {
-            if (iterator === void 0 || iterator === false) {
+            if (!iterator) {
                 continue;
             }
             if (typeof iterator === "string") {
