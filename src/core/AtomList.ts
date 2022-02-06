@@ -141,6 +141,20 @@ import { IDisposable } from "./types";
         }
 
         /**
+         * Replaces given item in the list at position `i`
+         * and refreshes the bindings.
+         * @param {number} i
+         * @param {T} item
+         * @memberof AtomList
+         */
+        public set(i: number, item: T): void {
+            const old = this[i];
+            this[i] = item;
+            AtomBinder.invokeItemsEvent(this, "replace", i, item, old);
+            AtomBinder.refreshValue(this, "length");
+        }
+
+        /**
          * Removes item at given index i and refresh the bindings
          * @param {number} i
          * @memberof AtomList
