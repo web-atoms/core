@@ -211,19 +211,18 @@ function findHostAndPosition(opener: HTMLElement) {
         handler: null,
         root
     };
-    while (true) {
-        const { parent } = offset as any;
-        if (parent === body) {
+    do {
+        root = root.parentElement;
+        if (root === body) {
             break;
         }
-        if (parent.classList.contains("page-host")) {
+        if (root.classList.contains("page-host")) {
             break;
         }
-        if (parent.dataset.popUpHost === "yes") {
+        if (root.dataset.popUpHost === "yes") {
             break;
         }
-        root = root.parentElement as HTMLElement;
-    }
+    } while (true);
     rect = root.getBoundingClientRect();
     offset.x -= rect.x;
     offset.y -= rect.y;
