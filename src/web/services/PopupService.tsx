@@ -413,7 +413,7 @@ export default class PopupService {
                     style.top = offset.y + "px";
                 } else {
                     style.top = `${offset.y - opener.offsetHeight}px`;
-                    // style.transform = "translate(0, -100%)";
+                    style.transform = "translate(0, -100%)";
                 }
 
             } else {
