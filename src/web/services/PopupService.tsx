@@ -226,6 +226,7 @@ function findHostAndPosition(opener: HTMLElement) {
     rect = root.getBoundingClientRect();
     offset.x -= rect.x;
     offset.y -= rect.y;
+    offset.root = root;
     return offset;
 }
 
