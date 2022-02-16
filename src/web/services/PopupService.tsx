@@ -392,6 +392,7 @@ export default class PopupService {
 
         const style = container.element.style;
         style.position = "absolute";
+        offset.y += hostHeight;
 
         if (options?.alignment === "centerOfScreen") {
             style.left = "50%";
@@ -411,8 +412,8 @@ export default class PopupService {
                 if (offset.y < (hostHeight / 2)) {
                     style.top = offset.y + "px";
                 } else {
-                    style.top = `${offset.y}px`;
-                    style.transform = "translate(0, -100%)";
+                    style.top = `${offset.y - opener.offsetHeight}px`;
+                    // style.transform = "translate(0, -100%)";
                 }
 
             } else {
