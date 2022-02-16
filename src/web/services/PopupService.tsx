@@ -382,7 +382,6 @@ export default class PopupService {
         container.element.classList.add(popupStyle);
         container.element.appendChild(popup);
         const offset = findHostAndPosition(opener);
-        offset.y += opener.offsetHeight;
         const host = offset.root;
         const hostHeight = host.offsetHeight
         || host.clientHeight
