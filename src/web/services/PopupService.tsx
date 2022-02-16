@@ -216,7 +216,10 @@ function findHostAndPosition(opener: HTMLElement) {
         if (root === body) {
             break;
         }
-        if (root.classList.contains("page-host")) {
+        if (root.parentElement.classList.contains("page-host")) {
+            break;
+        }
+        if (root.classList.contains("popup-host")) {
             break;
         }
         if (root.dataset.popUpHost === "yes") {
