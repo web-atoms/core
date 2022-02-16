@@ -392,7 +392,7 @@ export default class PopupService {
 
         const style = container.element.style;
         style.position = "absolute";
-        offset.y += hostHeight;
+        offset.y += opener.offsetHeight;
 
         if (options?.alignment === "centerOfScreen") {
             style.left = "50%";
