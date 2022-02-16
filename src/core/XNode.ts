@@ -56,7 +56,7 @@ declare global {
                 "event-click"?: (e: MouseEvent) => void;
                 "event-blur"?: (e: Event) => void;
                 "event-focus"?: (e: Event) => void;
-                "on-create": (ctrl: AtomControl, element: HTMLElement) => void;
+                "on-create"?: (ctrl: AtomControl, element: HTMLElement) => void;
                 /**
                  * If display is set to true, it will be set as empty string,
                  * which will unset the value and it will inherit the style from stylesheet.
