@@ -155,6 +155,16 @@ export const ElementValueSetters: ISetters = {
     },
     onCreate(ctrl: AtomControl, element: HTMLElement, value) {
         value(ctrl, element);
+    },
+    watch(ctrl: AtomControl, element: HTMLElement, value) {
+        element.dispatchEvent(new CustomEvent("watch", {
+            bubbles: true,
+            cancelable: true,
+            detail: {
+                control: ctrl,
+                value
+            }
+        }));
     }
 };
 
