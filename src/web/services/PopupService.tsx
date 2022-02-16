@@ -201,6 +201,35 @@ export class PopupWindow extends AtomControl {
 
 }
 
+function findHostAndPosition(opener: HTMLElement) {
+    let root = opener;
+    const body = document.body;
+    let rect = opener.getBoundingClientRect();
+    const offset = {
+        x: rect.left,
+        y: rect.top,
+        handler: null,
+        root
+    };
+    while (true) {
+        const { parent } = offset as any;
+        if (parent === body) {
+            break;
+        }
+        if (parent.classList.contains("page-host")) {
+            break;
+        }
+        if (parent.dataset.popUpHost === "yes") {
+            break;
+        }
+        root = root.parentElement as HTMLElement;
+    }
+    rect = root.getBoundingClientRect();
+    offset.x -= rect.x;
+    offset.y -= rect.y;
+    return offset;
+}
+
 function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLElement {
 
     // let us find scrollable larget offsetParent
@@ -352,21 +381,8 @@ export default class PopupService {
         container.element._logicalParent = opener;
         container.element.classList.add(popupStyle);
         container.element.appendChild(popup);
-        const offset = {
-            x: opener.offsetLeft,
-            y: opener.offsetTop + opener.offsetHeight - (opener.offsetParent?.scrollTop ?? 0),
-            handler: null
-        };
-
-        // find host...
-        // const host = findHost(opener, offset);
-        const host = findHost(opener, offset);
-        if (!host) {
-            // tslint:disable-next-line: no-console
-            console.warn("Aborting popup display as host no longer exists");
-            return;
-        }
-
+        const offset = findHostAndPosition(opener);
+        const host = offset.root;
         const hostHeight = host.offsetHeight
         || host.clientHeight
         || (host.firstElementChild as HTMLElement).offsetHeight;
