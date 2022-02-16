@@ -152,6 +152,9 @@ export const ElementValueSetters: ISetters = {
             const ie = element as HTMLInputElement;
             if (ie) { ie.focus(); }
         });
+    },
+    onCreate(ctrl: AtomControl, element: HTMLElement, value) {
+        value(ctrl, element);
     }
 };
 
@@ -171,6 +174,7 @@ ElementValueSetters["style-border-width"] = ElementValueSetters.styleBorderWidth
 ElementValueSetters["style-border-color"] = ElementValueSetters.styleBorderColor;
 ElementValueSetters["style-color"] = ElementValueSetters.styleColor;
 ElementValueSetters["style-background-color"] = ElementValueSetters.styleBackgroundColor;
+ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
 
 /**
  * AtomControl class represents UI Component for a web browser.

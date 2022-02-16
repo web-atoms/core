@@ -1,4 +1,5 @@
 import type { ObjectPositionType } from "../style/StyleRule";
+import type { AtomControl } from "../web/controls/AtomControl";
 import Bind, { bindSymbol } from "./Bind";
 import type { ColorItem } from "./Colors";
 import { IClassOf, IDisposable } from "./types";
@@ -55,6 +56,7 @@ declare global {
                 "event-click"?: (e: MouseEvent) => void;
                 "event-blur"?: (e: Event) => void;
                 "event-focus"?: (e: Event) => void;
+                "on-create": (ctrl: AtomControl, element: HTMLElement) => void;
                 /**
                  * If display is set to true, it will be set as empty string,
                  * which will unset the value and it will inherit the style from stylesheet.
