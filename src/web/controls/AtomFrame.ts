@@ -177,7 +177,7 @@ export class AtomFrame
 
         const e = view.element;
 
-        this.navigationService.currentTarget = e;
+        // this.navigationService.currentTarget = e;
 
         this.setUrl(urlString);
         disposables.add({
@@ -185,7 +185,7 @@ export class AtomFrame
                 const closed = this.current === view;
                 e.innerHTML = "";
                 e.remove();
-                this.navigationService.currentTarget = null;
+                // this.navigationService.currentTarget = null;
                 this.popStack(closed);
             }
         });

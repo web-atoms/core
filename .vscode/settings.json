@@ -1,4 +1,14 @@
 {
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass"
+            ]
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
     "coverage-gutters.lcovname": "./coverage/lcov.info",
     "cSpell.words": [
         "Akash",
