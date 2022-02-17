@@ -27,6 +27,13 @@ import PopupService from "./PopupService";
 
 export type HostForElementFunc = ((e: HTMLElement) => HTMLElement);
 
+let lastElementTarget = null;
+document.body.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).offsetParent) {
+        lastElementTarget = e.target;
+    }
+});
+
 @RegisterSingleton
 export class WindowService extends NavigationService {
 
@@ -37,30 +44,30 @@ export class WindowService extends NavigationService {
 
     public readonly screen: IScreen;
 
-    private targetStack: HTMLElement[] = [];
-    public get currentTarget(): HTMLElement {
-        const ts = this.targetStack;
-        return ts.length > 0 ? ts[ts.length - 1] : undefined;
-    }
-    public set currentTarget(v: HTMLElement) {
-        const ts = this.targetStack;
-        const nts = [];
-        if (v === null) {
-            // special case... remove all non existent elements...
-            for (const iterator of ts) {
-                if (iterator.parentElement) {
-                    nts.push(iterator);
-                }
-            }
-            this.targetStack = nts;
-            return;
-        }
+    // private targetStack: HTMLElement[] = [];
+    // public get currentTarget(): HTMLElement {
+    //     const ts = this.targetStack;
+    //     return ts.length > 0 ? ts[ts.length - 1] : undefined;
+    // }
+    // public set currentTarget(v: HTMLElement) {
+    //     const ts = this.targetStack;
+    //     const nts = [];
+    //     if (v === null) {
+    //         // special case... remove all non existent elements...
+    //         for (const iterator of ts) {
+    //             if (iterator.parentElement) {
+    //                 nts.push(iterator);
+    //             }
+    //         }
+    //         this.targetStack = nts;
+    //         return;
+    //     }
 
-        if (ts.length === 0 && ts[ts.length - 1] === v) {
-            return;
-        }
-        ts.push(v);
-    }
+    //     if (ts.length === 0 && ts[ts.length - 1] === v) {
+    //         return;
+    //     }
+    //     ts.push(v);
+    // }
 
     private popups: AtomControl[] = [];
 
@@ -122,10 +129,10 @@ export class WindowService extends NavigationService {
         this.screen.screenType = st;
 
         if (window) {
-            window.addEventListener("click", (e) => {
-                // this.currentTarget = e.target as HTMLElement;
-                this.closePopup(e);
-            });
+            // window.addEventListener("click", (e) => {
+            //     // this.currentTarget = e.target as HTMLElement;
+            //     this.closePopup(e);
+            // });
 
             const update = (e) => {
                 this.refreshScreen();
@@ -208,63 +215,63 @@ export class WindowService extends NavigationService {
         });
     }
 
-    public closePopup(e: MouseEvent): void {
+    // public closePopup(e: MouseEvent): void {
 
-        // need to simulate parent click if we are inside an iframe...
-        const fe = typeof frameElement !== "undefined" ? frameElement : null;
-        if (fe) {
-            (fe as any).click();
-            const pe = fe.ownerDocument ? fe.ownerDocument.defaultView as any : null;
-            if (pe && pe.simulateParentClick) {
-                pe.simulateParentClick();
-            }
-        }
+    //     // need to simulate parent click if we are inside an iframe...
+    //     const fe = typeof frameElement !== "undefined" ? frameElement : null;
+    //     if (fe) {
+    //         (fe as any).click();
+    //         const pe = fe.ownerDocument ? fe.ownerDocument.defaultView as any : null;
+    //         if (pe && pe.simulateParentClick) {
+    //             pe.simulateParentClick();
+    //         }
+    //     }
 
-        let target = this.currentTarget;
-        const et = e.target as HTMLElement;
-        if (!et.parentElement) {
-            // probably the window/popup was just disposed..
-            // ignore it...
+    //     let target = this.currentTarget;
+    //     const et = e.target as HTMLElement;
+    //     if (!et.parentElement) {
+    //         // probably the window/popup was just disposed..
+    //         // ignore it...
 
-            // if mouse click was outside body and within the window
-            // target element will be HTML
-            // in that case we have to dispose the top popup
-            if (!/html/i.test(et.tagName)) {
-                return;
-            }
+    //         // if mouse click was outside body and within the window
+    //         // target element will be HTML
+    //         // in that case we have to dispose the top popup
+    //         if (!/html/i.test(et.tagName)) {
+    //             return;
+    //         }
 
-            // we need to manually override target so popup will be disposed
-            target = et;
-        }
+    //         // we need to manually override target so popup will be disposed
+    //         target = et;
+    //     }
 
-        this.currentTarget = e.target as HTMLElement;
-        if (!this.popups.length) {
-            return;
-        }
+    //     this.currentTarget = e.target as HTMLElement;
+    //     if (!this.popups.length) {
+    //         return;
+    //     }
 
-        const peek = this.popups[this.popups.length - 1];
-        const element = peek.element;
+    //     const peek = this.popups[this.popups.length - 1];
+    //     const element = peek.element;
 
-        while (target) {
-            if (target === element) {
-                // do not close this popup....
-                return;
-            }
-            if (element._logicalParent === target) {
-                return;
-            }
-            target = target.parentElement;
-        }
+    //     while (target) {
+    //         if (target === element) {
+    //             // do not close this popup....
+    //             return;
+    //         }
+    //         if (element._logicalParent === target) {
+    //             return;
+    //         }
+    //         target = target.parentElement;
+    //     }
 
-        this.remove(peek);
-    }
+    //     this.remove(peek);
+    // }
 
     public refresh(): void {
         location.reload();
     }
 
     public getHostForElement(): HTMLElement {
-        const ce = this.currentTarget;
+        const ce = lastElementTarget;
         if (!ce) {
             return null;
         }
@@ -304,21 +311,21 @@ export class WindowService extends NavigationService {
         // }));
     }
 
-    protected registerForPopup(): void {
+    // protected registerForPopup(): void {
 
-        if (window) {
-            window.addEventListener("click", (e) => {
-                this.closePopup(e);
-            });
-        }
-    }
+    //     if (window) {
+    //         window.addEventListener("click", (e) => {
+    //             this.closePopup(e);
+    //         });
+    //     }
+    // }
 
     protected async openWindow<T>(url: AtomUri, options?: IPageOptions): Promise<T> {
 
         // this is because current target is not yet set
         await Atom.delay(1);
 
-        const lastTarget = this.currentTarget;
+        const lastTarget = lastElementTarget;
 
         const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
             url, this.app, true, () => this.app.resolve(AtomWindowViewModel, true));
@@ -350,12 +357,38 @@ export class WindowService extends NavigationService {
             e.style.opacity = "0";
         }
 
+        popup.registerDisposable({
+            dispose: () => {
+                lastElementTarget = lastTarget;
+            }
+        });
+
+        if (isPopup) {
+            // register for close...
+            const root = popup.element;
+            const last = lastElementTarget;
+            const closePopup = (e:Event) => {
+                    let target = e.target as HTMLElement;
+                    while (target) {
+                        if (target === root || target === last) {
+                            return;
+                        }
+                        target = target.parentElement;
+                    }
+                    this.remove(popup, true);
+                };
+            document.body.addEventListener("click", closePopup);
+            popup.registerDisposable({dispose: () => {
+                document.body.removeEventListener("click", closePopup);
+            }})
+        }
+
         e._logicalParent = lastTarget;
         (e as any).sourceUrl = url;
 
         const pvm = popup.viewModel;
         if (pvm) {
-            let ce = this.currentTarget;
+            let ce = lastElementTarget;
             if (ce) {
                 while (!ce.atomControl) {
                     ce = ce.parentElement;
@@ -377,7 +410,7 @@ export class WindowService extends NavigationService {
 
         if (isPopup) {
 
-            const sr = AtomUI.screenOffset(this.currentTarget);
+            const sr = AtomUI.screenOffset(lastElementTarget);
 
             const x = sr.x;
             const y = sr.y;
@@ -418,7 +451,7 @@ export class WindowService extends NavigationService {
             }
         }
 
-        this.currentTarget = e;
+        // this.currentTarget = e;
 
         popup.bindEvent(document.body, "keyup", (keyboardEvent: KeyboardEvent) => {
             if (keyboardEvent.key === "Escape") {
@@ -430,7 +463,7 @@ export class WindowService extends NavigationService {
             dispose: () => {
                 e.innerHTML = "";
                 e.remove();
-                this.currentTarget = null;
+                // this.currentTarget = null;
             }
         });
 
