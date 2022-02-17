@@ -299,6 +299,14 @@ let popupId = 1001;
 
 export default class PopupService {
 
+    public static get lastTarget() {
+        return lastTarget;
+    }
+
+    public static set lastTarget(v) {
+        lastTarget = v;
+    }
+
     public static showWindow<T>(
         opener: HTMLElement,
         popupClass: IClassOf<PopupWindow>,

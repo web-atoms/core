@@ -27,13 +27,6 @@ import PopupService from "./PopupService";
 
 export type HostForElementFunc = ((e: HTMLElement) => HTMLElement);
 
-let lastElementTarget = null;
-document.body.addEventListener("click", (e) => {
-    if ((e.target as HTMLElement).offsetParent) {
-        lastElementTarget = e.target;
-    }
-});
-
 @RegisterSingleton
 export class WindowService extends NavigationService {
 
@@ -271,7 +264,7 @@ export class WindowService extends NavigationService {
     }
 
     public getHostForElement(): HTMLElement {
-        const ce = lastElementTarget;
+        const ce = PopupService.lastTarget;
         if (!ce) {
             return null;
         }
@@ -325,7 +318,7 @@ export class WindowService extends NavigationService {
         // this is because current target is not yet set
         await Atom.delay(1);
 
-        const lastTarget = lastElementTarget;
+        const lastTarget = PopupService.lastTarget;
 
         const { view: popup, returnPromise, disposables } = await AtomLoader.loadView<AtomControl>(
             url, this.app, true, () => this.app.resolve(AtomWindowViewModel, true));
@@ -359,14 +352,14 @@ export class WindowService extends NavigationService {
 
         popup.registerDisposable({
             dispose: () => {
-                lastElementTarget = lastTarget;
+                PopupService.lastTarget = lastTarget;
             }
         });
 
         if (isPopup) {
             // register for close...
             const root = popup.element;
-            const last = lastElementTarget;
+            const last = PopupService.lastTarget;
             const closePopup = (e:Event) => {
                     let target = e.target as HTMLElement;
                     while (target) {
@@ -388,7 +381,7 @@ export class WindowService extends NavigationService {
 
         const pvm = popup.viewModel;
         if (pvm) {
-            let ce = lastElementTarget;
+            let ce = PopupService.lastTarget;
             if (ce) {
                 while (!ce.atomControl) {
                     ce = ce.parentElement;
@@ -410,7 +403,7 @@ export class WindowService extends NavigationService {
 
         if (isPopup) {
 
-            const sr = AtomUI.screenOffset(lastElementTarget);
+            const sr = AtomUI.screenOffset(PopupService.lastTarget);
 
             const x = sr.x;
             const y = sr.y;
