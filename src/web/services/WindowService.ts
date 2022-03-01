@@ -285,23 +285,21 @@ export class WindowService extends NavigationService {
         this.screen.orientation = width > height ? "landscape" : "portrait";
     }
 
-    public notify(
+    public async notify(
         message: string | FormattedString,
         title?: string,
         type?: NotifyType,
-        delay?: number): void {
-        const notification = NotificationPopup({ message, type });
-        const cancelToken = new CancelToken(delay ?? 5000);
-        this.app.runAsync(() => notification.showWindow(notification, {
+        delay?: number): Promise<void> {
+        try {
+            const notification = NotificationPopup({ message, type });
+            const cancelToken = new CancelToken(delay ?? 5000);
+            await notification.showWindow(notification, {
             title,
             cancelToken
-        }));
-        // this.app.runAsync(() => this.openPage(AtomNotification, {
-        //     message,
-        //     title,
-        //     type: type || NotifyType.Information,
-        //     timeout: delay
-        // }));
+            });
+        } catch (ex) {
+            console.error(ex);
+        }
     }
 
     // protected registerForPopup(): void {

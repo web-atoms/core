@@ -108,7 +108,7 @@ export class MockNavigationService extends NavigationService {
         return this.openTestWindow(pageName, p);
     }
 
-    public notify(message: string, title?: string): void {
+    public async notify(message: string, title?: string): Promise<void> {
         const url = `__AlertNotification_${message}`;
         const w: any = this.windowStack.find((x) => x.windowType === message);
         if (!w) {
