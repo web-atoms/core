@@ -145,6 +145,10 @@ export class PopupWindow extends AtomControl {
     @BindableProperty
     public title?: string;
 
+    public close: (r?) => void;
+
+    public cancel: (r?) => void;
+
     private hostCreated = false;
 
     protected render(node: XNode, e?: any, creator?: any): void {
@@ -361,6 +365,10 @@ export default class PopupService {
 
             vm.cancel = finalize;
             vm.close = finalize;
+            if (vm !== control) {
+                control.cancel = finalize;
+                control.close = finalize;
+            }
 
             if (!isModal) {
                 closeHandler(host, opener, control, finalize);
