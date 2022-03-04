@@ -162,7 +162,7 @@ export class PopupWindow extends AtomControl {
                 <button
                     class="popup-close-button"
                     text="x"
-                    eventClick={Bind.event(() => this.viewModel.cancel())}/>
+                    eventClick={Bind.event(() => this.cancel())}/>
             </div>
             { node }
         </div>);
