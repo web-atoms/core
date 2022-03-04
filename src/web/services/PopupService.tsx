@@ -316,7 +316,7 @@ export default class PopupService {
             const previousTarget = opener;
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
-            const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
+            const vm = control.viewModel ?? control;
 
             let resolved = false;
             const finalize = (r?) => {
