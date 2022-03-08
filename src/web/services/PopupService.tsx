@@ -293,10 +293,10 @@ function closeHandler(
             }
             start = start.parentElement;
         }
-        host.removeEventListener("click", handler);
         close();
     };
-    host.addEventListener("click", handler);
+    document.body.addEventListener("click", handler);
+    container.registerDisposable(() => document.body.removeEventListener("click", handler))
 }
 
 let popupId = 1001;
@@ -456,8 +456,9 @@ export default class PopupService {
         };
 
         closeHandler(host, opener, container, () => {
-            container.element.remove();
+            const e = container.element;
             container.dispose();
+            e.remove();
         });
 
         const ct = options?.cancelToken;
