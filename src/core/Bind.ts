@@ -383,10 +383,12 @@ export default class Bind {
      * Use this for HTML only, this will fire two way binding
      * as soon as the input/textarea box is updated
      * @param sourcePath binding lambda expression
+     * @param converter Optional value converter
      */
     public static twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
-        sourcePath: bindingFunction<T>): any {
-        return this.twoWays(sourcePath, ["change", "input", "paste"]);
+        sourcePath: bindingFunction<T>,
+        converter?: IValueConverter): any {
+        return this.twoWays(sourcePath, ["change", "input", "paste"], converter);
         // const b = new Bind(twoWays, sourcePath, null,
         //     ["change", "input", "paste"]);
         // if (!(b.thisPathList  || b.pathList)) {
