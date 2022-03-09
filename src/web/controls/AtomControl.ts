@@ -527,7 +527,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (typeof name === "string") {
             const element = document.createElement(name);
             if (name === "input") {
-                attributes.autocomplete ??= "google=stop";
+                if (!attributes.autocomplete) {
+                    this.app.callLater(() => {
+                        (element as HTMLInputElement).autocomplete = "google-stop"
+                    });
+                }
             }
             e?.appendChild(element);
             this.render(iterator, element, creator);
