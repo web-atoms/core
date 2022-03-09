@@ -335,8 +335,12 @@ export default class PopupService {
                         } else {
                             reject("cancelled");
                         }
-                        control.element?.remove();
-                        control.dispose();
+                        // if control's element is null
+                        // control has been disposed and no need to dispose it
+                        if (control.element) {
+                            control.element.remove();
+                            control.dispose();
+                        }
                     }
                 }, 1);
             };
