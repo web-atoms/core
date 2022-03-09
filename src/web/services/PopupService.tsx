@@ -321,6 +321,7 @@ export default class PopupService {
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ?? control;
+            let element = control.element;
 
             let resolved = false;
             const finalize = (r?) => {
@@ -341,6 +342,8 @@ export default class PopupService {
                             control.element.remove();
                             control.dispose();
                         }
+                        element?.remove();
+                        element = undefined;
                     }
                 }, 1);
             };
