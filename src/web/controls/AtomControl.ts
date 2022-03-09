@@ -153,6 +153,11 @@ export const ElementValueSetters: ISetters = {
             if (ie) { ie.focus(); }
         });
     },
+    autocomplete(ctrl: AtomControl, element: HTMLElement, value) {
+        ctrl.app.callLater(() => {
+            (element as HTMLInputElement).autocomplete = value;
+        });
+    },
     onCreate(ctrl: AtomControl, element: HTMLElement, value) {
         value(ctrl, element);
     },
@@ -521,6 +526,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         const attributes = iterator.attributes;
         if (typeof name === "string") {
             const element = document.createElement(name);
+            if (name === "input") {
+                attributes.autocomplete ??= "google=stop";
+            }
             e?.appendChild(element);
             this.render(iterator, element, creator);
             return element;
