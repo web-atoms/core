@@ -25,7 +25,7 @@ export interface IActionOptions {
     successMode?: "alert" | "notify";
 
     /**
-     * By default 2000 milliseconds, the success/error notification will hide in given miliseconds
+     * By default 2000 milliseconds, the success/error notification will hide in given milliseconds
      */
     notifyDelay?: number;
 
