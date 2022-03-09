@@ -80,7 +80,7 @@ export default function Action(
         close = false,
         notifyDelay = 2000,
     }: IActionOptions = {}) {
-    return (target, key: string | symbol, descriptor) => {
+    return (target, key: string | symbol, descriptor: any): any => {
         const { get } = descriptor;
         return {
             get: function(){
