@@ -25,7 +25,7 @@ export interface IActionOptions {
     successMode?: "alert" | "notify";
 
     /**
-     * By default 2000 miliseconds, the success/error notification will hide in given miliseconds
+     * By default 2000 milliseconds, the success/error notification will hide in given miliseconds
      */
     notifyDelay?: number;
 
@@ -80,66 +80,76 @@ export default function Action(
         close = false,
         notifyDelay = 2000,
     }: IActionOptions = {}) {
-    // tslint:disable-next-line: only-arrow-functions
-    return function(target: AtomViewModel, key: string | symbol): void {
-        registerInit(target, (vm) => {
-            // tslint:disable-next-line: ban-types
-            const oldMethod = vm[key] as Function;
-            const app = vm.app as App;
-            // tslint:disable-next-line:only-arrow-functions
-            vm[key] = async function( ... a: any[]) {
-                const ns = app.resolve(NavigationService) as NavigationService;
-                try {
+    return (target, key: string | symbol, descriptor) => {
+        const { get } = descriptor;
+        return {
+            get: function(){
+                const vm = this;
+                // tslint:disable-next-line: ban-types
+                const oldMethod = get;
+                // tslint:disable-next-line:only-arrow-functions
+                const value = async function( ... a: any[]) {
+                    const vm = this;
+                    const app = vm.app as App;
+                    const ns = app.resolve(NavigationService) as NavigationService;
+                    try {
 
-                    if (validate) {
-                        if (!vm.isValid) {
-                            const vMsg = typeof validate === "boolean"
-                                ? "Please enter correct information"
-                                : validate;
-                            await ns.alert(vMsg, validateTitle || "Error");
-                            return;
-                        }
-                    }
-
-                    if (confirm) {
-                        if (! await ns.confirm(confirm, confirmTitle || "Confirm")) {
-                            return;
-                        }
-                    }
-
-                    const pe = oldMethod.apply(vm, a);
-                    if (pe && pe.then) {
-                        const result = await pe;
-                        if (close) {
-                            if (success) {
-                                await ns.notify(success, successTitle, NotifyType.Information, notifyDelay);
+                        if (validate) {
+                            if (!vm.isValid) {
+                                const vMsg = typeof validate === "boolean"
+                                    ? "Please enter correct information"
+                                    : validate;
+                                await ns.alert(vMsg, validateTitle || "Error");
+                                return;
                             }
-                            vm.close?.(result);
-                            return result;
                         }
-                        if (success) {
-                            if (successMode === "notify") {
-                                await ns.notify(success, successTitle, NotifyType.Information, notifyDelay);
+
+                        if (confirm) {
+                            if (! await ns.confirm(confirm, confirmTitle || "Confirm")) {
+                                return;
+                            }
+                        }
+
+                        const pe = oldMethod.apply(vm, a);
+                        if (pe && pe.then) {
+                            const result = await pe;
+                            if (close) {
+                                if (success) {
+                                    await ns.notify(success, successTitle, NotifyType.Information, notifyDelay);
+                                }
+                                vm.close?.(result);
                                 return result;
                             }
-                            await ns.alert(success, successTitle);
+                            if (success) {
+                                if (successMode === "notify") {
+                                    await ns.notify(success, successTitle, NotifyType.Information, notifyDelay);
+                                    return result;
+                                }
+                                await ns.alert(success, successTitle);
+                                return result;
+                            }
                             return result;
+                        }
+                    } catch (e) {
+                        if (/^(cancelled|canceled|timeout)$/i.test(e.toString().trim())) {
+                            // tslint:disable-next-line: no-console
+                            console.warn(e);
+                            return;
+                        }
+                        if (e instanceof JsonError && e.json?.detail) {
+                            await ns.alert(e.json.detail, e.message);
+                            return;
+                        }
+                        await ns.alert(e, "Error");
                     }
-                        return result;
-                    }
-                } catch (e) {
-                    if (/^(cancelled|canceled|timeout)$/i.test(e.toString().trim())) {
-                        // tslint:disable-next-line: no-console
-                        console.warn(e);
-                        return;
-                    }
-                    if (e instanceof JsonError && e.json?.detail) {
-                        await ns.alert(e.json.detail, e.message);
-                        return;
-                    }
-                    await ns.alert(e, "Error");
-                }
-            };
-        });
+                };
+                Object.defineProperty(vm, key, {
+                    value,
+                    writable: true,
+                    enumerable: false
+                } )
+            },
+            configurable: true
+        };
     };
 }
