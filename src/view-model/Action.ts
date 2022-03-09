@@ -81,14 +81,14 @@ export default function Action(
         notifyDelay = 2000,
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
-        const { get } = descriptor;
+        const { value } = descriptor;
         return {
             get: function(){
                 const vm = this;
                 // tslint:disable-next-line: ban-types
-                const oldMethod = get;
+                const oldMethod = value;
                 // tslint:disable-next-line:only-arrow-functions
-                const value = async function( ... a: any[]) {
+                const fx = async function( ... a: any[]) {
                     const vm = this;
                     const app = vm.app as App;
                     const ns = app.resolve(NavigationService) as NavigationService;
@@ -144,7 +144,7 @@ export default function Action(
                     }
                 };
                 Object.defineProperty(vm, key, {
-                    value,
+                    value: fx,
                     writable: true,
                     enumerable: false
                 } )
