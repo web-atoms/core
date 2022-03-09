@@ -335,7 +335,7 @@ export default class PopupService {
                         } else {
                             reject("cancelled");
                         }
-                        control.element.remove();
+                        control.element?.remove();
                         control.dispose();
                     }
                 }, 1);
