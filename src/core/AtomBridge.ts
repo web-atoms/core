@@ -147,12 +147,9 @@ export class AtomElementBridge extends BaseElementBridge<HTMLElement> {
 
     public visitDescendents(element: HTMLElement, action: (e: HTMLElement, ac: IUIAtomControl) => boolean): void  {
 
-        const en = new ChildEnumerator(element);
-        while (en.next()) {
-            const iterator = en.current;
+        for (const iterator of ChildEnumerator.enumerate(element)) {            
             const eAny = iterator as any;
             const ac = eAny ? eAny.atomControl : undefined;
-
             if (!action(iterator, ac)) {
                 continue;
             }

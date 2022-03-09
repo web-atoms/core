@@ -573,15 +573,14 @@ export class AtomItemsControl extends AtomControl {
 
     public bringIntoView(data: any): void {
         this.app.callLater(() => {
-            const en = new ChildEnumerator(this.itemsPresenter || this.element);
-            while (en.next()) {
-                const item = en.current;
+            for(let item of ChildEnumerator.enumerate(this.itemsPresenter || this.element)) {
                 const dataItem = item.atomControl ? item.atomControl.data : item;
                 if (dataItem === data) {
                     item.scrollIntoView();
                     return;
                 }
             }
+
         });
     }
 
@@ -612,9 +611,9 @@ export class AtomItemsControl extends AtomControl {
             AtomUI.scrollTop(this.mVirtualContainer, scrollTop * vcHeight);
             return;
         }
-        const en = new ChildEnumerator(this.itemsPresenter || this.element);
-        while (en.next()) {
-            const item = en.current;
+        // const en = new ChildEnumerator(this.itemsPresenter || this.element);
+        for(let item of ChildEnumerator.enumerate(this.itemsPresenter || this.element)) {
+            // const item = en.current;
             const dataItem = item.atomControl ? item.atomControl.data : item;
             if (this.isSelected(dataItem)) {
                 setTimeout(() => {
@@ -706,9 +705,9 @@ export class AtomItemsControl extends AtomControl {
         if (/remove/gi.test(key)) {
             // tslint:disable-next-line:no-shadowed-variable
             const ip = this.itemsPresenter || this.element;
-            const en = new ChildEnumerator(ip);
-            while (en.next()) {
-                const ce = en.current;
+            // const en = new ChildEnumerator(ip);
+            for(let ce of ChildEnumerator.enumerate(ip)) {
+                // const ce = en.current;
                 // tslint:disable-next-line:no-shadowed-variable
                 const c = ce;
                 if (c.atomControl && c.atomControl.data === item) {
@@ -775,16 +774,7 @@ export class AtomItemsControl extends AtomControl {
             // AtomControl.updateUI();
 
             const lastItem = items[index];
-            let last: HTMLElement = null;
-            let cIndex: number = 0;
-            const en = new ChildEnumerator(this.itemsPresenter);
-            while (en.next()) {
-                if (cIndex === index) {
-                    last = en.current;
-                    break;
-                }
-                cIndex++;
-            }
+            let last = this.itemsPresenter.children.item(index) as HTMLElement;
             const df2 = document.createDocumentFragment();
             this.createChild(df2, lastItem);
             if (last) {
@@ -1033,9 +1023,9 @@ export class AtomItemsControl extends AtomControl {
     }
 
     protected disposeChildren(e: HTMLElement): void {
-        const en = new ChildEnumerator(e);
-        while (en.next()) {
-            const iterator = en.current;
+        // const en = new ChildEnumerator(e);
+        for (let iterator of ChildEnumerator.enumerate(e)) {
+            // const iterator = en.current;
             const ac = (iterator as any).atomControl as AtomControl;
             if (ac) {
                 ac.dispose();
