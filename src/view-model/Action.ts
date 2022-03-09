@@ -148,6 +148,7 @@ export default function Action(
                     writable: true,
                     enumerable: false
                 } )
+                return fx;
             },
             configurable: true
         };
