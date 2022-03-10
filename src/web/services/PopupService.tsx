@@ -324,18 +324,34 @@ export default class PopupService {
             let element = control.element;
 
             let resolved = false;
-            const finalize = (r?) => {
+            const close = (r?) => {
                 // this is to allow binding events
                 // to refresh the data
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
                         lastTarget = previousTarget;
-                        if (r) {
-                            resolve(r);
-                        } else {
-                            reject("cancelled");
+                        resolve(r);
+                        // if control's element is null
+                        // control has been disposed and no need to dispose it
+                        if (control.element) {
+                            control.element.remove();
+                            control.dispose();
                         }
+                        element?.remove();
+                        element = undefined;
+                    }
+                }, 1);
+            };
+
+            const cancel = (r?) => {
+                // this is to allow binding events
+                // to refresh the data
+                setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        lastTarget = previousTarget;
+                        reject(r ?? "cancelled");
                         // if control's element is null
                         // control has been disposed and no need to dispose it
                         if (control.element) {
@@ -363,22 +379,22 @@ export default class PopupService {
                         }
                     }
                 }
-                popupOptions.cancelToken?.registerForCancel(finalize);
+                popupOptions.cancelToken?.registerForCancel(cancel);
                 isModal = popupOptions.modal;
             }
 
             const host = findHost(opener);
             host.appendChild(control.element);
 
-            vm.cancel = finalize;
-            vm.close = finalize;
+            vm.cancel = cancel;
+            vm.close = close;
             if (vm !== control) {
-                control.cancel = finalize;
-                control.close = finalize;
+                control.cancel = cancel;
+                control.close = close;
             }
 
             if (!isModal) {
-                closeHandler(host, opener, control, finalize);
+                closeHandler(host, opener, control, cancel);
             }
         });
     }
