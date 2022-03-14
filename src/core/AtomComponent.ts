@@ -361,7 +361,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             return;
         }
 
-        if ((!element || element === this.element) &&  this.hasProperty(name)) {
+        if ((!element || element === this.element) &&  Reflect.has(this, name)) {
             this[name] = value;
         } else {
             this.setElementValue(element, name, value);
