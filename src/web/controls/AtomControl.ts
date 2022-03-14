@@ -70,7 +70,8 @@ function setStyle(name: string, applyUnit?: string) {
 }
 
 export interface ISetters {
-    [key: string]: (ctrl: AtomControl, e: HTMLElement, value: any) => void;
+    // tslint:disable-next-line: ban-types
+    [key: string | symbol]: (ctrl: AtomControl, e: HTMLElement, value: any) => void;
 }
 
 export const ElementValueSetters: ISetters = {
@@ -162,13 +163,13 @@ export const ElementValueSetters: ISetters = {
         value(ctrl, element);
     },
     watch(ctrl: AtomControl, element: HTMLElement, value) {
-        setTimeout((ctrl, element, value) => {
-            element.dispatchEvent(new CustomEvent("watch", {
+        setTimeout((c1: AtomControl, e1: HTMLElement, v1: any) => {
+            e1.dispatchEvent(new CustomEvent("watch", {
                 bubbles: true,
                 cancelable: true,
                 detail: {
-                    control: ctrl,
-                    value
+                    control: c1,
+                    value: v1
                 }
             }));
         }, 1, ctrl, element, value);
@@ -198,6 +199,15 @@ ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
  */
 
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
+
+    public static registerProperty(
+        attributeName: string,
+        attributeValue: string,
+        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void) {
+        const setterSymbol = Symbol(attributeName + "=" + attributeValue);
+        ElementValueSetters[setterSymbol] = setter;
+        return setterSymbol;
+    }
 
     public defaultControlStyle: any;
 
@@ -434,8 +444,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        // element[name] = value;
-        element.setAttribute(name, value);
+        element[name] = value;
     }
 
     protected bindElementEvent(element: HTMLElement, name: string, value: any) {
@@ -530,7 +539,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             if (name === "input") {
                 if (!attributes.autocomplete) {
                     this.app.callLater(() => {
-                        (element as HTMLInputElement).autocomplete = "google-stop"
+                        (element as HTMLInputElement).autocomplete = "google-stop";
                     });
                 }
             }
