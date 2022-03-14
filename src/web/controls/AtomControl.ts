@@ -434,7 +434,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        element[name] = value;
+        // element[name] = value;
+        element.setAttribute(name, value);
     }
 
     protected bindElementEvent(element: HTMLElement, name: string, value: any) {
