@@ -243,7 +243,7 @@ function findHostAndPosition(opener: HTMLElement) {
 
 function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLElement {
 
-    // let us find scrollable larget offsetParent
+    // let us find scrollable target offsetParent
 
     // find host...
     let host = opener.offsetParent as HTMLElement;
@@ -300,7 +300,7 @@ function closeHandler(
         close();
     };
     document.body.addEventListener("click", handler);
-    container.registerDisposable(() => document.body.removeEventListener("click", handler))
+    container.registerDisposable(() => document.body.removeEventListener("click", handler));
 }
 
 let popupId = 1001;
@@ -378,8 +378,8 @@ export default class PopupService {
                 if (viewModelParameters) {
                     for (const key in viewModelParameters) {
                         if (Object.prototype.hasOwnProperty.call(viewModelParameters, key)) {
-                            const element = viewModelParameters[key];
-                            vm[key] = element;
+                            const e = viewModelParameters[key];
+                            vm[key] = e;
                         }
                     }
                 }

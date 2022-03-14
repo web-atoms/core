@@ -60,7 +60,7 @@ declare global {
                 /** This will fire up `watch` custom event, that you can observe
                  * for many elements in document.body instead of setting up too
                  * many bindings
-                */
+                 */
                 watch?: any;
                 /**
                  * If display is set to true, it will be set as empty string,
