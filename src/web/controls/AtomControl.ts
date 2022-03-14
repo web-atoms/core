@@ -194,17 +194,18 @@ ElementValueSetters["style-color"] = ElementValueSetters.styleColor;
 ElementValueSetters["style-background-color"] = ElementValueSetters.styleBackgroundColor;
 ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
 
+let propertyId = 1;
+
 /**
  * AtomControl class represents UI Component for a web browser.
  */
-
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public static registerProperty(
         attributeName: string,
         attributeValue: string,
         setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void) {
-        const setterSymbol = Symbol(attributeName + "=" + attributeValue);
+        const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
         return setterSymbol;
     }
