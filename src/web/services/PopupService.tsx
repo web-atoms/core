@@ -137,7 +137,9 @@ export class PopupControl extends AtomControl {
         const popup = new this(app);
         
         const p = PopupService.show(openerElement, popup.element, options);
-        p.registerDisposable(popup);
+        // since popup will be children of openerElement
+        // on dispose(popupElement), popup will be disposed automatically
+        // p.registerDisposable(popup);
         return new Promise(((resolve, reject) => {
             let resolved = false;
             popup.close = (r) => {
