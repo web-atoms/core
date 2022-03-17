@@ -114,6 +114,52 @@ const dialogCss = CSS(StyleRule()
 
 export class PopupControl extends AtomControl {
 
+    public static showControl<T>(
+        opener: HTMLElement | AtomControl,
+        options?: IPopupOptions): Promise<T> {
+        let openerElement: HTMLElement;
+        let app: App;
+    
+        if (opener instanceof AtomControl) {
+            openerElement = opener.element;
+            app = opener.app;
+        } else {
+            openerElement = opener;
+            let start = opener;
+            while (!start.atomControl) {
+                start = start.parentElement;
+            }
+            if (!start) {
+                return Promise.reject("Could not create popup as target is not attached")
+            }
+            app = start.atomControl.app;
+        }
+        const popup = new this(app);
+        
+        const p = PopupService.show(openerElement, popup.element, options);
+        p.registerDisposable(popup);
+        return new Promise(((resolve, reject) => {
+            let resolved = false;
+            popup.close = (r) => {
+                if (resolved) {
+                    return;
+                }
+                resolved = true;
+                resolve(r);
+                p.dispose();
+            };
+
+            popup.cancel = (e) => {
+                if (resolved) {
+                    return;
+                }
+                resolved = true;
+                reject(e);
+                p.dispose();
+            };
+        }));
+    }
+
     public close: (r?) => void;
 
     public cancel: (r?) => void;
@@ -410,53 +456,6 @@ export default class PopupService {
                 closeHandler(host, opener, control, cancel);
             }
         });
-    }
-
-    public static showControl<T>(
-        opener: HTMLElement | AtomControl,
-        factory: IClassOf<PopupControl>,
-        options?: IPopupOptions): Promise<T> {
-        let openerElement: HTMLElement;
-        let app: App;
-    
-        if (opener instanceof AtomControl) {
-            openerElement = opener.element;
-            app = opener.app;
-        } else {
-            openerElement = opener;
-            let start = opener;
-            while (!start.atomControl) {
-                start = start.parentElement;
-            }
-            if (!start) {
-                return Promise.reject("Could not create popup as target is not attached")
-            }
-            app = start.atomControl.app;
-        }
-        const popup = new factory(app);
-        
-        const p = this.show(openerElement, popup.element, options);
-        p.registerDisposable(popup);
-        return new Promise(((resolve, reject) => {
-            let resolved = false;
-            popup.close = (r) => {
-                if (resolved) {
-                    return;
-                }
-                resolved = true;
-                resolve(r);
-                p.dispose();
-            };
-
-            popup.cancel = (e) => {
-                if (resolved) {
-                    return;
-                }
-                resolved = true;
-                reject(e);
-                p.dispose();
-            };
-        }));
     }
 
     /**
