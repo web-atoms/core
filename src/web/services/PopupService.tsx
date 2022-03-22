@@ -391,7 +391,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        resolve(r);
+                        setTimeout(resolve,1,r);
                         // if control's element is null
                         // control has been disposed and no need to dispose it
                         if (control.element) {
@@ -411,7 +411,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        reject(r ?? "cancelled");
+                        setTimeout(reject ,1 ,r ?? "cancelled");
                         // if control's element is null
                         // control has been disposed and no need to dispose it
                         if (control.element) {
