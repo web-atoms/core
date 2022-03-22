@@ -369,7 +369,9 @@ export default class PopupService {
     }
 
     public static set lastTarget(v) {
-        lastTarget = v;
+        if (v.isConnected) {
+            lastTarget = v;
+        }
     }
 
     public static showWindow<T>(
@@ -391,7 +393,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        lastTarget = previousTarget;
+                        PopupService.lastTarget = previousTarget;
                         resolve(r);
                         // if control's element is null
                         // control has been disposed and no need to dispose it
@@ -411,7 +413,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        lastTarget = previousTarget;
+                        PopupService.lastTarget = previousTarget;
                         reject(r ?? "cancelled");
                         // if control's element is null
                         // control has been disposed and no need to dispose it
@@ -531,7 +533,7 @@ export default class PopupService {
             if (!container.disposables) {
                 return;
             }
-            lastTarget = previousTarget;
+            PopupService.lastTarget = previousTarget;
             container.disposables.dispose();
             const parent = getParent(opener);
             parent.dispose(container.element);
