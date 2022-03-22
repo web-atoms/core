@@ -4,6 +4,14 @@ import { INameValues, IRect } from "../../core/types";
 
 export class ChildEnumerator {
 
+    public static *enumerate(e: HTMLElement) {
+        let item = e?.firstElementChild as HTMLElement;
+        while (item) {
+            yield item;
+            item = item.nextElementSibling as HTMLElement;
+        }
+    }
+
     private item: HTMLElement;
 
     public get current(): HTMLElement {
@@ -15,7 +23,7 @@ export class ChildEnumerator {
 
     public next(): boolean {
         if (!this.item) {
-            this.item = this.e.firstElementChild as HTMLElement;
+            this.item = this.e?.firstElementChild as HTMLElement;
         } else {
             this.item = this.item.nextElementSibling as HTMLElement;
         }

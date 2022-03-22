@@ -70,7 +70,8 @@ function setStyle(name: string, applyUnit?: string) {
 }
 
 export interface ISetters {
-    [key: string]: (ctrl: AtomControl, e: HTMLElement, value: any) => void;
+    // tslint:disable-next-line: ban-types
+    [key: string | symbol]: (ctrl: AtomControl, e: HTMLElement, value: any) => void;
 }
 
 export const ElementValueSetters: ISetters = {
@@ -152,6 +153,26 @@ export const ElementValueSetters: ISetters = {
             const ie = element as HTMLInputElement;
             if (ie) { ie.focus(); }
         });
+    },
+    autocomplete(ctrl: AtomControl, element: HTMLElement, value) {
+        ctrl.app.callLater(() => {
+            (element as HTMLInputElement).autocomplete = value;
+        });
+    },
+    onCreate(ctrl: AtomControl, element: HTMLElement, value) {
+        value(ctrl, element);
+    },
+    watch(ctrl: AtomControl, element: HTMLElement, value) {
+        setTimeout((c1: AtomControl, e1: HTMLElement, v1: any) => {
+            e1.dispatchEvent(new CustomEvent("watch", {
+                bubbles: true,
+                cancelable: true,
+                detail: {
+                    control: c1,
+                    value: v1
+                }
+            }));
+        }, 1, ctrl, element, value);
     }
 };
 
@@ -171,12 +192,23 @@ ElementValueSetters["style-border-width"] = ElementValueSetters.styleBorderWidth
 ElementValueSetters["style-border-color"] = ElementValueSetters.styleBorderColor;
 ElementValueSetters["style-color"] = ElementValueSetters.styleColor;
 ElementValueSetters["style-background-color"] = ElementValueSetters.styleBackgroundColor;
+ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
+
+let propertyId = 1;
 
 /**
  * AtomControl class represents UI Component for a web browser.
  */
-
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
+
+    public static registerProperty(
+        attributeName: string,
+        attributeValue: string,
+        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void) {
+        const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
+        ElementValueSetters[setterSymbol] = setter;
+        return setterSymbol;
+    }
 
     public defaultControlStyle: any;
 
@@ -505,6 +537,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         const attributes = iterator.attributes;
         if (typeof name === "string") {
             const element = document.createElement(name);
+            if (name === "input") {
+                if (!attributes.autocomplete) {
+                    this.app.callLater(() => {
+                        (element as HTMLInputElement).autocomplete = "google-stop";
+                    });
+                }
+            }
             e?.appendChild(element);
             this.render(iterator, element, creator);
             return element;

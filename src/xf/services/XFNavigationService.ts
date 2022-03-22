@@ -80,7 +80,7 @@ export default class XFNavigationService extends NavigationService {
         });
     }
 
-    public notify(message: string, title?: string, type?: NotifyType, delay?: number): void {
+    public async notify(message: string, title?: string, type?: NotifyType, delay?: number): Promise<void> {
         // display toast pending..
         // tslint:disable-next-line: no-console
         console.warn("Display toast not yet implemented");

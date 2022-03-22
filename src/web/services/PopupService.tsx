@@ -1,3 +1,4 @@
+import { App } from "../../App";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
@@ -69,6 +70,7 @@ const dialogCss = CSS(StyleRule()
     .top("50%")
     .left("50%")
     .transform("translate(-50%,-50%)" as any)
+    .boxShadow("0 0 20px 1px rgb(0 0 0 / 75%)")
     .child(StyleRule(".title")
         .display("flex")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
@@ -110,6 +112,62 @@ const dialogCss = CSS(StyleRule()
     )
 );
 
+export class PopupControl extends AtomControl {
+
+    public static showControl<T>(
+        opener: HTMLElement | AtomControl,
+        options?: IPopupOptions): Promise<T> {
+        let openerElement: HTMLElement;
+        let app: App;
+    
+        if (opener instanceof AtomControl) {
+            openerElement = opener.element;
+            app = opener.app;
+        } else {
+            openerElement = opener;
+            let start = opener;
+            while (!start.atomControl) {
+                start = start.parentElement;
+            }
+            if (!start) {
+                return Promise.reject("Could not create popup as target is not attached")
+            }
+            app = start.atomControl.app;
+        }
+        const popup = new this(app);
+        
+        const p = PopupService.show(openerElement, popup.element, options);
+        // since popup will be children of openerElement
+        // on dispose(popupElement), popup will be disposed automatically
+        // p.registerDisposable(popup);
+        return new Promise(((resolve, reject) => {
+            let resolved = false;
+            popup.close = (r) => {
+                if (resolved) {
+                    return;
+                }
+                resolved = true;
+                resolve(r);
+                p.dispose();
+            };
+
+            popup.cancel = (e) => {
+                if (resolved) {
+                    return;
+                }
+                resolved = true;
+                reject(e);
+                p.dispose();
+            };
+        }));
+    }
+
+    public close: (r?) => void;
+
+    public cancel: (r?) => void;
+
+}
+
 export class PopupWindow extends AtomControl {
 
     public static async showWindow<T>(options?: IDialogOptions): Promise<T>;
@@ -145,6 +203,10 @@ export class PopupWindow extends AtomControl {
     @BindableProperty
     public title?: string;
 
+    public close: (r?) => void;
+
+    public cancel: (r?) => void;
+
     private hostCreated = false;
 
     protected render(node: XNode, e?: any, creator?: any): void {
@@ -152,13 +214,16 @@ export class PopupWindow extends AtomControl {
             return super.render(node, e, creator);
         }
         this.hostCreated = true;
-        super.render(<div class={dialogCss} title={Bind.oneWay(() => this.viewModel.title)}>
+        super.render(<div
+            data-popup-window="popup-window"
+            class={dialogCss}
+            title={Bind.oneWay(() => this.viewModel.title)}>
             <div class="title title-host">
                 <span class="title-text" text={Bind.oneWay(() => this.title)}/>
                 <button
                     class="popup-close-button"
                     text="x"
-                    eventClick={Bind.event(() => this.viewModel.cancel())}/>
+                    eventClick={Bind.event(() => this.cancel())}/>
             </div>
             { node }
         </div>);
@@ -201,9 +266,41 @@ export class PopupWindow extends AtomControl {
 
 }
 
+function findHostAndPosition(opener: HTMLElement) {
+    let root = opener;
+    const body = document.body;
+    let rect = opener.getBoundingClientRect();
+    const offset = {
+        x: rect.left,
+        y: rect.top,
+        handler: null,
+        root
+    };
+    do {
+        root = root.parentElement;
+        if (root === body) {
+            break;
+        }
+        if (root.parentElement.classList.contains("page-host")) {
+            break;
+        }
+        if (root.classList.contains("popup-host")) {
+            break;
+        }
+        if (root.dataset.popUpHost === "yes") {
+            break;
+        }
+    } while (true);
+    rect = root.getBoundingClientRect();
+    offset.x -= rect.x;
+    offset.y -= rect.y;
+    offset.root = root;
+    return offset;
+}
+
 function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLElement {
 
-    // let us find scrollable larget offsetParent
+    // let us find scrollable target offsetParent
 
     // find host...
     let host = opener.offsetParent as HTMLElement;
@@ -257,15 +354,25 @@ function closeHandler(
             }
             start = start.parentElement;
         }
-        host.removeEventListener("click", handler);
         close();
     };
-    host.addEventListener("click", handler);
+    document.body.addEventListener("click", handler);
+    container.registerDisposable(() => document.body.removeEventListener("click", handler));
 }
 
 let popupId = 1001;
 
 export default class PopupService {
+
+    public static get lastTarget() {
+        return lastTarget;
+    }
+
+    public static set lastTarget(v) {
+        if (v.isConnected) {
+            lastTarget = v;
+        }
+    }
 
     public static showWindow<T>(
         opener: HTMLElement,
@@ -276,23 +383,46 @@ export default class PopupService {
             const previousTarget = opener;
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
-            const vm = control.viewModel ??= (control as any).resolve(AtomWindowViewModel);
+            const vm = control.viewModel ?? control;
+            let element = control.element;
 
             let resolved = false;
-            const finalize = (r?) => {
+            const close = (r?) => {
                 // this is to allow binding events
                 // to refresh the data
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        lastTarget = previousTarget;
-                        if (r) {
-                            resolve(r);
-                        } else {
-                            reject("cancelled");
+                        PopupService.lastTarget = previousTarget;
+                        resolve(r);
+                        // if control's element is null
+                        // control has been disposed and no need to dispose it
+                        if (control.element) {
+                            control.element.remove();
+                            control.dispose();
                         }
-                        control.element.remove();
-                        control.dispose();
+                        element?.remove();
+                        element = undefined;
+                    }
+                }, 1);
+            };
+
+            const cancel = (r?) => {
+                // this is to allow binding events
+                // to refresh the data
+                setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        PopupService.lastTarget = previousTarget;
+                        reject(r ?? "cancelled");
+                        // if control's element is null
+                        // control has been disposed and no need to dispose it
+                        if (control.element) {
+                            control.element.remove();
+                            control.dispose();
+                        }
+                        element?.remove();
+                        element = undefined;
                     }
                 }, 1);
             };
@@ -307,23 +437,27 @@ export default class PopupService {
                 if (viewModelParameters) {
                     for (const key in viewModelParameters) {
                         if (Object.prototype.hasOwnProperty.call(viewModelParameters, key)) {
-                            const element = viewModelParameters[key];
-                            vm[key] = element;
+                            const e = viewModelParameters[key];
+                            vm[key] = e;
                         }
                     }
                 }
-                popupOptions.cancelToken?.registerForCancel(finalize);
+                popupOptions.cancelToken?.registerForCancel(cancel);
                 isModal = popupOptions.modal;
             }
 
             const host = findHost(opener);
             host.appendChild(control.element);
 
-            vm.cancel = finalize;
-            vm.close = finalize;
+            vm.cancel = cancel;
+            vm.close = close;
+            if (vm !== control) {
+                control.cancel = cancel;
+                control.close = close;
+            }
 
             if (!isModal) {
-                closeHandler(host, opener, control, finalize);
+                closeHandler(host, opener, control, cancel);
             }
         });
     }
@@ -352,27 +486,15 @@ export default class PopupService {
         container.element._logicalParent = opener;
         container.element.classList.add(popupStyle);
         container.element.appendChild(popup);
-        const offset = {
-            x: opener.offsetLeft,
-            y: opener.offsetTop + opener.offsetHeight - (opener.offsetParent?.scrollTop ?? 0),
-            handler: null
-        };
-
-        // find host...
-        // const host = findHost(opener, offset);
-        const host = findHost(opener, offset);
-        if (!host) {
-            // tslint:disable-next-line: no-console
-            console.warn("Aborting popup display as host no longer exists");
-            return;
-        }
-
+        const offset = findHostAndPosition(opener);
+        const host = offset.root;
         const hostHeight = host.offsetHeight
         || host.clientHeight
         || (host.firstElementChild as HTMLElement).offsetHeight;
 
         const style = container.element.style;
         style.position = "absolute";
+        offset.y += opener.offsetHeight;
 
         if (options?.alignment === "centerOfScreen") {
             style.left = "50%";
@@ -411,7 +533,7 @@ export default class PopupService {
             if (!container.disposables) {
                 return;
             }
-            lastTarget = previousTarget;
+            PopupService.lastTarget = previousTarget;
             container.disposables.dispose();
             const parent = getParent(opener);
             parent.dispose(container.element);
@@ -420,8 +542,9 @@ export default class PopupService {
         };
 
         closeHandler(host, opener, container, () => {
-            container.element.remove();
+            const e = container.element;
             container.dispose();
+            e.remove();
         });
 
         const ct = options?.cancelToken;

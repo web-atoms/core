@@ -146,7 +146,7 @@ export abstract class NavigationService {
         return this.openWindow(url, options);
     }
 
-    public abstract notify(message: string | FormattedString, title?: string, type?: NotifyType, delay?: number): void;
+    public abstract notify(message: string | FormattedString, title?: string, type?: NotifyType, delay?: number): Promise<void>;
 
     public abstract get title(): string;
     public abstract set title(v: string);

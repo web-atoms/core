@@ -141,6 +141,20 @@ import { IDisposable } from "./types";
         }
 
         /**
+         * Replaces given item in the list at position `i`
+         * and refreshes the bindings.
+         * @param {number} i
+         * @param {T} item
+         * @memberof AtomList
+         */
+        public set(i: number, item: T): void {
+            const old = this[i];
+            this[i] = item;
+            AtomBinder.invokeItemsEvent(this, "replace", i, item, old);
+            AtomBinder.refreshValue(this, "length");
+        }
+
+        /**
          * Removes item at given index i and refresh the bindings
          * @param {number} i
          * @memberof AtomList
@@ -218,6 +232,27 @@ import { IDisposable } from "./types";
             return AtomBinder.add_CollectionChanged(this, f);
         }
 
+        public count(f: (item)=> boolean) {
+            let total = 0;
+            for (const iterator of this) {
+                if (f(iterator)) {
+                    total++;
+                }
+            }
+            return total;
+        }
+
+        public avg(f: (item) => number) {
+            if (!this.length) {
+                return 0;
+            }
+            let sum = 0;
+            for (const iterator of this) {
+                sum += f(iterator);
+            }
+            return sum/this.length;
+        }
+
     }
 
     // tslint:disable
@@ -230,6 +265,8 @@ import { IDisposable } from "./types";
     Array.prototype["watch"] = AtomList.prototype.watch;
     Array.prototype["replace"] = AtomList.prototype.replace;
     Array.prototype["insert"] = AtomList.prototype.insert;
+    Array.prototype["count"] = AtomList.prototype.count;
+    Array.prototype["avg"] = AtomList.prototype.avg;
 
 declare global { 
     interface Array<T> {
@@ -244,5 +281,7 @@ declare global {
             f: (target: any, key: string, index?: number, item?: any) => void,
             wrap?: boolean): IDisposable;
         replace(items: T[], start?: number, size?: number): void;
+        count?(f: (item: T) => boolean): number;
+        avg?(f: (item: T) => number): number;
     }
 }

@@ -114,7 +114,7 @@ export class AtomTabbedPage extends AtomControl
         </section>);
         this.registerDisposable(this.windowService.registerHostForWindow((e) => this.getParentHost(e)));
 
-        this.windowService.currentTarget = this.presenter;
+        // this.windowService.currentTarget = this.presenter;
     }
 
     private getParentHost(e: HTMLElement): HTMLElement {
@@ -306,7 +306,7 @@ class AtomTabViewModel extends AtomViewModel {
             }
             this.pages.remove(page);
             e.remove();
-            ws.currentTarget = null;
+            // ws.currentTarget = null;
             if (this.selectedPage === page) {
                 this.selectedPage = this.pages[index - 1];
             }

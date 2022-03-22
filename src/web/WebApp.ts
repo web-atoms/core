@@ -33,12 +33,7 @@ export default class WebApp extends App {
             return;
         }
         const pe = this.parentElement;
-        const ce = new ChildEnumerator(pe);
-        const de: HTMLElement[] = [];
-        while (ce.next()) {
-            const current = ce.current;
-            de.push(current);
-        }
+        const de: HTMLElement[] = Array.from(pe.children) as HTMLElement[];
         for (const iterator of de) {
             iterator.remove();
         }

@@ -3,7 +3,7 @@ import { ArrayHelper, IDisposable  } from "./types";
 export const symbolHandlers = Symbol.for("handlers");
 export const symbolBindable = Symbol.for("bindable");
 
-export type WatchFunction = (target: any, key: string, index?: number, item?: any) => void;
+export type WatchFunction = (target: any, key: string, index?: number, item?: any, oldItem?: any) => void;
 export interface IWatchFunctionCollection {
     [key: string]: WatchFunction[];
 }
@@ -161,14 +161,14 @@ export class AtomBinder {
         }
     }
 
-    public static invokeItemsEvent(target: any[], mode: string, index: number, item: any) {
+    public static invokeItemsEvent(target: any[], mode: string, index: number, item: any, oldItem?: any) {
         const key = "_items";
         const handlers = AtomBinder.get_WatchHandler(target as any as IWatchableObject, key);
         if (!handlers) {
             return;
         }
         for (const obj of handlers) {
-            obj(target, mode, index, item);
+            obj(target, mode, index, item, oldItem);
         }
         AtomBinder.refreshValue(target, "length");
     }
