@@ -369,9 +369,7 @@ export default class PopupService {
     }
 
     public static set lastTarget(v) {
-        if (v.isConnected) {
-            lastTarget = v;
-        }
+        lastTarget = v;
     }
 
     public static showWindow<T>(
@@ -393,7 +391,6 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        PopupService.lastTarget = previousTarget;
                         resolve(r);
                         // if control's element is null
                         // control has been disposed and no need to dispose it
@@ -403,6 +400,7 @@ export default class PopupService {
                         }
                         element?.remove();
                         element = undefined;
+                        lastTarget = previousTarget;
                     }
                 }, 1);
             };
@@ -413,7 +411,6 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        PopupService.lastTarget = previousTarget;
                         reject(r ?? "cancelled");
                         // if control's element is null
                         // control has been disposed and no need to dispose it
@@ -423,6 +420,7 @@ export default class PopupService {
                         }
                         element?.remove();
                         element = undefined;
+                        lastTarget = previousTarget;
                     }
                 }, 1);
             };
@@ -533,12 +531,12 @@ export default class PopupService {
             if (!container.disposables) {
                 return;
             }
-            PopupService.lastTarget = previousTarget;
             container.disposables.dispose();
             const parent = getParent(opener);
             parent.dispose(container.element);
             container.element.remove();
             container.disposables = null;
+            lastTarget = previousTarget;
         };
 
         closeHandler(host, opener, container, () => {
