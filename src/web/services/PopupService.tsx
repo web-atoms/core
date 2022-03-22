@@ -370,8 +370,8 @@ let lastTarget = {
 export default class PopupService {
 
     public static get lastTarget() {
-        const { element, x, y } = lastTarget;
-        if (element.isConnected) {
+        const { element, x = 0, y = 0 } = lastTarget;
+        if (element?.isConnected) {
             return element;
         }
         const e = document.elementFromPoint(x, y) as HTMLElement;
