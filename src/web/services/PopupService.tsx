@@ -12,10 +12,10 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomControl } from "../controls/AtomControl";
 import CSS from "../styles/CSS";
 
-let lastTarget = null;
+// let lastTarget = null;
 document.body.addEventListener("click", (e) => {
     if ((e.target as HTMLElement).offsetParent) {
-        lastTarget = e.target;
+        PopupService.lastTarget = e.target as HTMLElement;
     }
 });
 
@@ -181,7 +181,7 @@ export class PopupWindow extends AtomControl {
         }
         // this will force lastTarget to be set
         await sleep(1);
-        return PopupService.showWindow<T>(lastTarget, window as any, options);
+        return PopupService.showWindow<T>(PopupService.lastTarget, window as any, options);
     }
 
     public static async showModal<T>(options?: IDialogOptions): Promise<T>;
@@ -197,7 +197,7 @@ export class PopupWindow extends AtomControl {
         options.modal ??= true;
         // this will force lastTarget to be set
         await sleep(1);
-        return PopupService.showWindow<T>(lastTarget, window as any, options);
+        return PopupService.showWindow<T>(PopupService.lastTarget, window as any, options);
     }
 
     @BindableProperty
@@ -362,14 +362,30 @@ function closeHandler(
 
 let popupId = 1001;
 
+let lastTarget = {
+    element: null,
+    x: 10,
+    y: 10
+};
 export default class PopupService {
 
     public static get lastTarget() {
-        return lastTarget;
+        const { element, x, y } = lastTarget;
+        if (element.isConnected) {
+            return element;
+        }
+        const e = document.elementFromPoint(x, y) as HTMLElement;
+        PopupService.lastTarget = e;
+        return e;
     }
 
-    public static set lastTarget(v) {
-        lastTarget = v;
+    public static set lastTarget(element: HTMLElement) {
+        const rect = element.getBoundingClientRect();
+        lastTarget = {
+            element,
+            x: rect.left + (rect.width / 2),
+            y: rect.top + (rect.height / 2)
+        };
     }
 
     public static showWindow<T>(
@@ -400,7 +416,7 @@ export default class PopupService {
                         }
                         element?.remove();
                         element = undefined;
-                        lastTarget = previousTarget;
+                        PopupService.lastTarget = previousTarget;
                     }
                 }, 1);
             };
@@ -420,7 +436,7 @@ export default class PopupService {
                         }
                         element?.remove();
                         element = undefined;
-                        lastTarget = previousTarget;
+                        PopupService.lastTarget = previousTarget;
                     }
                 }, 1);
             };
@@ -536,7 +552,7 @@ export default class PopupService {
             parent.dispose(container.element);
             container.element.remove();
             container.disposables = null;
-            lastTarget = previousTarget;
+            PopupService.lastTarget = previousTarget;
         };
 
         closeHandler(host, opener, container, () => {
