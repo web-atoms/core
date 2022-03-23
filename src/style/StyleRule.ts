@@ -3025,7 +3025,8 @@ export class AtomStyleRules {
     public textEllipsis() {
         this.style.overflow = "hidden";
         this.style.whiteSpace = "nowrap";
-        this.style.textOverflow = "ellipsis"
+        this.style.textOverflow = "ellipsis";
+        return this;
     }
 
     public hover(style: AtomStyleRules) {
