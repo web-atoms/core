@@ -3022,6 +3022,12 @@ export class AtomStyleRules {
         return this;
     }
 
+    public textEllipsis() {
+        this.style.overflow = "hidden";
+        this.style.whiteSpace = "nowrap";
+        this.style.textOverflow = "ellipsis"
+    }
+
     public hover(style: AtomStyleRules) {
         const sc = this.style.subclasses ??= {};
         sc[":hover"] = { ... sc[":hover"], ... style.style };
