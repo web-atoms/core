@@ -207,7 +207,15 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void) {
         const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
-        return setterSymbol;
+        function setterFx(v) {
+            return {
+                [setterSymbol]: v
+            };
+        }
+        setterFx.toString = () => {
+            return setterSymbol;
+        }
+        return setter as object;
     }
 
     public defaultControlStyle: any;
