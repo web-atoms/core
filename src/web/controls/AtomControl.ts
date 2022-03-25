@@ -215,7 +215,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         setterFx.toString = () => {
             return setterSymbol;
         }
-        return setter as any;
+        return setterFx as any;
     }
 
     public defaultControlStyle: any;
