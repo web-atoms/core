@@ -214,12 +214,12 @@ export class PopupWindow extends AtomControl {
             return super.render(node, e, creator);
         }
         this.hostCreated = true;
+        this.title = null;
         super.render(<div
             data-popup-window="popup-window"
-            class={dialogCss}
-            title={Bind.oneWay(() => this.viewModel.title)}>
+            class={dialogCss}>
             <div class="title title-host">
-                <span class="title-text" text={Bind.oneWay(() => this.title)}/>
+                <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModel.title)}/>
                 <button
                     class="popup-close-button"
                     text="x"
