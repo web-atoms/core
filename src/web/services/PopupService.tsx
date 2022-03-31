@@ -98,7 +98,7 @@ CSS(StyleRule()
             .hoverBackgroundColor(Colors.red)
         )
     )
-    .child(StyleRule(" * > *")
+    .child(StyleRule("*[data-window-content=window-content]")
         .margin(5)
     )
     .child(StyleRule(" * > .command-bar")
@@ -226,10 +226,14 @@ export class PopupWindow extends AtomControl {
         this.render = super.render;
         this.title = null;
         const titleContent = this.titleRenderer?.();
+        const a = node.attributes ??= {};
+        a["data-window-content"] = "window-content";
         super.render(<div>
             <div class="title title-host">
-                <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModel.title)}/>
-                { titleContent }
+                { titleContent
+                    ? titleContent
+                    : <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModel.title)}/>
+                }
                 <button
                     class="popup-close-button"
                     text="x"
