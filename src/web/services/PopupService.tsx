@@ -61,7 +61,7 @@ export interface IDialogOptions {
     modal?: boolean;
 }
 
-const dialogCss = CSS(StyleRule()
+CSS(StyleRule()
     .display("block")
     .position("absolute")
     .border("solid 1px lightgray")
@@ -110,7 +110,7 @@ const dialogCss = CSS(StyleRule()
             .paddingRight(10)
         )
     )
-);
+, "*[data-popup-window=popup-window]");
 
 export class PopupControl extends AtomControl {
 
@@ -119,7 +119,7 @@ export class PopupControl extends AtomControl {
         options?: IPopupOptions): Promise<T> {
         let openerElement: HTMLElement;
         let app: App;
-    
+
         if (opener instanceof AtomControl) {
             openerElement = opener.element;
             app = opener.app;
@@ -130,12 +130,12 @@ export class PopupControl extends AtomControl {
                 start = start.parentElement;
             }
             if (!start) {
-                return Promise.reject("Could not create popup as target is not attached")
+                return Promise.reject("Could not create popup as target is not attached");
             }
             app = start.atomControl.app;
         }
         const popup = new this(app);
-        
+
         const p = PopupService.show(openerElement, popup.element, options);
         // since popup will be children of openerElement
         // on dispose(popupElement), popup will be disposed automatically
@@ -207,17 +207,18 @@ export class PopupWindow extends AtomControl {
 
     public cancel: (r?) => void;
 
-    private hostCreated = false;
+    protected preCreate(): void {
+        this.element.dataset.popupWindow = "popup-window";
+        this.app.dispatcher.callLater(() => {
+            const host = this.element.getElementsByClassName("title-host")[0];
+            this.setupDragging(host as HTMLElement);
+        });
+    }
 
     protected render(node: XNode, e?: any, creator?: any): void {
-        if (this.hostCreated) {
-            return super.render(node, e, creator);
-        }
-        this.hostCreated = true;
+        this.render = super.render;
         this.title = null;
-        super.render(<div
-            data-popup-window="popup-window"
-            class={dialogCss}>
+        super.render(<div>
             <div class="title title-host">
                 <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModel.title)}/>
                 <button
@@ -227,11 +228,9 @@ export class PopupWindow extends AtomControl {
             </div>
             { node }
         </div>);
-        const host = this.element.getElementsByClassName("title-host")[0];
-        this.setupDragging(host as HTMLElement);
     }
 
-    private setupDragging(tp: HTMLElement): void {
+    protected setupDragging(tp: HTMLElement): void {
         this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
@@ -407,7 +406,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        setTimeout(resolve,1,r);
+                        setTimeout(resolve, 1, r);
                         // if control's element is null
                         // control has been disposed and no need to dispose it
                         if (control.element) {
@@ -427,7 +426,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        setTimeout(reject ,1 ,r ?? "cancelled");
+                        setTimeout(reject , 1 , r ?? "cancelled");
                         // if control's element is null
                         // control has been disposed and no need to dispose it
                         if (control.element) {
