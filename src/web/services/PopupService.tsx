@@ -75,10 +75,15 @@ CSS(StyleRule()
         .display("flex")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
         .padding(5)
+        .alignItems("center")
+        .justifyItems("center")
         .child(
             StyleRule(".title-text")
             .cursor("move")
             .flexStretch()
+        )
+        .child(StyleRule("*")
+            .flex("1 0 auto")
         )
         .child(StyleRule(".popup-close-button")
             .fontFamily("arial")
@@ -207,6 +212,8 @@ export class PopupWindow extends AtomControl {
 
     public cancel: (r?) => void;
 
+    public titleRenderer: () => XNode;
+
     protected preCreate(): void {
         this.element.dataset.popupWindow = "popup-window";
         this.app.dispatcher.callLater(() => {
@@ -218,9 +225,11 @@ export class PopupWindow extends AtomControl {
     protected render(node: XNode, e?: any, creator?: any): void {
         this.render = super.render;
         this.title = null;
+        const titleContent = this.titleRenderer?.();
         super.render(<div>
             <div class="title title-host">
                 <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModel.title)}/>
+                { titleContent }
                 <button
                     class="popup-close-button"
                     text="x"
