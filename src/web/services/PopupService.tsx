@@ -419,7 +419,7 @@ export default class PopupService {
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ?? control;
             let element = control.element;
-
+            element.style.zIndex = `${popupId++}`;
             let resolved = false;
             const close = (r?) => {
                 // this is to allow binding events
