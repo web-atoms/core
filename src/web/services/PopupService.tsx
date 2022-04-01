@@ -59,10 +59,12 @@ export interface IDialogOptions {
     parameters?: {[key: string]: any};
     cancelToken?: CancelToken;
     modal?: boolean;
+    width?: number | string;
+    height?: number | string;
+    maximize?: boolean;
 }
 
 CSS(StyleRule()
-    .display("block")
     .position("absolute")
     .border("solid 1px lightgray")
     .borderRadius(5)
@@ -71,6 +73,10 @@ CSS(StyleRule()
     .left("50%")
     .transform("translate(-50%,-50%)" as any)
     .boxShadow("0 0 20px 1px rgb(0 0 0 / 75%)")
+    .verticalFlexLayout({
+        alignItems: "stretch",
+        justifyContent: "flex-start"
+    })
     .child(StyleRule(".title")
         .display("flex")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
@@ -101,6 +107,7 @@ CSS(StyleRule()
     )
     .child(StyleRule("*[data-window-content=window-content]")
         .margin(5)
+        .flexStretch()
     )
     .child(StyleRule(" * > .command-bar")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.6))
@@ -457,20 +464,41 @@ export default class PopupService {
             let isModal = false;
 
             if (popupOptions) {
-                if (popupOptions.title) {
-                    vm.title = popupOptions.title;
+                const {
+                    width,
+                    height,
+                    maximize,
+                    title,
+                    parameters,
+                    cancelToken,
+                    modal
+                } = popupOptions;
+                    if (title) {
+                    vm.title = title;
                 }
-                const viewModelParameters = popupOptions.parameters;
-                if (viewModelParameters) {
-                    for (const key in viewModelParameters) {
-                        if (Object.prototype.hasOwnProperty.call(viewModelParameters, key)) {
-                            const e = viewModelParameters[key];
+
+                if (maximize) {
+                    element.style.width = "95%";
+                    element.style.height = "95%";
+                } else {
+                    if (width) {
+                        element.style.width = typeof width === "number" ? width + "px" : width;
+                    }
+                    if (height) {
+                        element.style.height = typeof height === "number" ? height + "px" : height;
+                    }
+                }
+
+                if (parameters) {
+                    for (const key in parameters) {
+                        if (Object.prototype.hasOwnProperty.call(parameters, key)) {
+                            const e = parameters[key];
                             vm[key] = e;
                         }
                     }
                 }
-                popupOptions.cancelToken?.registerForCancel(cancel);
-                isModal = popupOptions.modal;
+                cancelToken?.registerForCancel(cancel);
+                isModal = modal;
             }
 
             const host = findHost(opener);
