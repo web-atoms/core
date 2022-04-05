@@ -217,6 +217,8 @@ export class PopupWindow extends AtomControl {
     @BindableProperty
     public title?: string;
 
+    public viewModelTitle?: string;
+
     public close: (r?) => void;
 
     public cancel: (r?) => void;
@@ -234,14 +236,15 @@ export class PopupWindow extends AtomControl {
     protected render(node: XNode, e?: any, creator?: any): void {
         this.render = super.render;
         this.title = null;
+        this.viewModelTitle = null;
         const titleContent = this.titleRenderer?.();
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
-        super.render(<div>
+        super.render(<div viewModelTitle={Bind.oneWay(() => this.viewModel.title)}>
             <div class="title title-host">
                 { titleContent
                     ? titleContent
-                    : <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModel.title)}/>
+                    : <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>
                 }
                 <button
                     class="popup-close-button"
