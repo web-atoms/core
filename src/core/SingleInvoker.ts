@@ -23,7 +23,23 @@ export default class SingleInvoker extends TransientDisposable {
         if (e) {
             clearTimeout(e);
         }
-        keys[key] = setTimeout(fx, delay);
+        keys[key] = setTimeout(() => {
+            delete keys[key];
+            fx();
+        }, delay);
+    }
+
+    public queue(fx: Function, delay: number = 1): void {
+        const key = fx.toString();
+        const keys = this.keys;
+        const e = keys[key];
+        if (e) {
+            clearTimeout(e);
+        }
+        keys[key] = setTimeout(() => {
+            delete keys[key];
+            fx();
+        }, delay);
     }
 
 }
