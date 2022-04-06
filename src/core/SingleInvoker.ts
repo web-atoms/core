@@ -5,41 +5,39 @@ import { IDisposable } from "./types";
 @DITransient()
 export default class SingleInvoker extends TransientDisposable {
 
-    private keys: {[key: string]: any} = {};
+    private keys = new Map<string, number>();
 
     public dispose() {
-        for (const key in this.keys) {
-            if (this.keys.hasOwnProperty(key)) {
-                const element = this.keys[key];
-                clearTimeout(element);
-            }
+        for(const [key, index] of this.keys.entries()) {
+            clearTimeout(index);
         }
+        this.keys.clear();
     }
 
     // tslint:disable-next-line: ban-types
     public invoke(key: string, fx: Function, delay: number = 100): void {
         const keys = this.keys;
-        const e = keys[key];
+        const e = keys.get(key);
         if (e) {
             clearTimeout(e);
         }
-        keys[key] = setTimeout(() => {
-            delete keys[key];
+        keys.set(key, setTimeout(() => {
+            keys.delete(key);
             fx();
-        }, delay);
+        }, delay));
     }
 
-    public queue(fx: Function, delay: number = 1): void {
-        const key = fx.toString();
+    public queue(fx: Function, delay: number = 1, key?: string ): void {
+        key ??= fx.toString();
         const keys = this.keys;
-        const e = keys[key];
+        const e = keys.get(key);
         if (e) {
             clearTimeout(e);
         }
-        keys[key] = setTimeout(() => {
-            delete keys[key];
+        keys.set(key, setTimeout(() => {
+            keys.delete(key);
             fx();
-        }, delay);
+        }, delay));
     }
 
 }
