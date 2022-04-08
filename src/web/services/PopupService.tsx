@@ -578,6 +578,7 @@ export default class PopupService {
                 }
 
             } else {
+                style.top = offset.y + "px";
                 if (options?.alignment === "right") {
                     style.right = `${(host.offsetWidth - (opener.offsetLeft + opener.offsetWidth))}px`;
                 } else {
