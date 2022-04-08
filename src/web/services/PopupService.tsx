@@ -109,6 +109,12 @@ CSS(StyleRule()
         .margin(5)
         .flexStretch()
         .overflow("hidden")
+        // This is done to avoid absolute position
+        // to run out of content area
+        .position("relative")
+        .and(StyleRule("[data-window-content-fill] > *")
+            .maximizeAbsolute()
+        )
     )
     .child(StyleRule(" * > .command-bar")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.6))
