@@ -204,10 +204,18 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public static registerProperty(
         attributeName: string,
         attributeValue: string,
-        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void) {
+        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void) : (a) => object {
         const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
-        return setterSymbol;
+        function setterFx(v) {
+            return {
+                [setterSymbol]: v
+            };
+        }
+        setterFx.toString = () => {
+            return setterSymbol;
+        }
+        return setterFx as any;
     }
 
     public defaultControlStyle: any;

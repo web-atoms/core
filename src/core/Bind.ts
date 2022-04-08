@@ -388,7 +388,7 @@ export default class Bind {
     public static twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         converter?: IValueConverter): any {
-        return this.twoWays(sourcePath, ["change", "input", "paste"], converter);
+        return this.twoWays(sourcePath, ["change", "input", "paste", "keyup", "keypress"], converter);
         // const b = new Bind(twoWays, sourcePath, null,
         //     ["change", "input", "paste"]);
         // if (!(b.thisPathList  || b.pathList)) {

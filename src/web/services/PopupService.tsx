@@ -12,10 +12,10 @@ import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
 import { AtomControl } from "../controls/AtomControl";
 import CSS from "../styles/CSS";
 
-let lastTarget = null;
+// let lastTarget = null;
 document.body.addEventListener("click", (e) => {
     if ((e.target as HTMLElement).offsetParent) {
-        lastTarget = e.target;
+        PopupService.lastTarget = e.target as HTMLElement;
     }
 });
 
@@ -59,10 +59,12 @@ export interface IDialogOptions {
     parameters?: {[key: string]: any};
     cancelToken?: CancelToken;
     modal?: boolean;
+    width?: number | string;
+    height?: number | string;
+    maximize?: boolean;
 }
 
-const dialogCss = CSS(StyleRule()
-    .display("block")
+CSS(StyleRule()
     .position("absolute")
     .border("solid 1px lightgray")
     .borderRadius(5)
@@ -71,18 +73,28 @@ const dialogCss = CSS(StyleRule()
     .left("50%")
     .transform("translate(-50%,-50%)" as any)
     .boxShadow("0 0 20px 1px rgb(0 0 0 / 75%)")
+    .verticalFlexLayout({
+        alignItems: "stretch",
+        justifyContent: "flex-start"
+    })
     .child(StyleRule(".title")
         .display("flex")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
         .padding(5)
+        .alignItems("center")
+        .justifyItems("center")
         .child(
             StyleRule(".title-text")
             .cursor("move")
             .flexStretch()
         )
+        .child(StyleRule("*")
+            .flex("1 1 100%")
+        )
         .child(StyleRule(".popup-close-button")
             .fontFamily("arial")
             .fontSize(15)
+            .flex("1 0 auto")
             .cursor("pointer")
             .width(30)
             .height(30)
@@ -93,8 +105,16 @@ const dialogCss = CSS(StyleRule()
             .hoverBackgroundColor(Colors.red)
         )
     )
-    .child(StyleRule(" * > *")
+    .child(StyleRule("*[data-window-content=window-content]")
         .margin(5)
+        .flexStretch()
+        .overflow("hidden")
+        // This is done to avoid absolute position
+        // to run out of content area
+        .position("relative")
+        .and(StyleRule("[data-window-content-fill] > *")
+            .maximizeAbsolute()
+        )
     )
     .child(StyleRule(" * > .command-bar")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.6))
@@ -110,7 +130,7 @@ const dialogCss = CSS(StyleRule()
             .paddingRight(10)
         )
     )
-);
+, "*[data-popup-window=popup-window]");
 
 export class PopupControl extends AtomControl {
 
@@ -119,7 +139,7 @@ export class PopupControl extends AtomControl {
         options?: IPopupOptions): Promise<T> {
         let openerElement: HTMLElement;
         let app: App;
-    
+
         if (opener instanceof AtomControl) {
             openerElement = opener.element;
             app = opener.app;
@@ -130,12 +150,12 @@ export class PopupControl extends AtomControl {
                 start = start.parentElement;
             }
             if (!start) {
-                return Promise.reject("Could not create popup as target is not attached")
+                return Promise.reject("Could not create popup as target is not attached");
             }
             app = start.atomControl.app;
         }
         const popup = new this(app);
-        
+
         const p = PopupService.show(openerElement, popup.element, options);
         // since popup will be children of openerElement
         // on dispose(popupElement), popup will be disposed automatically
@@ -181,7 +201,7 @@ export class PopupWindow extends AtomControl {
         }
         // this will force lastTarget to be set
         await sleep(1);
-        return PopupService.showWindow<T>(lastTarget, window as any, options);
+        return PopupService.showWindow<T>(PopupService.lastTarget, window as any, options);
     }
 
     public static async showModal<T>(options?: IDialogOptions): Promise<T>;
@@ -197,29 +217,41 @@ export class PopupWindow extends AtomControl {
         options.modal ??= true;
         // this will force lastTarget to be set
         await sleep(1);
-        return PopupService.showWindow<T>(lastTarget, window as any, options);
+        return PopupService.showWindow<T>(PopupService.lastTarget, window as any, options);
     }
 
     @BindableProperty
     public title?: string;
 
+    public viewModelTitle?: string;
+
     public close: (r?) => void;
 
     public cancel: (r?) => void;
 
-    private hostCreated = false;
+    public titleRenderer: () => XNode;
+
+    protected preCreate(): void {
+        this.element.dataset.popupWindow = "popup-window";
+        this.app.dispatcher.callLater(() => {
+            const host = this.element.getElementsByClassName("title-host")[0];
+            this.setupDragging(host as HTMLElement);
+        });
+    }
 
     protected render(node: XNode, e?: any, creator?: any): void {
-        if (this.hostCreated) {
-            return super.render(node, e, creator);
-        }
-        this.hostCreated = true;
-        super.render(<div
-            data-popup-window="popup-window"
-            class={dialogCss}
-            title={Bind.oneWay(() => this.viewModel.title)}>
+        this.render = super.render;
+        this.title = null;
+        this.viewModelTitle = null;
+        const titleContent = this.titleRenderer?.();
+        const a = node.attributes ??= {};
+        a["data-window-content"] = "window-content";
+        super.render(<div viewModelTitle={Bind.oneWay(() => this.viewModel.title)}>
             <div class="title title-host">
-                <span class="title-text" text={Bind.oneWay(() => this.title)}/>
+                { titleContent
+                    ? titleContent
+                    : <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>
+                }
                 <button
                     class="popup-close-button"
                     text="x"
@@ -227,11 +259,9 @@ export class PopupWindow extends AtomControl {
             </div>
             { node }
         </div>);
-        const host = this.element.getElementsByClassName("title-host")[0];
-        this.setupDragging(host as HTMLElement);
     }
 
-    private setupDragging(tp: HTMLElement): void {
+    protected setupDragging(tp: HTMLElement): void {
         this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
@@ -362,16 +392,30 @@ function closeHandler(
 
 let popupId = 1001;
 
+let lastTarget = {
+    element: null,
+    x: 10,
+    y: 10
+};
 export default class PopupService {
 
     public static get lastTarget() {
-        return lastTarget;
+        const { element, x = 0, y = 0 } = lastTarget;
+        if (element?.isConnected) {
+            return element;
+        }
+        const e = document.elementFromPoint(x, y) as HTMLElement;
+        PopupService.lastTarget = e;
+        return e;
     }
 
-    public static set lastTarget(v) {
-        if (v.isConnected) {
-            lastTarget = v;
-        }
+    public static set lastTarget(element: HTMLElement) {
+        const rect = element.getBoundingClientRect();
+        lastTarget = {
+            element,
+            x: rect.left + (rect.width / 2),
+            y: rect.top + (rect.height / 2)
+        };
     }
 
     public static showWindow<T>(
@@ -385,7 +429,7 @@ export default class PopupService {
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = control.viewModel ?? control;
             let element = control.element;
-
+            element.style.zIndex = `${popupId++}`;
             let resolved = false;
             const close = (r?) => {
                 // this is to allow binding events
@@ -393,8 +437,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        PopupService.lastTarget = previousTarget;
-                        resolve(r);
+                        setTimeout(resolve, 1, r);
                         // if control's element is null
                         // control has been disposed and no need to dispose it
                         if (control.element) {
@@ -403,6 +446,7 @@ export default class PopupService {
                         }
                         element?.remove();
                         element = undefined;
+                        PopupService.lastTarget = previousTarget;
                     }
                 }, 1);
             };
@@ -413,8 +457,7 @@ export default class PopupService {
                 setTimeout(() => {
                     if (!resolved) {
                         resolved = true;
-                        PopupService.lastTarget = previousTarget;
-                        reject(r ?? "cancelled");
+                        setTimeout(reject , 1 , r ?? "cancelled");
                         // if control's element is null
                         // control has been disposed and no need to dispose it
                         if (control.element) {
@@ -423,6 +466,7 @@ export default class PopupService {
                         }
                         element?.remove();
                         element = undefined;
+                        PopupService.lastTarget = previousTarget;
                     }
                 }, 1);
             };
@@ -430,20 +474,41 @@ export default class PopupService {
             let isModal = false;
 
             if (popupOptions) {
-                if (popupOptions.title) {
-                    vm.title = popupOptions.title;
+                const {
+                    width,
+                    height,
+                    maximize,
+                    title,
+                    parameters,
+                    cancelToken,
+                    modal
+                } = popupOptions;
+                    if (title) {
+                    vm.title = title;
                 }
-                const viewModelParameters = popupOptions.parameters;
-                if (viewModelParameters) {
-                    for (const key in viewModelParameters) {
-                        if (Object.prototype.hasOwnProperty.call(viewModelParameters, key)) {
-                            const e = viewModelParameters[key];
+
+                if (maximize) {
+                    element.style.width = "95%";
+                    element.style.height = "95%";
+                } else {
+                    if (width) {
+                        element.style.width = typeof width === "number" ? width + "px" : width;
+                    }
+                    if (height) {
+                        element.style.height = typeof height === "number" ? height + "px" : height;
+                    }
+                }
+
+                if (parameters) {
+                    for (const key in parameters) {
+                        if (Object.prototype.hasOwnProperty.call(parameters, key)) {
+                            const e = parameters[key];
                             vm[key] = e;
                         }
                     }
                 }
-                popupOptions.cancelToken?.registerForCancel(cancel);
-                isModal = popupOptions.modal;
+                cancelToken?.registerForCancel(cancel);
+                isModal = modal;
             }
 
             const host = findHost(opener);
@@ -519,8 +584,10 @@ export default class PopupService {
                 }
 
             } else {
+                offset.y -= opener.offsetHeight
+                style.top = offset.y + "px";
                 if (options?.alignment === "right") {
-                    style.right = `${(host.offsetWidth - (opener.offsetLeft + opener.offsetWidth))}px`;
+                    style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;
                 } else {
                     style.left = offset.x + "px";
                 }
@@ -533,12 +600,12 @@ export default class PopupService {
             if (!container.disposables) {
                 return;
             }
-            PopupService.lastTarget = previousTarget;
             container.disposables.dispose();
             const parent = getParent(opener);
             parent.dispose(container.element);
             container.element.remove();
             container.disposables = null;
+            PopupService.lastTarget = previousTarget;
         };
 
         closeHandler(host, opener, container, () => {
