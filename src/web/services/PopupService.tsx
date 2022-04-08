@@ -578,6 +578,7 @@ export default class PopupService {
                 }
 
             } else {
+                offset.y -= opener.offsetHeight
                 style.top = offset.y + "px";
                 if (options?.alignment === "right") {
                     style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;
