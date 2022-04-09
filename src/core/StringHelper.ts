@@ -1,5 +1,33 @@
 export class StringHelper {
 
+    public static escapeRegExp(text: string) {
+        return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    public static createContainsRegExp(text) {
+        return new RegExp(this.escapeRegExp(text), "g");
+    }
+
+    public static containsIgnoreCase(source: string, test: string) {
+        if (!source) {
+            return false;
+        }
+        if (!test) {
+            return true;
+        }
+        return this.createContainsRegExp(test).test(source);
+    }
+
+    public static containsAnyWordIgnoreCase(source: string, test: string) {
+        if (!source) {
+            return false;
+        }
+        if (!test) {
+            return true;
+        }
+        return source.split(/\s+/g).some((x) => this.containsIgnoreCase(source, x));
+    }
+
     public static fromCamelToHyphen(input: string): string {
         return input.replace( /([a-z])([A-Z])/g, "$1-$2" ).toLowerCase();
     }
