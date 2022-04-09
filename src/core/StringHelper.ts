@@ -5,11 +5,11 @@ export class StringHelper {
     }
 
     public static createContainsRegExp(text) {
-        return new RegExp(this.escapeRegExp(text), "g");
+        return new RegExp(this.escapeRegExp(text), "ig");
     }
 
     public static createContainsAnyWordRegExp(text: string) {
-        return new RegExp(text.split(/\s+/g).map((x) => `(${this.escapeRegExp(x)})`).join("|"), "g");
+        return new RegExp(text.split(/\s+/g).map((x) => `(${this.escapeRegExp(x)})`).join("|"), "ig");
     }
 
     public static containsIgnoreCase(source: string, test: string) {
