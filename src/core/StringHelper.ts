@@ -9,7 +9,7 @@ export class StringHelper {
     }
 
     public static createContainsAnyWordRegExp(text: string) {
-        return text.split(/\s+/g).map((x) => this.createContainsRegExp(x));
+        return new RegExp(text.split(/\s+/g).map((x) => `(${this.escapeRegExp(x)})`).join("|"), "g");
     }
 
     public static containsIgnoreCase(source: string, test: string) {
@@ -29,7 +29,7 @@ export class StringHelper {
         if (!test) {
             return true;
         }
-        return source.split(/\s+/g).some((x) => this.containsIgnoreCase(source, x));
+        return this.createContainsAnyWordRegExp(test).test(source);
     }
 
     public static fromCamelToHyphen(input: string): string {
