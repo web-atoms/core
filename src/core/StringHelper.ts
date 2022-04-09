@@ -8,6 +8,10 @@ export class StringHelper {
         return new RegExp(this.escapeRegExp(text), "g");
     }
 
+    public static createContainsAnyWordRegExp(text: string) {
+        return text.split(/\s+/g).map((x) => this.createContainsRegExp(x));
+    }
+
     public static containsIgnoreCase(source: string, test: string) {
         if (!source) {
             return false;
