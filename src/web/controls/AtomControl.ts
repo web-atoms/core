@@ -50,7 +50,7 @@ function setAttribute(name: string) {
 
 function setEvent(name: string) {
     return (ctrl: AtomControl, e: HTMLElement, value: any) => {
-        (ctrl as any).bindElementEvent(e, name, value);
+        (ctrl as any).bindEvent(e, name, value);
     };
 }
 
@@ -345,72 +345,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        // switch (name) {
-        //     case "text":
-        //         element.textContent = value;
-        //         return;
-        //     case "class":
-        //         this.setElementClass(element, value, true);
-        //         return;
-        //     case "alt":
-        //         (element as any).alt = value;
-        //         return;
-        //     case "src":
-        //         if (value && /^http\:/i.test(value)) {
-        //             (element as any).src = value.substr(5);
-        //         } else {
-        //             (element as any).src = value;
-        //         }
-        //         return;
-        //     case "styleClass":
-        //         this.setElementClass(element, value);
-        //         return;
-        //     case "styleDisplay":
-        //         if (typeof value === "boolean") {
-        //             element.style.display = value ? "" : "none";
-        //         } else {
-        //             element.style.display = value;
-        //         }
-        //         return;
-        //     case "title":
-        //         element.title = value;
-        //         return;
-        //     case "formattedText":
-        //         if (value instanceof FormattedString) {
-        //             (value as FormattedString).applyTo(this.app, element);
-        //         } else {
-        //             element.textContent = (value || "").toString();
-        //         }
-        //         return;
-        //     case "disabled":
-        //         if (value) {
-        //             element.setAttribute("disabled", "");
-        //         } else {
-        //             element.removeAttribute("disabled");
-        //         }
-        //         return;
-        //     case "autofocus":
-        //         this.app.callLater(() => {
-        //             const ie = element as HTMLInputElement;
-        //             if (ie) { ie.focus(); }
-        //         });
-        //     case "style":
-        //         element.setAttribute("style", value);
-        //         return;
-        //     case "eventClick":
-        //         this.bindElementEvent(element, "click", value);
-        //         return;
-        //     case "eventKeydown":
-        //         this.bindElementEvent(element, "keydown", value);
-        //         return;
-        //     case "eventKeypress":
-        //         this.bindElementEvent(element, "keypress", value);
-        //         return;
-        //     case "eventKeyup":
-        //         this.bindElementEvent(element, "keyup", value);
-        //         return;
-        // }
-
         const setter = ElementValueSetters[name];
         if (setter !== void 0) {
             setter(this, element, value);
@@ -449,36 +383,16 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 name = name.charAt(0).toLowerCase() + name.substring(1);
             }
 
-            this.bindElementEvent(element, name, value);
+            this.bindEvent(element, name, value);
             return;
         }
 
         element[name] = value;
     }
 
-    protected bindElementEvent(element: HTMLElement, name: string, value: any) {
-        this.bindEvent(element, name, async (...e: any[]) => {
-            try {
-                const f = value as (...v: any[]) => any;
-                const pr = f.apply(this, e) as Promise<any>;
-                if (pr?.then) {
-                    try {
-                        await pr;
-                    } catch (error) {
-                        if (/canceled|cancelled/i.test(error)) {
-                            return;
-                        }
-
-                        const nav: NavigationService = this.app.resolve(NavigationService);
-                        await nav.alert(error, "Error");
-                    }
-                }
-            } catch (er1) {
-                // tslint:disable-next-line:no-console
-                console.error(er1);
-            }
-        });
-    }
+    // protected bindElementEvent(element: HTMLElement, name: string, value: any) {
+    //     this.bindEvent(element, name, value);
+    // }
 
     protected setElementClass(element: HTMLElement, value: any, clear?: boolean): void {
         const s = value;
