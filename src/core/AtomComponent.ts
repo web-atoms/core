@@ -4,6 +4,7 @@ import { AtomBridge } from "../core/AtomBridge";
 import { ArrayHelper, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { Inject } from "../di/Inject";
+import { NavigationService } from "../services/NavigationService";
 import { AtomDisposableList } from "./AtomDisposableList";
 import { AtomOnce } from "./AtomOnce";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
@@ -222,7 +223,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         element: T,
         name?: string,
         method?: EventListenerOrEventListenerObject,
-        key?: string): IDisposable {
+        key?: string,
+        capture?: boolean): IDisposable {
         if (!element) {
             return;
         }
@@ -237,7 +239,26 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         if (key) {
             be.key = key;
         }
-        be.disposable = AtomBridge.instance.addEventHandler(element, name, method, false);
+        const handler = (e) => {
+            try {
+                const r = (method as any)(e);
+                if (r?.catch) {
+                    return r.catch((c) => {
+                        alert(c.stack ?? c);
+                    });
+                }
+                return r;
+            } catch (error) {
+                alert(error.stack ?? error);
+            }
+        };
+        element.addEventListener(name, handler, capture);
+        be.disposable = {
+            dispose: () => {
+                element.removeEventListener(name, handler, capture);
+                be.disposable.dispose = () => undefined;
+            }
+        };
         this.eventHandlers.push(be);
 
         return {

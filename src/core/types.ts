@@ -5,6 +5,8 @@ import Map from "./AtomMap";
 export interface INativeComponent {
     appendChild(e: any);
     dispatchEvent(e: any);
+    addEventListener(name: string, fx: any, capture?: boolean);
+    removeEventListener(name: string, fx: any, capture?: boolean);
 }
 
 export interface INotifyPropertyChanging {

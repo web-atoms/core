@@ -8,7 +8,7 @@ export default class SingleInvoker extends TransientDisposable {
     private keys = new Map<string, number>();
 
     public dispose() {
-        for(const [key, index] of this.keys.entries()) {
+        for (const [key, index] of this.keys.entries()) {
             clearTimeout(index);
         }
         this.keys.clear();
@@ -27,6 +27,7 @@ export default class SingleInvoker extends TransientDisposable {
         }, delay));
     }
 
+    // tslint:disable-next-line: ban-types
     public queue(fx: Function, delay: number = 1, key?: string ): void {
         key ??= fx.toString();
         const keys = this.keys;
