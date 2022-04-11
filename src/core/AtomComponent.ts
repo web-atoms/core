@@ -244,11 +244,18 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 const r = (method as any)(e);
                 if (r?.catch) {
                     return r.catch((c) => {
+                        c = c?.toString() ?? "Unknown error";
+                        if (/canceled|cancelled/i.test(c)) {
+                            return;
+                        }
                         alert(c.stack ?? c);
                     });
                 }
                 return r;
             } catch (error) {
+                if (/canceled|cancelled/i.test(error)) {
+                    return;
+                }
                 alert(error.stack ?? error);
             }
         };
