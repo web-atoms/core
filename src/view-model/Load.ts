@@ -146,7 +146,7 @@ export default function Load(
                             await m(new CancelToken());
                         }  catch (error) {
                         } finally {
-                            vm.setupWatch(pathList, fx);
+                            vm.setupWatch(pathList, () => fx());
                         }
                     })
                     return;
