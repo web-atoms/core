@@ -30,20 +30,24 @@ export class AtomWindowTest extends AtomWebTest {
     @Test
     public async drag(): Promise<any> {
 
-        const ns = this.app.resolve(NavigationService) as NavigationService;
+        Assert.throwsAsync("cancelled", async () => {
+            const ns = this.app.resolve(NavigationService) as NavigationService;
 
-        const ct = new CancelToken();
-        const p = ns.openPage(SampleWindow, null, { cancelToken: ct });
+            const ct = new CancelToken();
+            const p = ns.openPage(SampleWindow, null, { cancelToken: ct });
 
-        await this.app.waitForPendingCalls();
+            await this.app.waitForPendingCalls();
 
-        window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mousedown", true, false));
-        window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mousemove", true, false));
-        window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mouseup", true, false));
+            window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mousedown", true, false));
+            window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mousemove", true, false));
+            window.dispatchEvent(createEvent<MouseEvent>("mouseevent", "mouseup", true, false));
 
-        ct.cancel();
+            setTimeout(() => {
+                ct.cancel();
+            }, 100);
 
-        Assert.throwsAsync("cancelled", () => p);
+            await p;
+        });
     }
 
     // @Test

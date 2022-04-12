@@ -404,7 +404,7 @@ export default class PopupService {
         if (element?.isConnected) {
             return element;
         }
-        const e = document.elementFromPoint(x, y) as HTMLElement;
+        const e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
         PopupService.lastTarget = e;
         return e;
     }

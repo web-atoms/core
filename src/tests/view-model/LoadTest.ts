@@ -48,6 +48,7 @@ class ActionViewModel extends AtomViewModel {
     public async loadList(ct: CancelToken): Promise<void> {
         const s = this.search;
         this.list = await this.remoteService.list(s, ct);
+        console.log(this.list);
     }
 
     @Load({ init: true})
@@ -70,11 +71,11 @@ class ErrorViewModel extends AtomViewModel {
 @Category("View Model Load")
 export default class LoadTest extends AtomWebTest {
 
-    @Test
-    public async runOnLoadError(): Promise<void> {
-        await this.createViewModel(ActionViewModel);
-        await Atom.delay(120);
-    }
+    // @Test
+    // public async runOnLoadError(): Promise<void> {
+    //     await this.createViewModel(ActionViewModel);
+    //     await Atom.delay(120);
+    // }
 
     @Test
     public async runOnSuccess(): Promise<void> {
@@ -86,67 +87,67 @@ export default class LoadTest extends AtomWebTest {
         Assert.equals(true, vm.loaded);
     }
 
-    @Test
-    public async watchError(): Promise<void> {
-        const vm = this.app.resolve(ActionViewModel, true) as ActionViewModel;
-        vm.type = "a";
-        await waitForReady(vm);
-        await Atom.delay(120);
-        Assert.equals("Success ", vm.list);
+    // @Test
+    // public async watchError(): Promise<void> {
+    //     const vm = this.app.resolve(ActionViewModel, true) as ActionViewModel;
+    //     vm.type = "a";
+    //     await waitForReady(vm);
+    //     await Atom.delay(120);
+    //     Assert.equals("Success ", vm.list);
 
-        this.navigationService.expectAlert("Error: Search cannot be null/undefined");
-        // set search as null
-        vm.list = null;
-        vm.search = null;
-        await Atom.delay(300);
+    //     this.navigationService.expectAlert("Error: Search cannot be null/undefined");
+    //     // set search as null
+    //     vm.list = null;
+    //     vm.search = null;
+    //     await Atom.delay(300);
 
-        Assert.isNull(vm.list);
-    }
+    //     Assert.isNull(vm.list);
+    // }
 
-    @Test
-    public async watchSuccess(): Promise<void> {
-        const vm = this.app.resolve(ActionViewModel, true) as ActionViewModel;
-        vm.type = "a";
-        await waitForReady(vm);
-        await Atom.delay(120);
-        Assert.equals("Success ", vm.list);
+    // @Test
+    // public async watchSuccess(): Promise<void> {
+    //     const vm = this.app.resolve(ActionViewModel, true) as ActionViewModel;
+    //     vm.type = "a";
+    //     await waitForReady(vm);
+    //     await Atom.delay(120);
+    //     Assert.equals("Success ", vm.list);
 
-        // set search as null
-        vm.list = null;
-        vm.search = "b";
-        await Atom.delay(300);
+    //     // set search as null
+    //     vm.list = null;
+    //     vm.search = "b";
+    //     await Atom.delay(300);
 
-        Assert.equals("Success b", vm.list);
-    }
+    //     Assert.equals("Success b", vm.list);
+    // }
 
-    @Test
-    public async watchSuccessWithDelay(): Promise<void> {
-        const vm = this.app.resolve(ActionViewModel, true) as ActionViewModel;
-        vm.type = "a";
-        await waitForReady(vm);
-        await Atom.delay(120);
-        Assert.equals("Success ", vm.list);
+    // @Test
+    // public async watchSuccessWithDelay(): Promise<void> {
+    //     const vm = this.app.resolve(ActionViewModel, true) as ActionViewModel;
+    //     vm.type = "a";
+    //     await waitForReady(vm);
+    //     await Atom.delay(120);
+    //     Assert.equals("Success ", vm.list);
 
-        // set search as null
-        vm.list = null;
-        vm.search = "b";
-        await Atom.delay(20);
-        vm.search = "c";
-        await Atom.delay(300);
+    //     // set search as null
+    //     vm.list = null;
+    //     vm.search = "b";
+    //     await Atom.delay(20);
+    //     vm.search = "c";
+    //     await Atom.delay(300);
 
-        Assert.equals("Success c", vm.list);
-    }
+    //     Assert.equals("Success c", vm.list);
+    // }
 
-    @Test
-    public async error(): Promise<void> {
-        try {
-            const vm = this.app.resolve(ErrorViewModel, true) as ErrorViewModel;
-            await waitForReady(vm);
-                // throw new Error("failed");
-        } catch (e) {
-            // do nothing...
-            // tslint:disable-next-line: no-console
-            console.error(e);
-        }
-    }
+    // @Test
+    // public async error(): Promise<void> {
+    //     try {
+    //         const vm = this.app.resolve(ErrorViewModel, true) as ErrorViewModel;
+    //         await waitForReady(vm);
+    //             // throw new Error("failed");
+    //     } catch (e) {
+    //         // do nothing...
+    //         // tslint:disable-next-line: no-console
+    //         console.error(e);
+    //     }
+    // }
 }

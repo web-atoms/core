@@ -1,6 +1,7 @@
 import { App } from "../App";
 import { parsePath } from "../core/ExpressionParser";
 import FormattedString from "../core/FormattedString";
+import sleep from "../core/sleep";
 import { CancelToken } from "../core/types";
 import { NavigationService } from "../services/NavigationService";
 import { AtomViewModel, Watch } from "./AtomViewModel";
@@ -77,7 +78,7 @@ export default function Load(
         init,
         showErrorOnInit,
         watch,
-        watchDelayMS
+        watchDelayMS = 100
     }: ILoadOptions) {
     // tslint:disable-next-line: only-arrow-functions
     return function(target: AtomViewModel, key: string | symbol): void {
@@ -86,26 +87,18 @@ export default function Load(
             const oldMethod = vm[key] as Function;
             const app = vm.app as App;
             let showError = init ? (showErrorOnInit ? true : false) : true;
-            let ct: CancelToken = new CancelToken();
+            let ct: CancelToken = undefined;
 
-            /**
-             * For the special case of init and watch both are true,
-             * we need to make sure that watch is ignored for first run
-             *
-             * So executing is set to true for the first time
-             */
-            let executing = init;
+            const ns = app.resolve(NavigationService);
+
             const m = async (ctx?: CancelToken) => {
-                const ns = app.resolve(NavigationService);
                 try {
                     const pe = oldMethod.call(vm, ctx);
-                    if (pe && pe.then) {
+                    if (pe?.then) {
                         return await pe;
                     }
                 } catch (e) {
                     if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
-                        // tslint:disable-next-line: no-console
-                        console.warn(e);
                         return;
                     }
                     if (!showError) {
@@ -115,36 +108,26 @@ export default function Load(
                     }
                     await ns.alert(e, "Error");
                 } finally {
-                    showError = true;
-                    executing = false;
+                    init = null;
+                    ct = null;
                 }
             };
 
             if (watch) {
-                const fx = async (c1?: CancelToken) => {
-                    if (ct) { ct.cancel(); }
-                    const ct2 = ct = (c1 || new CancelToken());
-
-                    if (executing) {
-                        return;
+                let timeout = undefined;
+                const fx = (c1?: CancelToken) => {
+                    if (ct && !ct.cancelled) {
+                        ct.cancel();
                     }
-                    executing = true;
-                    try {
-                        await m(ct2);
-                    } catch (ex1) {
-                        if (/^(cancelled|canceled)$/i.test(ex1.toString().trim())) {
-                            // tslint:disable-next-line: no-console
-                            console.warn(ex1);
-                        } else {
-                            // tslint:disable-next-line: no-console
-                            console.error(ex1);
-                        }
-                    } finally {
-                        executing = false;
-                        ct = null;
+                    if (timeout) {
+                        clearTimeout(timeout);
                     }
+                    timeout = setTimeout(() => {
+                        timeout = undefined;
+                        ct = c1 ??= new CancelToken();
+                        m(c1).catch((e) => console.error(e) );
+                    }, watchDelayMS);
                 };
-                let timeout = null;
 
                 // get path stripped as we are passing CancelToken, it will not
                 // parse for this. expressions..
@@ -152,24 +135,30 @@ export default function Load(
                 if (pathList.length === 0) {
                     throw new Error("Nothing to watch !!");
                 }
-                vm.setupWatch(pathList, () => {
-                    if (executing) {
-                        return;
-                    }
-                    if (timeout) {
-                        clearTimeout(timeout);
-                    }
-                    timeout = setTimeout(() => {
-                        timeout = null;
-                        fx();
-                    }, watchDelayMS || 100);
-                });
+
+                // in case if init is true..
+                // we will setup watch immediately after init was finished...
                 vm[key] = fx;
 
+                if (init) {
+                    app.runAsync(async () => {
+                        try {
+                            await m(new CancelToken());
+                        }  catch (error) {
+                        } finally {
+                            vm.setupWatch(pathList, fx);
+                        }
+                    })
+                    return;
+                }
+
+                vm.setupWatch(pathList, fx);
+
+                return;
             }
 
             if (init) {
-                app.runAsync(() => m.call(vm, ct));
+                app.runAsync(() => m(new CancelToken()));
             }
         });
     };
