@@ -86,8 +86,8 @@ export default function Load(
             // tslint:disable-next-line: ban-types
             const oldMethod = vm[key] as Function;
             const app = vm.app as App;
-            let showError = init ? (showErrorOnInit ? true : false) : true;
-            let ct: CancelToken = undefined;
+            const showError = init ? (showErrorOnInit ? true : false) : true;
+            let ct: CancelToken;
 
             const ns = app.resolve(NavigationService);
 
@@ -108,13 +108,12 @@ export default function Load(
                     }
                     await ns.alert(e, "Error");
                 } finally {
-                    init = null;
                     ct = null;
                 }
             };
 
             if (watch) {
-                let timeout = undefined;
+                let timeout;
                 const fx = (c1?: CancelToken) => {
                     if (ct && !ct.cancelled) {
                         ct.cancel();
@@ -150,7 +149,7 @@ export default function Load(
                         } finally {
                             vm.setupWatch(pathList, watchedFunction);
                         }
-                    })
+                    });
                     return;
                 }
 
