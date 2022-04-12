@@ -72,6 +72,15 @@ export type CancelReason = "cancelled" | "timeout";
  */
 export class CancelToken implements IDisposable {
 
+    public static isCancelled(e: any) {
+        if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
+            return true;
+        }
+        if (e.name === "AbortError") {
+            return true;
+        }
+    }
+
     private listeners: Array<(r: CancelReason) => void> = [];
 
     private mCancelled: (CancelReason | null | undefined) = null;

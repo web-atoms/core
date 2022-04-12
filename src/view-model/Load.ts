@@ -98,7 +98,7 @@ export default function Load(
                         return await pe;
                     }
                 } catch (e) {
-                    if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
+                    if (CancelToken.isCancelled(e)) {
                         return;
                     }
                     if (!showError) {
