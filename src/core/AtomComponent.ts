@@ -1,7 +1,7 @@
 import { App } from "../App";
 import { AtomBridge } from "../core/AtomBridge";
 // tslint:disable-next-line:import-spacing
-import { ArrayHelper, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
+import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { Inject } from "../di/Inject";
 import { NavigationService } from "../services/NavigationService";
@@ -244,11 +244,18 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 const r = (method as any)(e);
                 if (r?.catch) {
                     return r.catch((c) => {
+                        c = c?.toString() ?? "Unknown error";
+                        if (CancelToken.isCancelled(c)) {
+                            return;
+                        }
                         alert(c.stack ?? c);
                     });
                 }
                 return r;
             } catch (error) {
+                if (CancelToken.isCancelled(error)) {
+                    return;
+                }
                 alert(error.stack ?? error);
             }
         };

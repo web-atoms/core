@@ -147,7 +147,7 @@ export default function Action(
                     value: fx,
                     writable: true,
                     enumerable: false
-                } )
+                } );
                 return fx;
             },
             configurable: true
