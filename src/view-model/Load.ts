@@ -140,19 +140,21 @@ export default function Load(
                 // we will setup watch immediately after init was finished...
                 vm[key] = fx;
 
+                const watchedFunction = () => fx();
+
                 if (init) {
                     app.runAsync(async () => {
                         try {
                             await m(new CancelToken());
                         }  catch (error) {
                         } finally {
-                            vm.setupWatch(pathList, () => fx());
+                            vm.setupWatch(pathList, watchedFunction);
                         }
                     })
                     return;
                 }
 
-                vm.setupWatch(pathList, fx);
+                vm.setupWatch(pathList, watchedFunction);
 
                 return;
             }
