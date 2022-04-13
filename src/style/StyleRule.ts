@@ -654,6 +654,11 @@ export class AtomStyleRules {
         return this;
     }
 
+    public caretColor(value: ColorItem | string) {
+        this.style.caretColor = value;
+        return this;
+    }
+
     public clear(value: ClearType) {
         if (value !== undefined && value !== null) {
             this.style.clear = value;
