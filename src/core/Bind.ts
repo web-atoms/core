@@ -1,6 +1,6 @@
 import { parsePath, parsePathLists } from "./ExpressionParser";
 import { IValueConverter } from "./IValueConverter";
-import { CancelToken } from "./types";
+import { CancelToken, ignoreValue } from "./types";
 
 export interface IAtomComponent {
     element: any;
@@ -329,7 +329,7 @@ export default class Bind {
                             control.setLocalValue(e, name, value );
                         }
                     }, watchDelayInMS);
-                    return undefined;
+                    return ignoreValue;
                 }, bindingSource);
                 if (typeof defaultValue !== "undefined") {
                     control.setLocalValue(e, name, defaultValue);

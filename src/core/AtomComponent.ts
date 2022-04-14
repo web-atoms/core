@@ -1,7 +1,7 @@
 import { App } from "../App";
 import { AtomBridge } from "../core/AtomBridge";
 // tslint:disable-next-line:import-spacing
-import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
+import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, ignoreValue, INotifyPropertyChanged, PathList }
     from "../core/types";
 import { Inject } from "../di/Inject";
 import { NavigationService } from "../services/NavigationService";
@@ -387,6 +387,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 // tslint:disable-next-line:no-console
                 console.error(e);
             });
+            return;
+        }
+
+        if (ignoreValue === value) {
             return;
         }
 

@@ -64,6 +64,8 @@ export interface IRect {
 
 export type CancelReason = "cancelled" | "timeout";
 
+export const ignoreValue = Symbol("ignore");
+
 /**
  *
  *
