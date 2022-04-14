@@ -317,21 +317,17 @@ export default class Bind {
                 let timeout = undefined;
                 let cancelToken = undefined;
                 control.bind(e, name, finalPathList, false, () => {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                    }
-                    timeout = setTimeout(() => {
+                    const app = control.app as any;
+                    cancelToken?.cancel();
+                    cancelToken = null;
+                    timeout = app.setTimeoutAsync(async () => {
                         timeout = undefined;
                         cancelToken?.cancel();
-                        cancelToken = null;
-                        (control as any).app.runAsync(async () => {
-                            cancelToken?.cancel();
-                            const ct = cancelToken = new CancelToken();
-                            const value = await sourcePath.call(control, control, e, ct);
-                            if (!ct.cancelled) {
-                                control.setLocalValue(e, name, value );
-                            }
-                        });
+                        const ct = cancelToken = new CancelToken();
+                        const value = await sourcePath.call(control, control, e, ct);
+                        if (!ct.cancelled) {
+                            control.setLocalValue(e, name, value );
+                        }
                     }, watchDelayInMS);
                     return undefined;
                 }, bindingSource);
