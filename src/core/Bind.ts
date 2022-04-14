@@ -1,15 +1,14 @@
 import { parsePath, parsePathLists } from "./ExpressionParser";
 import { IValueConverter } from "./IValueConverter";
 import { CancelToken, ignoreValue } from "./types";
+import type { App } from "../App";
 
 export interface IAtomComponent {
     element: any;
     viewModel: any;
     localViewModel: any;
     data: any;
-    app: {
-        callLater: (f: () => void) => void;
-    };
+    app: App;
     runAfterInit(f: () => void): void;
     setLocalValue(e: any, name: string, value: any): void;
     bindEvent(e: any, name: string, handler: any);
@@ -314,13 +313,15 @@ export default class Bind {
                     finalPathList = thisPathList;
                     bindingSource = creator;
                 }
-                let timeout = undefined;
+                let timeout = {
+                    token: 0
+                };
                 let cancelToken = undefined;
                 control.bind(e, name, finalPathList, false, () => {
-                    const app = control.app as any;
+                    const app = control.app;
                     cancelToken?.cancel();
                     cancelToken = null;
-                    timeout = app.setTimeoutAsync(async () => {
+                    timeout.token = app.setTimeoutAsync(async () => {
                         timeout = undefined;
                         cancelToken?.cancel();
                         const ct = cancelToken = new CancelToken();
@@ -328,7 +329,7 @@ export default class Bind {
                         if (!ct.cancelled) {
                             control.setLocalValue(e, name, value );
                         }
-                    }, watchDelayInMS, timeout);
+                    }, watchDelayInMS, timeout.token);
                     return ignoreValue;
                 }, bindingSource);
                 if (typeof defaultValue !== "undefined") {
