@@ -313,23 +313,23 @@ export default class Bind {
                     finalPathList = thisPathList;
                     bindingSource = creator;
                 }
-                let timeout = {
-                    token: 0
+                let asyncState = {
+                    token: 0,
+                    cancelToken: undefined
                 };
-                let cancelToken = undefined;
                 control.bind(e, name, finalPathList, false, () => {
                     const app = control.app;
-                    cancelToken?.cancel();
-                    cancelToken = null;
-                    timeout.token = app.setTimeoutAsync(async () => {
-                        timeout = undefined;
-                        cancelToken?.cancel();
-                        const ct = cancelToken = new CancelToken();
+                    asyncState.cancelToken?.cancel();
+                    asyncState.cancelToken = undefined;
+                    asyncState.token = app.setTimeoutAsync(async () => {
+                        asyncState.token = undefined;
+                        asyncState.cancelToken?.cancel();
+                        const ct = asyncState.cancelToken = new CancelToken();
                         const value = await sourcePath.call(creator, control, e, ct);
                         if (!ct.cancelled) {
                             control.setLocalValue(e, name, value );
                         }
-                    }, watchDelayInMS, timeout.token);
+                    }, watchDelayInMS, asyncState.token);
                     return ignoreValue;
                 }, bindingSource);
                 if (typeof defaultValue !== "undefined") {
