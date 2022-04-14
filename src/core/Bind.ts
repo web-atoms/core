@@ -324,11 +324,11 @@ export default class Bind {
                         timeout = undefined;
                         cancelToken?.cancel();
                         const ct = cancelToken = new CancelToken();
-                        const value = await sourcePath.call(control, control, e, ct);
+                        const value = await sourcePath.call(creator, control, e, ct);
                         if (!ct.cancelled) {
                             control.setLocalValue(e, name, value );
                         }
-                    }, watchDelayInMS);
+                    }, watchDelayInMS, timeout);
                     return ignoreValue;
                 }, bindingSource);
                 if (typeof defaultValue !== "undefined") {
