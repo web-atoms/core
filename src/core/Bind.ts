@@ -268,7 +268,7 @@ export default class Bind {
     public static oneWayAsync<T extends IAtomComponent = IAtomComponent>(
         sourcePath: (control: T, e: HTMLElement, cancelToken: CancelToken) => Promise<any>,
         {
-            watchDelayInMS = 150,
+            watchDelayInMS = 250,
             default: defaultValue
         }: {
             watchDelayInMS?: number,
