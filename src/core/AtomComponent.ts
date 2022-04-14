@@ -371,6 +371,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         // if value is a promise
         const p = value as Promise<any>;
         if (p && p.then && p.catch) {
+            console.warn(`Do not bind promises, instead use Bind.oneWayAsync`)
             this.mPendingPromises[name] = p;
             p.then( (r) => {
                 if (this.mPendingPromises [name] !== p) {
