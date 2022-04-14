@@ -78,7 +78,7 @@ export default function Load(
         init,
         showErrorOnInit,
         watch,
-        watchDelayMS = 250
+        watchDelayMS = 100
     }: ILoadOptions) {
     // tslint:disable-next-line: only-arrow-functions
     return function(target: AtomViewModel, key: string | symbol): void {
