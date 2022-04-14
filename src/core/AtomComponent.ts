@@ -390,10 +390,6 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             return;
         }
 
-        if (ignoreValue === value) {
-            return;
-        }
-
         if ((!element || element === this.element) &&  Reflect.has(this, name)) {
             this[name] = value;
         } else {
@@ -653,7 +649,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
     private watcher: AtomWatcher<any>;
     private twoWaysDisposable: IDisposable;
     private isTwoWaySetup: boolean = false;
-    private updaterOnce: AtomOnce;
+    private isRunning: boolean;
 
     private fromSourceToTarget: (...v: any[]) => any;
     private fromTargetToSource: (v: any) => any;
@@ -671,7 +667,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         this.twoWays = twoWays;
         this.target = target;
         this.element = element;
-        this.updaterOnce = new AtomOnce();
+        this.isRunning = false;
         if (valueFunc) {
             if (typeof valueFunc !== "function") {
                 this.fromSourceToTarget = valueFunc.fromSource;
@@ -682,23 +678,32 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         }
         this.watcher = new AtomWatcher(target, path,
             (...v: any[]) => {
-                this.updaterOnce.run(() => {
-                    if (this.disposed) {
+                if (this.isRunning) {
+                    return;
+                }
+                if (this.disposed) {
+                    return;
+                }
+                // set value
+                for (const iterator of v) {
+                    if (iterator === undefined) {
                         return;
                     }
-                    // set value
-                    for (const iterator of v) {
-                        if (iterator === undefined) {
-                            return;
-                        }
-                    }
-                    const cv = this.fromSourceToTarget ? this.fromSourceToTarget.apply(this, v) : v[0];
+                }
+                const cv = this.fromSourceToTarget ? this.fromSourceToTarget.apply(this, v) : v[0];
+                if (cv === ignoreValue) {
+                    return;
+                }
+                this.isRunning = true;
+                try {
                     if (this.target instanceof AtomComponent) {
                         this.target.setLocalValue(this.element, this.name, cv);
                     } else {
                         this.target[name] = cv;
                     }
-                });
+                } finally {
+                    this.isRunning = false;
+                }
             },
             source
         );
@@ -762,10 +767,14 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             throw new Error("This Binding is not two ways.");
         }
 
-        this.updaterOnce.run(() => {
-            if (this.disposed) {
-                return;
-            }
+        if (this.disposed) {
+            return;
+        }
+        if (this.isRunning) {
+            return;
+        }
+        this.isRunning = true;
+        try {
             const first = this.path[0];
             const length = first.length;
             let v: any = this.target;
@@ -784,15 +793,15 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             }
             name = first[i].name;
             v[name] = this.fromTargetToSource ? this.fromTargetToSource.call(this, value) : value;
-        });
+        } finally {
+            this.isRunning = false;            
+        }
 
     }
 
     public dispose(): void {
-        if (this.twoWaysDisposable) {
-            this.twoWaysDisposable.dispose();
-            this.twoWaysDisposable = null;
-        }
+        this.twoWaysDisposable?.dispose();
+        this.twoWaysDisposable = undefined;
         this.watcher.dispose();
         this.disposed = true;
         this.watcher = null;
