@@ -483,7 +483,7 @@ export default class PopupService {
                     cancelToken,
                     modal
                 } = popupOptions;
-                    if (title) {
+                if (title) {
                     vm.title = title;
                 }
 
@@ -584,7 +584,7 @@ export default class PopupService {
                 }
 
             } else {
-                offset.y -= opener.offsetHeight
+                offset.y -= opener.offsetHeight;
                 style.top = offset.y + "px";
                 if (options?.alignment === "right") {
                     style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;
