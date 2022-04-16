@@ -487,16 +487,29 @@ export default class PopupService {
                     vm.title = title;
                 }
 
+                let widthSet = false;
+                let heightSet = false;
+
                 if (maximize) {
                     element.style.width = "95%";
                     element.style.height = "95%";
+                    widthSet = heightSet = true;
                 } else {
                     if (width) {
                         element.style.width = typeof width === "number" ? width + "px" : width;
+                        widthSet = true;
                     }
                     if (height) {
                         element.style.height = typeof height === "number" ? height + "px" : height;
+                        heightSet = true;
                     }
+                }
+
+                if (!widthSet) {
+                    element.style.maxWidth = "95%";
+                }
+                if (!heightSet) {
+                    element.style.maxHeight = "95%";
                 }
 
                 if (parameters) {
