@@ -322,6 +322,9 @@ export default class Bind {
                     asyncState.cancelToken?.cancel();
                     asyncState.cancelToken = undefined;
                     asyncState.token = app.setTimeoutAsync(async () => {
+                        if (asyncState.cancelToken?.cancelled) {
+                            return;
+                        }
                         asyncState.token = undefined;
                         asyncState.cancelToken?.cancel();
                         const ct = asyncState.cancelToken = new CancelToken();
