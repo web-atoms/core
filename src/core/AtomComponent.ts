@@ -1,8 +1,7 @@
 import { App } from "../App";
 import { AtomBridge } from "../core/AtomBridge";
-// tslint:disable-next-line:import-spacing
-import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, ignoreValue, INotifyPropertyChanged, PathList }
-    from "../core/types";
+import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement,
+    IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types";
 import { Inject } from "../di/Inject";
 import { NavigationService } from "../services/NavigationService";
 import { AtomDisposableList } from "./AtomDisposableList";
@@ -372,7 +371,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         // if value is a promise
         const p = value as Promise<any>;
         if (p && p.then && p.catch) {
-            console.warn(`Do not bind promises, instead use Bind.oneWayAsync`)
+            // tslint:disable-next-line: no-console
+            console.warn(`Do not bind promises, instead use Bind.oneWayAsync`);
             this.mPendingPromises[name] = p;
             p.then( (r) => {
                 if (this.mPendingPromises [name] !== p) {
@@ -795,7 +795,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             name = first[i].name;
             v[name] = this.fromTargetToSource ? this.fromTargetToSource.call(this, value) : value;
         } finally {
-            this.isRunning = false;            
+            this.isRunning = false;
         }
 
     }
