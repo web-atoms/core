@@ -231,6 +231,16 @@ export class PopupWindow extends AtomControl {
 
     public titleRenderer: () => XNode;
 
+    public closeButtonRenderer: () => XNode;
+
+    @BindableProperty
+    public closeWarning: string;
+
+    public async requestCancel() {
+        if (this.closeWarning) {
+        }
+    }
+
     protected preCreate(): void {
         this.element.dataset.popupWindow = "popup-window";
         this.app.dispatcher.callLater(() => {
@@ -243,19 +253,18 @@ export class PopupWindow extends AtomControl {
         this.render = super.render;
         this.title = null;
         this.viewModelTitle = null;
-        const titleContent = this.titleRenderer?.();
+        const titleContent = this.titleRenderer?.() ?? <span
+            class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>;
+        const closeButton = this.closeButtonRenderer?.() ?? <button
+            class="popup-close-button"
+            text="x"
+            eventClick={Bind.event(() => this.requestCancel())}/>;
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
         super.render(<div viewModelTitle={Bind.oneWay(() => this.viewModel.title)}>
             <div class="title title-host">
-                { titleContent
-                    ? titleContent
-                    : <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>
-                }
-                <button
-                    class="popup-close-button"
-                    text="x"
-                    eventClick={Bind.event(() => this.cancel())}/>
+                { titleContent }
+                { closeButton }
             </div>
             { node }
         </div>);
@@ -295,6 +304,40 @@ export class PopupWindow extends AtomControl {
     }
 
 }
+
+CSS(StyleRule(), "div[data-confirm-popup=confirm-popup]");
+
+export class ConfirmPopup extends PopupWindow {
+
+    public message: string;
+
+    public messageRenderer: () => XNode;
+
+    public yesLabel: string;
+
+    public noLabel: string;
+
+    protected render(node: XNode, e?: any, creator?: any) {
+        this.element.dataset.confirmPopup="confirm-popup";
+        this.yesLabel = "Yes";
+        this.noLabel = "No";
+        this.closeButtonRenderer = () => <div/>;
+        this.render(<div>
+            { node }
+            <div>
+                <button
+                    class="yes"
+                    autofocus={true}
+                    text={Bind.oneWay(() => this.yesLabel)}/>
+                <button
+                    class="no"
+                    text={Bind.oneWay(() => this.noLabel)}/>
+            </div>
+        </div>);
+    }
+
+}
+
 
 function findHostAndPosition(opener: HTMLElement) {
     let root = opener;
