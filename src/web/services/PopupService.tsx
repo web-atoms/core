@@ -236,7 +236,7 @@ export class PopupWindow extends AtomControl {
     @BindableProperty
     public closeWarning: string;
 
-    public async requestCancel() {
+    protected async requestCancel() {
         if (this.closeWarning) {
             if (!await ConfirmPopup.showModal<boolean>({
                 parameters: {
