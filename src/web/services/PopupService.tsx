@@ -267,6 +267,16 @@ export class PopupWindow extends AtomControl {
             const host = this.element.getElementsByClassName("title-host")[0];
             this.setupDragging(host as HTMLElement);
         });
+        setTimeout(() => {
+            // this.element may become null if it was immediately
+            // closed, very rare case, but possible if
+            // supplied cancelToken was cancelled
+            const anyAutofocus = this.element?.querySelector(`*[autofocus]`);
+            if (!anyAutofocus) {
+                const firstInput = this.element?.querySelector("input");
+                firstInput?.focus();
+            }
+        }, 1);
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
