@@ -238,10 +238,30 @@ export class PopupWindow extends AtomControl {
 
     public async requestCancel() {
         if (this.closeWarning) {
+            if (!await ConfirmPopup.showModal<boolean>({
+                parameters: {
+                    message : this.closeWarning
+                }
+            })) {
+                return;
+            }
         }
+        this.cancel();
     }
 
     protected preCreate(): void {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                this.app.runAsync(() => this.requestCancel());
+                return;
+            }
+        };
+        document.body.addEventListener("keypress", handler);
+        this.registerDisposable({
+            dispose() {
+                document.body.removeEventListener("keypress", handler);
+            }
+        });
         this.element.dataset.popupWindow = "popup-window";
         this.app.dispatcher.callLater(() => {
             const host = this.element.getElementsByClassName("title-host")[0];
@@ -305,7 +325,22 @@ export class PopupWindow extends AtomControl {
 
 }
 
-CSS(StyleRule(), "div[data-confirm-popup=confirm-popup]");
+CSS(StyleRule()
+    .nested(StyleRule("yes")
+        .borderRadius(9999)
+        .paddingLeft(10)
+        .paddingRight(10)
+        .borderWidth(1)
+        .borderColor(Colors.transparent)
+    )
+    .nested(StyleRule("no")
+        .borderRadius(9999)
+        .paddingLeft(10)
+        .paddingRight(10)
+        .borderWidth(1)
+        .borderColor(Colors.transparent)
+    )
+, "div[data-confirm-popup=confirm-popup]");
 
 export class ConfirmPopup extends PopupWindow {
 
@@ -318,11 +353,12 @@ export class ConfirmPopup extends PopupWindow {
     public noLabel: string;
 
     protected render(node: XNode, e?: any, creator?: any) {
-        this.element.dataset.confirmPopup="confirm-popup";
+        this.render = super.render;
+        this.element.dataset.confirmPopup = "confirm-popup";
         this.yesLabel = "Yes";
         this.noLabel = "No";
         this.closeButtonRenderer = () => <div/>;
-        this.render(<div>
+        super.render(<div>
             { node }
             <div>
                 <button
@@ -337,7 +373,6 @@ export class ConfirmPopup extends PopupWindow {
     }
 
 }
-
 
 function findHostAndPosition(opener: HTMLElement) {
     let root = opener;
