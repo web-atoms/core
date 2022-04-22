@@ -256,10 +256,10 @@ export class PopupWindow extends AtomControl {
                 return;
             }
         };
-        document.body.addEventListener("keypress", handler);
+        document.body.addEventListener("keydown", handler);
         this.registerDisposable({
             dispose() {
-                document.body.removeEventListener("keypress", handler);
+                document.body.removeEventListener("keydown", handler);
             }
         });
         this.element.dataset.popupWindow = "popup-window";
