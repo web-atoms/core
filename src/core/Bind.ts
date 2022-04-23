@@ -1,7 +1,7 @@
+import type { App } from "../App";
 import { parsePath, parsePathLists } from "./ExpressionParser";
 import { IValueConverter } from "./IValueConverter";
 import { CancelToken, ignoreValue } from "./types";
-import type { App } from "../App";
 
 export interface IAtomComponent {
     element: any;
@@ -23,7 +23,8 @@ const isEvent = /^event/i;
 
 export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => any;
 
-export type asyncBindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T, e: any, cancelToken: CancelToken) => Promise<any>;
+export type asyncBindingFunction<T extends IAtomComponent = IAtomComponent>
+    = (control: T, e: any, cancelToken: CancelToken) => Promise<any>;
 
 export type bindingFunctionCommand<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => (p) => void;
 
@@ -301,8 +302,8 @@ export default class Bind {
 
         return {
             [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
-                var bindingSource = undefined;
-                var finalPathList = pathList;
+                let bindingSource;
+                let finalPathList = pathList;
                 if (combined) {
                     bindingSource = {
                         t: creator,
@@ -313,7 +314,7 @@ export default class Bind {
                     finalPathList = thisPathList;
                     bindingSource = creator;
                 }
-                let asyncState = {
+                const asyncState = {
                     token: 0,
                     cancelToken: undefined
                 };

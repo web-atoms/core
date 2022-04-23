@@ -115,6 +115,7 @@ export class App extends ServiceProvider {
                         if (CancelToken.isCancelled(error)) {
                             return;
                         }
+                        // tslint:disable-next-line: no-console
                         console.error(error);
                     });
                 }
@@ -122,9 +123,10 @@ export class App extends ServiceProvider {
                 if (CancelToken.isCancelled(e)) {
                     return;
                 }
+                // tslint:disable-next-line: no-console
                 console.error(e);
             }
-        }, timeInMS); 
+        }, timeInMS);
     }
 
     /**
