@@ -594,7 +594,7 @@ export default class PopupService {
         title = "Confirm",
         yesLabel = "Yes",
         noLabel = "No",
-        cancelLabel = undefined
+        cancelLabel = null
     }): Promise<boolean> {
         try {
             const popup = class extends ConfirmPopup {
