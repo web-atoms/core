@@ -336,19 +336,26 @@ export class PopupWindow extends AtomControl {
 }
 
 CSS(StyleRule()
-    .nested(StyleRule("yes")
+    .nested(StyleRule(".yes")
         .borderRadius(9999)
         .paddingLeft(10)
         .paddingRight(10)
         .borderWidth(1)
         .borderColor(Colors.transparent)
+        .margin(5)
+        .marginRight(10)
+        .backgroundColor(Colors.lightGreen)
     )
-    .nested(StyleRule("no")
+    .nested(StyleRule(".no")
         .borderRadius(9999)
         .paddingLeft(10)
         .paddingRight(10)
         .borderWidth(1)
         .borderColor(Colors.transparent)
+        .margin(5)
+        .marginRight(10)
+        .backgroundColor(Colors.red)
+        .color(Colors.white)
     )
 , "div[data-confirm-popup=confirm-popup]");
 
