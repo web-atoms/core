@@ -354,6 +354,29 @@ CSS(StyleRule()
 
 export class ConfirmPopup extends PopupWindow {
 
+    public static async confirm({
+        message,
+        title = "Confirm",
+        yesLabel = "Yes",
+        noLabel = "No"
+    }): Promise<boolean> {
+        try {
+            return await ConfirmPopup.showModal<boolean>({
+                parameters: {
+                    message,
+                    yesLabel,
+                    noLabel
+                },
+                title
+            });
+        } catch (e) {
+            if (CancelToken.isCancelled(e)) {
+                return false;
+            }
+            throw e;
+        }
+    }
+
     public message: string;
 
     public messageRenderer: () => XNode;
@@ -374,10 +397,14 @@ export class ConfirmPopup extends PopupWindow {
                 <button
                     class="yes"
                     autofocus={true}
-                    text={Bind.oneWay(() => this.yesLabel)}/>
+                    text={Bind.oneWay(() => this.yesLabel)}
+                    eventClick={() => this.close(true)}
+                    />
                 <button
                     class="no"
-                    text={Bind.oneWay(() => this.noLabel)}/>
+                    text={Bind.oneWay(() => this.noLabel)}
+                    eventClick={() => this.close(false)}
+                    />
             </div>
         </div>);
     }
