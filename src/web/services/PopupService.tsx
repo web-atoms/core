@@ -357,6 +357,16 @@ CSS(StyleRule()
         .backgroundColor(Colors.red)
         .color(Colors.white)
     )
+    .nested(StyleRule(".cancel")
+        .borderRadius(9999)
+        .paddingLeft(10)
+        .paddingRight(10)
+        .borderWidth(1)
+        .borderColor(Colors.transparent)
+        .margin(5)
+        .marginRight(10)
+        .backgroundColor(Colors.gray)
+    )
 , "div[data-confirm-popup=confirm-popup]");
 
 export class ConfirmPopup extends PopupWindow {
@@ -366,7 +376,7 @@ export class ConfirmPopup extends PopupWindow {
         title = "Confirm",
         yesLabel = "Yes",
         noLabel = "No",
-        cancelLabel = undefined
+        cancelLabel = null
     }): Promise<boolean> {
         try {
             const popup = class extends ConfirmPopup {
@@ -403,12 +413,16 @@ export class ConfirmPopup extends PopupWindow {
 
     public cancelLabel: string;
 
-    protected render(node: XNode, e?: any, creator?: any) {
-        this.render = super.render;
-        this.element.dataset.confirmPopup = "confirm-popup";
+    protected preCreate(): void {
+        super.preCreate();
         this.yesLabel = "Yes";
         this.noLabel = "No";
         this.cancelLabel = null;
+    }
+
+    protected render(node: XNode, e?: any, creator?: any) {
+        this.render = super.render;
+        this.element.dataset.confirmPopup = "confirm-popup";
         this.closeButtonRenderer = () => <div/>;
         super.render(<div>
             { node }
