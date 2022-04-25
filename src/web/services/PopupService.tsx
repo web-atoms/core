@@ -365,7 +365,8 @@ export class ConfirmPopup extends PopupWindow {
         message,
         title = "Confirm",
         yesLabel = "Yes",
-        noLabel = "No"
+        noLabel = "No",
+        cancelLabel = undefined
     }): Promise<boolean> {
         try {
             const popup = class extends ConfirmPopup {
@@ -379,7 +380,8 @@ export class ConfirmPopup extends PopupWindow {
                 parameters: {
                     message,
                     yesLabel,
-                    noLabel
+                    noLabel,
+                    cancelLabel
                 },
                 title
             });
@@ -399,11 +401,14 @@ export class ConfirmPopup extends PopupWindow {
 
     public noLabel: string;
 
+    public cancelLabel: string;
+
     protected render(node: XNode, e?: any, creator?: any) {
         this.render = super.render;
         this.element.dataset.confirmPopup = "confirm-popup";
         this.yesLabel = "Yes";
         this.noLabel = "No";
+        this.cancelLabel = null;
         this.closeButtonRenderer = () => <div/>;
         super.render(<div>
             { node }
@@ -413,11 +418,19 @@ export class ConfirmPopup extends PopupWindow {
                     autofocus={true}
                     text={Bind.oneWay(() => this.yesLabel)}
                     eventClick={() => this.close(true)}
+                    style-display={Bind.oneWay(() => !!this.yesLabel)}
                     />
                 <button
                     class="no"
                     text={Bind.oneWay(() => this.noLabel)}
                     eventClick={() => this.close(false)}
+                    style-display={Bind.oneWay(() => !!this.noLabel)}
+                    />
+                <button
+                    class="cancel"
+                    text={Bind.oneWay(() => this.cancelLabel)}
+                    eventClick={() => this.requestCancel()}
+                    style-display={Bind.oneWay(() => !!this.cancelLabel)}
                     />
             </div>
         </div>);
@@ -545,6 +558,67 @@ export default class PopupService {
             x: rect.left + (rect.width / 2),
             y: rect.top + (rect.height / 2)
         };
+    }
+
+    public static async alert({
+        message,
+        title = "Alert",
+        yesLabel = "Ok"
+    }): Promise<boolean> {
+        try {
+            const popup = class extends ConfirmPopup {
+                protected create(): void {
+                    this.render(<div>
+                        <div text={message}/>
+                    </div>);
+                }
+            };
+            return await popup.showModal<boolean>({
+                parameters: {
+                    message,
+                    yesLabel,
+                    noLabel: ""
+                },
+                title
+            });
+        } catch (e) {
+            if (CancelToken.isCancelled(e)) {
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    public static async confirm({
+        message,
+        title = "Confirm",
+        yesLabel = "Yes",
+        noLabel = "No",
+        cancelLabel = undefined
+    }): Promise<boolean> {
+        try {
+            const popup = class extends ConfirmPopup {
+                protected create(): void {
+                    this.render(<div>
+                        <div text={message}/>
+                    </div>);
+                }
+            };
+            return await popup.showModal<boolean>({
+                parameters: {
+                    message,
+                    yesLabel,
+                    noLabel,
+                    cancelLabel
+                },
+                title
+            });
+        } catch (e) {
+            if (CancelToken.isCancelled(e)) {
+                return false;
+            }
+            throw e;
+        }
     }
 
     public static showWindow<T>(
