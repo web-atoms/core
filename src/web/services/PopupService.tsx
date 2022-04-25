@@ -250,6 +250,8 @@ export class PopupWindow extends AtomControl {
     }
 
     protected preCreate(): void {
+        this.title = null;
+        this.viewModelTitle = null;
         const handler = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 this.app.runAsync(() => this.requestCancel());
@@ -281,8 +283,6 @@ export class PopupWindow extends AtomControl {
 
     protected render(node: XNode, e?: any, creator?: any): void {
         this.render = super.render;
-        this.title = null;
-        this.viewModelTitle = null;
         const titleContent = this.titleRenderer?.() ?? <span
             class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>;
         const closeButton = this.closeButtonRenderer?.() ?? <button
