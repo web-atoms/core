@@ -361,7 +361,14 @@ export class ConfirmPopup extends PopupWindow {
         noLabel = "No"
     }): Promise<boolean> {
         try {
-            return await ConfirmPopup.showModal<boolean>({
+            const popup = class extends ConfirmPopup {
+                protected create(): void {
+                    this.render(<div>
+                        <div text={message}/>
+                    </div>);
+                }
+            };
+            return await popup.showModal<boolean>({
                 parameters: {
                     message,
                     yesLabel,
