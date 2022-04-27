@@ -335,6 +335,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     public setPrimitiveValue(element: T, name: string, value: any): void {
         const p = value as Promise<any>;
         if (p && p.then && p.catch) {
+            // tslint:disable-next-line: no-console
+            console.warn(`Do not bind promises, instead use Bind.oneWayAsync`);
             this.mPendingPromises[name] = p;
             p.then( (r) => {
                 if (this.mPendingPromises [name] !== p) {
