@@ -305,7 +305,15 @@ export class PopupWindow extends AtomControl {
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
             // const offset = AtomUI.screenOffset(tp);
-            const offset = { x: tp.parentElement.offsetLeft, y: tp.parentElement.offsetTop };
+            const element = this.element;
+            const offset = { x: element.offsetLeft, y: element.offsetTop };
+            if (element.style.transform !== "none") {
+                offset.x -= element.offsetWidth / 2;
+                offset.y -= element.offsetHeight / 2;
+                element.style.left = offset.x + "px";
+                element.style.top = offset.y + "px";
+                element.style.transform = "none";
+            }
             const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
             tp.style.cursor = "move";
@@ -314,12 +322,18 @@ export class PopupWindow extends AtomControl {
                 const dx = clientX - rect.x;
                 const dy = clientY - rect.y;
 
-                offset.x += dx;
-                offset.y += dy;
+                const finalX = offset.x + dx;
+                const finalY = offset.y + dx;
+                if (finalX < 0 || finalY < 0) {
+                    return;
+                }
+
+                offset.x = finalX;
+                offset.y = finalY;
 
                 this.element.style.left = offset.x + "px";
                 this.element.style.top = offset.y + "px";
-                this.element.style.transform = "";
+                this.element.style.transform = "none";
 
                 rect.x = clientX;
                 rect.y = clientY;
