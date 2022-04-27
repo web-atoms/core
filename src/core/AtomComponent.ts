@@ -241,6 +241,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const handler = (e) => {
             try {
                 const r = (method as any)(e);
+                e.executed = true;
                 e.promise = e.promise ? Promise.all([r, e.promise]) : r;
                 if (r?.catch) {
                     return r.catch((c) => {
