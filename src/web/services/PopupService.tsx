@@ -77,6 +77,9 @@ CSS(StyleRule()
         alignItems: "stretch",
         justifyContent: "flex-start"
     })
+    .and(StyleRule("[data-dragging=true]")
+        .opacity("0.3")
+    )
     .child(StyleRule(".title")
         .display("flex")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
@@ -314,6 +317,7 @@ export class PopupWindow extends AtomControl {
                 element.style.top = offset.y + "px";
                 element.style.transform = "none";
             }
+            this.element.dataset.dragging = "true";
             const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
             tp.style.cursor = "move";
@@ -339,6 +343,7 @@ export class PopupWindow extends AtomControl {
             }));
             disposables.push(this.bindEvent(document.body, "mouseup", (endEvent: MouseEvent) => {
                 tp.style.cursor = cursor;
+                this.element.removeAttribute("data-dragging");
                 for (const iterator of disposables) {
                     iterator.dispose();
                 }
