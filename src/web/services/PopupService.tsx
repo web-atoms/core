@@ -77,8 +77,10 @@ CSS(StyleRule()
         alignItems: "stretch",
         justifyContent: "flex-start"
     })
+    .opacity("1")
+    .transition("opacity 1s ease-in-out")
     .and(StyleRule("[data-dragging=true]")
-        .opacity("0.3")
+        .opacity("0.5")
     )
     .child(StyleRule(".title")
         .display("flex")
