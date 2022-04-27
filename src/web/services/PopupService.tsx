@@ -333,7 +333,6 @@ export class PopupWindow extends AtomControl {
 
                 this.element.style.left = offset.x + "px";
                 this.element.style.top = offset.y + "px";
-                this.element.style.transform = "none";
 
                 rect.x = clientX;
                 rect.y = clientY;
