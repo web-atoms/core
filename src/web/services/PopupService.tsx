@@ -323,7 +323,7 @@ export class PopupWindow extends AtomControl {
                 const dy = clientY - rect.y;
 
                 const finalX = offset.x + dx;
-                const finalY = offset.y + dx;
+                const finalY = offset.y + dy;
                 if (finalX < 0 || finalY < 0) {
                     return;
                 }
