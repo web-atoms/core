@@ -276,8 +276,6 @@ export class PopupWindow extends AtomControl {
         this.app.dispatcher.callLater(() => {
             const host = this.element.getElementsByClassName("title-host")[0];
             this.setupDragging(host as HTMLElement);
-        });
-        setTimeout(() => {
             this.element.dataset.ready = "true";
             // this.element may become null if it was immediately
             // closed, very rare case, but possible if
@@ -287,7 +285,7 @@ export class PopupWindow extends AtomControl {
                 const firstInput = this.element?.querySelector("input");
                 firstInput?.focus();
             }
-        }, 1);
+        });
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
