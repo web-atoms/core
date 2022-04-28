@@ -287,7 +287,7 @@ export class PopupWindow extends AtomControl {
                 const firstInput = this.element?.querySelector("input");
                 firstInput?.focus();
             }
-        }, 0);
+        }, 1);
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
