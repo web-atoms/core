@@ -273,10 +273,9 @@ export class PopupWindow extends AtomControl {
             }
         });
         this.element.dataset.popupWindow = "popup-window";
-        this.app.dispatcher.callLater(() => {
+        this.runAfterInit(() => {
             const host = this.element.getElementsByClassName("title-host")[0];
             this.setupDragging(host as HTMLElement);
-            this.element.dataset.ready = "true";
             // this.element may become null if it was immediately
             // closed, very rare case, but possible if
             // supplied cancelToken was cancelled
@@ -286,6 +285,10 @@ export class PopupWindow extends AtomControl {
                 firstInput?.focus();
             }
         });
+
+        setTimeout((p) => {
+            p.dataset.ready = "true";
+        }, 10, this.element);
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
