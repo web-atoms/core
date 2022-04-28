@@ -77,8 +77,11 @@ CSS(StyleRule()
         alignItems: "stretch",
         justifyContent: "flex-start"
     })
-    .opacity("1")
+    .opacity("0")
     .transition("opacity 1s ease-in-out")
+    .and(StyleRule("[data-ready=true]")
+        .opacity("1")
+    )
     .and(StyleRule("[data-dragging=true]")
         .opacity("0.5")
     )
@@ -275,6 +278,7 @@ export class PopupWindow extends AtomControl {
             this.setupDragging(host as HTMLElement);
         });
         setTimeout(() => {
+            this.element.dataset.ready = "true";
             // this.element may become null if it was immediately
             // closed, very rare case, but possible if
             // supplied cancelToken was cancelled
@@ -283,7 +287,7 @@ export class PopupWindow extends AtomControl {
                 const firstInput = this.element?.querySelector("input");
                 firstInput?.focus();
             }
-        }, 1);
+        }, 0);
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
