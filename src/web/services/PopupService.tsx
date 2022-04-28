@@ -78,7 +78,7 @@ CSS(StyleRule()
         justifyContent: "flex-start"
     })
     .opacity("0")
-    .transition("opacity 1s ease-in-out")
+    .transition("opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32)")
     .and(StyleRule("[data-ready=true]")
         .opacity("1")
     )
