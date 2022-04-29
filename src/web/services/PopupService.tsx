@@ -263,6 +263,7 @@ export class PopupWindow extends AtomControl {
         const handler = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 this.app.runAsync(() => this.requestCancel());
+                e.preventDefault();
                 return;
             }
         };
