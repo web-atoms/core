@@ -683,6 +683,7 @@ export default class PopupService {
         popupOptions?: IDialogOptions
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
+            const activeElement = document.activeElement as any;
             const previousTarget = opener;
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
@@ -706,6 +707,11 @@ export default class PopupService {
                         element?.remove();
                         element = undefined;
                         PopupService.lastTarget = previousTarget;
+                        try {
+                            activeElement?.focus();
+                        } catch (error) {
+                            console.error(error);
+                        }
                     }
                 }, 1);
             };
@@ -726,6 +732,11 @@ export default class PopupService {
                         element?.remove();
                         element = undefined;
                         PopupService.lastTarget = previousTarget;
+                        try {
+                            activeElement?.focus();
+                        } catch (error) {
+                            console.error(error);
+                        }
                     }
                 }, 1);
             };
