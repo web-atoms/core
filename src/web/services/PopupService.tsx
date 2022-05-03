@@ -286,8 +286,20 @@ export class PopupWindow extends AtomControl {
             // supplied cancelToken was cancelled
             const anyAutofocus = this.element.querySelector(`*[autofocus]`);
             if (!anyAutofocus) {
-                const firstInput = this.element.querySelector("input");
-                firstInput?.focus();
+                const windowContent = this.element.querySelector("[data-window-content]");
+                if (windowContent) {
+                    const firstInput = this.element.querySelector("input,button") as HTMLInputElement;
+                    if (firstInput) {
+                        firstInput.focus();
+                        return;
+                    }    
+                }
+
+                const closeButton = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
+                if (closeButton) {
+                    closeButton.focus();
+                }
+                return;
             }
         });
 
