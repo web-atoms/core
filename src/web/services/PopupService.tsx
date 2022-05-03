@@ -267,22 +267,26 @@ export class PopupWindow extends AtomControl {
                 return;
             }
         };
-        document.body.addEventListener("keydown", handler);
-        this.registerDisposable({
-            dispose() {
-                document.body.removeEventListener("keydown", handler);
-            }
-        });
+        this.bindEvent(this.element, "keydown", handler);
+        // document.body.addEventListener("keydown", handler);
+        // this.registerDisposable({
+        //     dispose() {
+        //         document.body.removeEventListener("keydown", handler);
+        //     }
+        // });
         this.element.dataset.popupWindow = "popup-window";
         this.runAfterInit(() => {
+            if (!this.element) {
+                return;
+            }
             const host = this.element.getElementsByClassName("title-host")[0];
             this.setupDragging(host as HTMLElement);
             // this.element may become null if it was immediately
             // closed, very rare case, but possible if
             // supplied cancelToken was cancelled
-            const anyAutofocus = this.element?.querySelector(`*[autofocus]`);
+            const anyAutofocus = this.element.querySelector(`*[autofocus]`);
             if (!anyAutofocus) {
-                const firstInput = this.element?.querySelector("input");
+                const firstInput = this.element.querySelector("input");
                 firstInput?.focus();
             }
         });
