@@ -288,7 +288,7 @@ export class PopupWindow extends AtomControl {
             if (!anyAutofocus) {
                 const windowContent = this.element.querySelector("[data-window-content]");
                 if (windowContent) {
-                    const firstInput = this.element.querySelector("input,button") as HTMLInputElement;
+                    const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
                     if (firstInput) {
                         firstInput.focus();
                         return;
