@@ -599,6 +599,24 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     }
 
+    protected extractControlProperties(x: any) {
+        const extracted = {};
+        const toDelete = [];
+        for (const key in x) {
+            if (Object.prototype.hasOwnProperty.call(x, key)) {
+                if (Reflect.has(this, key)) {
+                    const element = x[key];
+                    extracted[key] = element;
+                    toDelete.push(key);
+                }
+            }
+        }
+        for (const iterator of toDelete) {
+            delete x[iterator];
+        }
+        return extracted;
+    }
+
     // tslint:disable-next-line:no-empty
     protected create(): void {
     }
