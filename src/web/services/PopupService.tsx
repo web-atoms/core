@@ -469,7 +469,10 @@ export class ConfirmPopup extends PopupWindow {
         this.render = super.render;
         this.element.dataset.confirmPopup = "confirm-popup";
         this.closeButtonRenderer = () => <div/>;
-        super.render(<div>
+        const extracted = node.attributes
+            ? this.extractControlProperties(node.attributes)
+            : {};
+        super.render(<div { ... extracted }>
             { node }
             <div>
                 <button
