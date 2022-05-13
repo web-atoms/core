@@ -318,7 +318,7 @@ export class PopupWindow extends AtomControl {
             eventClick={Bind.event(() => this.requestCancel())}/>;
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
-        const extracted = this.extractControlProperties(node);
+        const extracted = this.extractControlProperties(node.attributes);
         super.render(<div
             viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
             { ... extracted }>
