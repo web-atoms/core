@@ -223,6 +223,30 @@ export default class WebApp extends App {
 
 }
 
+document.body.addEventListener("click", (e) => {
+    const originalTarget = e.target;
+    let control = null;
+    let start = originalTarget as HTMLElement;
+    const data = {};
+    while (start) {
+        if (start.atomControl) {
+            control = start.atomControl;
+            break;
+        }
+        const dataset = start.dataset;
+        for (const key in dataset) {
+            if (Object.prototype.hasOwnProperty.call(dataset, key)) {
+                const element = dataset[key];
+                if (!data.hasOwnProperty(key)) {
+                    data[key] = element;
+                }
+            }
+        }
+        start = start.parentElement;
+    }
+    control?.dispatchClickEvent(e, data);
+});
+
 declare global {
     // tslint:disable-next-line: interface-name
     interface Window {

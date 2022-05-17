@@ -531,6 +531,15 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         throw new Error(`Creating template from ${name} not supported`);
 
     }
+
+    protected dispatchClickEvent(e: MouseEvent, data: any) {
+        let eventClick = data.eventClick;
+        if (!eventClick) {
+            return;
+        }
+        eventClick = eventClick.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        e.target.dispatchEvent(new CustomEvent(eventClick, { detail: data }));
+    }
 }
 
 bridgeInstance.controlFactory = AtomControl;

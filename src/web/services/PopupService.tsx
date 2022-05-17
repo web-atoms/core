@@ -292,7 +292,7 @@ export class PopupWindow extends AtomControl {
                     if (firstInput) {
                         firstInput.focus();
                         return;
-                    }    
+                    }
                 }
 
                 const closeButton = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
