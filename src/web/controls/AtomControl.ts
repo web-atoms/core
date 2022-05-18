@@ -542,4 +542,29 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 }
 
+
+document.body.addEventListener("click", (e) => {
+    const originalTarget = e.target;
+    let control = null;
+    let start = originalTarget as HTMLElement;
+    const data = {};
+    while (start) {
+        const dataset = start.dataset;
+        for (const key in dataset) {
+            if (Object.prototype.hasOwnProperty.call(dataset, key)) {
+                const element = dataset[key];
+                if (!data.hasOwnProperty(key)) {
+                    data[key] = element;
+                }
+            }
+        }
+        if (start.atomControl) {
+            control = start.atomControl;
+            break;
+        }
+        start = start.parentElement;
+    }
+    control?.dispatchClickEvent(e, data);
+});
+
 bridgeInstance.controlFactory = AtomControl;
