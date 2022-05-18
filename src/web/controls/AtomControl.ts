@@ -544,6 +544,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
 
 document.body.addEventListener("click", (e) => {
+    if (e.defaultPrevented) {
+        return;
+    }
     const originalTarget = e.target;
     let control = null;
     let start = originalTarget as HTMLElement;
