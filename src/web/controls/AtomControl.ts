@@ -538,7 +538,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
         clickEvent = clickEvent.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-        e.target.dispatchEvent(new CustomEvent(clickEvent, { detail: data }));
+        e.target.dispatchEvent(new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true }));
     }
 }
 
