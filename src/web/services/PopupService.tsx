@@ -576,6 +576,9 @@ function closeHandler(
     let handler: any = null;
     handler = (e: Event) => {
         let start = e.target as HTMLElement;
+        if (e.defaultPrevented) {
+            return;
+        }
         while (start) {
             if (start === host) {
                 break;
