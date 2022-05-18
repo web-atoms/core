@@ -533,12 +533,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected dispatchClickEvent(e: MouseEvent, data: any) {
-        let eventClick = data.eventClick;
-        if (!eventClick) {
+        let clickEvent = data.clickEvent;
+        if (!clickEvent) {
             return;
         }
-        eventClick = eventClick.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-        e.target.dispatchEvent(new CustomEvent(eventClick, { detail: data }));
+        clickEvent = clickEvent.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        e.target.dispatchEvent(new CustomEvent(clickEvent, { detail: data }));
     }
 }
 
