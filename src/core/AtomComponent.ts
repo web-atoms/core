@@ -599,10 +599,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     }
 
-    protected extractControlProperties(x: XNode, name: string = "div") {
+    protected extractControlProperties(x: XNode, name: string | Function = "div") {
         const a = x.attributes;
         const extracted = {};
-        if (this instanceof (x.name as any)) {
+        if (typeof x.name === "function" && this instanceof (x.name as any)) {
             x.name = name;
         }
         if (a) {
