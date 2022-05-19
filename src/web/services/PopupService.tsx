@@ -318,7 +318,7 @@ export class PopupWindow extends AtomControl {
             eventClick={Bind.event(() => this.requestCancel())}/>;
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
-        const extracted = this.extractControlProperties(node.attributes);
+        const extracted = this.extractControlProperties(node);
         super.render(<div
             viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
             { ... extracted }>
@@ -469,9 +469,7 @@ export class ConfirmPopup extends PopupWindow {
         this.render = super.render;
         this.element.dataset.confirmPopup = "confirm-popup";
         this.closeButtonRenderer = () => <div/>;
-        const extracted = node.attributes
-            ? this.extractControlProperties(node.attributes)
-            : {};
+        const extracted = this.extractControlProperties(node);
         super.render(<div { ... extracted }>
             { node }
             <div>
