@@ -602,12 +602,14 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     protected extractControlProperties(x: XNode, name: string = "div") {
         const a = x.attributes;
         const extracted = {};
-        x.name = name;
+        if (this instanceof (x.name as any)) {
+            x.name = name;
+        }
         if (a) {
             for (const key in a) {
                 if (Object.prototype.hasOwnProperty.call(a, key)) {
                     if (Reflect.has(this, key)) {
-                        const element = x[key];
+                        const element = a[key];
                         extracted[key] = element;
                         delete a[key];
                     }
