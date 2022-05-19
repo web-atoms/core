@@ -59,8 +59,16 @@ export interface IDialogOptions {
     parameters?: {[key: string]: any};
     cancelToken?: CancelToken;
     modal?: boolean;
+
     width?: number | string;
     height?: number | string;
+
+    maxWidth?: number | string;
+    maxHeight?: number | string;
+
+    minWidth?: number | string;
+    minHeight?: number | string;
+
     maximize?: boolean;
 }
 
@@ -754,6 +762,10 @@ export default class PopupService {
                 const {
                     width,
                     height,
+                    minHeight,
+                    maxHeight,
+                    minWidth,
+                    maxWidth,
                     maximize,
                     title,
                     parameters,
@@ -778,6 +790,22 @@ export default class PopupService {
                     }
                     if (height) {
                         element.style.height = typeof height === "number" ? height + "px" : height;
+                        heightSet = true;
+                    }
+                    if (minWidth) {
+                        element.style.minWidth = typeof minWidth === "number" ? minWidth + "px" : minWidth;
+                        widthSet = true;
+                    }
+                    if (minHeight) {
+                        element.style.minHeight = typeof minHeight === "number" ? minHeight + "px" : minHeight;
+                        heightSet = true;
+                    }
+                    if (maxWidth) {
+                        element.style.maxWidth = typeof maxWidth === "number" ? maxWidth + "px" : maxWidth;
+                        widthSet = true;
+                    }
+                    if (maxHeight) {
+                        element.style.maxHeight = typeof maxHeight === "number" ? maxHeight + "px" : maxHeight;
                         heightSet = true;
                     }
                 }
