@@ -604,12 +604,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const extracted = {};
         x.name = name;
         if (a) {
-            for (const key in x) {
-                if (Object.prototype.hasOwnProperty.call(x, key)) {
+            for (const key in a) {
+                if (Object.prototype.hasOwnProperty.call(a, key)) {
                     if (Reflect.has(this, key)) {
                         const element = x[key];
                         extracted[key] = element;
-                        delete x[key];
+                        delete a[key];
                     }
                 }
             }
