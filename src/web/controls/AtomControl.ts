@@ -547,27 +547,34 @@ document.body.addEventListener("click", (e) => {
     if (e.defaultPrevented) {
         return;
     }
-    const originalTarget = e.target;
-    let control = null;
-    let start = originalTarget as HTMLElement;
-    const data = {};
+    const originalTarget = e.target as HTMLElement;
+    let control;
+    let start = originalTarget;
     while (start) {
-        const dataset = start.dataset;
-        for (const key in dataset) {
-            if (Object.prototype.hasOwnProperty.call(dataset, key)) {
-                const element = dataset[key];
-                if (!data.hasOwnProperty(key)) {
-                    data[key] = element;
-                }
-            }
-        }
         if (start.atomControl) {
             control = start.atomControl;
             break;
         }
         start = start.parentElement;
     }
-    control?.dispatchClickEvent(e, data);
+    if (control !== void 0) {
+        const till = control.element;
+        const data = new Proxy(originalTarget, {
+            get(target, p) {
+                if (typeof p !== "string") {
+                    return;
+                }
+                while (target) {
+                    const value = target.dataset[p];
+                    if (value !== void 0) {
+                        return value;
+                    }
+                    start = start.parentElement;
+                }
+            }
+        });
+        control.dispatchClickEvent(e, data);
+    }
 });
 
 bridgeInstance.controlFactory = AtomControl;
