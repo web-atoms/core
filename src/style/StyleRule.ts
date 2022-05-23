@@ -3084,6 +3084,18 @@ export class AtomStyleRules {
         return this;
     }
 
+    public merge( ... styles: AtomStyleRules[]) {
+        for (const iterator of styles) {
+            for (const key in iterator.style) {
+                if (Object.prototype.hasOwnProperty.call(iterator, key)) {
+                    const element = iterator[key];
+                    this.style[key] = element;
+                }
+            }
+        }
+        return this;
+    }
+
     public toStyleSheet() {
         const list = createStyleText(this.name, [], this.style);
         return list.join("\n");
