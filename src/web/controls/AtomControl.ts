@@ -558,7 +558,6 @@ document.body.addEventListener("click", (e) => {
         start = start.parentElement;
     }
     if (control !== void 0) {
-        const till = control.element;
         const data = new Proxy(originalTarget, {
             get(target, p) {
                 if (typeof p !== "string") {
@@ -569,7 +568,7 @@ document.body.addEventListener("click", (e) => {
                     if (value !== void 0) {
                         return value;
                     }
-                    start = start.parentElement;
+                    target = target.parentElement;
                 }
             }
         });

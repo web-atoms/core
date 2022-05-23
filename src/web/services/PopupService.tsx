@@ -816,9 +816,11 @@ export default class PopupService {
 
                 if (!widthSet) {
                     element.style.maxWidth = "95%";
+                    element.style.minWidth = "300px";
                 }
                 if (!heightSet) {
                     element.style.maxHeight = "95%";
+                    element.style.minHeight = "100px";
                 }
 
                 if (parameters) {
