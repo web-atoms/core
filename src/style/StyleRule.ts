@@ -3085,10 +3085,10 @@ export class AtomStyleRules {
     }
 
     public merge( ... styles: AtomStyleRules[]) {
-        for (const iterator of styles) {
-            for (const key in iterator.style) {
-                if (Object.prototype.hasOwnProperty.call(iterator, key)) {
-                    const element = iterator[key];
+        for (const { style } of styles) {
+            for (const key in style) {
+                if (Object.prototype.hasOwnProperty.call(style, key)) {
+                    const element = style[key];
                     this.style[key] = element;
                 }
             }
