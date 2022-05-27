@@ -10,14 +10,14 @@ export default function Defer(n: number = 100) {
     return (target: any, key: string, descriptor: any) => {
         // tslint:disable-next-line: ban-types
         const old = descriptor.value as Function;
+        const k = Symbol.for(`defer_${key}`);
         descriptor.value = function(... a: any[]) {
-            const k = `_$_timeout_${key}`;
             const id = this[k];
             if (id) {
                 clearTimeout(id);
             }
             this[k] = setTimeout(() => {
-                this[k] = 0;
+                this[k] = undefined;
                 old.apply(this, a);
             }, n);
         };
