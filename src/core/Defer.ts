@@ -7,7 +7,7 @@ import { CancelToken } from "./types";
  * This is important when you want to watch multiple events and avoid multiple refresh
  * @param n number of milliseconds to defer
  */
-export default function Defer(n: number = 100) {
+export default function Defer(n: number = 250) {
 
     return (target: any, key: string, descriptor: any) => {
         // tslint:disable-next-line: ban-types
