@@ -1,3 +1,5 @@
+import { CancelToken } from "./types";
+
 /**
  * Defers execution for given milliseconds. And previous pending
  * execution is cancelled, so only the last execution will be executed.
@@ -18,7 +20,15 @@ export default function Defer(n: number = 100) {
             }
             this[k] = setTimeout(() => {
                 this[k] = undefined;
-                old.apply(this, a);
+                const result = old.apply(this, a);
+                if (result?.then) {
+                    result.catch((e) => {
+                        if (CancelToken.isCancelled(e)) {
+                            return;
+                        }
+                        console.error(e);
+                    });
+                }
             }, n);
         };
     };
