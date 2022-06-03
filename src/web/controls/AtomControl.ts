@@ -70,7 +70,7 @@ function setStyle(name: string, applyUnit?: string) {
     };
 }
 
-function disposeChildren(owner: AtomControl, e: HTMLElement, all = false) {
+function disposeChildren(owner: AtomControl, e: HTMLElement) {
     if (!e) {
         return;
     }
@@ -78,15 +78,12 @@ function disposeChildren(owner: AtomControl, e: HTMLElement, all = false) {
     while (s) {
         const c = s as HTMLElement;
         s = s.nextElementSibling as HTMLElement;
-        if (!all && c.dataset.pageItem !== "page-item") {
-            continue;
-        }
         const ac = c.atomControl;
         if (ac) {
             ac.dispose();
             continue;
         }
-        disposeChildren(owner, c, true);
+        disposeChildren(owner, c);
         owner.unbind(c);
         owner.unbindEvent(c);
         c.remove();
