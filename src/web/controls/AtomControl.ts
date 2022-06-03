@@ -3,9 +3,10 @@ import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge, AtomElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
+import { BindableProperty } from "../../core/BindableProperty";
 import FormattedString from "../../core/FormattedString";
 import WebImage from "../../core/WebImage";
-import { elementFactorySymbol, isControl } from "../../core/XNode";
+import XNode, { elementFactorySymbol, isControl } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
@@ -67,6 +68,29 @@ function setStyle(name: string, applyUnit?: string) {
     return (ctrl: AtomControl, e: HTMLElement, value: any) => {
         e.style[name] = value;
     };
+}
+
+function disposeChildren(owner: AtomControl, e: HTMLElement, all = false) {
+    if (!e) {
+        return;
+    }
+    let s = e.firstElementChild;
+    while (s) {
+        const c = s as HTMLElement;
+        s = s.nextElementSibling as HTMLElement;
+        if (!all && c.dataset.pageItem !== "page-item") {
+            continue;
+        }
+        const ac = c.atomControl;
+        if (ac) {
+            ac.dispose();
+            continue;
+        }
+        disposeChildren(owner, c, true);
+        owner.unbind(c);
+        owner.unbindEvent(c);
+        c.remove();
+    }
 }
 
 export interface ISetters {
@@ -218,6 +242,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         return setterFx as any;
     }
 
+    @BindableProperty
+    public renderer: XNode;
+
     public defaultControlStyle: any;
 
     private mControlStyle: AtomStyle;
@@ -300,6 +327,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 this.mCachedTheme = null;
                 AtomBinder.refreshValue(this, "style");
                 break;
+            case "renderer":
+                this.rendererChanged();
+                break;
         }
     }
 
@@ -331,6 +361,16 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             }
             return true;
         });
+    }
+
+    protected rendererChanged() {
+        disposeChildren(this, this.element);
+        const r = this.renderer;
+        if (!r) {
+            return;
+        }
+        delete this.render;
+        this.render(r);
     }
 
     protected preCreate(): void {
