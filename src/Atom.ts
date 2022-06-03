@@ -15,7 +15,7 @@ export class Atom {
         do {
             c = Object.getPrototypeOf(c);
             if (!c) {
-                throw new Error("No property descriptor found for " + name);
+                throw new Error("No property descriptor found for " + name as any);
             }
             const pd = Object.getOwnPropertyDescriptor(c.prototype, name);
             if (!pd) {
