@@ -81,6 +81,7 @@ function disposeChildren(owner: AtomControl, e: HTMLElement) {
         const ac = c.atomControl;
         if (ac) {
             ac.dispose();
+            c.remove();
             continue;
         }
         disposeChildren(owner, c);
