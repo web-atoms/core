@@ -3,9 +3,10 @@ import { AtomBinder } from "../../core/AtomBinder";
 import { AtomBridge, AtomElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
+import { BindableProperty } from "../../core/BindableProperty";
 import FormattedString from "../../core/FormattedString";
 import WebImage from "../../core/WebImage";
-import { elementFactorySymbol, isControl } from "../../core/XNode";
+import XNode, { elementFactorySymbol, isControl } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
 import { NavigationService } from "../../services/NavigationService";
 import { AtomStyle } from "../styles/AtomStyle";
@@ -67,6 +68,27 @@ function setStyle(name: string, applyUnit?: string) {
     return (ctrl: AtomControl, e: HTMLElement, value: any) => {
         e.style[name] = value;
     };
+}
+
+function disposeChildren(owner: AtomControl, e: HTMLElement) {
+    if (!e) {
+        return;
+    }
+    let s = e.firstElementChild;
+    while (s) {
+        const c = s as HTMLElement;
+        s = s.nextElementSibling as HTMLElement;
+        const ac = c.atomControl;
+        if (ac) {
+            ac.dispose();
+            c.remove();
+            continue;
+        }
+        disposeChildren(owner, c);
+        owner.unbind(c);
+        owner.unbindEvent(c);
+        c.remove();
+    }
 }
 
 export interface ISetters {
@@ -204,7 +226,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public static registerProperty(
         attributeName: string,
         attributeValue: string,
-        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void) : (a) => object {
+        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): (a) => object {
         const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
         function setterFx(v) {
@@ -214,9 +236,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
         setterFx.toString = () => {
             return setterSymbol;
-        }
+        };
         return setterFx as any;
     }
+
+    @BindableProperty
+    public renderer: XNode;
 
     public defaultControlStyle: any;
 
@@ -300,6 +325,9 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
                 this.mCachedTheme = null;
                 AtomBinder.refreshValue(this, "style");
                 break;
+            case "renderer":
+                this.rendererChanged();
+                break;
         }
     }
 
@@ -331,6 +359,16 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             }
             return true;
         });
+    }
+
+    protected rendererChanged() {
+        disposeChildren(this, this.element);
+        const r = this.renderer;
+        if (!r) {
+            return;
+        }
+        delete this.render;
+        this.render(r);
     }
 
     protected preCreate(): void {
@@ -531,6 +569,49 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         throw new Error(`Creating template from ${name} not supported`);
 
     }
+
+    protected dispatchClickEvent(e: MouseEvent, data: any) {
+        let clickEvent = data.clickEvent;
+        if (!clickEvent) {
+            return;
+        }
+        clickEvent = clickEvent.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        e.target.dispatchEvent(new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true }));
+    }
 }
+
+
+document.body.addEventListener("click", (e) => {
+    if (e.defaultPrevented) {
+        return;
+    }
+    const originalTarget = e.target as HTMLElement;
+    let control;
+    let start = originalTarget;
+    while (start) {
+        if (start.atomControl) {
+            control = start.atomControl;
+            break;
+        }
+        start = start.parentElement;
+    }
+    if (control !== void 0) {
+        const data = new Proxy(originalTarget, {
+            get(target, p) {
+                if (typeof p !== "string") {
+                    return;
+                }
+                while (target) {
+                    const value = target.dataset[p];
+                    if (value !== void 0) {
+                        return value;
+                    }
+                    target = target.parentElement;
+                }
+            }
+        });
+        control.dispatchClickEvent(e, data);
+    }
+});
 
 bridgeInstance.controlFactory = AtomControl;

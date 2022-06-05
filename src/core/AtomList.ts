@@ -232,7 +232,7 @@ import { IDisposable } from "./types";
             return AtomBinder.add_CollectionChanged(this, f);
         }
 
-        public count(f: (item)=> boolean) {
+        public count(f: (item) => boolean) {
             let total = 0;
             for (const iterator of this) {
                 if (f(iterator)) {
@@ -250,7 +250,7 @@ import { IDisposable } from "./types";
             for (const iterator of this) {
                 sum += f(iterator);
             }
-            return sum/this.length;
+            return sum / this.length;
         }
 
     }
@@ -260,6 +260,7 @@ import { IDisposable } from "./types";
     Array.prototype["addAll"] = AtomList.prototype.addAll;
     Array.prototype["clear"] = AtomList.prototype.clear;
     Array.prototype["refresh"] = AtomList.prototype.refresh;
+    Array.prototype["set"] = AtomList.prototype.set;
     Array.prototype["remove"] = AtomList.prototype.remove;
     Array.prototype["removeAt"] = AtomList.prototype.removeAt;
     Array.prototype["watch"] = AtomList.prototype.watch;
@@ -277,6 +278,7 @@ declare global {
         insert?(index: number, item: T): void;
         remove?(item: T | ((i:T) => boolean)):boolean;
         removeAt?(i: number):T;
+        set?(index: number, item: T): void;
         watch?(
             f: (target: any, key: string, index?: number, item?: any) => void,
             wrap?: boolean): IDisposable;

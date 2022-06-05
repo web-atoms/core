@@ -64,6 +64,8 @@ export interface IRect {
 
 export type CancelReason = "cancelled" | "timeout";
 
+export const ignoreValue: any = Symbol("ignore");
+
 /**
  *
  *
@@ -73,7 +75,7 @@ export type CancelReason = "cancelled" | "timeout";
 export class CancelToken implements IDisposable {
 
     public static isCancelled(e: any) {
-        if (/^(cancelled|canceled)$/i.test(e.toString().trim())) {
+        if (/^(cancelled|canceled)$/i.test(e.message ?? e.toString().trim())) {
             return true;
         }
         if (e.name === "AbortError") {

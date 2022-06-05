@@ -2,7 +2,7 @@ import { AtomBinder } from "./core/AtomBinder";
 import { AtomDispatcher } from "./core/AtomDispatcher";
 import { AtomUri } from "./core/AtomUri";
 import { IScreen } from "./core/IScreen";
-import { IDisposable } from "./core/types";
+import { CancelToken, IDisposable } from "./core/types";
 import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
 import { BusyIndicatorService, IBackgroundTaskInfo } from "./services/BusyIndicatorService";
@@ -98,6 +98,35 @@ export class App extends ServiceProvider {
 
     public waitForPendingCalls(): Promise<any> {
         return this.dispatcher.waitForAll();
+    }
+
+    public setTimeoutAsync(
+        task: () => Promise<any>,
+        timeInMS: number = 1,
+        previousToken?: number) {
+        if (previousToken !== void 0) {
+            clearTimeout(previousToken);
+        }
+        return setTimeout(() => {
+            try {
+                const p = task();
+                if (p?.then) {
+                    p.catch((error) => {
+                        if (CancelToken.isCancelled(error)) {
+                            return;
+                        }
+                        // tslint:disable-next-line: no-console
+                        console.error(error);
+                    });
+                }
+            } catch (e) {
+                if (CancelToken.isCancelled(e)) {
+                    return;
+                }
+                // tslint:disable-next-line: no-console
+                console.error(e);
+            }
+        }, timeInMS);
     }
 
     /**

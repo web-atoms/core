@@ -654,6 +654,11 @@ export class AtomStyleRules {
         return this;
     }
 
+    public caretColor(value: ColorItem | string) {
+        this.style.caretColor = value;
+        return this;
+    }
+
     public clear(value: ClearType) {
         if (value !== undefined && value !== null) {
             this.style.clear = value;
@@ -3075,6 +3080,18 @@ export class AtomStyleRules {
         const sc = this.style.subclasses ??= {};
         for (const style of styles) {
             sc[" > " + style.name] = style.style;
+        }
+        return this;
+    }
+
+    public merge( ... styles: AtomStyleRules[]) {
+        for (const { style } of styles) {
+            for (const key in style) {
+                if (Object.prototype.hasOwnProperty.call(style, key)) {
+                    const element = style[key];
+                    this.style[key] = element;
+                }
+            }
         }
         return this;
     }

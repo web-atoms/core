@@ -59,8 +59,16 @@ export interface IDialogOptions {
     parameters?: {[key: string]: any};
     cancelToken?: CancelToken;
     modal?: boolean;
+
     width?: number | string;
     height?: number | string;
+
+    maxWidth?: number | string;
+    maxHeight?: number | string;
+
+    minWidth?: number | string;
+    minHeight?: number | string;
+
     maximize?: boolean;
 }
 
@@ -77,6 +85,14 @@ CSS(StyleRule()
         alignItems: "stretch",
         justifyContent: "flex-start"
     })
+    .opacity("0")
+    .transition("opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32)")
+    .and(StyleRule("[data-ready=true]")
+        .opacity("1")
+    )
+    .and(StyleRule("[data-dragging=true]")
+        .opacity("0.5")
+    )
     .child(StyleRule(".title")
         .display("flex")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
@@ -112,9 +128,13 @@ CSS(StyleRule()
         // This is done to avoid absolute position
         // to run out of content area
         .position("relative")
-        .and(StyleRule("[data-window-content-fill] > *")
-            .maximizeAbsolute()
-        )
+        // .display("flex")
+        // .child(StyleRule("*")
+        //     .flex("1 1 100%")
+        // )
+        // .and(StyleRule("[data-window-content-fill] > *")
+        //     .maximizeAbsolute()
+        // )
     )
     .child(StyleRule(" * > .command-bar")
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.6))
@@ -231,31 +251,92 @@ export class PopupWindow extends AtomControl {
 
     public titleRenderer: () => XNode;
 
+    public closeButtonRenderer: () => XNode;
+
+    @BindableProperty
+    public closeWarning: string;
+
+    protected async requestCancel() {
+        if (this.closeWarning) {
+            if (!await ConfirmPopup.showModal<boolean>({
+                parameters: {
+                    message : this.closeWarning
+                }
+            })) {
+                return;
+            }
+        }
+        this.cancel();
+    }
+
     protected preCreate(): void {
+        this.title = null;
+        this.viewModelTitle = null;
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                this.app.runAsync(() => this.requestCancel());
+                e.preventDefault();
+                return;
+            }
+        };
+        this.bindEvent(this.element, "keydown", handler);
+        // document.body.addEventListener("keydown", handler);
+        // this.registerDisposable({
+        //     dispose() {
+        //         document.body.removeEventListener("keydown", handler);
+        //     }
+        // });
         this.element.dataset.popupWindow = "popup-window";
-        this.app.dispatcher.callLater(() => {
+        this.runAfterInit(() => {
+            if (!this.element) {
+                return;
+            }
             const host = this.element.getElementsByClassName("title-host")[0];
             this.setupDragging(host as HTMLElement);
+            // this.element may become null if it was immediately
+            // closed, very rare case, but possible if
+            // supplied cancelToken was cancelled
+            const anyAutofocus = this.element.querySelector(`*[autofocus]`);
+            if (!anyAutofocus) {
+                const windowContent = this.element.querySelector("[data-window-content]");
+                if (windowContent) {
+                    const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
+                    if (firstInput) {
+                        firstInput.focus();
+                        return;
+                    }
+                }
+
+                const closeButton = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
+                if (closeButton) {
+                    closeButton.focus();
+                }
+                return;
+            }
         });
+
+        setTimeout((p) => {
+            p.dataset.ready = "true";
+        }, 10, this.element);
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
         this.render = super.render;
-        this.title = null;
-        this.viewModelTitle = null;
-        const titleContent = this.titleRenderer?.();
+        const titleContent = this.titleRenderer?.() ?? <span
+            class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>;
+        const closeButton = this.closeButtonRenderer?.() ?? <button
+            class="popup-close-button"
+            text="x"
+            eventClick={Bind.event(() => this.requestCancel())}/>;
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
-        super.render(<div viewModelTitle={Bind.oneWay(() => this.viewModel.title)}>
+        const extracted = this.extractControlProperties(node);
+        super.render(<div
+            viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
+            { ... extracted }>
             <div class="title title-host">
-                { titleContent
-                    ? titleContent
-                    : <span class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>
-                }
-                <button
-                    class="popup-close-button"
-                    text="x"
-                    eventClick={Bind.event(() => this.cancel())}/>
+                { titleContent }
+                { closeButton }
             </div>
             { node }
         </div>);
@@ -266,7 +347,16 @@ export class PopupWindow extends AtomControl {
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
             // const offset = AtomUI.screenOffset(tp);
-            const offset = { x: tp.parentElement.offsetLeft, y: tp.parentElement.offsetTop };
+            const element = this.element;
+            const offset = { x: element.offsetLeft, y: element.offsetTop };
+            if (element.style.transform !== "none") {
+                offset.x -= element.offsetWidth / 2;
+                offset.y -= element.offsetHeight / 2;
+                element.style.left = offset.x + "px";
+                element.style.top = offset.y + "px";
+                element.style.transform = "none";
+            }
+            this.element.dataset.dragging = "true";
             const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
             tp.style.cursor = "move";
@@ -275,23 +365,147 @@ export class PopupWindow extends AtomControl {
                 const dx = clientX - rect.x;
                 const dy = clientY - rect.y;
 
-                offset.x += dx;
-                offset.y += dy;
+                const finalX = offset.x + dx;
+                const finalY = offset.y + dy;
+                if (finalX < 0 || finalY < 0) {
+                    return;
+                }
+
+                offset.x = finalX;
+                offset.y = finalY;
 
                 this.element.style.left = offset.x + "px";
                 this.element.style.top = offset.y + "px";
-                this.element.style.transform = "";
 
                 rect.x = clientX;
                 rect.y = clientY;
             }));
             disposables.push(this.bindEvent(document.body, "mouseup", (endEvent: MouseEvent) => {
                 tp.style.cursor = cursor;
+                this.element.removeAttribute("data-dragging");
                 for (const iterator of disposables) {
                     iterator.dispose();
                 }
             }));
         });
+    }
+
+}
+
+CSS(StyleRule()
+    .nested(StyleRule(".yes")
+        .borderRadius(9999)
+        .paddingLeft(10)
+        .paddingRight(10)
+        .borderWidth(1)
+        .borderColor(Colors.transparent)
+        .margin(5)
+        .marginRight(10)
+        .backgroundColor(Colors.lightGreen)
+    )
+    .nested(StyleRule(".no")
+        .borderRadius(9999)
+        .paddingLeft(10)
+        .paddingRight(10)
+        .borderWidth(1)
+        .borderColor(Colors.transparent)
+        .margin(5)
+        .marginRight(10)
+        .backgroundColor(Colors.red)
+        .color(Colors.white)
+    )
+    .nested(StyleRule(".cancel")
+        .borderRadius(9999)
+        .paddingLeft(10)
+        .paddingRight(10)
+        .borderWidth(1)
+        .borderColor(Colors.transparent)
+        .margin(5)
+        .marginRight(10)
+        .backgroundColor(Colors.gray)
+    )
+, "div[data-confirm-popup=confirm-popup]");
+
+export class ConfirmPopup extends PopupWindow {
+
+    public static async confirm({
+        message,
+        title = "Confirm",
+        yesLabel = "Yes",
+        noLabel = "No",
+        cancelLabel = null
+    }): Promise<boolean> {
+        try {
+            const popup = class extends ConfirmPopup {
+                protected create(): void {
+                    this.render(<div>
+                        <div text={message}/>
+                    </div>);
+                }
+            };
+            return await popup.showModal<boolean>({
+                parameters: {
+                    message,
+                    yesLabel,
+                    noLabel,
+                    cancelLabel
+                },
+                title
+            });
+        } catch (e) {
+            if (CancelToken.isCancelled(e)) {
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    public message: string;
+
+    public messageRenderer: () => XNode;
+
+    public yesLabel: string;
+
+    public noLabel: string;
+
+    public cancelLabel: string;
+
+    protected preCreate(): void {
+        super.preCreate();
+        this.yesLabel = "Yes";
+        this.noLabel = "No";
+        this.cancelLabel = null;
+    }
+
+    protected render(node: XNode, e?: any, creator?: any) {
+        this.render = super.render;
+        this.element.dataset.confirmPopup = "confirm-popup";
+        this.closeButtonRenderer = () => <div/>;
+        const extracted = this.extractControlProperties(node);
+        super.render(<div { ... extracted }>
+            { node }
+            <div>
+                <button
+                    class="yes"
+                    autofocus={true}
+                    text={Bind.oneWay(() => this.yesLabel)}
+                    eventClick={() => this.close(true)}
+                    style-display={Bind.oneWay(() => !!this.yesLabel)}
+                    />
+                <button
+                    class="no"
+                    text={Bind.oneWay(() => this.noLabel)}
+                    eventClick={() => this.close(false)}
+                    style-display={Bind.oneWay(() => !!this.noLabel)}
+                    />
+                <button
+                    class="cancel"
+                    text={Bind.oneWay(() => this.cancelLabel)}
+                    eventClick={() => this.requestCancel()}
+                    style-display={Bind.oneWay(() => !!this.cancelLabel)}
+                    />
+            </div>
+        </div>);
     }
 
 }
@@ -372,6 +586,9 @@ function closeHandler(
     let handler: any = null;
     handler = (e: Event) => {
         let start = e.target as HTMLElement;
+        if (e.defaultPrevented) {
+            return;
+        }
         while (start) {
             if (start === host) {
                 break;
@@ -418,12 +635,74 @@ export default class PopupService {
         };
     }
 
+    public static async alert({
+        message,
+        title = "Alert",
+        yesLabel = "Ok"
+    }): Promise<boolean> {
+        try {
+            const popup = class extends ConfirmPopup {
+                protected create(): void {
+                    this.render(<div>
+                        <div text={message}/>
+                    </div>);
+                }
+            };
+            return await popup.showModal<boolean>({
+                parameters: {
+                    message,
+                    yesLabel,
+                    noLabel: ""
+                },
+                title
+            });
+        } catch (e) {
+            if (CancelToken.isCancelled(e)) {
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    public static async confirm({
+        message,
+        title = "Confirm",
+        yesLabel = "Yes",
+        noLabel = "No",
+        cancelLabel = null
+    }): Promise<boolean> {
+        try {
+            const popup = class extends ConfirmPopup {
+                protected create(): void {
+                    this.render(<div>
+                        <div text={message}/>
+                    </div>);
+                }
+            };
+            return await popup.showModal<boolean>({
+                parameters: {
+                    message,
+                    yesLabel,
+                    noLabel,
+                    cancelLabel
+                },
+                title
+            });
+        } catch (e) {
+            if (CancelToken.isCancelled(e)) {
+                return false;
+            }
+            throw e;
+        }
+    }
+
     public static showWindow<T>(
         opener: HTMLElement,
         popupClass: IClassOf<PopupWindow>,
         popupOptions?: IDialogOptions
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
+            const activeElement = document.activeElement as any;
             const previousTarget = opener;
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
@@ -447,6 +726,11 @@ export default class PopupService {
                         element?.remove();
                         element = undefined;
                         PopupService.lastTarget = previousTarget;
+                        try {
+                            activeElement?.focus();
+                        } catch (error) {
+                            console.error(error);
+                        }
                     }
                 }, 1);
             };
@@ -467,6 +751,11 @@ export default class PopupService {
                         element?.remove();
                         element = undefined;
                         PopupService.lastTarget = previousTarget;
+                        try {
+                            activeElement?.focus();
+                        } catch (error) {
+                            console.error(error);
+                        }
                     }
                 }, 1);
             };
@@ -477,26 +766,61 @@ export default class PopupService {
                 const {
                     width,
                     height,
+                    minHeight,
+                    maxHeight,
+                    minWidth,
+                    maxWidth,
                     maximize,
                     title,
                     parameters,
                     cancelToken,
                     modal
                 } = popupOptions;
-                    if (title) {
+                if (title) {
                     vm.title = title;
                 }
+
+                let widthSet = false;
+                let heightSet = false;
 
                 if (maximize) {
                     element.style.width = "95%";
                     element.style.height = "95%";
+                    widthSet = heightSet = true;
                 } else {
                     if (width) {
                         element.style.width = typeof width === "number" ? width + "px" : width;
+                        widthSet = true;
                     }
                     if (height) {
                         element.style.height = typeof height === "number" ? height + "px" : height;
+                        heightSet = true;
                     }
+                    if (minWidth) {
+                        element.style.minWidth = typeof minWidth === "number" ? minWidth + "px" : minWidth;
+                        widthSet = true;
+                    }
+                    if (minHeight) {
+                        element.style.minHeight = typeof minHeight === "number" ? minHeight + "px" : minHeight;
+                        heightSet = true;
+                    }
+                    if (maxWidth) {
+                        element.style.maxWidth = typeof maxWidth === "number" ? maxWidth + "px" : maxWidth;
+                        widthSet = true;
+                    }
+                    if (maxHeight) {
+                        element.style.maxHeight = typeof maxHeight === "number" ? maxHeight + "px" : maxHeight;
+                        heightSet = true;
+                    }
+                }
+
+                if (!widthSet) {
+                    element.style.maxWidth = "95%";
+                    element.style.minWidth = "300px";
+                }
+                if (!heightSet) {
+                    element.style.maxHeight = "95%";
+                    element.style.minHeight = "100px";
                 }
 
                 if (parameters) {
@@ -584,7 +908,7 @@ export default class PopupService {
                 }
 
             } else {
-                offset.y -= opener.offsetHeight
+                offset.y -= opener.offsetHeight;
                 style.top = offset.y + "px";
                 if (options?.alignment === "right") {
                     style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;

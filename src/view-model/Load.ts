@@ -86,7 +86,7 @@ export default function Load(
             // tslint:disable-next-line: ban-types
             const oldMethod = vm[key] as Function;
             const app = vm.app as App;
-            const showError = init ? (showErrorOnInit ? true : false) : true;
+            let showError = init ? (showErrorOnInit ? true : false) : true;
             let ct: CancelToken;
 
             const ns = app.resolve(NavigationService);
@@ -109,6 +109,7 @@ export default function Load(
                     await ns.alert(e, "Error");
                 } finally {
                     ct = null;
+                    showError = true;
                 }
             };
 

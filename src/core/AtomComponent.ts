@@ -1,8 +1,7 @@
 import { App } from "../App";
 import { AtomBridge } from "../core/AtomBridge";
-// tslint:disable-next-line:import-spacing
-import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement, IClassOf, IDisposable, INotifyPropertyChanged, PathList }
-    from "../core/types";
+import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement,
+    IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types";
 import { Inject } from "../di/Inject";
 import { NavigationService } from "../services/NavigationService";
 import { AtomDisposableList } from "./AtomDisposableList";
@@ -242,6 +241,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         const handler = (e) => {
             try {
                 const r = (method as any)(e);
+                e.executed = true;
+                e.promise = e.promise ? Promise.all([r, e.promise]) : r;
                 if (r?.catch) {
                     return r.catch((c) => {
                         c = c?.toString() ?? "Unknown error";
@@ -334,6 +335,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     public setPrimitiveValue(element: T, name: string, value: any): void {
         const p = value as Promise<any>;
         if (p && p.then && p.catch) {
+            // tslint:disable-next-line: no-console
+            console.warn(`Do not bind promises, instead use Bind.oneWayAsync`);
             this.mPendingPromises[name] = p;
             p.then( (r) => {
                 if (this.mPendingPromises [name] !== p) {
@@ -371,6 +374,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         // if value is a promise
         const p = value as Promise<any>;
         if (p && p.then && p.catch) {
+            // tslint:disable-next-line: no-console
+            console.warn(`Do not bind promises, instead use Bind.oneWayAsync`);
             this.mPendingPromises[name] = p;
             p.then( (r) => {
                 if (this.mPendingPromises [name] !== p) {
@@ -594,6 +599,26 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     }
 
+    protected extractControlProperties(x: XNode, name: string | Function = "div") {
+        const a = x.attributes;
+        const extracted = {};
+        if (typeof x.name === "function" && this instanceof (x.name as any)) {
+            x.name = name;
+        }
+        if (a) {
+            for (const key in a) {
+                if (Object.prototype.hasOwnProperty.call(a, key)) {
+                    if (Reflect.has(this, key)) {
+                        const element = a[key];
+                        extracted[key] = element;
+                        delete a[key];
+                    }
+                }
+            }
+        }
+        return extracted;
+    }
+
     // tslint:disable-next-line:no-empty
     protected create(): void {
     }
@@ -648,7 +673,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
     private watcher: AtomWatcher<any>;
     private twoWaysDisposable: IDisposable;
     private isTwoWaySetup: boolean = false;
-    private updaterOnce: AtomOnce;
+    private isRunning: boolean;
 
     private fromSourceToTarget: (...v: any[]) => any;
     private fromTargetToSource: (v: any) => any;
@@ -666,7 +691,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         this.twoWays = twoWays;
         this.target = target;
         this.element = element;
-        this.updaterOnce = new AtomOnce();
+        this.isRunning = false;
         if (valueFunc) {
             if (typeof valueFunc !== "function") {
                 this.fromSourceToTarget = valueFunc.fromSource;
@@ -677,23 +702,32 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         }
         this.watcher = new AtomWatcher(target, path,
             (...v: any[]) => {
-                this.updaterOnce.run(() => {
-                    if (this.disposed) {
+                if (this.isRunning) {
+                    return;
+                }
+                if (this.disposed) {
+                    return;
+                }
+                // set value
+                for (const iterator of v) {
+                    if (iterator === undefined) {
                         return;
                     }
-                    // set value
-                    for (const iterator of v) {
-                        if (iterator === undefined) {
-                            return;
-                        }
-                    }
-                    const cv = this.fromSourceToTarget ? this.fromSourceToTarget.apply(this, v) : v[0];
+                }
+                const cv = this.fromSourceToTarget ? this.fromSourceToTarget.apply(this, v) : v[0];
+                if (cv === ignoreValue) {
+                    return;
+                }
+                this.isRunning = true;
+                try {
                     if (this.target instanceof AtomComponent) {
                         this.target.setLocalValue(this.element, this.name, cv);
                     } else {
                         this.target[name] = cv;
                     }
-                });
+                } finally {
+                    this.isRunning = false;
+                }
             },
             source
         );
@@ -757,10 +791,14 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             throw new Error("This Binding is not two ways.");
         }
 
-        this.updaterOnce.run(() => {
-            if (this.disposed) {
-                return;
-            }
+        if (this.disposed) {
+            return;
+        }
+        if (this.isRunning) {
+            return;
+        }
+        this.isRunning = true;
+        try {
             const first = this.path[0];
             const length = first.length;
             let v: any = this.target;
@@ -779,15 +817,15 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             }
             name = first[i].name;
             v[name] = this.fromTargetToSource ? this.fromTargetToSource.call(this, value) : value;
-        });
+        } finally {
+            this.isRunning = false;
+        }
 
     }
 
     public dispose(): void {
-        if (this.twoWaysDisposable) {
-            this.twoWaysDisposable.dispose();
-            this.twoWaysDisposable = null;
-        }
+        this.twoWaysDisposable?.dispose();
+        this.twoWaysDisposable = undefined;
         this.watcher.dispose();
         this.disposed = true;
         this.watcher = null;

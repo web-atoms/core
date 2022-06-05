@@ -1,14 +1,14 @@
+import type { App } from "../App";
 import { parsePath, parsePathLists } from "./ExpressionParser";
 import { IValueConverter } from "./IValueConverter";
+import { CancelToken, ignoreValue } from "./types";
 
 export interface IAtomComponent {
     element: any;
     viewModel: any;
     localViewModel: any;
     data: any;
-    app: {
-        callLater: (f: () => void) => void;
-    };
+    app: App;
     runAfterInit(f: () => void): void;
     setLocalValue(e: any, name: string, value: any): void;
     bindEvent(e: any, name: string, handler: any);
@@ -22,6 +22,9 @@ const isEvent = /^event/i;
  */
 
 export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => any;
+
+export type asyncBindingFunction<T extends IAtomComponent = IAtomComponent>
+    = (control: T, e: any, cancelToken: CancelToken) => Promise<any>;
 
 export type bindingFunctionCommand<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => (p) => void;
 
@@ -214,23 +217,27 @@ export default class Bind {
         };
     }
 
-    public static command<T>(action: (p: T) => any) {
+    /**
+     * Bind the expression one time
+     * @param sourcePath Lambda Expression for binding
+     * @param now Default value to set immediately
+     */
+    public static oneTimeAsync<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: asyncBindingFunction<T>,
+        now?: any): any {
         return {
             [bindSymbol](name: string, control: IAtomComponent, e: any) {
-                e[name] = (p) => {
-                    const r = action(p);
-                    if (r.then) {
-                        r.catch((er) => {
-                            console.error(er);
-                        });
-                    }
-                };
+                control.runAfterInit(() => {
+                    (control.app as any).runAsync(async () => {
+                        const value = await sourcePath(control as any, e, new CancelToken());
+                        control.setLocalValue(e, name, value);
+                    });
+                });
+                if (typeof now !== "undefined") {
+                    control.setLocalValue(e, name, now);
+                }
             }
         };
-    }
-
-    public static oneWayCommand<T extends IAtomComponent = IAtomComponent>(sourcePath: bindingFunctionCommand<T>) {
-        return this.oneWay(sourcePath);
     }
 
     /**
@@ -254,6 +261,83 @@ export default class Bind {
                 }, self);
                 if (typeof now !== "undefined") {
                     control.setLocalValue(e, name, now);
+                }
+            }
+        };
+    }
+
+    public static oneWayAsync<T extends IAtomComponent = IAtomComponent>(
+        sourcePath: (control: T, e: HTMLElement, cancelToken: CancelToken) => Promise<any>,
+        {
+            watchDelayInMS = 250,
+            default: defaultValue
+        }: {
+            watchDelayInMS?: number,
+            default?: any
+        } = {
+        }
+    ): any {
+        let pathList;
+        let combined;
+        let thisPathList;
+
+        if (Array.isArray(sourcePath)) {
+            pathList = sourcePath as any;
+        } else {
+            const lists = parsePathLists(sourcePath);
+            if (lists.combined.length) {
+                combined = lists.combined;
+            }
+            if (lists.pathList.length) {
+                pathList = lists.pathList;
+            }
+            if (lists.thisPath.length) {
+                thisPathList = lists.thisPath;
+            }
+        }
+
+        if (!(combined || pathList || thisPathList)) {
+            throw new Error(`Failed to setup binding for ${sourcePath}, parsing failed`);
+        }
+
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                let bindingSource;
+                let finalPathList = pathList;
+                if (combined) {
+                    bindingSource = {
+                        t: creator,
+                        x: control
+                    };
+                    finalPathList = combined;
+                } else if (thisPathList) {
+                    finalPathList = thisPathList;
+                    bindingSource = creator;
+                }
+                const asyncState = {
+                    token: 0,
+                    cancelToken: undefined
+                };
+                control.bind(e, name, finalPathList, false, () => {
+                    const app = control.app;
+                    asyncState.cancelToken?.cancel();
+                    asyncState.cancelToken = undefined;
+                    asyncState.token = app.setTimeoutAsync(async () => {
+                        if (asyncState.cancelToken?.cancelled) {
+                            return;
+                        }
+                        asyncState.token = undefined;
+                        asyncState.cancelToken?.cancel();
+                        const ct = asyncState.cancelToken = new CancelToken();
+                        const value = await sourcePath.call(creator, control, e, ct);
+                        if (!ct.cancelled) {
+                            control.setLocalValue(e, name, value );
+                        }
+                    }, watchDelayInMS, asyncState.token);
+                    return ignoreValue;
+                }, bindingSource);
+                if (typeof defaultValue !== "undefined") {
+                    control.setLocalValue(e, name, defaultValue);
                 }
             }
         };

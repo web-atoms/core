@@ -172,20 +172,21 @@ export class WindowService extends NavigationService {
         ServiceCollection.instance.register(type, null, Scope.Transient, id);
     }
 
-    public async confirm(message: string | FormattedString, title: string): Promise<any> {
-        try {
-            return await this.openPage(AtomAlertWindow, {
-                okTitle: "Yes",
-                cancelTitle: "No",
-                title: title || "Confirm",
-                message
-            });
-        } catch (e) {
-            if (/canceled|cancelled/i.test(e)) {
-                return false;
-            }
-            throw e;
-        }
+    public confirm(message: string | FormattedString, title: string): Promise<any> {
+        return PopupService.confirm({ message, title });
+        // try {
+        //     return await this.openPage(AtomAlertWindow, {
+        //         okTitle: "Yes",
+        //         cancelTitle: "No",
+        //         title: title || "Confirm",
+        //         message
+        //     });
+        // } catch (e) {
+        //     if (/canceled|cancelled/i.test(e)) {
+        //         return false;
+        //     }
+        //     throw e;
+        // }
     }
 
     public alert(message: string | FormattedString | any, title?: string): Promise<any> {
@@ -196,16 +197,17 @@ export class WindowService extends NavigationService {
                 message = message.message ? message.message : message.toString();
             }
         }
-        return this.openPage(AtomAlertWindow, {
-            message,
-            title,
-            okTitle: "Ok",
-            cancelTitle: ""
-        }).catch((e) => {
-            // do nothing...
-// tslint:disable-next-line: no-console
-            console.warn(e);
-        });
+        return PopupService.alert({ message, title });
+//         return this.openPage(AtomAlertWindow, {
+//             message,
+//             title,
+//             okTitle: "Ok",
+//             cancelTitle: ""
+//         }).catch((e) => {
+//             // do nothing...
+// // tslint:disable-next-line: no-console
+//             console.warn(e);
+//         });
     }
 
     // public closePopup(e: MouseEvent): void {
