@@ -16,8 +16,8 @@ jobs:
           registry-url: https://registry.npmjs.org/          
       - run: npm install
       - run: npm install -g codecov
-      - run: npm install -D istanbul remap-istanbul
-      - run: tsc
+      - run: npm install -D istanbul remap-istanbul @web-atoms/ts-to-systemjs@1.0.3
+      - run: node ./node_modules/@web-atoms/ts-to-system/index.js
       # - run: typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
       # - run: node ./node_modules/.bin/istanbul cover ./node_modules/@web-atoms/unit-test/index.js ./dist/test.js
       - run: npm run test
