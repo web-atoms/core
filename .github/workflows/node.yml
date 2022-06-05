@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3.2.0
         with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/          
+          node-version: 16
+          registry-url: https://registry.npmjs.org/        
       - run: npm install
       - run: npm install -g codecov
       - run: npm install -D istanbul remap-istanbul @web-atoms/ts-to-systemjs@1.0.4
