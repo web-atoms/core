@@ -1,7 +1,7 @@
 [![Action Status](https://github.com/web-atoms/core/workflows/Build/badge.svg)](https://github.com/web-atoms/core/actions) [![npm version](https://badge.fury.io/js/%40web-atoms%2Fcore.svg)](https://badge.fury.io/js/%40web-atoms%2Fcore) [![codecov](https://codecov.io/gh/web-atoms/core/branch/master/graph/badge.svg)](https://codecov.io/gh/web-atoms/core)
 
 # Web-Atoms Core
-Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to design modern webpplications.
+Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to design modern Web Applications.
 
 > Note, Xamarin Forms support is now deprecated, as we are migrating to new mobile framework.
 
