@@ -503,13 +503,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return this.disposables.add(d);
     }
 
-    protected render(node: XNode, e?: any, creator?: any): void {
-
-        creator = creator || this;
+    protected render(node: XNode, e: any = this.element, creator: any = this): void {
 
         const app = this.app;
 
-        e = e || this.element;
         const attr = node.attributes;
         if (attr) {
             for (const key in attr) {

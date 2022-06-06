@@ -314,8 +314,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         return AtomControl;
     }
 
-    constructor(app: App, e?: HTMLElement) {
-        super(app, e || document.createElement("div"));
+    constructor(app: App, e: HTMLElement = document.createElement("div")) {
+        super(app, e);
     }
 
     public onPropertyChanged(name: string): void {
@@ -526,8 +526,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         const name = iterator.name;
         if (typeof name === "string") {
             return class Template extends AtomControl {
-                constructor(a, e) {
-                    super(a ?? app, e ?? document.createElement(name));
+                constructor(a = app, e = document.createElement(name)) {
+                    super(a, e);
                 }
 
                 public create() {
@@ -543,8 +543,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
             if (forName) {
                 return class Template extends (name as any) {
-                    constructor(a, e) {
-                        super(a ?? app, e ?? document.createElement(forName));
+                    constructor(a = app, e = document.createElement(forName)) {
+                        super(a, e);
                     }
 
                     public create() {
@@ -555,8 +555,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             }
 
             return class Template extends (name as any) {
-                constructor(a, e) {
-                    super(a ?? app, e);
+                constructor(a = app, e) {
+                    super(a, e);
                 }
 
                 public create() {
