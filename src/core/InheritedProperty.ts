@@ -12,7 +12,7 @@ function refreshInherited(ac: AtomControl, key: any, storageKey: any) {
     while(stack.length) {
         start = stack.pop();
         while (start) {
-            let firstChild = start.firstElementChild;
+            let firstChild = start.firstElementChild as HTMLElement;
             const ac = start.atomControl;
             if (ac) {
                 if (ac[storageKey] === undefined) {
@@ -23,7 +23,7 @@ function refreshInherited(ac: AtomControl, key: any, storageKey: any) {
                 }
             }
             if (firstChild) {
-                stack.push(start);
+                stack.push(firstChild);
             }
             start = start.nextElementSibling as HTMLElement;
         }
