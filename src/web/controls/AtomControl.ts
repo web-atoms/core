@@ -523,6 +523,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected toTemplate(app, iterator, creator) {
+
+        if (iterator.isTemplate) {
+            return this.toTemplate(app, iterator.children[0], creator);
+        }
+
         const name = iterator.name;
         if (typeof name === "string") {
             return class Template extends AtomControl {
