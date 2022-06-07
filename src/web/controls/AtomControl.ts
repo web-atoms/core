@@ -537,7 +537,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
                 public create() {
                     super.create();
-                    this.render(iterator, null, creator);
+                    this.render(iterator, undefined, creator);
                 }
             };
         }
@@ -554,7 +554,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
                     public create() {
                         super.create();
-                        this.render(iterator, null, creator);
+                        this.render(iterator, undefined, creator);
                     }
                 };
             }
@@ -566,7 +566,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
                 public create() {
                     super.create();
-                    this.render(iterator, null, creator);
+                    this.render(iterator, undefined, creator);
                 }
             };
         }
