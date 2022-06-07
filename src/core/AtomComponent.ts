@@ -587,6 +587,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             // }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
+                console.warn(`This path is deprecated, check who is calling it.`);
                 this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
                 continue;
             }
