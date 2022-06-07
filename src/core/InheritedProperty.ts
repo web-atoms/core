@@ -1,6 +1,34 @@
+import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomBinder } from "./AtomBinder";
-import { AtomBridge } from "./AtomBridge";
-import { INotifyPropertyChanging } from "./types";
+
+function refreshInherited(ac: AtomControl, key: any, storageKey: any) {
+    AtomBinder.refreshValue(ac, key);
+    const e = ac.element;
+    let start = e.firstElementChild as HTMLElement;
+    if (!start) {
+        return;
+    }
+    const stack = [start];
+    while(stack.length) {
+        start = stack.pop();
+        while (start) {
+            let firstChild = start.firstElementChild;
+            const ac = start.atomControl;
+            if (ac) {
+                if (ac[storageKey] === undefined) {
+                    AtomBinder.refreshValue(ac, key);
+                } else {
+                    // we will not refresh this element
+                    firstChild = void 0;
+                }
+            }
+            if (firstChild) {
+                stack.push(start);
+            }
+            start = start.nextElementSibling as HTMLElement;
+        }
+    }
+};
 
 /**
  * Use this decorator only to watch property changes in `onPropertyChanged` method.
@@ -46,7 +74,7 @@ export function InheritedProperty(target: any, key: string): any {
 
         this[keyName] = newVal;
 
-        AtomBridge.refreshInherited(this, key);
+        refreshInherited(this, key, keyName);
     };
 
     // delete property
