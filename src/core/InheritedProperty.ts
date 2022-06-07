@@ -2,8 +2,12 @@ import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomBinder } from "./AtomBinder";
 
 function refreshInherited(ac: AtomControl, key: any, storageKey: any) {
-    AtomBinder.refreshValue(ac, key);
     const e = ac.element;
+    if (!e) {
+        // control is disposed !!
+        return;
+    }
+    AtomBinder.refreshValue(ac, key);
     let start = e.firstElementChild as HTMLElement;
     if (!start) {
         return;
