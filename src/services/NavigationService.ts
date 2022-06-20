@@ -85,7 +85,21 @@ export abstract class NavigationService {
     public abstract confirm(message: string | FormattedString, title?: string): Promise<boolean>;
 
     /**
-     *
+     * This method will open the page, it will not wait for the result
+     * @param pageName node style package url or a class
+     * @param viewModelParameters key value pair that will be injected on ViewModel when created
+     * @param options {@link IPageOptions}
+     */
+     public pushPage(
+        pageName: string | any,
+        viewModelParameters?: INameValuePairs,
+        options?: IPageOptions) {
+        this.app.runAsync(() => this.openPage(pageName, viewModelParameters, options));
+    }
+
+    /**
+     * This method will open the page and it will wait for result, use pushPage to
+     * ignore the result
      * @param pageName node style package url or a class
      * @param viewModelParameters key value pair that will be injected on ViewModel when created
      * @param options {@link IPageOptions}
