@@ -156,7 +156,7 @@ declare global {
 
     // tslint:disable-next-line
     interface Array<T> {
-        groupBy<TKey>(this: Array<T>, keySelector: ((item: T) => TKey)): Array<IKeyedArray<TKey, T>>;
+        groupBy<TKey>(keySelector: ((item: T) => TKey)): ThisType<{ key: TKey } & ThisType<T>>;
     }
 }
 
