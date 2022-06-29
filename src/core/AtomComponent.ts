@@ -223,7 +223,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string,
-        capture?: boolean): IDisposable {
+        capture?: boolean | AddEventListenerOptions): IDisposable {
         if (!element) {
             return;
         }
@@ -260,10 +260,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 alert(error.stack ?? error);
             }
         };
-        element.addEventListener(name, handler, capture);
+        element.addEventListener(name as any, handler, capture as any);
         be.disposable = {
             dispose: () => {
-                element.removeEventListener(name, handler, capture);
+                element.removeEventListener(name as any, handler, capture as any);
                 be.disposable.dispose = () => undefined;
             }
         };
