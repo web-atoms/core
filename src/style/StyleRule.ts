@@ -715,9 +715,11 @@ export class AtomStyleRules {
         return this;
     }
 
-    public columnGap(value: ColumnGapType) {
+    public columnGap(value: ColumnGapType);
+    public columnGap(value: string): AtomStyleRules;
+    public columnGap(value: number | string | any, unit: Units = "px") {
         if (value !== undefined && value !== null) {
-            this.style.columnGap = value;
+            this.style.columnGap = toUnit(value, unit);
         }
         return this;
     }
@@ -2878,9 +2880,9 @@ export class AtomStyleRules {
         return this;
     }
 
-    public zIndex(value: string) {
+    public zIndex(value: string | number) {
         if (value !== undefined && value !== null) {
-            this.style.zIndex = value;
+            this.style.zIndex = value as any;
         }
         return this;
     }
