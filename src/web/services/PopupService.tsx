@@ -35,6 +35,11 @@ export interface IPopupOptions {
     alignment?: "left" | "right" | "auto" | "above" | "below" | "centerOfScreen";
     popupStyle?: string;
     cancelToken?: CancelToken;
+
+    /**
+     * Used by PopupControl to overwrite parent Element
+     */
+    parentElement?: HTMLElement;
 }
 
 function getParent(e: HTMLElement): AtomControl {
@@ -157,14 +162,14 @@ export class PopupControl extends AtomControl {
     public static showControl<T>(
         opener: HTMLElement | AtomControl,
         options?: IPopupOptions): Promise<T> {
-        let openerElement: HTMLElement;
+        let openerElement: HTMLElement = options?.parentElement;
         let app: App;
 
         if (opener instanceof AtomControl) {
-            openerElement = opener.element;
+            openerElement ??= opener.element;
             app = opener.app;
         } else {
-            openerElement = opener;
+            openerElement ??= opener;
             let start = opener;
             while (!start.atomControl) {
                 start = start.parentElement;
