@@ -581,10 +581,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
         clickEvent = clickEvent.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-        e.target.dispatchEvent(new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true }));
+        const ce = new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true });
+        e.target.dispatchEvent(ce);
+        if ((ce as any).preventClickEvent) {
+            e.preventDefault();
+        }
     }
 }
-
 
 document.body.addEventListener("click", (e) => {
     if (e.defaultPrevented) {
