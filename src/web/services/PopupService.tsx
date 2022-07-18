@@ -444,7 +444,7 @@ export class ConfirmPopup extends PopupWindow {
             const popup = class extends ConfirmPopup {
                 protected create(): void {
                     this.render(<div>
-                        <div text={message}/>
+                        { message instanceof XNode ? message : <div text={message}/> }
                     </div>);
                 }
             };
@@ -649,7 +649,7 @@ export default class PopupService {
             const popup = class extends ConfirmPopup {
                 protected create(): void {
                     this.render(<div>
-                        <div text={message}/>
+                        { message instanceof XNode ? message : <div text={message}/> }
                     </div>);
                 }
             };
@@ -680,7 +680,7 @@ export default class PopupService {
             const popup = class extends ConfirmPopup {
                 protected create(): void {
                     this.render(<div>
-                        <div text={message}/>
+                        { message instanceof XNode ? message : <div text={message}/> }
                     </div>);
                 }
             };
