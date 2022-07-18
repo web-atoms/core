@@ -360,8 +360,8 @@ export class WindowService extends NavigationService {
             // register for close...
             const root = popup.element;
             const last = PopupService.lastTarget;
-            const closePopup = (e:Event) => {
-                    let target = e.target as HTMLElement;
+            const closePopup = (et: Event) => {
+                    let target = et.target as HTMLElement;
                     while (target) {
                         if (target === root || target === last) {
                             return;
@@ -373,7 +373,7 @@ export class WindowService extends NavigationService {
             document.body.addEventListener("click", closePopup);
             popup.registerDisposable({dispose: () => {
                 document.body.removeEventListener("click", closePopup);
-            }})
+            }});
         }
 
         e._logicalParent = lastTarget;
