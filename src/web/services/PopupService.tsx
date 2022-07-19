@@ -619,6 +619,14 @@ let lastTarget = {
     x: 10,
     y: 10
 };
+
+export interface IPopupAlertOptions {
+    message: string | XNode,
+    title?: string,
+    yesLabel?: string,
+    noLabel?: string,
+    cancelLabel?: string
+}
 export default class PopupService {
 
     public static get lastTarget() {
@@ -644,7 +652,7 @@ export default class PopupService {
         message,
         title = "Alert",
         yesLabel = "Ok"
-    }): Promise<boolean> {
+    }: IPopupAlertOptions): Promise<boolean> {
         try {
             const popup = class extends ConfirmPopup {
                 protected create(): void {
@@ -675,7 +683,7 @@ export default class PopupService {
         yesLabel = "Yes",
         noLabel = "No",
         cancelLabel = null
-    }): Promise<boolean> {
+    }: IPopupAlertOptions): Promise<boolean> {
         try {
             const popup = class extends ConfirmPopup {
                 protected create(): void {

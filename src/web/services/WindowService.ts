@@ -173,7 +173,7 @@ export class WindowService extends NavigationService {
     }
 
     public confirm(message: string | FormattedString, title: string): Promise<any> {
-        return PopupService.confirm({ message, title });
+        return PopupService.confirm({ message: message as any, title });
         // try {
         //     return await this.openPage(AtomAlertWindow, {
         //         okTitle: "Yes",
