@@ -584,20 +584,22 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         const ce = new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true });
         e.target.dispatchEvent(ce);
         if ((ce as any).preventClickEvent) {
-            ce.preventDefault();
+            // ce.preventDefault();
             e.preventDefault();
         }
 
-        if (!ce.defaultPrevented) {
-            if (clickEvent === "invokeMethod") {
-                const method = data.method;
-                const m = this[method] as Function;
-                if (m) {
-                    this.app.runAsync(() => m.call(this, ce));
-                }
+        /** There is a problem with following method, in hierarchy of nodes, 
+         * it will not be possible to know which control should execute it */
+        // if (!ce.defaultPrevented) {
+        //     if (clickEvent === "invokeMethod") {
+        //         const method = data.method;
+        //         const m = this[method] as Function;
+        //         if (m) {
+        //             this.app.runAsync(() => m.call(this, ce));
+        //         }
                 
-            }
-        }
+        //     }
+        // }
     }
 }
 
