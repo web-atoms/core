@@ -363,6 +363,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     protected rendererChanged() {
         disposeChildren(this, this.element);
+        this.element.innerHTML = "";
         const r = this.renderer;
         if (!r) {
             return;
