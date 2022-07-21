@@ -847,6 +847,12 @@ export default class PopupService {
                             vm[key] = e;
                         }
                     }
+                    (control as any).init?.()
+                        ?.catch((error) => {
+                            if (!CancelToken.isCancelled(error)) {
+                                console.error(error);
+                            }
+                        });
                 }
                 cancelToken?.registerForCancel(cancel);
                 isModal = modal;

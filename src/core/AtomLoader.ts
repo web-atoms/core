@@ -6,7 +6,7 @@ import type { AtomControl } from "../web/controls/AtomControl";
 import type { AtomDisposableList } from "./AtomDisposableList";
 import type { AtomUri } from "./AtomUri";
 import { getOwnInheritedProperty } from "./InheritedProperty";
-import { DI, IClassOf, IDisposable } from "./types";
+import { CancelToken, DI, IClassOf, IDisposable } from "./types";
 
 export class AtomLoader {
 
@@ -178,7 +178,12 @@ export class AtomLoader {
                     }
                 }
             }
-
+            (view as any).init?.()
+                ?.catch((error) => {
+                    if (!CancelToken.isCancelled(error)) {
+                        console.error(error);
+                    }
+                });
             return view;
         } finally {
             busyIndicator.dispose();
