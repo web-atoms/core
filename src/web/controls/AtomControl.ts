@@ -589,8 +589,10 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             e.preventDefault();
         }
 
-        /** There is a problem with following method, in hierarchy of nodes, 
-         * it will not be possible to know which control should execute it */
+        /** There is a problem with following method, in hierarchy of nodes,
+         * it will not be possible to know which control should execute it
+         */
+
         // if (!ce.defaultPrevented) {
         //     if (clickEvent === "invokeMethod") {
         //         const method = data.method;
@@ -598,7 +600,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         //         if (m) {
         //             this.app.runAsync(() => m.call(this, ce));
         //         }
-                
+
         //     }
         // }
     }

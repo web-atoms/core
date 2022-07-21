@@ -622,11 +622,11 @@ let lastTarget = {
 };
 
 export interface IPopupAlertOptions {
-    message: string | XNode,
-    title?: string,
-    yesLabel?: string,
-    noLabel?: string,
-    cancelLabel?: string
+    message: string | XNode;
+    title?: string;
+    yesLabel?: string;
+    noLabel?: string;
+    cancelLabel?: string;
 }
 export default class PopupService {
 
@@ -744,6 +744,7 @@ export default class PopupService {
                         try {
                             activeElement?.focus();
                         } catch (error) {
+                            // tslint:disable-next-line: no-console
                             console.error(error);
                         }
                     }
@@ -769,6 +770,7 @@ export default class PopupService {
                         try {
                             activeElement?.focus();
                         } catch (error) {
+                            // tslint:disable-next-line: no-console
                             console.error(error);
                         }
                     }
