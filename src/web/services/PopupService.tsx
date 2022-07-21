@@ -259,10 +259,10 @@ export class PopupWindow extends AtomControl {
 
     public closeButtonRenderer: () => XNode;
 
-    public init: () => any;
-
     @BindableProperty
     public closeWarning: string;
+
+    protected init: () => any;
 
     protected async requestCancel() {
         if (this.closeWarning) {
