@@ -59,6 +59,9 @@ export class AtomLoader {
                 vm = vmFactory();
                 view.viewModel = vm;
             }
+            if ("parameters" in view) {
+                vm = (view as any).parameters;
+            }
             if (vm) {
                 const jsonService = app.get(JsonService);
                 for (const key in url.query) {
