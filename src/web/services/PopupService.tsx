@@ -3,6 +3,7 @@ import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import Colors from "../../core/Colors";
+import { getOwnInheritedProperty } from "../../core/InheritedProperty";
 import sleep from "../../core/sleep";
 import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
 import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
@@ -719,7 +720,8 @@ export default class PopupService {
             const previousTarget = opener;
             const parent = getParent(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
-            const vm = control.viewModel ?? control;
+            const vm = getOwnInheritedProperty(control, "viewModel")
+                ?? ("parameters" in  control ? (control as any).parameters ??= {} : control);
             let element = control.element;
             element.style.zIndex = `${popupId++}`;
             let resolved = false;

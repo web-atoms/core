@@ -1,9 +1,11 @@
-import { App } from "../App";
+import type { App } from "../App";
 import { JsonService } from "../services/JsonService";
 import ReferenceService from "../services/ReferenceService";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import { AtomDisposableList } from "./AtomDisposableList";
-import { AtomUri } from "./AtomUri";
+import type { AtomControl } from "../web/controls/AtomControl";
+import type { AtomDisposableList } from "./AtomDisposableList";
+import type { AtomUri } from "./AtomUri";
+import { getOwnInheritedProperty } from "./InheritedProperty";
 import { DI, IClassOf, IDisposable } from "./types";
 
 export class AtomLoader {
@@ -122,6 +124,59 @@ export class AtomLoader {
             }
 
             return { view };
+        } finally {
+            busyIndicator.dispose();
+        }
+    }
+
+    public static async loadControl<T extends AtomControl>(
+        url: AtomUri,
+        app: App): Promise<T> {
+
+        const busyIndicator = app.createBusyIndicator({
+            title: url.toString(),
+            description: `Loading View ${url}`
+        });
+
+        try {
+            const view = await AtomLoader.load<T>(url, app);
+            const vm = getOwnInheritedProperty(view, "viewModel");
+            let params;
+            if ("parameters" in view) {
+                params = (view as any).parameters;
+            }
+            if (vm || params) {
+                const jsonService = app.get(JsonService);
+                for (const key in url.query) {
+                    if (url.query.hasOwnProperty(key)) {
+                        const element = url.query[key];
+                        if (/^json\:/.test(key)) {
+                            const k = key.split(":")[1];
+                            const v = jsonService.parse(element.toString());
+                            if (vm) { vm[k] = v; }
+                            if (params) { params[k] = v; }
+                            continue;
+                        }
+                        if (/^ref\:/.test(key)) {
+                            const rs = app.get(ReferenceService);
+                            const v = rs.get(element as string).consume();
+                            vm[key.split(":", 2)[1]] = v;
+                            if (vm) { vm[key] = v; }
+                            if (params) { params[key] = v; }
+                            continue;
+                        }
+                        try {
+                            if (vm) { vm[key] = element; }
+                            if (params) { params[key] = element; }
+                        } catch (e) {
+                            // tslint:disable-next-line: no-console
+                            console.error(e);
+                        }
+                    }
+                }
+            }
+
+            return view;
         } finally {
             busyIndicator.dispose();
         }
