@@ -145,6 +145,9 @@ export class AtomLoader {
             if ("parameters" in view) {
                 params = (view as any).parameters;
             }
+            if (!vm) {
+                params = (view as any).parameters ??= {};
+            }
             if (vm || params) {
                 const jsonService = app.get(JsonService);
                 for (const key in url.query) {
