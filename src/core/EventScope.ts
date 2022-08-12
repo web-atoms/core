@@ -1,5 +1,4 @@
 import DateTime from "@web-atoms/date-time/dist/DateTime";
-import { StringHelper } from "./StringHelper";
 
 const key = DateTime.now.msSinceEpoch;
 let id = 1;
@@ -14,19 +13,17 @@ export default class EventScope {
 
     }
 
-    public listen(eventName: string, fx: (ce: Event) => void) {
-        eventName = this.id + "E" + StringHelper.fromHyphenToCamel(eventName);
-        document.body.addEventListener(eventName, fx);
+    public listen(fx: (ce: Event) => void) {
+        document.body.addEventListener(this.id, fx);
         return {
             dispose() {
-                document.body.removeEventListener(eventName, fx);
+                document.body.removeEventListener(this.id, fx);
             }
         };
     }
 
-    public dispatchEvent<T>(eventName, detail: T, cancelable: boolean = false) {
-        eventName = this.id + "E" + StringHelper.fromHyphenToCamel(eventName);
-        const ce = new CustomEvent(eventName, { detail, cancelable });
+    public dispatchEvent<T>(detail: T, cancelable: boolean = false) {
+        const ce = new CustomEvent(this.id, { detail, cancelable });
         document.body.dispatchEvent(ce);
         return ce;
     }
