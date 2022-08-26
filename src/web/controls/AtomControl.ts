@@ -223,6 +223,16 @@ let propertyId = 1;
  */
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
+    public static from(e: HTMLElement): AtomControl {
+        while (e) {
+            const { atomControl } = e;
+            if (atomControl) {
+                return atomControl;
+            }
+            e = e.parentElement;
+        }
+    }
+
     public static registerProperty(
         attributeName: string,
         attributeValue: string,
