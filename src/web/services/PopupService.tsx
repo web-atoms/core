@@ -425,6 +425,7 @@ export class PopupWindow extends AtomControl {
 }
 
 CSS(StyleRule()
+    .display("grid")
     .nested(StyleRule(".yes")
         .borderRadius(9999)
         .paddingLeft(10)
@@ -455,6 +456,9 @@ CSS(StyleRule()
         .margin(5)
         .marginRight(10)
         .backgroundColor(Colors.gray)
+    )
+    .child(StyleRule("[data-element=message]")
+        .overflow("auto")
     )
 , "div[data-confirm-popup=confirm-popup]");
 
@@ -514,9 +518,11 @@ export class ConfirmPopup extends PopupWindow {
         this.element.dataset.confirmPopup = "confirm-popup";
         this.closeButtonRenderer = () => <div/>;
         const extracted = this.extractControlProperties(node);
+        const na = node.attributes ??= {};
+        na["data-element"] = "message";
         super.render(<div { ... extracted }>
             { node }
-            <div>
+            <div data-element="buttons">
                 <button
                     class="yes"
                     autofocus={true}
