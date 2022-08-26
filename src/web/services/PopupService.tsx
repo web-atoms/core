@@ -921,7 +921,10 @@ export default class PopupService {
         };
         container.registerDisposable = (f) => container.disposables.add(f);
 
-        const isCenterOfScreen = options?.alignment === "centerOfScreen";
+        const alignment = options?.alignment;
+
+        const isCenterOfScreen = alignment === "centerOfScreen";
+        const alignRight = alignment === "right";
 
         const popupStyle = options?.popupStyle ?? popupCss;
         container.element._logicalParent = opener;
@@ -934,7 +937,12 @@ export default class PopupService {
                 opener.parentElement.style.position = "relative";
             }
             setTimeout(() => {
-                container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                if (alignRight) {
+                    container.element.style.top = (opener.offsetTop) + "px";
+                    container.element.style.left = (opener.offsetWidth) + "px";
+                } else {
+                    container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                }
                 opener.insertAdjacentElement("afterend", container.element);
             }, 50);
         }
