@@ -20,6 +20,39 @@ document.body.addEventListener("click", (e) => {
     }
 });
 
+CSS(StyleRule()
+    .position("absolute")
+    .height(0)
+    .width(0)
+    .left(0)
+    .child(StyleRule("*")
+        .position("absolute")
+        .left(0)
+        .top(0)
+        .maxHeight(200)
+        .padding(5)
+        .borderRadius(5)
+        .backgroundColor(Colors.white)
+        .zIndex(200)
+        .defaultBoxShadow()
+    )
+, "*[data-inline-popup=true]");
+
+CSS(StyleRule("popup")
+    .position("fixed")
+    .left("50%")
+    .top("50%")
+    .transform("translate(-50%, -50%)" as any)
+    .zIndex(10000)
+    .padding(5)
+    .backgroundColor(Colors.white)
+    .border("solid 1px lightgray")
+    .borderRadius(5)
+    .boxShadow("rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;")
+    .display("inline-block")
+, "*[data-center-popup]");
+
+
 const popupCss = CSS(StyleRule("popup")
     .padding(5)
     .backgroundColor(Colors.white)
@@ -886,7 +919,7 @@ export default class PopupService {
      */
     public static show(
         opener: HTMLElement,
-        popup: HTMLElement,
+        popup: HTMLElement | XNode,
         options?: IPopupOptions): IPopup {
         const previousTarget = opener;
         const container: IPopup = {
@@ -896,55 +929,76 @@ export default class PopupService {
             dispose: null,
         };
         container.registerDisposable = (f) => container.disposables.add(f);
+
+        const isCenterOfScreen = options?.alignment === "centerOfScreen";
+
         const popupStyle = options?.popupStyle ?? popupCss;
         container.element._logicalParent = opener;
         container.element.classList.add(popupStyle);
-        container.element.appendChild(popup);
-        const offset = findHostAndPosition(opener);
-        const host = offset.root;
-        const hostHeight = host.offsetHeight
-        || host.clientHeight
-        || (host.firstElementChild as HTMLElement).offsetHeight;
-
-        const style = container.element.style;
-        style.position = "absolute";
-        offset.y += opener.offsetHeight;
-
-        if (options?.alignment === "centerOfScreen") {
-            style.left = "50%";
-            style.top = "50%";
-            style.transform = "translate(-50%,-50%)";
+        if (isCenterOfScreen) {
+            container.element.dataset.centerPopup = "center";
         } else {
-
-            if (!options || options?.alignment === "auto") {
-
-                // check where is more space??
-                if (offset.x < (host.offsetWidth / 2)) {
-                    style.left = offset.x + "px";
-                } else {
-                    style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
-                }
-
-                if (offset.y < (hostHeight / 2)) {
-                    style.top = offset.y + "px";
-                } else {
-                    style.top = `${offset.y - opener.offsetHeight}px`;
-                    style.transform = "translate(0, -100%)";
-                }
-
-            } else {
-                offset.y -= opener.offsetHeight;
-                style.top = offset.y + "px";
-                if (options?.alignment === "right") {
-                    style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;
-                } else {
-                    style.left = offset.x + "px";
-                }
+            container.element.dataset.inlinePopup = "true";
+            if (opener.offsetParent !== opener.parentElement) {
+                opener.parentElement.style.position = "relative";
             }
+            setTimeout(() => {
+                container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                opener.insertAdjacentElement("afterend", container.element);
+            }, 50);
         }
+        if (popup instanceof XNode) {
+            const p = AtomControl.from(opener);
+            // @ts-ignore
+            p.render(popup, container);
+        } else {
+            container.element.appendChild(popup);
+        }
+        const style = container.element.style;
+        // const offset = findHostAndPosition(opener);
+        // const host = offset.root;
+        // const hostHeight = host.offsetHeight
+        // || host.clientHeight
+        // || (host.firstElementChild as HTMLElement).offsetHeight;
+
+        // style.position = "absolute";
+        // offset.y += opener.offsetHeight;
+
+        // if (options?.alignment === "centerOfScreen") {
+        //     style.left = "50%";
+        //     style.top = "50%";
+        //     style.transform = "translate(-50%,-50%)";
+        // } else {
+
+        //     if (!options || options?.alignment === "auto") {
+
+        //         // check where is more space??
+        //         if (offset.x < (host.offsetWidth / 2)) {
+        //             style.left = offset.x + "px";
+        //         } else {
+        //             style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
+        //         }
+
+        //         if (offset.y < (hostHeight / 2)) {
+        //             style.top = offset.y + "px";
+        //         } else {
+        //             style.top = `${offset.y - opener.offsetHeight}px`;
+        //             style.transform = "translate(0, -100%)";
+        //         }
+
+        //     } else {
+        //         offset.y -= opener.offsetHeight;
+        //         style.top = offset.y + "px";
+        //         if (options?.alignment === "right") {
+        //             style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;
+        //         } else {
+        //             style.left = offset.x + "px";
+        //         }
+        //     }
+        // }
         style.zIndex = `${popupId++}`;
 
-        host.appendChild(container.element);
+        // host.appendChild(container.element);
         container.dispose = () => {
             if (!container.disposables) {
                 return;
@@ -957,7 +1011,7 @@ export default class PopupService {
             PopupService.lastTarget = previousTarget;
         };
 
-        closeHandler(host, opener, container, () => {
+        closeHandler(opener.parentElement, opener, container, () => {
             const e = container.element;
             container.dispose();
             e.remove();
