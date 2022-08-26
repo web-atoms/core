@@ -621,15 +621,7 @@ document.body.addEventListener("click", (e) => {
         return;
     }
     const originalTarget = e.target as HTMLElement;
-    let control;
-    let start = originalTarget;
-    while (start) {
-        if (start.atomControl) {
-            control = start.atomControl;
-            break;
-        }
-        start = start.parentElement;
-    }
+    let control = AtomControl.from(originalTarget);
     if (control !== void 0) {
         const data = new Proxy(originalTarget, {
             get(target, p) {
@@ -645,6 +637,7 @@ document.body.addEventListener("click", (e) => {
                 }
             }
         });
+        // @ts-ignore
         control.dispatchClickEvent(e, data);
     }
 });
