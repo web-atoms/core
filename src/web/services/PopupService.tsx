@@ -77,16 +77,6 @@ export interface IPopupOptions {
     parentElement?: HTMLElement;
 }
 
-function getParent(e: HTMLElement): AtomControl {
-    let start = e;
-    while (start) {
-        if (start.atomControl) {
-            return start.atomControl;
-        }
-        start = start._logicalParent ?? start.parentElement;
-    }
-}
-
 export interface IPopup {
     element: HTMLElement;
     disposables: AtomDisposableList;
@@ -754,7 +744,7 @@ export default class PopupService {
         return new Promise<T>((resolve, reject) => {
             const activeElement = document.activeElement as any;
             const previousTarget = opener;
-            const parent = getParent(opener);
+            const parent = AtomControl.from(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
             const vm = getOwnInheritedProperty(control, "viewModel")
                 ?? ("parameters" in  control ? (control as any).parameters ??= {} : control);
@@ -948,10 +938,11 @@ export default class PopupService {
                 opener.insertAdjacentElement("afterend", container.element);
             }, 50);
         }
+        const parent = AtomControl.from(opener);
+
         if (popup instanceof XNode) {
-            const p = AtomControl.from(opener);
             // @ts-ignore
-            p.render(popup, container);
+            parent.render(popup, container);
         } else {
             container.element.appendChild(popup);
         }
@@ -1005,7 +996,6 @@ export default class PopupService {
                 return;
             }
             container.disposables.dispose();
-            const parent = getParent(opener);
             parent.dispose(container.element);
             container.element.remove();
             container.disposables = null;

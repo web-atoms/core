@@ -229,7 +229,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             if (atomControl) {
                 return atomControl;
             }
-            e = e.parentElement;
+            e = e._logicalParent ?? e.parentElement;
         }
     }
 
