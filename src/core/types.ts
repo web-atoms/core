@@ -75,7 +75,7 @@ export const ignoreValue: any = Symbol("ignore");
 export class CancelToken implements IDisposable {
 
     public static isCancelled(e: any) {
-        if (/^(cancelled|canceled)$/i.test(e.message ?? e.toString().trim())) {
+        if (/^(cancelled|canceled|aborterror\:)$/i.test(e.message ?? e.toString().trim())) {
             return true;
         }
         if (e.name === "AbortError") {
