@@ -927,7 +927,7 @@ export default class PopupService {
         };
         container.registerDisposable = (f) => container.disposables.add(f);
 
-        const alignment = options?.alignment;
+        const alignment = options?.alignment ?? "auto";
 
         const isCenterOfScreen = alignment === "centerOfScreen";
         let alignRight = alignment === "right";
