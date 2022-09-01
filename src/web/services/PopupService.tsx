@@ -949,10 +949,7 @@ export default class PopupService {
             }
 
             container.element.dataset.inlinePopup = "true";
-            if (opener.offsetParent !== opener.parentElement) {
-                opener.parentElement.style.position = "relative";
-            }
-            setTimeout(() => {
+            const alignPopup = () => {
                 if (alignRight) {
                     container.element.style.top = (opener.offsetTop) + "px";
                     container.element.style.left = (opener.offsetWidth) + "px";
@@ -960,7 +957,14 @@ export default class PopupService {
                     container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
                 }
                 opener.insertAdjacentElement("afterend", container.element);
-            }, 50);
+            };
+            if (opener.offsetParent !== opener.parentElement) {
+                opener.parentElement.style.position = "relative";
+                setTimeout(alignPopup, 50);
+            } else {
+                alignPopup();
+            }
+            
         }
         const parent = AtomControl.from(opener);
 
