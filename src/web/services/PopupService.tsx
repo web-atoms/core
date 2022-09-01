@@ -930,7 +930,8 @@ export default class PopupService {
         const alignment = options?.alignment;
 
         const isCenterOfScreen = alignment === "centerOfScreen";
-        const alignRight = alignment === "right";
+        let alignRight = alignment === "right";
+        const alignAuto = alignment === "auto";
 
         const popupStyle = options?.popupStyle ?? popupCss;
         container.element._logicalParent = opener;
@@ -938,6 +939,15 @@ export default class PopupService {
         if (isCenterOfScreen) {
             container.element.dataset.centerPopup = "center";
         } else {
+
+            if (alignAuto) {
+                const rect = opener.getBoundingClientRect();
+                const w = window.visualViewport.width;
+                if (rect.left > w / 2) {
+                    alignRight = true;
+                }
+            }
+
             container.element.dataset.inlinePopup = "true";
             if (opener.offsetParent !== opener.parentElement) {
                 opener.parentElement.style.position = "relative";
