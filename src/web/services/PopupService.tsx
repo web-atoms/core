@@ -968,7 +968,7 @@ export default class PopupService {
                 switch(alignment) {
                     case "bottomRight":
                         container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
-                        container.element.style.right = (opener.offsetLeft + opener.offsetWidth) + "px";
+                        container.element.style.right = "0px";
                         container.element.dataset.inlinePopup = "right";
                         break;
                     case "topRight":
