@@ -67,7 +67,7 @@ export interface IPopupOptions {
     /**
      * Popup alignment, default is auto starting with right and below
      */
-    alignment?: "left" | "right" | "auto" | "above" | "below" | "centerOfScreen";
+    alignment?: "bottomLeft" | "bottomRight" | "topRight" | "right" | "auto" | "above" | "below" | "centerOfScreen";
     popupStyle?: string;
     cancelToken?: CancelToken;
 
@@ -927,34 +927,38 @@ export default class PopupService {
         };
         container.registerDisposable = (f) => container.disposables.add(f);
 
-        const alignment = options?.alignment ?? "auto";
+        let alignment = options?.alignment ?? "auto";
+
+        if (alignment === "auto") {
+            const rect = opener.getBoundingClientRect();
+            const w = window.visualViewport.width;
+            if (rect.left > w / 2) {
+                alignment = "bottomRight";
+            }
+        }
 
         const isCenterOfScreen = alignment === "centerOfScreen";
-        let alignRight = alignment === "right";
-        const alignAuto = alignment === "auto";
-
         const popupStyle = options?.popupStyle ?? popupCss;
         container.element._logicalParent = opener;
         container.element.classList.add(popupStyle);
         if (isCenterOfScreen) {
             container.element.dataset.centerPopup = "center";
         } else {
-
-            if (alignAuto) {
-                const rect = opener.getBoundingClientRect();
-                const w = window.visualViewport.width;
-                if (rect.left > w / 2) {
-                    alignRight = true;
-                }
-            }
-
             container.element.dataset.inlinePopup = "true";
             const alignPopup = () => {
-                if (alignRight) {
-                    container.element.style.top = (opener.offsetTop) + "px";
-                    container.element.style.left = (opener.offsetWidth) + "px";
-                } else {
-                    container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                switch(alignment) {
+                    case "bottomRight":
+                        container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                        container.element.style.right = (opener.offsetLeft + opener.offsetWidth) + "px";
+                        break;
+                    case "topRight":
+                    case "right":
+                        container.element.style.top = (opener.offsetTop) + "px";
+                        container.element.style.left = (opener.offsetWidth) + "px";
+                        break;
+                    default:
+                        container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                        break;
                 }
                 opener.insertAdjacentElement("afterend", container.element);
             };
