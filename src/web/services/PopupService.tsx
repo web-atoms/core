@@ -37,7 +37,26 @@ CSS(StyleRule()
         .zIndex(200)
         .defaultBoxShadow()
     )
-, "*[data-inline-popup=true]");
+, "*[data-inline-popup=left]");
+
+CSS(StyleRule()
+    .position("absolute")
+    .height(0)
+    .width(0)
+    .right(0)
+    .child(StyleRule("*")
+        .position("absolute")
+        .right(0)
+        .top(0)
+        .padding(5)
+        .maxHeight(300)
+        .overflow("auto")
+        .borderRadius(5)
+        .backgroundColor(Colors.white)
+        .zIndex(200)
+        .defaultBoxShadow()
+    )
+, "*[data-inline-popup=right]");
 
 CSS(StyleRule("popup")
     .position("fixed")
@@ -944,12 +963,13 @@ export default class PopupService {
         if (isCenterOfScreen) {
             container.element.dataset.centerPopup = "center";
         } else {
-            container.element.dataset.inlinePopup = "true";
+            container.element.dataset.inlinePopup = "left";
             const alignPopup = () => {
                 switch(alignment) {
                     case "bottomRight":
                         container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
                         container.element.style.right = (opener.offsetLeft + opener.offsetWidth) + "px";
+                        container.element.dataset.inlinePopup = "right";
                         break;
                     case "topRight":
                     case "right":
