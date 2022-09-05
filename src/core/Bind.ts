@@ -159,9 +159,13 @@ export default class Bind {
         return Bind as any;
     }
 
-    public static presenter(name?: string): any {
+    public static presenter(name?: string | ((c: IAtomComponent) => any)): any {
         return {
             [bindSymbol](cn: string, control: IAtomComponent, e: any, creator: any) {
+                if (typeof name === "function") {
+                    name(control);
+                    return;
+                }
                 const n = name || cn;
                 let c = control.element as any;
                 while (c) {
