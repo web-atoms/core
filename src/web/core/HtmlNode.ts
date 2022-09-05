@@ -51,10 +51,15 @@ export function convertToText(node: XNode) {
         const attributes = mergeStyles(node.attributes);
         const name = node.name;
         const children = node.children;
+        let textContent = "";
         for (const key in attributes) {
             if (attributes.hasOwnProperty(key)) {
                 const element = attributes[key];
                 if (element === null || element === undefined) {
+                    continue;
+                }
+                if (key === "text") {
+                    textContent = element.toString();
                     continue;
                 }
                 if (key === "style" && typeof element === "object") {
@@ -69,7 +74,7 @@ export function convertToText(node: XNode) {
             }
         }
         const content: string[] = renderChildren(node, children);
-        return `<${name}${attrs}>
+        return `<${name}${attrs}>${textContent}
 \t${content.map((s) => s.toString().split("\n").join("\n\t")).join("\r\n")}
 </${name}>`;
     }
