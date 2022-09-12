@@ -4,7 +4,7 @@ import { CancelToken } from "./types";
 const key = DateTime.now.msSinceEpoch;
 let id = 1;
 
-export default class EventScope<T> {
+export default class EventScope<T = any> {
 
     public static create<T1 = any>() {
         return new EventScope<T1>(`eventScopeE${key}${id++}`)
