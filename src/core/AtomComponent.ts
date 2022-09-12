@@ -245,8 +245,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 e.promise = e.promise ? Promise.all([r, e.promise]) : r;
                 if (r?.catch) {
                     return r.catch((c) => {
-                        c = c?.toString() ?? "Unknown error";
-                        if (CancelToken.isCancelled(c)) {
+                        if (CancelToken.isCancelled(c ?? "Unknown error")) {
                             return;
                         }
                         alert(c.stack ?? c);
