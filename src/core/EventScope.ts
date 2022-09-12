@@ -16,14 +16,21 @@ export default class EventScope<T> {
 
     public listen(fx: (ce: CustomEvent<T>) => any) {
         const asyncHandler = (ce: CustomEvent<T>) => {
-            const p = fx(ce);
-            if (p?.catch) {
-                p.catch((r) => {
-                    if(CancelToken.isCancelled(r)) {
-                        return;
-                    }
-                    console.error(r);
-                });
+            try {
+                const p = fx(ce);
+                if (p?.catch) {
+                    p.catch((r) => {
+                        if(CancelToken.isCancelled(r)) {
+                            return;
+                        }
+                        console.error(r);
+                    });
+                }
+            } catch (e) {
+                if (CancelToken.isCancelled(e)) {
+                    return;
+                }
+                console.error(e);
             }
         };
         window.addEventListener(this.eventType, asyncHandler);
