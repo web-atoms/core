@@ -1,30 +1,42 @@
 import DateTime from "@web-atoms/date-time/dist/DateTime";
+import { CancelToken } from "./types";
 
 const key = DateTime.now.msSinceEpoch;
 let id = 1;
 
-export default class EventScope {
+export default class EventScope<T> {
 
-    public static create() {
-        return new EventScope(`eventScopeE${key}${id++}`)
+    public static create<T1 = any>() {
+        return new EventScope<T1>(`eventScopeE${key}${id++}`)
     }
 
-    private constructor(private id: string) {
+    private constructor(public readonly eventType: string) {
 
     }
 
-    public listen(fx: (ce: Event) => void) {
-        document.body.addEventListener(this.id, fx);
+    public listen(fx: (ce: CustomEvent<T>) => any) {
+        const asyncHandler = (ce: CustomEvent<T>) => {
+            const p = fx(ce);
+            if (p?.catch) {
+                p.catch((r) => {
+                    if(CancelToken.isCancelled(r)) {
+                        return;
+                    }
+                    console.error(r);
+                });
+            }
+        };
+        window.addEventListener(this.eventType, asyncHandler);
         return {
-            dispose() {
-                document.body.removeEventListener(this.id, fx);
+            dispose:() => {
+                window.removeEventListener(this.eventType, asyncHandler);
             }
         };
     }
 
-    public dispatchEvent<T>(detail: T, cancelable: boolean = false) {
-        const ce = new CustomEvent(this.id, { detail, cancelable });
-        document.body.dispatchEvent(ce);
+    public dispatchEvent(detail: T, cancelable: boolean = false) {
+        const ce = new CustomEvent(this.eventType, { detail, cancelable, bubbles: false });
+        window.dispatchEvent(ce);
         return ce;
     }
 
