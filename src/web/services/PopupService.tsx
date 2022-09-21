@@ -659,8 +659,10 @@ function closeHandler(
             start = start.parentElement;
         }
         close();
+        e.preventDefault();
+        e.stopImmediatePropagation?.();
     };
-    document.body.addEventListener("click", handler);
+    document.body.addEventListener("click", handler, true);
     container.registerDisposable(() => document.body.removeEventListener("click", handler));
 }
 
