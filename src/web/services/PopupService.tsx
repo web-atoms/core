@@ -91,6 +91,11 @@ export interface IPopupOptions {
     cancelToken?: CancelToken;
 
     /**
+     * Default is "close" for popup control to avoid cancel exceptions.
+     */
+    onClick?: "close" | "cancel" | null | undefined;
+
+    /**
      * Used by PopupControl to overwrite parent Element
      */
     parentElement?: HTMLElement;
@@ -205,7 +210,10 @@ export class PopupControl extends AtomControl {
 
     public static showControl<T>(
         opener: HTMLElement | AtomControl,
-        options?: IPopupOptions): Promise<T> {
+        {
+            onClick = "close",
+            ... options
+        }: IPopupOptions = {}): Promise<T> {
         let openerElement: HTMLElement = options?.parentElement;
         let app: App;
 
@@ -224,7 +232,11 @@ export class PopupControl extends AtomControl {
             app = start.atomControl.app;
         }
         const popup = new this(app);
-
+        if (onClick === "close") {
+            popup.bindEvent(popup.element, "click", () => popup.close());
+        } else if (onClick === "cancel") {
+            popup.bindEvent(popup.element, "click", () => popup.cancel());
+        }
         const p = PopupService.show(openerElement, popup.element, options);
         // since popup will be children of openerElement
         // on dispose(popupElement), popup will be disposed automatically
