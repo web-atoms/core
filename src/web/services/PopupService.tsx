@@ -233,9 +233,9 @@ export class PopupControl extends AtomControl {
         }
         const popup = new this(app);
         if (onClick === "close") {
-            popup.bindEvent(popup.element, "click", () => popup.close());
+            popup.bindEvent(popup.element, "click", () => setTimeout(() => popup.close(), 10));
         } else if (onClick === "cancel") {
-            popup.bindEvent(popup.element, "click", () => popup.cancel());
+            popup.bindEvent(popup.element, "click", () => setTimeout(() => popup.cancel(), 10));
         }
         const p = PopupService.show(openerElement, popup.element, options);
         // since popup will be children of openerElement
