@@ -663,7 +663,7 @@ function closeHandler(
         e.stopImmediatePropagation?.();
     };
     document.body.addEventListener("click", handler, true);
-    container.registerDisposable(() => document.body.removeEventListener("click", handler));
+    container.registerDisposable(() => document.body.removeEventListener("click", handler, true));
 }
 
 let popupId = 1001;
