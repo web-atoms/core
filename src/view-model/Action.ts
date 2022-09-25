@@ -1,6 +1,7 @@
 import { App } from "../App";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
+import { CancelToken } from "../core/types";
 import XNode from "../core/XNode";
 import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
@@ -132,7 +133,10 @@ export default function Action(
                             return result;
                         }
                     } catch (e) {
-                        if (/^(cancelled|canceled|timeout)$/i.test(e.toString().trim())) {
+                        if(CancelToken.isCancelled(e)) {
+                            return;
+                        }
+                        if (/^timeout$/i.test(e.toString().trim())) {
                             // tslint:disable-next-line: no-console
                             console.warn(e);
                             return;
