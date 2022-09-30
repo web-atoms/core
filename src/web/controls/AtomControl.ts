@@ -223,11 +223,11 @@ let propertyId = 1;
  */
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
-    public static from(e: HTMLElement): AtomControl {
+    public static from<T = AtomControl>(e: HTMLElement): T {
         while (e) {
             const { atomControl } = e;
             if (atomControl) {
-                return atomControl;
+                return atomControl as T;
             }
             e = e._logicalParent ?? e.parentElement;
         }
