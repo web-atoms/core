@@ -163,9 +163,9 @@ export class AtomLoader {
                         if (/^ref\:/.test(key)) {
                             const rs = app.get(ReferenceService);
                             const v = rs.get(element as string).consume();
-                            vm[key.split(":", 2)[1]] = v;
-                            if (vm) { vm[key] = v; }
-                            if (params) { params[key] = v; }
+                            const keyName = key.split(":", 2)[1];
+                            if (vm) { vm[keyName] = v; }
+                            if (params) { params[keyName] = v; }
                             continue;
                         }
                         try {
