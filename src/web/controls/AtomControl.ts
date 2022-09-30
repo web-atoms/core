@@ -223,7 +223,8 @@ let propertyId = 1;
  */
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
-    public static from<T = AtomControl>(e: HTMLElement): T {
+    public static from<T = AtomControl>(e1: Element | EventTarget): T {
+        let e = e1 as any;
         while (e) {
             const { atomControl } = e;
             if (atomControl) {
