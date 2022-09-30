@@ -21,7 +21,7 @@ document.body.addEventListener("click", (e) => {
 });
 
 CSS(StyleRule()
-    .position("absolute")
+    .position("relative")
     .height(0)
     .width(0)
     .left(0)
@@ -57,6 +57,25 @@ CSS(StyleRule()
         .defaultBoxShadow()
     )
 , "*[data-inline-popup=right]");
+
+CSS(StyleRule()
+    .position("relative")
+    .height(0)
+    .width(0)
+    .left(0)
+    .child(StyleRule("*")
+        .position("absolute")
+        .left(0)
+        .top(0)
+        .padding(5)
+        .maxHeight(300)
+        .overflow("auto")
+        .borderRadius(5)
+        .backgroundColor(Colors.white)
+        .zIndex(200)
+        .defaultBoxShadow()
+    )
+, "*[data-inline-popup=inline-left]");
 
 CSS(StyleRule("popup")
     .position("fixed")
@@ -989,6 +1008,10 @@ export default class PopupService {
                     case "right":
                         container.element.style.top = (opener.offsetTop) + "px";
                         container.element.style.left = (opener.offsetWidth) + "px";
+                        break;
+                    case "bottomLeft":
+                        container.element.dataset.inlinePopup = "inline-left";
+                        container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
                         break;
                     default:
                         container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
