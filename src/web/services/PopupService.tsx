@@ -1003,21 +1003,24 @@ export default class PopupService {
                         container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
                         container.element.style.right = "0px";
                         container.element.dataset.inlinePopup = "right";
+                        opener.insertAdjacentElement("afterend", container.element);
                         break;
                     case "topRight":
                     case "right":
                         container.element.style.top = (opener.offsetTop) + "px";
                         container.element.style.left = (opener.offsetWidth) + "px";
+                        opener.insertAdjacentElement("afterend", container.element);
                         break;
                     case "bottomLeft":
                         container.element.dataset.inlinePopup = "inline-left";
                         container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                        opener.insertAdjacentElement("beforebegin", container.element);
                         break;
                     default:
                         container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                        opener.insertAdjacentElement("afterend", container.element);
                         break;
                 }
-                opener.insertAdjacentElement("afterend", container.element);
             };
             if (opener.offsetParent !== opener.parentElement) {
                 opener.parentElement.style.position = "relative";
