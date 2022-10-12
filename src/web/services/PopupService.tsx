@@ -295,7 +295,7 @@ export class PopupWindow extends AtomControl {
     public static async showWindow<T>(
         window: IClassOf<PopupWindow> | IDialogOptions,
         options?: IDialogOptions): Promise<T> {
-        if (arguments.length <= 2) {
+        if (arguments.length <= 1) {
             options = arguments[0];
             window = this;
         }
@@ -309,7 +309,7 @@ export class PopupWindow extends AtomControl {
     public static async showModal<T>(
         window: IClassOf<PopupWindow> | IDialogOptions,
         options?: IDialogOptions): Promise<T> {
-        if (arguments.length <= 2) {
+        if (arguments.length <= 1) {
             options = arguments[0];
             window = this;
         }
