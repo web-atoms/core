@@ -336,7 +336,9 @@ export class PopupWindow extends AtomControl {
     @BindableProperty
     public closeWarning: string;
 
-    protected init: () => any;
+    protected init() {
+        // do nothing...
+    }
 
     protected async requestCancel() {
         if (this.closeWarning) {
@@ -473,6 +475,9 @@ export class PopupWindow extends AtomControl {
     }
 
 }
+
+// @ts-ignore
+delete PopupWindow.prototype.init;
 
 CSS(StyleRule()
     .display("grid")
