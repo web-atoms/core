@@ -288,6 +288,7 @@ declare global {
             f: (target: any, key: string, index?: number, item?: any) => void,
             wrap?: boolean): IDisposable;
         replace(items: T[], start?: number, size?: number): void;
+        includes(item:T): boolean;
         count?(f: (item: T) => boolean): number;
         avg?(f: (item: T) => number): number;
     }
