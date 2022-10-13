@@ -132,6 +132,13 @@ export default function Action(
                             }
                             return result;
                         }
+                        if (close) {
+                            if (success) {
+                                await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
+                            }
+                            vm.close?.(pe);
+                            return pe;
+                        }
                     } catch (e) {
                         if(CancelToken.isCancelled(e)) {
                             return;
