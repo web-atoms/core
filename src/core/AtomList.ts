@@ -253,6 +253,10 @@ import { IDisposable } from "./types";
             return sum / this.length;
         }
 
+        public includes(item) {
+            return this.indexOf(item) !== -1;
+        }
+
     }
 
     // tslint:disable
@@ -268,6 +272,7 @@ import { IDisposable } from "./types";
     Array.prototype["insert"] = AtomList.prototype.insert;
     Array.prototype["count"] = AtomList.prototype.count;
     Array.prototype["avg"] = AtomList.prototype.avg;
+    Array.prototype["includes"] = AtomList.prototype.includes;
 
 declare global { 
     interface Array<T> {
