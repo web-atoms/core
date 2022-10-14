@@ -371,33 +371,6 @@ export class PopupWindow extends AtomControl {
         //     }
         // });
         this.element.dataset.popupWindow = "popup-window";
-        this.runAfterInit(() => {
-            if (!this.element) {
-                return;
-            }
-            const host = this.element.getElementsByClassName("title-host")[0];
-            this.setupDragging(host as HTMLElement);
-            // this.element may become null if it was immediately
-            // closed, very rare case, but possible if
-            // supplied cancelToken was cancelled
-            const anyAutofocus = this.element.querySelector(`*[autofocus]`);
-            if (!anyAutofocus) {
-                const windowContent = this.element.querySelector("[data-window-content]");
-                if (windowContent) {
-                    const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
-                    if (firstInput) {
-                        firstInput.focus();
-                        return;
-                    }
-                }
-
-                const closeButton = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
-                if (closeButton) {
-                    closeButton.focus();
-                }
-                return;
-            }
-        });
 
         setTimeout((p) => {
             p.dataset.ready = "true";
@@ -424,6 +397,34 @@ export class PopupWindow extends AtomControl {
             </div>
             { node }
         </div>);
+
+        this.runAfterInit(() => {
+            if (!this.element) {
+                return;
+            }
+            const host = this.element.getElementsByClassName("title-host")[0];
+            this.setupDragging(host as HTMLElement);
+            // this.element may become null if it was immediately
+            // closed, very rare case, but possible if
+            // supplied cancelToken was cancelled
+            const anyAutofocus = this.element.querySelector(`*[autofocus]`);
+            if (!anyAutofocus) {
+                const windowContent = this.element.querySelector("[data-window-content]");
+                if (windowContent) {
+                    const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
+                    if (firstInput) {
+                        firstInput.focus();
+                        return;
+                    }
+                }
+
+                const cb = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
+                if (cb) {
+                    cb.focus();
+                }
+                return;
+            }
+        });
     }
 
     protected setupDragging(tp: HTMLElement): void {
