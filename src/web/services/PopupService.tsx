@@ -267,6 +267,7 @@ export class PopupControl extends AtomControl {
                     return;
                 }
                 resolved = true;
+                PopupService.lastTarget = openerElement;
                 resolve(r);
                 p.dispose();
             };
@@ -276,6 +277,7 @@ export class PopupControl extends AtomControl {
                     return;
                 }
                 resolved = true;
+                PopupService.lastTarget = openerElement;
                 reject(e);
                 p.dispose();
             };
