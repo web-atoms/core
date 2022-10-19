@@ -733,6 +733,9 @@ export default class PopupService {
     }
 
     public static set lastTarget(element: HTMLElement) {
+        if (!element.isConnected) {
+            return;
+        }
         const rect = element.getBoundingClientRect();
         lastTarget = {
             element,
