@@ -173,6 +173,7 @@ Array.prototype["groupBy"] = <any> function (keySelector: any) {
             g = [] as IKeyedArray<any, any>;
             g.key = key;
             groups.push(g);
+            map.set(key, g);
         }
         g.push(iterator);
     }
