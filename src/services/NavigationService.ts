@@ -24,6 +24,12 @@ export type navigateCallback = (
     url: AtomUri,
     options?: IPageOptions) => Promise<any>;
 
+    
+export type preNavigateCallback = (
+    url: any,
+    viewModelParameters: {[key: string]: any},
+    options?: IPageOptions) => Promise<any>;
+
 export interface IPageOptions {
 
     /**
@@ -77,6 +83,8 @@ export abstract class NavigationService {
 
     private callbacks: navigateCallback[] = [];
 
+    private beforeCallbacks: preNavigateCallback[] = [];
+
     constructor(public readonly app: App) {
 
     }
@@ -119,6 +127,13 @@ export abstract class NavigationService {
                 const host = pageName instanceof AtomComponent ? "reference" : "class";
                 const r = rs.put(pageName);
                 pageName = `ref://${host}/${r.key}`;
+            }
+        }
+
+        for (const iterator of this.beforeCallbacks) {
+            const r = iterator(pageName, viewModelParameters, options);
+            if (r) {
+                return r;
             }
         }
 
@@ -200,6 +215,15 @@ export abstract class NavigationService {
         return {
             dispose: () => {
                 ArrayHelper.remove(this.callbacks, (a) => a === callback);
+            }
+        };
+    }
+
+    public registerPreNavigationHook(callback: preNavigateCallback): IDisposable {
+        this.beforeCallbacks.push(callback);
+        return {
+            dispose: () => {
+                this.beforeCallbacks.remove(callback);
             }
         };
     }
