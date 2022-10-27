@@ -12,22 +12,25 @@ export class AtomLoader {
 
     public static id: number = 1;
 
-    public static async load<T>(url: AtomUri, app: App): Promise<T> {
-        if (url.host === "reference") {
-            const r = app.get(ReferenceService).get(url.path);
-            if (!r) {
-                throw new Error("reference not found");
+    public static async load<T>(url: string | AtomUri, app: App): Promise<T> {
+        if (typeof url !== "string") {
+            if (url.host === "reference") {
+                const r = app.get(ReferenceService).get(url.path);
+                if (!r) {
+                    throw new Error("reference not found");
+                }
+                return r.consume();
             }
-            return r.consume();
-        }
-        if (url.host === "class") {
-            const r = app.get(ReferenceService).get(url.path);
-            if (!r) {
-                throw new Error("reference not found");
+            if (url.host === "class") {
+                const r = app.get(ReferenceService).get(url.path);
+                if (!r) {
+                    throw new Error("reference not found");
+                }
+                return app.resolve(r.consume(), true);
             }
-            return app.resolve(r.consume(), true);
+            url = url.path;
         }
-        const type = await DI.resolveViewClassAsync(url.path);
+        const type = await DI.resolveViewClassAsync(url);
         if (!type) {
             throw new Error(`Type not found for ${url}`);
         }
@@ -124,6 +127,52 @@ export class AtomLoader {
             }
 
             return { view };
+        } finally {
+            busyIndicator.dispose();
+        }
+    }
+
+    public static async loadClass<T extends AtomControl>(
+        url: string | any,
+        parameters: any,
+        app: App): Promise<T> {
+
+        const busyIndicator = app.createBusyIndicator({
+            title: url.toString(),
+            description: `Loading View ${url}`
+        });
+
+        try {
+            const view = await AtomLoader.load<T>(url, app);
+            const vm = getOwnInheritedProperty(view, "viewModel");
+            let params;
+            if ("parameters" in view) {
+                params = (view as any).parameters;
+            }
+            if (!vm) {
+                params = (view as any).parameters ??= {};
+            }
+            if ((vm || params) && parameters) {
+                for (const key in parameters) {
+                    if (url.query.hasOwnProperty(key)) {
+                        const element = url.query[key];
+                        try {
+                            if (vm) { vm[key] = element; }
+                            if (params) { params[key] = element; }
+                        } catch (e) {
+                            // tslint:disable-next-line: no-console
+                            console.error(e);
+                        }
+                    }
+                }
+            }
+            (view as any).init?.()
+                ?.catch((error) => {
+                    if (!CancelToken.isCancelled(error)) {
+                        console.error(error);
+                    }
+                });
+            return view;
         } finally {
             busyIndicator.dispose();
         }
