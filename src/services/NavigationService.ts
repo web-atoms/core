@@ -83,7 +83,7 @@ export abstract class NavigationService {
 
     private callbacks: navigateCallback[] = [];
 
-    private beforeCallbacks: preNavigateCallback[] = [];
+    private beforeCallbacks: preNavigateCallback[];
 
     constructor(public readonly app: App) {
 
@@ -130,10 +130,12 @@ export abstract class NavigationService {
             }
         }
 
-        for (const iterator of this.beforeCallbacks) {
-            const r = iterator(pageName, viewModelParameters, options);
-            if (r) {
-                return r;
+        if (this.beforeCallbacks) {
+            for (const iterator of this.beforeCallbacks) {
+                const r = iterator(pageName, viewModelParameters, options);
+                if (r) {
+                    return r;
+                }
             }
         }
 
@@ -220,7 +222,7 @@ export abstract class NavigationService {
     }
 
     public registerPreNavigationHook(callback: preNavigateCallback): IDisposable {
-        this.beforeCallbacks.push(callback);
+        (this.beforeCallbacks ??= []).push(callback);
         return {
             dispose: () => {
                 this.beforeCallbacks.remove(callback);
