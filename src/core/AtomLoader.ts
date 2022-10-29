@@ -154,8 +154,8 @@ export class AtomLoader {
             }
             if ((vm || params) && parameters) {
                 for (const key in parameters) {
-                    if (url.query.hasOwnProperty(key)) {
-                        const element = url.query[key];
+                    if (parameters.hasOwnProperty(key)) {
+                        const element = parameters[key];
                         try {
                             if (vm) { vm[key] = element; }
                             if (params) { params[key] = element; }
@@ -169,6 +169,7 @@ export class AtomLoader {
             (view as any).init?.()
                 ?.catch((error) => {
                     if (!CancelToken.isCancelled(error)) {
+                        // tslint:disable-next-line: no-console
                         console.error(error);
                     }
                 });
