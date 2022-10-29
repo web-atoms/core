@@ -134,7 +134,7 @@ export class AtomLoader {
 
     public static async loadClass<T extends AtomControl>(
         url: string | any,
-        parameters: any,
+        { title, ... parameters }: any = {},
         app: App): Promise<T> {
 
         const busyIndicator = app.createBusyIndicator({
@@ -151,6 +151,9 @@ export class AtomLoader {
             }
             if (!vm) {
                 params = (view as any).parameters ??= {};
+            }
+            if (title) {
+                (view as any).title = title;
             }
             if ((vm || params) && parameters) {
                 for (const key in parameters) {
