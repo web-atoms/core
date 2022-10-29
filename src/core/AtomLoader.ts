@@ -4,7 +4,7 @@ import ReferenceService from "../services/ReferenceService";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
 import type { AtomControl } from "../web/controls/AtomControl";
 import type { AtomDisposableList } from "./AtomDisposableList";
-import type { AtomUri } from "./AtomUri";
+import { AtomUri } from "./AtomUri";
 import { getOwnInheritedProperty } from "./InheritedProperty";
 import { CancelToken, DI, IClassOf, IDisposable } from "./types";
 
@@ -12,8 +12,17 @@ export class AtomLoader {
 
     public static id: number = 1;
 
-    public static async load<T>(url: string | AtomUri, app: App): Promise<T> {
-        if (typeof url !== "string") {
+    public static async load<T>(url: string | AtomUri | any, app: App): Promise<T> {
+
+        if (typeof url === "string") {
+            const type = await DI.resolveViewClassAsync(url);
+            if (!type) {
+                throw new Error(`Type not found for ${url}`);
+            }
+            url = type;
+        }
+
+        if (url instanceof AtomUri) {
             if (url.host === "reference") {
                 const r = app.get(ReferenceService).get(url.path);
                 if (!r) {
@@ -29,12 +38,15 @@ export class AtomLoader {
                 return app.resolve(r.consume(), true);
             }
             url = url.path;
+
+            const type = await DI.resolveViewClassAsync(url);
+            if (!type) {
+                throw new Error(`Type not found for ${url}`);
+            }
+            url = type;
+
         }
-        const type = await DI.resolveViewClassAsync(url);
-        if (!type) {
-            throw new Error(`Type not found for ${url}`);
-        }
-        const obj = app.resolve(type, true);
+        const obj = app.resolve(url, true);
         return obj;
     }
 
