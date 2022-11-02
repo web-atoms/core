@@ -21,7 +21,7 @@ document.body.addEventListener("click", (e) => {
 });
 
 CSS(StyleRule()
-    .custom("contain", "none")
+    .custom("contain", "none !important")
 , "[data-force-contain=none]");
 
 CSS(StyleRule()
@@ -679,6 +679,24 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
     return host;
 }
 
+export const disableContain = (ce: HTMLElement) => {
+    const containNoneList: HTMLElement[] = [];
+    while (ce) {
+        const isNotNone = window.getComputedStyle(ce).contain !== "none";
+        if (isNotNone) {
+            ce.setAttribute("data-force-contain", "none");
+            containNoneList.push(ce);
+        }
+        ce = ce.parentElement;
+    }
+
+    return () => {
+        for (const iterator of containNoneList) {
+            iterator.removeAttribute("data-force-contain");
+        }
+    };
+}
+
 function closeHandler(
     host: HTMLElement,
     opener: HTMLElement,
@@ -716,22 +734,7 @@ function closeHandler(
     document.body.addEventListener("backButton", onBack, true);
     container.registerDisposable(() => document.body.removeEventListener("backButton", onBack, true));
 
-    let ce = container.element as HTMLElement;
-    const containNoneList: HTMLElement[] = [];
-    while (ce) {
-        const isNotNone = window.getComputedStyle(ce).contain !== "none";
-        if (isNotNone) {
-            ce.setAttribute("data-force-contain", "none");
-            containNoneList.push(ce);
-        }
-        ce = ce.parentElement;
-    }
-
-    container.registerDisposable(() => {
-        for (const iterator of containNoneList) {
-            iterator.removeAttribute("data-force-contain");
-        }
-    });
+    container.registerDisposable(disableContain(container.element));
 
 }
 
