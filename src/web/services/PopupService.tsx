@@ -682,7 +682,8 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
 export const disableContain = (ce: HTMLElement) => {
     const containNoneList: HTMLElement[] = [];
     while (ce) {
-        const isNotNone = window.getComputedStyle(ce).contain !== "none";
+        const style = window.getComputedStyle(ce);
+        const isNotNone = style.contain !== "none";
         if (isNotNone) {
             ce.setAttribute("data-force-contain", "none");
             containNoneList.push(ce);
