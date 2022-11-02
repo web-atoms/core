@@ -696,7 +696,7 @@ export const disableContain = (ce: HTMLElement) => {
             iterator.removeAttribute("data-force-contain");
         }
     };
-}
+};
 
 function closeHandler(
     host: HTMLElement,
