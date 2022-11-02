@@ -685,7 +685,7 @@ export const disableContain = (ce: HTMLElement) => {
         const style = window.getComputedStyle(ce);
         const isNotNone = style.contain !== "none";
         if (isNotNone) {
-            ce.setAttribute("data-force-contain", "none");
+            ce.dataset.forceContain = "none";
             containNoneList.push(ce);
         }
         ce = ce.parentElement;
@@ -693,7 +693,7 @@ export const disableContain = (ce: HTMLElement) => {
 
     return () => {
         for (const iterator of containNoneList) {
-            iterator.removeAttribute("data-force-contain");
+            delete iterator.dataset.forceContain;
         }
     };
 };
