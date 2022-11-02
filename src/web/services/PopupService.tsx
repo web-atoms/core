@@ -703,6 +703,14 @@ function closeHandler(
     };
     document.body.addEventListener("click", handler, true);
     container.registerDisposable(() => document.body.removeEventListener("click", handler, true));
+    const onBack = (e: Event) => {
+        e.preventDefault();
+        e.stopImmediatePropagation?.();
+        e.stopPropagation();
+        close();
+    };
+    document.body.addEventListener("backButton", onBack, true);
+    container.registerDisposable(() => document.body.removeEventListener("backButton", onBack, true));
 }
 
 let popupId = 1001;
