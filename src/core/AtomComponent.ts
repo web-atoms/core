@@ -12,7 +12,7 @@ import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
 import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol,
-    elementFactorySymbol, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
+    elementFactorySymbol, IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -150,7 +150,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     /** Do not ever use, only available as intellisense feature for
      * vs code editor.
      */
-    public get vsProps(): { [k in keyof this]?: any} | { [k: string]: any } | {} {
+    public get vsProps(): { [k in keyof this]?: this[k]} | IElementAttributes {
         return undefined;
     }
 
