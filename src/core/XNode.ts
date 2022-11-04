@@ -35,7 +35,7 @@ export class RootObject {
 }
 
 export interface IElementAttributes extends IDataStyles {
-    // [key: string]: unknown;
+    [key: string]: unknown;
     eventClick?: any;
     eventBlur?: any;
     eventFocus?: any;
