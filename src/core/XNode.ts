@@ -2,10 +2,7 @@ import type { ObjectPositionType } from "../style/StyleRule";
 import type { AtomControl } from "../web/controls/AtomControl";
 import Bind, { bindSymbol } from "./Bind";
 import type { ColorItem } from "./Colors";
-import DataStyles, { IDataStyles } from "./DataStyles";
 import { IClassOf, IDisposable } from "./types";
-
-export const DataStyles2 = DataStyles;
 
 export interface IAttributes {
     [key: string]: string | number | null | any;
@@ -34,7 +31,7 @@ export class RootObject {
     }
 }
 
-export interface IElementAttributes extends IDataStyles {
+export interface IElementAttributes {
     [key: string]: unknown;
     eventClick?: any;
     eventBlur?: any;
@@ -43,10 +40,10 @@ export interface IElementAttributes extends IDataStyles {
     eventKeyup?: any;
     eventKeypress?: any;
     text?: string | any;
-    "event-click"?: (e: MouseEvent) => void;
-    "event-blur"?: (e: Event) => void;
-    "event-focus"?: (e: Event) => void;
-    "on-create"?: (ctrl: AtomControl, element: HTMLElement) => void;
+    "event-click"?: (e: MouseEvent) => any;
+    "event-blur"?: (e: Event) => any;
+    "event-focus"?: (e: Event) => any;
+    "on-create"?: (ctrl: AtomControl, element: HTMLElement) => any;
     /** This will fire up `watch` custom event, that you can observe
      * for many elements in document.body instead of setting up too
      * many bindings
