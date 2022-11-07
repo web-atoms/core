@@ -109,7 +109,7 @@ export default function Action(
 
                         if (authorize) {
                             const detail: IAuthorize = {
-                                authorize,
+                                authorize: true,
                                 authorized: false
                             };
                             var ce = new CustomEvent("authorize", {
