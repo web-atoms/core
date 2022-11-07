@@ -109,8 +109,8 @@ export default function Action(
 
                         if (authorize) {
                             const detail: IAuthorize = {
-                                authorize: true,
-                                authorized: false
+                                authorize,
+                                authorized: true
                             };
                             var ce = new CustomEvent("authorize", {
                                 bubbles: true,
