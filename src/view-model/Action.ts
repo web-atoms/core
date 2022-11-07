@@ -63,11 +63,11 @@ export interface IActionOptions {
     /**
      * Authorize user, if not empty role
      */
-    authorize?: string[];
+    authorize?: string[] | boolean;
 }
 
 export interface IAuthorize {
-    authorize: string[];
+    authorize: string[] | boolean;
     authorized: boolean;
 }
 
