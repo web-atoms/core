@@ -59,6 +59,16 @@ export interface IActionOptions {
      * Closes the current popup/window by calling viewModel.close, returned result will be sent in close
      */
     close?: boolean;
+
+    /**
+     * Authorize user, if not empty role
+     */
+    authorize?: string[];
+}
+
+export interface IAuthorize {
+    authorize: string[];
+    authorized: boolean;
 }
 
 /**
@@ -72,6 +82,7 @@ export interface IActionOptions {
  */
 export default function Action(
     {
+        authorize = void 0,
         success = null,
         successTitle = "Done",
         successMode = "notify",
@@ -95,6 +106,21 @@ export default function Action(
                     const app = vm.app as App;
                     const ns = app.resolve(NavigationService) as NavigationService;
                     try {
+
+                        if (authorize) {
+                            const detail: IAuthorize = {
+                                authorize,
+                                authorized: false
+                            };
+                            var ce = new CustomEvent("authorize", {
+                                bubbles: true,
+                                detail
+                            });
+                            document.body.dispatchEvent(ce);
+                            if (!ce.detail.authorized) {
+                                return;
+                            }
+                        }
 
                         if (validate) {
                             if (!vm.isValid) {
