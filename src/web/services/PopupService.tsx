@@ -1071,11 +1071,10 @@ export default class PopupService {
             };
             if (opener.offsetParent !== opener.parentElement) {
                 opener.parentElement.style.position = "relative";
-                setTimeout(alignPopup, 50);
+                setTimeout(alignPopup, 5);
             } else {
                 alignPopup();
             }
-            
         }
         const parent = AtomControl.from(opener);
 
