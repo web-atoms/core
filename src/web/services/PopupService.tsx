@@ -735,7 +735,9 @@ function closeHandler(
     document.body.addEventListener("backButton", onBack, true);
     container.registerDisposable(() => document.body.removeEventListener("backButton", onBack, true));
 
-    container.registerDisposable(disableContain(container.element));
+    setTimeout(() => {
+        container.registerDisposable(disableContain(container.element));
+    }, 10);
 
 }
 
