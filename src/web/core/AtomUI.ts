@@ -4,11 +4,34 @@ import { INameValues, IRect } from "../../core/types";
 
 export class ChildEnumerator {
 
+    public static find(e: HTMLElement, filter: (e: HTMLElement) => any) {
+        let item = e?.firstElementChild as HTMLElement;
+        while (item) {
+            const next = item.nextElementSibling as HTMLElement;
+            if (filter(item)) {
+                return item;
+            }
+            item = next;
+        }
+    }
+
+    public static *where(e: HTMLElement, filter: (e: HTMLElement) => any) {
+        let item = e?.firstElementChild as HTMLElement;
+        while (item) {
+            const next = item.nextElementSibling as HTMLElement;
+            if (filter(item)) {
+                yield item;
+            }
+            item = next;
+        }
+    }
+
     public static *enumerate(e: HTMLElement) {
         let item = e?.firstElementChild as HTMLElement;
         while (item) {
+            const next = item.nextElementSibling as HTMLElement;
             yield item;
-            item = item.nextElementSibling as HTMLElement;
+            item = next;
         }
     }
 
