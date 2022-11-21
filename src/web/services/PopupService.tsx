@@ -158,10 +158,11 @@ CSS(StyleRule()
     .left("50%")
     .transform("translate(-50%,-50%)" as any)
     .boxShadow("0 0 20px 1px rgb(0 0 0 / 75%)")
-    .verticalFlexLayout({
-        alignItems: "stretch",
-        justifyContent: "flex-start"
-    })
+    .display("grid")
+    .alignItems("center")
+    .justifyItems("center")
+    .gridTemplateRows("auto 1fr")
+    .gridTemplateColumns("1fr")
     .opacity("0")
     .transition("opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32)")
     .and(StyleRule("[data-ready=true]")
@@ -201,7 +202,7 @@ CSS(StyleRule()
     .child(StyleRule("*[data-window-content=window-content]")
         .margin(5)
         .flexStretch()
-        .overflow("hidden")
+        .overflow("auto")
         // This is done to avoid absolute position
         // to run out of content area
         .position("relative")
