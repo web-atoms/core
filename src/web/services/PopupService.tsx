@@ -202,6 +202,8 @@ CSS(StyleRule()
     )
     .child(StyleRule("*[data-window-content=window-content]")
         .margin(5)
+        .alignSelf("stretch")
+        .justifySelf("stretch")
         .flexStretch()
         .overflow("auto")
         // This is done to avoid absolute position
