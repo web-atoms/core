@@ -1003,7 +1003,18 @@ export default class PopupService {
                 control.close = close;
             }
 
-            if (!isModal) {
+            if (isModal) {
+                const bg = document.createElement("div");
+                bg.style.position = "fixed";
+                bg.style.right = "0";
+                bg.style.bottom = "0";
+                document.body.appendChild(bg);
+                control.registerDisposable({
+                    dispose: () => {
+                        bg.remove();
+                    }
+                });
+            } else {
                 closeHandler(host, opener, control, cancel);
             }
         });
