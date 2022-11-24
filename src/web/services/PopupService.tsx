@@ -1005,10 +1005,10 @@ export default class PopupService {
 
             if (isModal) {
                 const bg = document.createElement("div");
-                bg.style.position = "fixed";
+                bg.style.position = "absolute";
                 bg.style.right = "0";
                 bg.style.bottom = "0";
-                document.body.appendChild(bg);
+                host.appendChild(bg);
                 control.registerDisposable({
                     dispose: () => {
                         bg.remove();
