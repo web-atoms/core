@@ -458,6 +458,27 @@ export default class Bind {
         };
     }
 
+        /**
+     * Bind the expression one way with source, you cannot reference
+     * `this` inside this context, it will not watch `this`
+     * @param source source to watch
+     * @param path Lambda Expression for binding
+     * @param now Default value to set immediately
+     */
+    public static sourceTwoWays<T>(
+            source: T,
+            path: (x: { control: IAtomComponent, source: T }) => any,
+            events: string[] = ["input", "cut", "paste", "change"]): any {
+    
+            const lists = parsePath(path, false).map((x) => ["this", ... x]);
+            return {
+                [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                    const self = { control, source };
+                    control.bind(e, name, lists, events as any, lists, self);
+                }
+            };
+        }
+
     // public static twoWaysConvert<T extends IAtomComponent = IAtomComponent>(
     //     sourcePath: bindingFunction<T>): Bind {
     //     const b = new Bind(twoWays, sourcePath, null, events);
@@ -476,7 +497,7 @@ export default class Bind {
     public static twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         converter?: IValueConverter): any {
-        return this.twoWays(sourcePath, ["change", "input", "paste", "keyup", "keypress"], converter);
+        return this.twoWays(sourcePath, ["change", "input", "paste", "cut"], converter);
         // const b = new Bind(twoWays, sourcePath, null,
         //     ["change", "input", "paste"]);
         // if (!(b.thisPathList  || b.pathList)) {
