@@ -59,7 +59,7 @@ export class ChildEnumerator {
  * Enumerate through all the descendents including self.
  * @param e Element
  */
-export function *descendentIterator(e: Element) {
+export function *descendentElementIterator(e: Element) {
     const stack: Element[] = [];
     const start = e.firstElementChild;
     if (start) {
@@ -72,6 +72,33 @@ export function *descendentIterator(e: Element) {
         yield pop;
 
         const child = pop.firstElementChild;
+        if (child) {
+            stack.push(child);
+        }
+
+        if (next) {
+            stack.push(next);
+        }
+    }
+};
+
+/**
+ * Enumerate through all the descendents including self.
+ * @param e Element
+ */
+ export function *descendentIterator(e: Node) {
+    const stack: Node[] = [];
+    const start = e.firstChild;
+    if (start) {
+        stack.push(start);
+    }
+
+    while (stack.length) {
+        const pop = stack.pop();
+        const next = pop.nextSibling;
+        yield pop;
+
+        const child = pop.firstChild;
         if (child) {
             stack.push(child);
         }
