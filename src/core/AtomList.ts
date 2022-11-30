@@ -261,35 +261,34 @@ import { IDisposable } from "./types";
 
     // tslint:disable
     const ap = Array.prototype;
-    for (const key in AtomList.prototype) {
-        if (Object.prototype.hasOwnProperty.call(AtomList.prototype, key)) {
-            switch(key) {
-                case "add":
-                case "addAll":
-                case "clear":
-                case "refresh":
-                case "set":
-                case "remove":
-                case "removeAt":
-                case "watch":
-                case "replace":
-                case "insert":
-                case "count":
-                case "avg":
-                case "includes":
-                    if (key in ap) {
-                        continue;
-                    }
-                    const element = AtomList.prototype[key];
-                    Object.defineProperty(ap, key, {
-                        enumerable: false,
-                        value: element,
-                        configurable: true,
-                        writable: true
-                    });
+    for (const key of Object.getOwnPropertyNames(AtomList.prototype)) {
+        const { value } = Object.getOwnPropertyDescriptor(AtomList.prototype, key);        
+        switch(key) {
+            case "add":
+            case "addAll":
+            case "clear":
+            case "refresh":
+            case "set":
+            case "remove":
+            case "removeAt":
+            case "watch":
+            case "replace":
+            case "insert":
+            case "count":
+            case "avg":
+            case "includes":
+                if (key in ap) {
                     continue;
-            }
+                }
+                Object.defineProperty(ap, key, {
+                    enumerable: false,
+                    value,
+                    configurable: true,
+                    writable: true
+                });
+                continue;
         }
+        
     }
     // Array.prototype["add"] = AtomList.prototype.add;
     // Array.prototype["addAll"] = AtomList.prototype.addAll;
