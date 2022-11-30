@@ -55,6 +55,33 @@ export class ChildEnumerator {
 
 }
 
+/**
+ * Enumerate through all the descendents including self.
+ * @param e Element
+ */
+export function *descendentIterator(e: Element) {
+    const stack: Element[] = [];
+    const start = e.firstElementChild;
+    if (start) {
+        stack.push(start);
+    }
+
+    while (stack.length) {
+        const pop = stack.pop();
+        const next = pop.nextElementSibling;
+        yield pop;
+
+        const child = pop.firstElementChild;
+        if (child) {
+            stack.push(child);
+        }
+
+        if (next) {
+            stack.push(next);
+        }
+    }
+};
+
 export class AtomUI {
 
     public static outerHeight(el: HTMLElement, margin: boolean = false): number {
