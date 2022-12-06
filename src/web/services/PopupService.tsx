@@ -1008,6 +1008,8 @@ export default class PopupService {
                 bg.style.position = "absolute";
                 bg.style.right = "0";
                 bg.style.bottom = "0";
+                bg.style.left = "0";
+                bg.style.top = "0";
                 host.appendChild(bg);
                 control.registerDisposable({
                     dispose: () => {
