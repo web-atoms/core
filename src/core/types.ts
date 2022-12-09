@@ -151,14 +151,14 @@ export class ArrayHelper {
 declare global {
 
     interface IKeyedArray<TKey, T> extends Array<T> {
-        key: TKey;
+        key?: TKey;
     }
 
     // tslint:disable-next-line
     interface Array<T> {
         groupBy?<TKey>(
             this: Array<T>, 
-            keySelector: ((item: T) => TKey)): Array<{ key: TKey } & Array<T>>;
+            keySelector: ((item: T) => TKey)): Array<IKeyedArray<TKey,T>>;
     }
 }
 
