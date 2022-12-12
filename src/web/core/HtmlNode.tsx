@@ -1,6 +1,7 @@
 import XNode, { elementFactorySymbol } from "../../core/XNode";
 import { AtomStyleRules } from "../../style/StyleRule";
 import { ElementValueSetters } from "../controls/AtomControl";
+import { AtomUI, descendentElementIterator } from "./AtomUI";
 import Encoder from "./Encoder";
 export const encoder = Encoder("entity");
 
@@ -160,6 +161,21 @@ export default class HtmlNode {
 
     public static convert(node: XNode): string {
         return convertToText(node);
+    }
+
+    public static toElement(node: XNode, sanitize: boolean = true): HTMLElement {
+        const div = document.createElement("div");
+        render(<div>{ node }</div>, div);
+        if (sanitize) {
+            for(const e of descendentElementIterator(div)) {
+                if (/^script$/i.test(e.nodeName)) {
+                    e.remove();
+                    continue;
+                }
+                // remove all on attributes...
+            }
+        }
+        return div.firstElementChild as HTMLElement;
     }
 
 }
