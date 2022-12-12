@@ -959,10 +959,14 @@ export default class PopupService {
                     if (maxWidth) {
                         element.style.maxWidth = typeof maxWidth === "number" ? maxWidth + "px" : maxWidth;
                         widthSet = true;
+                    } else {
+                        element.style.maxWidth = "95%";
                     }
                     if (maxHeight) {
                         element.style.maxHeight = typeof maxHeight === "number" ? maxHeight + "px" : maxHeight;
                         heightSet = true;
+                    } else {
+                        element.style.maxHeight = "95%";
                     }
                 }
 
