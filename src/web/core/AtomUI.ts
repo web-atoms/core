@@ -71,14 +71,15 @@ export function *descendentElementIterator(e: Element) {
         const next = pop.nextElementSibling;
         yield pop;
 
+        if (next) {
+            stack.push(next);
+        }
+
         const child = pop.firstElementChild;
         if (child) {
             stack.push(child);
         }
 
-        if (next) {
-            stack.push(next);
-        }
     }
 }
 
@@ -98,14 +99,15 @@ export function *descendentIterator(e: Node) {
         const next = pop.nextSibling;
         yield pop;
 
+        if (next) {
+            stack.push(next);
+        }
+
         const child = pop.firstChild;
         if (child) {
             stack.push(child);
         }
 
-        if (next) {
-            stack.push(next);
-        }
     }
 }
 
