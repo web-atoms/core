@@ -61,7 +61,7 @@ export class ChildEnumerator {
  */
 export function *descendentElementIterator(e: Element) {
     const stack: Element[] = [];
-    const start = e.firstElementChild;
+    const start = e;
     if (start) {
         stack.push(start);
     }
@@ -80,15 +80,15 @@ export function *descendentElementIterator(e: Element) {
             stack.push(next);
         }
     }
-};
+}
 
 /**
  * Enumerate through all the descendents including self.
  * @param e Element
  */
- export function *descendentIterator(e: Node) {
+export function *descendentIterator(e: Node) {
     const stack: Node[] = [];
-    const start = e.firstChild;
+    const start = e;
     if (start) {
         stack.push(start);
     }
@@ -107,7 +107,7 @@ export function *descendentElementIterator(e: Element) {
             stack.push(next);
         }
     }
-};
+}
 
 export class AtomUI {
 
