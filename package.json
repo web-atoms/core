@@ -37,7 +37,7 @@
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
-    "@web-atoms/date-time": "^1.1.0",
+    "@web-atoms/date-time": "^1.1.1",
     "reflect-metadata": "^0.1.13"
   }
 }
