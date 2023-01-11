@@ -539,29 +539,7 @@ export class ConfirmPopup extends PopupWindow {
         noLabel = "No",
         cancelLabel = null
     }): Promise<boolean> {
-        try {
-            const popup = class extends ConfirmPopup {
-                protected create(): void {
-                    this.render(<div>
-                        { message instanceof XNode ? message : <div text={message}/> }
-                    </div>);
-                }
-            };
-            return await popup.showModal<boolean>({
-                parameters: {
-                    message,
-                    yesLabel,
-                    noLabel,
-                    cancelLabel
-                },
-                title
-            });
-        } catch (e) {
-            if (CancelToken.isCancelled(e)) {
-                return false;
-            }
-            throw e;
-        }
+        return PopupService.confirm({ title, message, yesLabel, noLabel,  cancelLabel});
     }
 
     public message: string;
