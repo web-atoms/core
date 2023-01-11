@@ -354,10 +354,8 @@ export class PopupWindow extends AtomControl {
 
     protected async requestCancel() {
         if (this.closeWarning) {
-            if (!await ConfirmPopup.showModal<boolean>({
-                parameters: {
-                    message : this.closeWarning
-                }
+            if (!await ConfirmPopup.confirm({
+                message : this.closeWarning
             })) {
                 return;
             }
@@ -530,7 +528,7 @@ CSS(StyleRule()
     )
 , "div[data-confirm-popup=confirm-popup]");
 
-export class ConfirmPopup extends PopupWindow {
+class ConfirmPopup extends PopupWindow {
 
     public static async confirm({
         message,
