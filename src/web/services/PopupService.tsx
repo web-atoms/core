@@ -996,9 +996,20 @@ export default class PopupService {
                 bg.style.left = "0";
                 bg.style.top = "0";
                 host.appendChild(bg);
+
+                const onBack = (e: CustomEvent) => {
+                    e.preventDefault();
+                    e.stopImmediatePropagation?.();
+                    e.stopPropagation();
+                    (control as any).requestCancel?.();
+                };
+
+                document.body.addEventListener("backButton", onBack, true);
+
                 control.registerDisposable({
                     dispose: () => {
                         bg.remove();
+                        document.body.removeEventListener("backButton", onBack, true);
                     }
                 });
             } else {
