@@ -439,6 +439,9 @@ export class PopupWindow extends AtomControl {
 
     protected setupDragging(tp: HTMLElement): void {
         this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
+            if ((startEvent.target as HTMLElement).tagName === "BUTTON") {
+                return;
+            }
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
             // const offset = AtomUI.screenOffset(tp);
@@ -462,7 +465,7 @@ export class PopupWindow extends AtomControl {
 
                 const finalX = offset.x + dx;
                 const finalY = offset.y + dy;
-                if (finalX < 0 || finalY < 0) {
+                if (finalX < 5 || finalY < 5) {
                     return;
                 }
 
