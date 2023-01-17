@@ -717,8 +717,8 @@ function closeHandler(
         e.stopPropagation();
         close();
     };
-    document.body.addEventListener("backButton", onBack, true);
-    container.registerDisposable(() => document.body.removeEventListener("backButton", onBack, true));
+    window.addEventListener("backButton", onBack, true);
+    container.registerDisposable(() => window.removeEventListener("backButton", onBack, true));
 
     setTimeout(() => {
         container.registerDisposable(disableContain(container.element));
@@ -1004,12 +1004,12 @@ export default class PopupService {
                     (control as any).requestCancel?.();
                 };
 
-                document.body.addEventListener("backButton", onBack, true);
+                window.addEventListener("backButton", onBack, true);
 
                 control.registerDisposable({
                     dispose: () => {
                         bg.remove();
-                        document.body.removeEventListener("backButton", onBack, true);
+                        window.removeEventListener("backButton", onBack, true);
                     }
                 });
             } else {
