@@ -560,6 +560,11 @@ class ConfirmPopup extends PopupWindow {
         this.cancelLabel = null;
     }
 
+    protected requestCancel(): Promise<void> {
+        this.cancel();
+        return Promise.resolve();
+    }
+
     protected render(node: XNode, e?: any, creator?: any) {
         this.render = super.render;
         this.element.dataset.confirmPopup = "confirm-popup";
