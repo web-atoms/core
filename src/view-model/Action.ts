@@ -107,19 +107,8 @@ export default function Action(
                     const ns = app.resolve(NavigationService) as NavigationService;
                     try {
 
-                        if (authorize) {
-                            const detail: IAuthorize = {
-                                authorize,
-                                authorized: true
-                            };
-                            var ce = new CustomEvent("authorize", {
-                                bubbles: true,
-                                detail
-                            });
-                            document.body.dispatchEvent(ce);
-                            if (!ce.detail.authorized) {
-                                return;
-                            }
+                        if (authorize && !App.authorize()) {
+                            return;
                         }
 
                         if (validate) {

@@ -33,8 +33,29 @@ export class AtomMessageAction {
     }
 }
 
+export interface IAuthorize {
+    authorize: string[] | boolean;
+    authorized: boolean;
+}
+
 @RegisterSingleton
 export class App extends ServiceProvider {
+
+    public static authorize(authorize: string[] | boolean = true) {
+        const detail: IAuthorize = {
+            authorize,
+            authorized: true
+        };
+        const ce = new CustomEvent("authorize", {
+            bubbles: true,
+            detail
+        });
+        document.body.dispatchEvent(ce);
+        if (!ce.detail.authorized) {
+            return false;
+        }
+        return true;
+    }
 
     public readonly dispatcher: AtomDispatcher;
 
