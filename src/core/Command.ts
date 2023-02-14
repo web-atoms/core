@@ -31,7 +31,7 @@ document.body.addEventListener("click", (ce: MouseEvent) => {
 
 let id = 1;
 
-export class Command<T = any> {
+export default class Command<T = any> {
 
     public static registry: Map<string, Command> = new Map();
 
