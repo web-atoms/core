@@ -155,7 +155,7 @@ export default function Action(
                             return pe;
                         }
                     } catch (e) {
-                        if(CancelToken.isCancelled(e)) {
+                        if (CancelToken.isCancelled(e)) {
                             return;
                         }
                         if (/^timeout$/i.test(e.toString().trim())) {
@@ -163,8 +163,8 @@ export default function Action(
                             console.warn(e);
                             return;
                         }
-                        if (e instanceof JsonError && e.json?.detail) {
-                            await ns.alert(e.json.detail, e.message);
+                        if (e.detail) {
+                            await ns.alert(e.detail, e.message);
                             return;
                         }
                         await ns.alert(e, "Error");
