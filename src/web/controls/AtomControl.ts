@@ -415,12 +415,18 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        if (/^data\-/.test(name)) {
-            name = fromHyphenToCamel(name.substring(5));
+        if (/^(data|aria)\-/.test(name)) {
             if (typeof value === "object") {
                 value = JSON.stringify(value);
             }
-            element.dataset[name] = value;
+            if (value === null) {
+                element.removeAttribute(name);
+                return;
+            }
+            if (typeof value !== "string") {
+                value = value.toString();
+            }
+            element.setAttribute(name, value);
             return;
         }
 
