@@ -195,9 +195,17 @@ export const ElementValueSetters: ISetters = {
                 }
             }));
         }, 1, ctrl, element, value);
+    },
+    ariaLabel(ctrl: AtomControl, e: HTMLElement, value) {
+        e.setAttribute("aria-label", value);
+    },
+    ariaPlaceholder(ctrl: AtomControl, e: HTMLElement, value) {
+        e.setAttribute("aria-placeholder", value);
     }
 };
 
+ElementValueSetters["aria-label"] = ElementValueSetters.ariaLabel;
+ElementValueSetters["aria-placeholder"] = ElementValueSetters.ariaPlaceholder;
 ElementValueSetters["style-display"] = ElementValueSetters.styleDisplay;
 ElementValueSetters["style-left"] = ElementValueSetters.styleLeft;
 ElementValueSetters["style-top"] = ElementValueSetters.styleTop;
@@ -218,6 +226,11 @@ ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
 
 let propertyId = 1;
 
+export type PropertyRegistration = ((value) => ({[key: string]: any})) & {
+    property: string;
+};
+
+
 /**
  * AtomControl class represents UI Component for a web browser.
  */
@@ -237,7 +250,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     public static registerProperty(
         attributeName: string,
         attributeValue: string,
-        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): (a) => object {
+        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): PropertyRegistration {
         const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
         function setterFx(v) {
@@ -248,7 +261,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         setterFx.toString = () => {
             return setterSymbol;
         };
-        return setterFx as any;
+        setterFx.property = setterSymbol;
+        return setterFx;
     }
 
     @BindableProperty
@@ -437,7 +451,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        element[name] = value;
+        if (name.startsWith("aria-")) {
+            element.setAttribute(name, value);
+        } else {
+            element[name] = value;
+        }
     }
 
     // protected bindElementEvent(element: HTMLElement, name: string, value: any) {
