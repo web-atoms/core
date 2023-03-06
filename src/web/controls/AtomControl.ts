@@ -197,9 +197,17 @@ export const ElementValueSetters: ISetters = {
         }, 1, ctrl, element, value);
     },
     ariaLabel(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value === null) {
+            e.removeAttribute("aria-label");
+            return;
+        }
         e.setAttribute("aria-label", value);
     },
     ariaPlaceholder(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value === null) {
+            e.removeAttribute("aria-placeholder");
+            return;
+        }
         e.setAttribute("aria-placeholder", value);
     }
 };
