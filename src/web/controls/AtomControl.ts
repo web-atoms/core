@@ -201,12 +201,24 @@ export const ElementValueSetters: ISetters = {
             e.removeAttribute("aria-label");
             return;
         }
+        if (typeof value === "object") {
+            value = JSON.stringify(value);
+        }
+        if (typeof value !== "string") {
+            value = value.toString();
+        }
         e.setAttribute("aria-label", value);
     },
     ariaPlaceholder(ctrl: AtomControl, e: HTMLElement, value) {
         if (value === null) {
             e.removeAttribute("aria-placeholder");
             return;
+        }
+        if (typeof value === "object") {
+            value = JSON.stringify(value);
+        }
+        if (typeof value !== "string") {
+            value = value.toString();
         }
         e.setAttribute("aria-placeholder", value);
     }
@@ -424,12 +436,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
 
         if (/^(data|aria)\-/.test(name)) {
-            if (typeof value === "object") {
-                value = JSON.stringify(value);
-            }
             if (value === null) {
                 element.removeAttribute(name);
                 return;
+            }
+            if (typeof value === "object") {
+                value = JSON.stringify(value);
             }
             if (typeof value !== "string") {
                 value = value.toString();
