@@ -1,9 +1,9 @@
-import { AtomComponent } from "./AtomComponent";
+import { AtomControl } from "./AtomComponent";
 
-export default function InjectProperty(target: AtomComponent<any, any>, key: string): void {
+export default function InjectProperty(target: AtomControl, key: string): void {
 
     Object.defineProperty(target, key, {
-        get: function() {
+        get() {
             const plist = (Reflect as any).getMetadata("design:type", target, key);
             const result = this.app.resolve(plist);
             // get is compatible with AtomWatcher

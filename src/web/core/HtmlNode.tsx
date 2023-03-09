@@ -1,6 +1,6 @@
+import { ElementValueSetters } from "../../core/AtomComponent";
 import XNode, { elementFactorySymbol } from "../../core/XNode";
 import { AtomStyleRules } from "../../style/StyleRule";
-import { ElementValueSetters } from "../controls/AtomControl";
 import { AtomUI, descendentElementIterator } from "./AtomUI";
 import Encoder from "./Encoder";
 export const encoder = Encoder("entity");
@@ -167,7 +167,7 @@ export default class HtmlNode {
         const div = document.createElement("div");
         render(<div>{ node }</div>, div);
         if (sanitize) {
-            for(const e of descendentElementIterator(div)) {
+            for (const e of descendentElementIterator(div)) {
                 if (/^script$/i.test(e.nodeName)) {
                     e.remove();
                     continue;

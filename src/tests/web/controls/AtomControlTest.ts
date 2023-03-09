@@ -3,15 +3,14 @@ import Category from "@web-atoms/unit-test/dist/Category";
 import Test from "@web-atoms/unit-test/dist/Test";
 import { Atom } from "../../../Atom";
 import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder";
-import { AtomComponent } from "../../../core/AtomComponent";
+import { AtomControl } from "../../../core/AtomComponent";
 import { AtomDispatcher } from "../../../core/AtomDispatcher";
 import { AtomWatcher } from "../../../core/AtomWatcher";
 import { BindableProperty } from "../../../core/BindableProperty";
 import WebImage from "../../../core/WebImage";
 import { AtomTest } from "../../../unit/AtomTest";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";
 import AtomWebTest from "../../../unit/AtomWebTest";
+import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";
 
 class TestViewModel {
 
@@ -97,7 +96,6 @@ export class AtomControlTests extends AtomWebTest {
         const a = new AtomItemsControl(this.app, document.createElement("UL"));
 
         Assert.isTrue(a instanceof AtomControl);
-        Assert.isTrue(a instanceof AtomComponent);
         Assert.isTrue(a instanceof AtomItemsControl);
     }
 

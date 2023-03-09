@@ -7,7 +7,7 @@ function getSymbolKey(name: string) {
     return cache[name] ??= Symbol(name);
 }
 
-function refreshInherited(ac: AtomControl, key: any, storageKey: any) {
+export function refreshInherited(ac: AtomControl, key: any, storageKey: any) {
     const e = ac.element;
     if (!e) {
         // control is disposed !!

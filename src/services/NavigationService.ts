@@ -1,5 +1,5 @@
 import { App } from "../App";
-import { AtomComponent } from "../core/AtomComponent";
+import { AtomControl } from "../core/AtomComponent";
 import { AtomUri } from "../core/AtomUri";
 import FormattedString from "../core/FormattedString";
 import { ArrayHelper, CancelToken, IDisposable, INameValuePairs } from "../core/types";
@@ -24,7 +24,6 @@ export type navigateCallback = (
     url: AtomUri,
     options?: IPageOptions) => Promise<any>;
 
-    
 export type preNavigateCallback = (
     url: any,
     viewModelParameters: {[key: string]: any},
@@ -124,7 +123,7 @@ export abstract class NavigationService {
                 pageName = pageName[nameSymbol] as string;
             } else {
                 const rs = this.app.resolve(ReferenceService) as ReferenceService;
-                const host = pageName instanceof AtomComponent ? "reference" : "class";
+                const host = pageName instanceof AtomControl ? "reference" : "class";
                 const r = rs.put(pageName);
                 pageName = `ref://${host}/${r.key}`;
             }
@@ -177,7 +176,12 @@ export abstract class NavigationService {
         return this.openWindow(url, options);
     }
 
-    public abstract notify(message: string | FormattedString, title?: string, type?: NotifyType, delay?: number): Promise<void>;
+    public abstract notify(
+        message: string | FormattedString,
+        title?: string,
+        type?: NotifyType,
+        delay?: number
+    ): Promise<void>;
 
     public abstract get title(): string;
     public abstract set title(v: string);

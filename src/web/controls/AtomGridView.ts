@@ -1,5 +1,4 @@
-import { AtomBridge } from "../../core/AtomBridge";
-import { BindableProperty } from "../../core/BindableProperty";
+import { visitDescendents } from "../../core/AtomComponent";
 import { IRect } from "../../core/types";
 import { AtomControl } from "./AtomControl";
 
@@ -263,7 +262,7 @@ export class AtomGridView extends AtomControl {
         host.style.left = `${colStart}px`;
         host.style.width = `${colSize}px`;
 
-        AtomBridge.instance.visitDescendents(host, (el, ac) => {
+        visitDescendents(host, (el, ac) => {
             if (ac) {
                 ac.invalidate();
                 return false;
@@ -280,7 +279,7 @@ export class AtomGridView extends AtomControl {
 
         let n: number = 0;
         if (s.endsWith("%")) {
-            s = s.substr(0, s.length - 1);
+            s = s.substring(0, s.length - 1);
             n = parseFloat(s);
             return { offset: -1, size: total * n / 100 };
         }

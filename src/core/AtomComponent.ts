@@ -1,10 +1,10 @@
 import { App } from "../App";
-import { AtomBridge } from "../core/AtomBridge";
 import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement,
     IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types";
 import { Inject } from "../di/Inject";
 import { TypeKey } from "../di/TypeKey";
 import { NavigationService } from "../services/NavigationService";
+import { ChildEnumerator, descendentElementIterator } from "../web/core/AtomUI";
 import { AtomStyle } from "../web/styles/AtomStyle";
 import { AtomStyleSheet } from "../web/styles/AtomStyleSheet";
 import { AtomBinder } from "./AtomBinder";
@@ -14,7 +14,7 @@ import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
 import Bind, { bindSymbol } from "./Bind";
 import { BindableProperty } from "./BindableProperty";
 import FormattedString from "./FormattedString";
-import { InheritedProperty } from "./InheritedProperty";
+import { InheritedProperty, refreshInherited } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
 import WebImage from "./WebImage";
@@ -35,18 +35,19 @@ declare global {
 }
 
 const defaultStyleSheets: { [key: string]: AtomStyle } = {};
-function setAttribute(name: string) {
+const setAttribute = (name: string) => {
     return (ctrl: AtomControl, e: HTMLElement, value: any) => {
         e.setAttribute(name, value);
     };
-}
+};
 
-function setEvent(name: string) {
+const setEvent = (name: string) => {
     return (ctrl: AtomControl, e: HTMLElement, value: any) => {
         (ctrl as any).bindEvent(e, name, value);
     };
-}
-function setStyle(name: string, applyUnit?: string) {
+};
+
+const setStyle = (name: string, applyUnit?: string) => {
     if (applyUnit) {
         return (ctrl: AtomControl, e: HTMLElement, value: any) => {
             if (typeof value === "number") {
@@ -59,9 +60,45 @@ function setStyle(name: string, applyUnit?: string) {
     return (ctrl: AtomControl, e: HTMLElement, value: any) => {
         e.style[name] = value;
     };
-}
+};
 
-function disposeChildren(owner: AtomControl, e: HTMLElement) {
+const watchProperty = (element: HTMLElement, name: string, events: string[], f: (v: any) => void): IDisposable => {
+
+    if (events.indexOf("change") === -1) {
+        events.push("change");
+    }
+
+    const l = (e) => {
+        const e1 = element as HTMLInputElement;
+        const v = e1.type === "checkbox" ? e1.checked : e1.value;
+        f(v);
+    };
+    for (const iterator of events) {
+        element.addEventListener(iterator, l , false);
+    }
+
+    return {
+        dispose: () => {
+            for (const iterator of events) {
+                element.removeEventListener(iterator, l, false);
+            }
+        }
+    };
+};
+
+export const visitDescendents = (element: HTMLElement, action: (e: HTMLElement, ac: AtomControl) => boolean) => {
+
+    for (const iterator of ChildEnumerator.enumerate(element)) {
+        const eAny = iterator as any;
+        const ac = eAny ? eAny.atomControl : undefined;
+        if (!action(iterator, ac)) {
+            continue;
+        }
+        visitDescendents(iterator, action);
+    }
+};
+
+const disposeChildren = (owner: AtomControl, e: HTMLElement) => {
     if (!e) {
         return;
     }
@@ -80,7 +117,7 @@ function disposeChildren(owner: AtomControl, e: HTMLElement) {
         owner.unbindEvent(c);
         c.remove();
     }
-}
+};
 
 export interface ISetters {
     // tslint:disable-next-line: ban-types
@@ -357,9 +394,8 @@ export class AtomControl implements
     }
     public set theme(v: AtomStyleSheet) {
         this.mTheme = v;
-        bridgeInstance.refreshInherited(this, "theme");
+        refreshInherited(this, "theme", "mTheme");
     }
-
 
     private mControlStyle: AtomStyle;
     public get controlStyle(): AtomStyle {
@@ -406,20 +442,20 @@ export class AtomControl implements
 
     private readonly eventHandlers: IEventObject[];
 
-    private readonly bindings: Array<PropertyBinding<HTMLElement>>;
+    private readonly bindings: PropertyBinding[];
 
     private mTheme: AtomStyleSheet;
     private mCachedTheme: AtomStyleSheet;
 
     constructor(
         @Inject public readonly app: App,
-        element: HTMLElement = null) {
+        element: any = document.createElement("div")) {
         this.disposables = new AtomDisposableList();
         this.bindings = [];
         this.eventHandlers = [];
         this.element = element as any;
         // AtomBridge.instance.attachControl(this.element, this as any);
-        (this.element as any).atomControl = this;
+        this.element.atomControl = this;
         const a = this.beginEdit();
         this.preCreate();
         this.create();
@@ -486,7 +522,7 @@ export class AtomControl implements
         if (!method) {
             return;
         }
-        const be: IEventObject<HTMLElement> = {
+        const be: IEventObject = {
             element,
             name,
             handler: method
@@ -663,7 +699,7 @@ export class AtomControl implements
             this.mInvalidated = 0;
         }
 
-        AtomBridge.instance.visitDescendents(e || this.element, (ex, ac) => {
+        visitDescendents(e || this.element, (ex, ac) => {
             if (ac) {
                 ac.dispose();
                 return false;
@@ -714,7 +750,7 @@ export class AtomControl implements
 
     public updateSize(): void {
         this.onUpdateSize();
-        bridgeInstance.visitDescendents(this.element, (e, ac) => {
+        visitDescendents(this.element, (e, ac) => {
             if (ac) {
                 ac.updateSize();
                 return false;
@@ -879,6 +915,7 @@ export class AtomControl implements
             // }
             const HTMLElement = iterator.attributes && iterator.attributes.template;
             if (HTMLElement) {
+                // tslint:disable-next-line: no-console
                 console.warn(`This path is deprecated, check who is calling it.`);
                 this.setLocalValue(e, HTMLElement, this.toTemplate(app, iterator, creator));
                 continue;
@@ -889,6 +926,7 @@ export class AtomControl implements
 
     }
 
+    // tslint:disable-next-line: ban-types
     protected extractControlProperties(x: XNode, name: string | Function = "div") {
         const a = x.attributes;
         const extracted = {};
@@ -1274,7 +1312,7 @@ export class PropertyBinding implements IDisposable {
                     events = this.twoWays;
                 }
 
-                this.twoWaysDisposable = AtomBridge.instance.watchProperty(
+                this.twoWaysDisposable = watchProperty(
                     this.element,
                     this.name,
                     events,
