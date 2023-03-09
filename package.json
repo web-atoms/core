@@ -1,6 +1,6 @@
 {
   "name": "@web-atoms/core",
-  "version": "2.1.357",
+  "version": "2.2.23",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
@@ -26,17 +26,18 @@
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
     "@web-atoms/module-loader": "^2.0.6",
-    "@web-atoms/unit-test": "^1.0.31",
+    "@web-atoms/unit-test": "^1.0.32",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
     "jsdom": "^15.2.1",
     "path": "^0.12.7",
     "remap-istanbul": "^0.11.1",
     "test-dom": "^1.0.0",
+    "tslib": "^2.4.1",
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
-    "@web-atoms/date-time": "^1.0.26",
+    "@web-atoms/date-time": "^1.1.1",
     "reflect-metadata": "^0.1.13"
   }
 }

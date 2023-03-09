@@ -1,16 +1,24 @@
 import { CancelToken } from "./types";
 
-export default function sleep(timeInMS: number, ct?: CancelToken) {
+export default function sleep(timeInMS: number, ct?: CancelToken, throwOnCancel = true) {
     let token = 0;
     return new Promise<void>((resolve, reject) => {
         ct?.registerForCancel((reason) => {
             if (token) {
                 clearTimeout(token);
-                reject(reason);
+                if (throwOnCancel) {
+                    reject(reason);
+                } else {
+                    resolve();
+                }
             }
         });
         if (ct?.cancelled) {
-            reject("cancelled");
+            if (throwOnCancel) {
+                reject("cancelled");
+            } else {
+                resolve();
+            }
             return;
         }
         token = setTimeout(resolve, timeInMS);

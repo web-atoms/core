@@ -253,21 +253,56 @@ import { IDisposable } from "./types";
             return sum / this.length;
         }
 
+        public includes(item) {
+            return this.indexOf(item) !== -1;
+        }
+
     }
 
     // tslint:disable
-    Array.prototype["add"] = AtomList.prototype.add;
-    Array.prototype["addAll"] = AtomList.prototype.addAll;
-    Array.prototype["clear"] = AtomList.prototype.clear;
-    Array.prototype["refresh"] = AtomList.prototype.refresh;
-    Array.prototype["set"] = AtomList.prototype.set;
-    Array.prototype["remove"] = AtomList.prototype.remove;
-    Array.prototype["removeAt"] = AtomList.prototype.removeAt;
-    Array.prototype["watch"] = AtomList.prototype.watch;
-    Array.prototype["replace"] = AtomList.prototype.replace;
-    Array.prototype["insert"] = AtomList.prototype.insert;
-    Array.prototype["count"] = AtomList.prototype.count;
-    Array.prototype["avg"] = AtomList.prototype.avg;
+    const ap = Array.prototype;
+    for (const key of Object.getOwnPropertyNames(AtomList.prototype)) {
+        const { value } = Object.getOwnPropertyDescriptor(AtomList.prototype, key);        
+        switch(key) {
+            case "add":
+            case "addAll":
+            case "clear":
+            case "refresh":
+            case "set":
+            case "remove":
+            case "removeAt":
+            case "watch":
+            case "replace":
+            case "insert":
+            case "count":
+            case "avg":
+            case "includes":
+                if (key in ap) {
+                    continue;
+                }
+                Object.defineProperty(ap, key, {
+                    enumerable: false,
+                    value,
+                    configurable: true,
+                    writable: true
+                });
+                continue;
+        }
+        
+    }
+    // Array.prototype["add"] = AtomList.prototype.add;
+    // Array.prototype["addAll"] = AtomList.prototype.addAll;
+    // Array.prototype["clear"] = AtomList.prototype.clear;
+    // Array.prototype["refresh"] = AtomList.prototype.refresh;
+    // Array.prototype["set"] = AtomList.prototype.set;
+    // Array.prototype["remove"] = AtomList.prototype.remove;
+    // Array.prototype["removeAt"] = AtomList.prototype.removeAt;
+    // Array.prototype["watch"] = AtomList.prototype.watch;
+    // Array.prototype["replace"] = AtomList.prototype.replace;
+    // Array.prototype["insert"] = AtomList.prototype.insert;
+    // Array.prototype["count"] = AtomList.prototype.count;
+    // Array.prototype["avg"] = AtomList.prototype.avg;
+    // Array.prototype["includes"] = AtomList.prototype.includes;
 
 declare global { 
     interface Array<T> {
@@ -283,6 +318,7 @@ declare global {
             f: (target: any, key: string, index?: number, item?: any) => void,
             wrap?: boolean): IDisposable;
         replace(items: T[], start?: number, size?: number): void;
+        includes(item:T): boolean;
         count?(f: (item: T) => boolean): number;
         avg?(f: (item: T) => number): number;
     }

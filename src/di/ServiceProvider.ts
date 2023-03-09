@@ -6,9 +6,9 @@ import { TypeKey } from "./TypeKey";
 
 export class ServiceProvider implements IDisposable {
 
-    private static mappedTypes: {[key: string]: any} = {};
+    private static mappedTypes: Map<string, any> = new Map();
 
-    private instances: { [key: string]: any } = {};
+    private instances: Map<string, any> = new Map();
 
     public get global(): ServiceProvider {
         return this.parent === null ? this : this.parent.global;
@@ -19,7 +19,7 @@ export class ServiceProvider implements IDisposable {
             ServiceCollection.instance.registerScoped(ServiceProvider);
         }
         const sd = ServiceCollection.instance.get(ServiceProvider);
-        this.instances[sd.id] = this;
+        this.instances.set(sd.id, this);
     }
 
     public get<T>(key: IClassOf<T>): T {
@@ -31,7 +31,7 @@ export class ServiceProvider implements IDisposable {
         if (!sd) {
             sd = ServiceCollection.instance.register(key, () => value, Scope.Global);
         }
-        this.instances[sd.id] = value;
+        this.instances.set(sd.id, value);
     }
 
     public resolve<T>(
@@ -71,9 +71,10 @@ export class ServiceProvider implements IDisposable {
             return sd.factory(this);
         }
 
-        let v: any = this.instances[sd.id];
-        if (!v) {
-            this.instances[sd.id] = v = sd.factory(this);
+        let v: any = this.instances.get(sd.id);
+        if (v === void 0) {
+            v = sd.factory(this);
+            this.instances.set(sd.id, v);
         }
         return v;
     }
@@ -83,18 +84,13 @@ export class ServiceProvider implements IDisposable {
     }
 
     public dispose(): void {
-        for (const key in this.instances) {
-            if (this.instances.hasOwnProperty(key)) {
-                const element = this.instances[key];
-                if (element === this) {
-                    continue;
-                }
-                const d = element as IDisposable;
-                if (d.dispose) {
-                    d.dispose();
-                }
+        for (const element of this.instances.values()) {
+            if (element === this) {
+                continue;
             }
+            element.dispose?.();
         }
+        this.instances.clear();
     }
 
     private create(key: any): any {
@@ -103,9 +99,11 @@ export class ServiceProvider implements IDisposable {
         const originalTypeKey = TypeKey.get(originalKey);
 
         if (DI.resolveType) {
-            const mappedType = ServiceProvider.mappedTypes[originalTypeKey] || (
-                ServiceProvider.mappedTypes[originalTypeKey] = DI.resolveType(originalKey)
-            );
+            let mappedType = ServiceProvider.mappedTypes.get(originalTypeKey);
+            if (mappedType === void 0) {
+                mappedType = DI.resolveType(originalKey);
+                ServiceProvider.mappedTypes.set(originalKey, mappedType);
+            }
 
             key = mappedType;
         }

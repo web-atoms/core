@@ -104,64 +104,6 @@ export default class WebApp extends App {
         // });
     }
 
-    public installStyleSheet(ssConfig: string |
-        { href: string, integrity?: string, crossOrigin?: string}): void {
-
-        if (typeof ssConfig !== "object") {
-            ssConfig = { href: ssConfig };
-        }
-
-        ssConfig.href = UMD.resolvePath(ssConfig.href);
-        const links = document.getElementsByTagName("link");
-        // tslint:disable-next-line:prefer-for-of
-        for (let index = 0; index < links.length; index++) {
-            const element = links[index];
-            const href = element.getAttribute("href");
-            if (href === ssConfig.href) {
-                return;
-            }
-        }
-        const ss = document.createElement("link");
-        ss.rel = "stylesheet";
-        ss.href = ssConfig.href;
-        if (ssConfig.crossOrigin) {
-            ss.crossOrigin = ssConfig.crossOrigin;
-        }
-        if (ssConfig.integrity) {
-            ss.integrity = ssConfig.integrity;
-        }
-        document.head.appendChild(ss);
-    }
-
-    public installScript(location: string): Promise<void> {
-        location = UMD.resolvePath(location);
-        const links = document.getElementsByTagName("script");
-        // tslint:disable-next-line:prefer-for-of
-        for (let index = 0; index < links.length; index++) {
-            const element = links[index];
-            const href = element.getAttribute("src");
-            if (href === location) {
-                return (element as any).loaderPromise;
-            }
-        }
-        const script: HTMLScriptElement = document.createElement("script");
-        const p = new Promise<void>((resolve, reject) => {
-            script.type = "text/javascript";
-            script.src = location;
-            const s: any = script as any;
-            script.onload = s.onreadystatechange = () => {
-                if ((s.readyState && s.readyState !== "complete" && s.readyState !== "loaded")) {
-                    return;
-                }
-                script.onload = s.onreadystatechange = null;
-                resolve();
-            };
-            document.body.appendChild(script);
-        });
-        (script as any).loaderPromise = p;
-        return p;
-    }
-
     public updateDefaultStyle(textContent: string) {
         if (this.styleElement) {
             if (this.styleElement.textContent === textContent) {

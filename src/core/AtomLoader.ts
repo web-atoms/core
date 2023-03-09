@@ -1,35 +1,52 @@
-import { App } from "../App";
+import type { App } from "../App";
 import { JsonService } from "../services/JsonService";
 import ReferenceService from "../services/ReferenceService";
 import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import { AtomDisposableList } from "./AtomDisposableList";
+import type { AtomControl } from "../web/controls/AtomControl";
+import type { AtomDisposableList } from "./AtomDisposableList";
 import { AtomUri } from "./AtomUri";
-import { DI, IClassOf, IDisposable } from "./types";
+import { getOwnInheritedProperty } from "./InheritedProperty";
+import { CancelToken, DI, IClassOf, IDisposable } from "./types";
 
 export class AtomLoader {
 
     public static id: number = 1;
 
-    public static async load<T>(url: AtomUri, app: App): Promise<T> {
-        if (url.host === "reference") {
-            const r = app.get(ReferenceService).get(url.path);
-            if (!r) {
-                throw new Error("reference not found");
+    public static async load<T>(url: string | AtomUri | any, app: App): Promise<T> {
+
+        if (typeof url === "string") {
+            const type = await DI.resolveViewClassAsync(url);
+            if (!type) {
+                throw new Error(`Type not found for ${url}`);
             }
-            return r.consume();
+            url = type;
         }
-        if (url.host === "class") {
-            const r = app.get(ReferenceService).get(url.path);
-            if (!r) {
-                throw new Error("reference not found");
+
+        if (url instanceof AtomUri) {
+            if (url.host === "reference") {
+                const r = app.get(ReferenceService).get(url.path);
+                if (!r) {
+                    throw new Error("reference not found");
+                }
+                return r.consume();
             }
-            return app.resolve(r.consume(), true);
+            if (url.host === "class") {
+                const r = app.get(ReferenceService).get(url.path);
+                if (!r) {
+                    throw new Error("reference not found");
+                }
+                return app.resolve(r.consume(), true);
+            }
+            url = url.path;
+
+            const type = await DI.resolveViewClassAsync(url);
+            if (!type) {
+                throw new Error(`Type not found for ${url}`);
+            }
+            url = type;
+
         }
-        const type = await DI.resolveViewClassAsync(url.path);
-        if (!type) {
-            throw new Error(`Type not found for ${url}`);
-        }
-        const obj = app.resolve(type, true);
+        const obj = app.resolve(url, true);
         return obj;
     }
 
@@ -58,6 +75,9 @@ export class AtomLoader {
                 }
                 vm = vmFactory();
                 view.viewModel = vm;
+            }
+            if ("parameters" in view) {
+                vm = (view as any).parameters;
             }
             if (vm) {
                 const jsonService = app.get(JsonService);
@@ -119,6 +139,117 @@ export class AtomLoader {
             }
 
             return { view };
+        } finally {
+            busyIndicator.dispose();
+        }
+    }
+
+    public static async loadClass<T extends AtomControl>(
+        url: string | any,
+        { title, ... parameters }: any = {},
+        app: App): Promise<T> {
+
+        const busyIndicator = app.createBusyIndicator({
+            title: url.toString(),
+            description: `Loading View ${url}`
+        });
+
+        try {
+            const view = await AtomLoader.load<T>(url, app);
+            const vm = getOwnInheritedProperty(view, "viewModel");
+            let params;
+            if ("parameters" in view) {
+                params = (view as any).parameters;
+            }
+            if (!vm) {
+                params = (view as any).parameters ??= {};
+            }
+            if (title) {
+                (view as any).title = title;
+            }
+            if ((vm || params) && parameters) {
+                for (const key in parameters) {
+                    if (parameters.hasOwnProperty(key)) {
+                        const element = parameters[key];
+                        try {
+                            if (vm) { vm[key] = element; }
+                            if (params) { params[key] = element; }
+                        } catch (e) {
+                            // tslint:disable-next-line: no-console
+                            console.error(e);
+                        }
+                    }
+                }
+            }
+            (view as any).init?.()
+                ?.catch((error) => {
+                    if (!CancelToken.isCancelled(error)) {
+                        // tslint:disable-next-line: no-console
+                        console.error(error);
+                    }
+                });
+            return view;
+        } finally {
+            busyIndicator.dispose();
+        }
+    }
+
+    public static async loadControl<T extends AtomControl>(
+        url: AtomUri,
+        app: App): Promise<T> {
+
+        const busyIndicator = app.createBusyIndicator({
+            title: url.toString(),
+            description: `Loading View ${url}`
+        });
+
+        try {
+            const view = await AtomLoader.load<T>(url, app);
+            const vm = getOwnInheritedProperty(view, "viewModel");
+            let params;
+            if ("parameters" in view) {
+                params = (view as any).parameters;
+            }
+            if (!vm) {
+                params = (view as any).parameters ??= {};
+            }
+            if (vm || params) {
+                const jsonService = app.get(JsonService);
+                for (const key in url.query) {
+                    if (url.query.hasOwnProperty(key)) {
+                        const element = url.query[key];
+                        if (/^json\:/.test(key)) {
+                            const k = key.split(":")[1];
+                            const v = jsonService.parse(element.toString());
+                            if (vm) { vm[k] = v; }
+                            if (params) { params[k] = v; }
+                            continue;
+                        }
+                        if (/^ref\:/.test(key)) {
+                            const rs = app.get(ReferenceService);
+                            const v = rs.get(element as string).consume();
+                            const keyName = key.split(":", 2)[1];
+                            if (vm) { vm[keyName] = v; }
+                            if (params) { params[keyName] = v; }
+                            continue;
+                        }
+                        try {
+                            if (vm) { vm[key] = element; }
+                            if (params) { params[key] = element; }
+                        } catch (e) {
+                            // tslint:disable-next-line: no-console
+                            console.error(e);
+                        }
+                    }
+                }
+            }
+            (view as any).init?.()
+                ?.catch((error) => {
+                    if (!CancelToken.isCancelled(error)) {
+                        console.error(error);
+                    }
+                });
+            return view;
         } finally {
             busyIndicator.dispose();
         }

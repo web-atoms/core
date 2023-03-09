@@ -195,9 +195,37 @@ export const ElementValueSetters: ISetters = {
                 }
             }));
         }, 1, ctrl, element, value);
+    },
+    ariaLabel(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value === null) {
+            e.removeAttribute("aria-label");
+            return;
+        }
+        if (typeof value === "object") {
+            value = JSON.stringify(value);
+        }
+        if (typeof value !== "string") {
+            value = value.toString();
+        }
+        e.setAttribute("aria-label", value);
+    },
+    ariaPlaceholder(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value === null) {
+            e.removeAttribute("aria-placeholder");
+            return;
+        }
+        if (typeof value === "object") {
+            value = JSON.stringify(value);
+        }
+        if (typeof value !== "string") {
+            value = value.toString();
+        }
+        e.setAttribute("aria-placeholder", value);
     }
 };
 
+ElementValueSetters["aria-label"] = ElementValueSetters.ariaLabel;
+ElementValueSetters["aria-placeholder"] = ElementValueSetters.ariaPlaceholder;
 ElementValueSetters["style-display"] = ElementValueSetters.styleDisplay;
 ElementValueSetters["style-left"] = ElementValueSetters.styleLeft;
 ElementValueSetters["style-top"] = ElementValueSetters.styleTop;
@@ -218,15 +246,31 @@ ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
 
 let propertyId = 1;
 
+export type PropertyRegistration = ((value) => ({[key: string]: any})) & {
+    property: string;
+};
+
+
 /**
  * AtomControl class represents UI Component for a web browser.
  */
 export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
+    public static from<T = AtomControl>(e1: Element | EventTarget): T {
+        let e = e1 as any;
+        while (e) {
+            const { atomControl } = e;
+            if (atomControl) {
+                return atomControl as T;
+            }
+            e = e._logicalParent ?? e.parentElement;
+        }
+    }
+
     public static registerProperty(
         attributeName: string,
         attributeValue: string,
-        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): (a) => object {
+        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): PropertyRegistration {
         const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
         function setterFx(v) {
@@ -237,7 +281,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         setterFx.toString = () => {
             return setterSymbol;
         };
-        return setterFx as any;
+        setterFx.property = setterSymbol;
+        return setterFx;
     }
 
     @BindableProperty
@@ -314,8 +359,8 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         return AtomControl;
     }
 
-    constructor(app: App, e?: HTMLElement) {
-        super(app, e || document.createElement("div"));
+    constructor(app: App, e: HTMLElement = document.createElement("div")) {
+        super(app, e);
     }
 
     public onPropertyChanged(name: string): void {
@@ -363,6 +408,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     protected rendererChanged() {
         disposeChildren(this, this.element);
+        this.element.innerHTML = "";
         const r = this.renderer;
         if (!r) {
             return;
@@ -389,12 +435,18 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        if (/^data\-/.test(name)) {
-            name = fromHyphenToCamel(name.substring(5));
+        if (/^(data|aria)\-/.test(name)) {
+            if (value === null) {
+                element.removeAttribute(name);
+                return;
+            }
             if (typeof value === "object") {
                 value = JSON.stringify(value);
             }
-            element.dataset[name] = value;
+            if (typeof value !== "string") {
+                value = value.toString();
+            }
+            element.setAttribute(name, value);
             return;
         }
 
@@ -425,7 +477,11 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        element[name] = value;
+        if (name.startsWith("aria-")) {
+            element.setAttribute(name, value);
+        } else {
+            element[name] = value;
+        }
     }
 
     // protected bindElementEvent(element: HTMLElement, name: string, value: any) {
@@ -523,16 +579,21 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 
     protected toTemplate(app, iterator, creator) {
+
+        if (iterator.isTemplate) {
+            return this.toTemplate(app, iterator.children[0], creator);
+        }
+
         const name = iterator.name;
         if (typeof name === "string") {
             return class Template extends AtomControl {
-                constructor(a, e) {
-                    super(a ?? app, e ?? document.createElement(name));
+                constructor(a = app, e = document.createElement(name)) {
+                    super(a, e);
                 }
 
                 public create() {
                     super.create();
-                    this.render(iterator, null, creator);
+                    this.render(iterator, undefined, creator);
                 }
             };
         }
@@ -543,25 +604,25 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
             if (forName) {
                 return class Template extends (name as any) {
-                    constructor(a, e) {
-                        super(a ?? app, e ?? document.createElement(forName));
+                    constructor(a = app, e = document.createElement(forName)) {
+                        super(a, e);
                     }
 
                     public create() {
                         super.create();
-                        this.render(iterator, null, creator);
+                        this.render(iterator, undefined, creator);
                     }
                 };
             }
 
             return class Template extends (name as any) {
-                constructor(a, e) {
-                    super(a ?? app, e);
+                constructor(a = app, e) {
+                    super(a, e);
                 }
 
                 public create() {
                     super.create();
-                    this.render(iterator, null, creator);
+                    this.render(iterator, undefined, creator);
                 }
             };
         }
@@ -576,25 +637,36 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
         clickEvent = clickEvent.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-        e.target.dispatchEvent(new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true }));
+        const ce = new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true });
+        e.target.dispatchEvent(ce);
+        if ((ce as any).preventClickEvent) {
+            // ce.preventDefault();
+            e.preventDefault();
+        }
+
+        /** There is a problem with following method, in hierarchy of nodes,
+         * it will not be possible to know which control should execute it
+         */
+
+        // if (!ce.defaultPrevented) {
+        //     if (clickEvent === "invokeMethod") {
+        //         const method = data.method;
+        //         const m = this[method] as Function;
+        //         if (m) {
+        //             this.app.runAsync(() => m.call(this, ce));
+        //         }
+
+        //     }
+        // }
     }
 }
-
 
 document.body.addEventListener("click", (e) => {
     if (e.defaultPrevented) {
         return;
     }
     const originalTarget = e.target as HTMLElement;
-    let control;
-    let start = originalTarget;
-    while (start) {
-        if (start.atomControl) {
-            control = start.atomControl;
-            break;
-        }
-        start = start.parentElement;
-    }
+    let control = AtomControl.from(originalTarget);
     if (control !== void 0) {
         const data = new Proxy(originalTarget, {
             get(target, p) {
@@ -610,6 +682,7 @@ document.body.addEventListener("click", (e) => {
                 }
             }
         });
+        // @ts-ignore
         control.dispatchClickEvent(e, data);
     }
 });

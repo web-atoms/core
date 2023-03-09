@@ -3,6 +3,7 @@ import { AtomDisposableList } from "../../core/AtomDisposableList";
 import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import Colors from "../../core/Colors";
+import { getOwnInheritedProperty } from "../../core/InheritedProperty";
 import sleep from "../../core/sleep";
 import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
 import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
@@ -19,6 +20,82 @@ document.body.addEventListener("click", (e) => {
     }
 });
 
+CSS(StyleRule()
+    .custom("contain", "none !important")
+, "[data-force-contain=none]");
+
+CSS(StyleRule()
+    .position("relative")
+    .height(0)
+    .width(0)
+    .left(0)
+    .child(StyleRule("*")
+        .position("absolute")
+        .left(0)
+        .top(0)
+        .padding(5)
+        .maxHeight(300)
+        .overflow("auto")
+        .borderRadius(5)
+        .backgroundColor(Colors.white)
+        .zIndex(200)
+        .defaultBoxShadow()
+    )
+, "*[data-inline-popup=left]");
+
+CSS(StyleRule()
+    .position("absolute")
+    .height(0)
+    .width(0)
+    .right(0)
+    .child(StyleRule("*")
+        .position("absolute")
+        .right(0)
+        .top(0)
+        .padding(5)
+        .maxHeight(300)
+        .overflow("auto")
+        .borderRadius(5)
+        .backgroundColor(Colors.white)
+        .zIndex(200)
+        .defaultBoxShadow()
+    )
+, "*[data-inline-popup=right]");
+
+CSS(StyleRule()
+    .position("relative")
+    .height(0)
+    .width(0)
+    .left(0)
+    .child(StyleRule("*")
+        .position("absolute")
+        .left(0)
+        .top(0)
+        .padding(5)
+        .maxHeight(300)
+        .overflow("auto")
+        .borderRadius(5)
+        .backgroundColor(Colors.white)
+        .zIndex(200)
+        .defaultBoxShadow()
+    )
+, "*[data-inline-popup=inline-left]");
+
+CSS(StyleRule("popup")
+    .position("fixed")
+    .left("50%")
+    .top("50%")
+    .transform("translate(-50%, -50%)" as any)
+    .zIndex(10000)
+    .padding(5)
+    .backgroundColor(Colors.white)
+    .border("solid 1px lightgray")
+    .borderRadius(5)
+    .boxShadow("rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;")
+    .display("inline-block")
+, "*[data-center-popup]");
+
+
 const popupCss = CSS(StyleRule("popup")
     .padding(5)
     .backgroundColor(Colors.white)
@@ -32,19 +109,19 @@ export interface IPopupOptions {
     /**
      * Popup alignment, default is auto starting with right and below
      */
-    alignment?: "left" | "right" | "auto" | "above" | "below" | "centerOfScreen";
+    alignment?: "bottomLeft" | "bottomRight" | "topRight" | "right" | "auto" | "above" | "below" | "centerOfScreen";
     popupStyle?: string;
     cancelToken?: CancelToken;
-}
 
-function getParent(e: HTMLElement): AtomControl {
-    let start = e;
-    while (start) {
-        if (start.atomControl) {
-            return start.atomControl;
-        }
-        start = start._logicalParent ?? start.parentElement;
-    }
+    /**
+     * Default is "close" for popup control to avoid cancel exceptions.
+     */
+    onClick?: "close" | "cancel" | null | undefined;
+
+    /**
+     * Used by PopupControl to overwrite parent Element
+     */
+    parentElement?: HTMLElement;
 }
 
 export interface IPopup {
@@ -81,10 +158,11 @@ CSS(StyleRule()
     .left("50%")
     .transform("translate(-50%,-50%)" as any)
     .boxShadow("0 0 20px 1px rgb(0 0 0 / 75%)")
-    .verticalFlexLayout({
-        alignItems: "stretch",
-        justifyContent: "flex-start"
-    })
+    .display("grid")
+    .alignItems("center")
+    .justifyItems("center")
+    .gridTemplateRows("auto 1fr")
+    .gridTemplateColumns("1fr")
     .opacity("0")
     .transition("opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32)")
     .and(StyleRule("[data-ready=true]")
@@ -94,7 +172,9 @@ CSS(StyleRule()
         .opacity("0.5")
     )
     .child(StyleRule(".title")
+        .justifySelf("stretch")
         .display("flex")
+        .minWidth(0)
         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
         .padding(5)
         .alignItems("center")
@@ -103,6 +183,7 @@ CSS(StyleRule()
             StyleRule(".title-text")
             .cursor("move")
             .flexStretch()
+            .textEllipsis()
         )
         .child(StyleRule("*")
             .flex("1 1 100%")
@@ -123,8 +204,10 @@ CSS(StyleRule()
     )
     .child(StyleRule("*[data-window-content=window-content]")
         .margin(5)
+        .alignSelf("stretch")
+        .justifySelf("stretch")
         .flexStretch()
-        .overflow("hidden")
+        .overflow("auto")
         // This is done to avoid absolute position
         // to run out of content area
         .position("relative")
@@ -156,15 +239,18 @@ export class PopupControl extends AtomControl {
 
     public static showControl<T>(
         opener: HTMLElement | AtomControl,
-        options?: IPopupOptions): Promise<T> {
-        let openerElement: HTMLElement;
+        {
+            onClick = "close",
+            ... options
+        }: IPopupOptions = {}): Promise<T> {
+        let openerElement: HTMLElement = options?.parentElement;
         let app: App;
 
         if (opener instanceof AtomControl) {
-            openerElement = opener.element;
+            openerElement ??= opener.element;
             app = opener.app;
         } else {
-            openerElement = opener;
+            openerElement ??= opener;
             let start = opener;
             while (!start.atomControl) {
                 start = start.parentElement;
@@ -175,7 +261,11 @@ export class PopupControl extends AtomControl {
             app = start.atomControl.app;
         }
         const popup = new this(app);
-
+        if (onClick === "close") {
+            popup.bindEvent(popup.element, "click", () => setTimeout(() => popup.close(), 10));
+        } else if (onClick === "cancel") {
+            popup.bindEvent(popup.element, "click", () => setTimeout(() => popup.cancel(), 10));
+        }
         const p = PopupService.show(openerElement, popup.element, options);
         // since popup will be children of openerElement
         // on dispose(popupElement), popup will be disposed automatically
@@ -187,6 +277,7 @@ export class PopupControl extends AtomControl {
                     return;
                 }
                 resolved = true;
+                PopupService.lastTarget = openerElement;
                 resolve(r);
                 p.dispose();
             };
@@ -196,6 +287,7 @@ export class PopupControl extends AtomControl {
                     return;
                 }
                 resolved = true;
+                PopupService.lastTarget = openerElement;
                 reject(e);
                 p.dispose();
             };
@@ -215,7 +307,7 @@ export class PopupWindow extends AtomControl {
     public static async showWindow<T>(
         window: IClassOf<PopupWindow> | IDialogOptions,
         options?: IDialogOptions): Promise<T> {
-        if (arguments.length <= 2) {
+        if (arguments.length <= 1) {
             options = arguments[0];
             window = this;
         }
@@ -229,7 +321,7 @@ export class PopupWindow extends AtomControl {
     public static async showModal<T>(
         window: IClassOf<PopupWindow> | IDialogOptions,
         options?: IDialogOptions): Promise<T> {
-        if (arguments.length <= 2) {
+        if (arguments.length <= 1) {
             options = arguments[0];
             window = this;
         }
@@ -256,12 +348,14 @@ export class PopupWindow extends AtomControl {
     @BindableProperty
     public closeWarning: string;
 
+    protected init() {
+        // do nothing...
+    }
+
     protected async requestCancel() {
         if (this.closeWarning) {
-            if (!await ConfirmPopup.showModal<boolean>({
-                parameters: {
-                    message : this.closeWarning
-                }
+            if (!await ConfirmPopup.confirm({
+                message : this.closeWarning
             })) {
                 return;
             }
@@ -287,33 +381,6 @@ export class PopupWindow extends AtomControl {
         //     }
         // });
         this.element.dataset.popupWindow = "popup-window";
-        this.runAfterInit(() => {
-            if (!this.element) {
-                return;
-            }
-            const host = this.element.getElementsByClassName("title-host")[0];
-            this.setupDragging(host as HTMLElement);
-            // this.element may become null if it was immediately
-            // closed, very rare case, but possible if
-            // supplied cancelToken was cancelled
-            const anyAutofocus = this.element.querySelector(`*[autofocus]`);
-            if (!anyAutofocus) {
-                const windowContent = this.element.querySelector("[data-window-content]");
-                if (windowContent) {
-                    const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
-                    if (firstInput) {
-                        firstInput.focus();
-                        return;
-                    }
-                }
-
-                const closeButton = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
-                if (closeButton) {
-                    closeButton.focus();
-                }
-                return;
-            }
-        });
 
         setTimeout((p) => {
             p.dataset.ready = "true";
@@ -340,10 +407,41 @@ export class PopupWindow extends AtomControl {
             </div>
             { node }
         </div>);
+
+        this.runAfterInit(() => {
+            if (!this.element) {
+                return;
+            }
+            const host = this.element.getElementsByClassName("title-host")[0];
+            this.setupDragging(host as HTMLElement);
+            // this.element may become null if it was immediately
+            // closed, very rare case, but possible if
+            // supplied cancelToken was cancelled
+            const anyAutofocus = this.element.querySelector(`*[autofocus]`);
+            if (!anyAutofocus) {
+                const windowContent = this.element.querySelector("[data-window-content]");
+                if (windowContent) {
+                    const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
+                    if (firstInput) {
+                        firstInput.focus();
+                        return;
+                    }
+                }
+
+                const cb = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
+                if (cb) {
+                    cb.focus();
+                }
+                return;
+            }
+        });
     }
 
     protected setupDragging(tp: HTMLElement): void {
         this.bindEvent(tp, "mousedown", (startEvent: MouseEvent) => {
+            if ((startEvent.target as HTMLElement).tagName === "BUTTON") {
+                return;
+            }
             startEvent.preventDefault();
             const disposables: IDisposable[] = [];
             // const offset = AtomUI.screenOffset(tp);
@@ -367,7 +465,7 @@ export class PopupWindow extends AtomControl {
 
                 const finalX = offset.x + dx;
                 const finalY = offset.y + dy;
-                if (finalX < 0 || finalY < 0) {
+                if (finalX < 5 || finalY < 5) {
                     return;
                 }
 
@@ -392,7 +490,11 @@ export class PopupWindow extends AtomControl {
 
 }
 
+// @ts-ignore
+delete PopupWindow.prototype.init;
+
 CSS(StyleRule()
+    .display("grid")
     .nested(StyleRule(".yes")
         .borderRadius(9999)
         .paddingLeft(10)
@@ -424,9 +526,12 @@ CSS(StyleRule()
         .marginRight(10)
         .backgroundColor(Colors.gray)
     )
+    .child(StyleRule("[data-element=message]")
+        .overflow("auto")
+    )
 , "div[data-confirm-popup=confirm-popup]");
 
-export class ConfirmPopup extends PopupWindow {
+class ConfirmPopup extends PopupWindow {
 
     public static async confirm({
         message,
@@ -435,29 +540,7 @@ export class ConfirmPopup extends PopupWindow {
         noLabel = "No",
         cancelLabel = null
     }): Promise<boolean> {
-        try {
-            const popup = class extends ConfirmPopup {
-                protected create(): void {
-                    this.render(<div>
-                        <div text={message}/>
-                    </div>);
-                }
-            };
-            return await popup.showModal<boolean>({
-                parameters: {
-                    message,
-                    yesLabel,
-                    noLabel,
-                    cancelLabel
-                },
-                title
-            });
-        } catch (e) {
-            if (CancelToken.isCancelled(e)) {
-                return false;
-            }
-            throw e;
-        }
+        return PopupService.confirm({ title, message, yesLabel, noLabel,  cancelLabel});
     }
 
     public message: string;
@@ -477,14 +560,21 @@ export class ConfirmPopup extends PopupWindow {
         this.cancelLabel = null;
     }
 
+    protected requestCancel(): Promise<void> {
+        this.cancel();
+        return Promise.resolve();
+    }
+
     protected render(node: XNode, e?: any, creator?: any) {
         this.render = super.render;
         this.element.dataset.confirmPopup = "confirm-popup";
         this.closeButtonRenderer = () => <div/>;
         const extracted = this.extractControlProperties(node);
+        const na = node.attributes ??= {};
+        na["data-element"] = "message";
         super.render(<div { ... extracted }>
             { node }
-            <div>
+            <div data-element="buttons">
                 <button
                     class="yes"
                     autofocus={true}
@@ -579,6 +669,25 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
     return host;
 }
 
+export const disableContain = (ce: HTMLElement) => {
+    const containNoneList: HTMLElement[] = [];
+    while (ce) {
+        const style = window.getComputedStyle(ce);
+        const isNotNone = style.contain !== "none";
+        if (isNotNone) {
+            ce.dataset.forceContain = "none";
+            containNoneList.push(ce);
+        }
+        ce = ce.parentElement;
+    }
+
+    return () => {
+        for (const iterator of containNoneList) {
+            delete iterator.dataset.forceContain;
+        }
+    };
+};
+
 function closeHandler(
     host: HTMLElement,
     opener: HTMLElement,
@@ -602,9 +711,24 @@ function closeHandler(
             start = start.parentElement;
         }
         close();
+        e.preventDefault();
+        e.stopImmediatePropagation?.();
     };
-    document.body.addEventListener("click", handler);
-    container.registerDisposable(() => document.body.removeEventListener("click", handler));
+    document.body.addEventListener("click", handler, true);
+    container.registerDisposable(() => document.body.removeEventListener("click", handler, true));
+    const onBack = (e: Event) => {
+        e.preventDefault();
+        e.stopImmediatePropagation?.();
+        e.stopPropagation();
+        close();
+    };
+    window.addEventListener("backButton", onBack, true);
+    container.registerDisposable(() => window.removeEventListener("backButton", onBack, true));
+
+    setTimeout(() => {
+        container.registerDisposable(disableContain(container.element));
+    }, 10);
+
 }
 
 let popupId = 1001;
@@ -614,6 +738,14 @@ let lastTarget = {
     x: 10,
     y: 10
 };
+
+export interface IPopupAlertOptions {
+    message: string | XNode;
+    title?: string;
+    yesLabel?: string;
+    noLabel?: string;
+    cancelLabel?: string;
+}
 export default class PopupService {
 
     public static get lastTarget() {
@@ -627,6 +759,9 @@ export default class PopupService {
     }
 
     public static set lastTarget(element: HTMLElement) {
+        if (!element.isConnected) {
+            return;
+        }
         const rect = element.getBoundingClientRect();
         lastTarget = {
             element,
@@ -639,12 +774,12 @@ export default class PopupService {
         message,
         title = "Alert",
         yesLabel = "Ok"
-    }): Promise<boolean> {
+    }: IPopupAlertOptions): Promise<boolean> {
         try {
             const popup = class extends ConfirmPopup {
                 protected create(): void {
                     this.render(<div>
-                        <div text={message}/>
+                        { message instanceof XNode ? message : <div text={message}/> }
                     </div>);
                 }
             };
@@ -670,12 +805,12 @@ export default class PopupService {
         yesLabel = "Yes",
         noLabel = "No",
         cancelLabel = null
-    }): Promise<boolean> {
+    }: IPopupAlertOptions): Promise<boolean> {
         try {
             const popup = class extends ConfirmPopup {
                 protected create(): void {
                     this.render(<div>
-                        <div text={message}/>
+                        { message instanceof XNode ? message : <div text={message}/> }
                     </div>);
                 }
             };
@@ -704,9 +839,10 @@ export default class PopupService {
         return new Promise<T>((resolve, reject) => {
             const activeElement = document.activeElement as any;
             const previousTarget = opener;
-            const parent = getParent(opener);
+            const parent = AtomControl.from(opener);
             const control = new (popupClass)(parent.app, document.createElement("div"));
-            const vm = control.viewModel ?? control;
+            const vm = getOwnInheritedProperty(control, "viewModel")
+                ?? ("parameters" in  control ? (control as any).parameters ??= {} : control);
             let element = control.element;
             element.style.zIndex = `${popupId++}`;
             let resolved = false;
@@ -729,6 +865,7 @@ export default class PopupService {
                         try {
                             activeElement?.focus();
                         } catch (error) {
+                            // tslint:disable-next-line: no-console
                             console.error(error);
                         }
                     }
@@ -754,6 +891,7 @@ export default class PopupService {
                         try {
                             activeElement?.focus();
                         } catch (error) {
+                            // tslint:disable-next-line: no-console
                             console.error(error);
                         }
                     }
@@ -807,10 +945,14 @@ export default class PopupService {
                     if (maxWidth) {
                         element.style.maxWidth = typeof maxWidth === "number" ? maxWidth + "px" : maxWidth;
                         widthSet = true;
+                    } else {
+                        element.style.maxWidth = "95%";
                     }
                     if (maxHeight) {
                         element.style.maxHeight = typeof maxHeight === "number" ? maxHeight + "px" : maxHeight;
                         heightSet = true;
+                    } else {
+                        element.style.maxHeight = "95%";
                     }
                 }
 
@@ -830,6 +972,12 @@ export default class PopupService {
                             vm[key] = e;
                         }
                     }
+                    (control as any).init?.()
+                        ?.catch((error) => {
+                            if (!CancelToken.isCancelled(error)) {
+                                console.error(error);
+                            }
+                        });
                 }
                 cancelToken?.registerForCancel(cancel);
                 isModal = modal;
@@ -845,7 +993,31 @@ export default class PopupService {
                 control.close = close;
             }
 
-            if (!isModal) {
+            if (isModal) {
+                const bg = document.createElement("div");
+                bg.style.position = "absolute";
+                bg.style.right = "0";
+                bg.style.bottom = "0";
+                bg.style.left = "0";
+                bg.style.top = "0";
+                host.appendChild(bg);
+
+                const onBack = (e: CustomEvent) => {
+                    e.preventDefault();
+                    e.stopImmediatePropagation?.();
+                    e.stopPropagation();
+                    (control as any).requestCancel?.();
+                };
+
+                window.addEventListener("backButton", onBack, true);
+
+                control.registerDisposable({
+                    dispose: () => {
+                        bg.remove();
+                        window.removeEventListener("backButton", onBack, true);
+                    }
+                });
+            } else {
                 closeHandler(host, opener, control, cancel);
             }
         });
@@ -861,7 +1033,7 @@ export default class PopupService {
      */
     public static show(
         opener: HTMLElement,
-        popup: HTMLElement,
+        popup: HTMLElement | XNode,
         options?: IPopupOptions): IPopup {
         const previousTarget = opener;
         const container: IPopup = {
@@ -871,68 +1043,122 @@ export default class PopupService {
             dispose: null,
         };
         container.registerDisposable = (f) => container.disposables.add(f);
+
+        let alignment = options?.alignment ?? "auto";
+
+        if (alignment === "auto") {
+            const rect = opener.getBoundingClientRect();
+            const w = window.visualViewport.width;
+            if (rect.left > w / 2) {
+                alignment = "bottomRight";
+            }
+        }
+
+        const isCenterOfScreen = alignment === "centerOfScreen";
         const popupStyle = options?.popupStyle ?? popupCss;
         container.element._logicalParent = opener;
         container.element.classList.add(popupStyle);
-        container.element.appendChild(popup);
-        const offset = findHostAndPosition(opener);
-        const host = offset.root;
-        const hostHeight = host.offsetHeight
-        || host.clientHeight
-        || (host.firstElementChild as HTMLElement).offsetHeight;
-
-        const style = container.element.style;
-        style.position = "absolute";
-        offset.y += opener.offsetHeight;
-
-        if (options?.alignment === "centerOfScreen") {
-            style.left = "50%";
-            style.top = "50%";
-            style.transform = "translate(-50%,-50%)";
+        if (isCenterOfScreen) {
+            container.element.dataset.centerPopup = "center";
         } else {
-
-            if (!options || options?.alignment === "auto") {
-
-                // check where is more space??
-                if (offset.x < (host.offsetWidth / 2)) {
-                    style.left = offset.x + "px";
-                } else {
-                    style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
+            container.element.dataset.inlinePopup = "left";
+            const alignPopup = () => {
+                switch(alignment) {
+                    case "bottomRight":
+                        container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                        container.element.style.right = "0px";
+                        container.element.dataset.inlinePopup = "right";
+                        opener.insertAdjacentElement("afterend", container.element);
+                        break;
+                    case "topRight":
+                    case "right":
+                        container.element.style.top = (opener.offsetTop) + "px";
+                        container.element.style.left = (opener.offsetWidth) + "px";
+                        opener.insertAdjacentElement("afterend", container.element);
+                        break;
+                    case "bottomLeft":
+                        container.element.dataset.inlinePopup = "inline-left";
+                        container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                        opener.insertAdjacentElement("beforebegin", container.element);
+                        break;
+                    default:
+                        container.element.style.top = (opener.offsetTop + opener.offsetHeight) + "px";
+                        opener.insertAdjacentElement("afterend", container.element);
+                        break;
                 }
-
-                if (offset.y < (hostHeight / 2)) {
-                    style.top = offset.y + "px";
-                } else {
-                    style.top = `${offset.y - opener.offsetHeight}px`;
-                    style.transform = "translate(0, -100%)";
-                }
-
+            };
+            if (opener.offsetParent !== opener.parentElement) {
+                opener.parentElement.style.position = "relative";
+                setTimeout(alignPopup, 5);
             } else {
-                offset.y -= opener.offsetHeight;
-                style.top = offset.y + "px";
-                if (options?.alignment === "right") {
-                    style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;
-                } else {
-                    style.left = offset.x + "px";
-                }
+                alignPopup();
             }
         }
+        const parent = AtomControl.from(opener);
+
+        if (popup instanceof XNode) {
+            // @ts-ignore
+            parent.render(popup, container);
+        } else {
+            container.element.appendChild(popup);
+        }
+        const style = container.element.style;
+        // const offset = findHostAndPosition(opener);
+        // const host = offset.root;
+        // const hostHeight = host.offsetHeight
+        // || host.clientHeight
+        // || (host.firstElementChild as HTMLElement).offsetHeight;
+
+        // style.position = "absolute";
+        // offset.y += opener.offsetHeight;
+
+        // if (options?.alignment === "centerOfScreen") {
+        //     style.left = "50%";
+        //     style.top = "50%";
+        //     style.transform = "translate(-50%,-50%)";
+        // } else {
+
+        //     if (!options || options?.alignment === "auto") {
+
+        //         // check where is more space??
+        //         if (offset.x < (host.offsetWidth / 2)) {
+        //             style.left = offset.x + "px";
+        //         } else {
+        //             style.right = `${(host.offsetWidth - (offset.x + opener.offsetWidth))}px`;
+        //         }
+
+        //         if (offset.y < (hostHeight / 2)) {
+        //             style.top = offset.y + "px";
+        //         } else {
+        //             style.top = `${offset.y - opener.offsetHeight}px`;
+        //             style.transform = "translate(0, -100%)";
+        //         }
+
+        //     } else {
+        //         offset.y -= opener.offsetHeight;
+        //         style.top = offset.y + "px";
+        //         if (options?.alignment === "right") {
+        //             style.left = `${(opener.offsetLeft + opener.offsetWidth)}px`;
+        //         } else {
+        //             style.left = offset.x + "px";
+        //         }
+        //     }
+        // }
         style.zIndex = `${popupId++}`;
 
-        host.appendChild(container.element);
+        // host.appendChild(container.element);
         container.dispose = () => {
             if (!container.disposables) {
                 return;
             }
             container.disposables.dispose();
-            const parent = getParent(opener);
             parent.dispose(container.element);
             container.element.remove();
             container.disposables = null;
             PopupService.lastTarget = previousTarget;
         };
 
-        closeHandler(host, opener, container, () => {
+        closeHandler(opener.parentElement, opener, container, () => {
             const e = container.element;
             container.dispose();
             e.remove();

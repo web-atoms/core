@@ -75,7 +75,7 @@ export const ignoreValue: any = Symbol("ignore");
 export class CancelToken implements IDisposable {
 
     public static isCancelled(e: any) {
-        if (/^(cancelled|canceled)$/i.test(e.message ?? e.toString().trim())) {
+        if (/^(cancelled$|canceled$|aborterror\:)/i.test(e.message ?? e.toString().trim())) {
             return true;
         }
         if (e.name === "AbortError") {
@@ -151,12 +151,14 @@ export class ArrayHelper {
 declare global {
 
     interface IKeyedArray<TKey, T> extends Array<T> {
-        key: TKey;
+        key?: TKey;
     }
 
     // tslint:disable-next-line
     interface Array<T> {
-        groupBy<TKey>(keySelector: ((item: T) => TKey)): Array<IKeyedArray<TKey, T>>;
+        groupBy?<TKey>(
+            this: Array<T>, 
+            keySelector: ((item: T) => TKey)): Array<IKeyedArray<TKey,T>>;
     }
 }
 
@@ -171,6 +173,7 @@ Array.prototype["groupBy"] = <any> function (keySelector: any) {
             g = [] as IKeyedArray<any, any>;
             g.key = key;
             groups.push(g);
+            map.set(key, g);
         }
         g.push(iterator);
     }

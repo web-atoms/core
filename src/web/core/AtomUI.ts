@@ -4,11 +4,34 @@ import { INameValues, IRect } from "../../core/types";
 
 export class ChildEnumerator {
 
+    public static find(e: HTMLElement, filter: (e: HTMLElement) => any) {
+        let item = e?.firstElementChild as HTMLElement;
+        while (item) {
+            const next = item.nextElementSibling as HTMLElement;
+            if (filter(item)) {
+                return item;
+            }
+            item = next;
+        }
+    }
+
+    public static *where(e: HTMLElement, filter: (e: HTMLElement) => any) {
+        let item = e?.firstElementChild as HTMLElement;
+        while (item) {
+            const next = item.nextElementSibling as HTMLElement;
+            if (filter(item)) {
+                yield item;
+            }
+            item = next;
+        }
+    }
+
     public static *enumerate(e: HTMLElement) {
         let item = e?.firstElementChild as HTMLElement;
         while (item) {
+            const next = item.nextElementSibling as HTMLElement;
             yield item;
-            item = item.nextElementSibling as HTMLElement;
+            item = next;
         }
     }
 
@@ -30,6 +53,62 @@ export class ChildEnumerator {
         return this.item ? true : false;
     }
 
+}
+
+/**
+ * Enumerate through all the descendents including self.
+ * @param e Element
+ */
+export function *descendentElementIterator(e: Element) {
+    const stack: Element[] = [];
+    const start = e;
+    if (start) {
+        stack.push(start);
+    }
+
+    while (stack.length) {
+        const pop = stack.pop();
+        const next = pop.nextElementSibling;
+        yield pop;
+
+        if (next) {
+            stack.push(next);
+        }
+
+        const child = pop.firstElementChild;
+        if (child) {
+            stack.push(child);
+        }
+
+    }
+}
+
+/**
+ * Enumerate through all the descendents including self.
+ * @param e Element
+ */
+export function *descendentIterator(e: Node) {
+    const stack: Node[] = [];
+    const start = e;
+    if (start) {
+        stack.push(start);
+    }
+
+    while (stack.length) {
+        const pop = stack.pop();
+        const next = pop.nextSibling;
+        yield pop;
+
+        if (next) {
+            stack.push(next);
+        }
+
+        const child = pop.firstChild;
+        if (child) {
+            stack.push(child);
+        }
+
+    }
 }
 
 export class AtomUI {

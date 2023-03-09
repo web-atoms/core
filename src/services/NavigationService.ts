@@ -24,6 +24,12 @@ export type navigateCallback = (
     url: AtomUri,
     options?: IPageOptions) => Promise<any>;
 
+    
+export type preNavigateCallback = (
+    url: any,
+    viewModelParameters: {[key: string]: any},
+    options?: IPageOptions) => Promise<any>;
+
 export interface IPageOptions {
 
     /**
@@ -77,6 +83,8 @@ export abstract class NavigationService {
 
     private callbacks: navigateCallback[] = [];
 
+    private beforeCallbacks: preNavigateCallback[];
+
     constructor(public readonly app: App) {
 
     }
@@ -85,7 +93,21 @@ export abstract class NavigationService {
     public abstract confirm(message: string | FormattedString, title?: string): Promise<boolean>;
 
     /**
-     *
+     * This method will open the page, it will not wait for the result
+     * @param pageName node style package url or a class
+     * @param viewModelParameters key value pair that will be injected on ViewModel when created
+     * @param options {@link IPageOptions}
+     */
+     public pushPage(
+        pageName: string | any,
+        viewModelParameters?: INameValuePairs,
+        options?: IPageOptions) {
+        this.app.runAsync(() => this.openPage(pageName, viewModelParameters, options));
+    }
+
+    /**
+     * This method will open the page and it will wait for result, use pushPage to
+     * ignore the result
      * @param pageName node style package url or a class
      * @param viewModelParameters key value pair that will be injected on ViewModel when created
      * @param options {@link IPageOptions}
@@ -105,6 +127,15 @@ export abstract class NavigationService {
                 const host = pageName instanceof AtomComponent ? "reference" : "class";
                 const r = rs.put(pageName);
                 pageName = `ref://${host}/${r.key}`;
+            }
+        }
+
+        if (this.beforeCallbacks) {
+            for (const iterator of this.beforeCallbacks) {
+                const r = iterator(pageName, viewModelParameters, options);
+                if (r) {
+                    return r;
+                }
             }
         }
 
@@ -186,6 +217,15 @@ export abstract class NavigationService {
         return {
             dispose: () => {
                 ArrayHelper.remove(this.callbacks, (a) => a === callback);
+            }
+        };
+    }
+
+    public registerPreNavigationHook(callback: preNavigateCallback): IDisposable {
+        (this.beforeCallbacks ??= []).push(callback);
+        return {
+            dispose: () => {
+                this.beforeCallbacks.remove(callback);
             }
         };
     }

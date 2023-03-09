@@ -12,7 +12,7 @@ import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
 import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol,
-    elementFactorySymbol, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
+    elementFactorySymbol, IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
 
 interface IEventObject<T> {
 
@@ -150,7 +150,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     /** Do not ever use, only available as intellisense feature for
      * vs code editor.
      */
-    public get vsProps(): { [k in keyof this]?: any} | { [k: string]: any } | {} {
+    public get vsProps(): { [k in keyof this]?: this[k]} | IElementAttributes {
         return undefined;
     }
 
@@ -223,7 +223,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string,
-        capture?: boolean): IDisposable {
+        capture?: boolean | AddEventListenerOptions): IDisposable {
         if (!element) {
             return;
         }
@@ -245,8 +245,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 e.promise = e.promise ? Promise.all([r, e.promise]) : r;
                 if (r?.catch) {
                     return r.catch((c) => {
-                        c = c?.toString() ?? "Unknown error";
-                        if (CancelToken.isCancelled(c)) {
+                        if (CancelToken.isCancelled(c ?? "Unknown error")) {
                             return;
                         }
                         alert(c.stack ?? c);
@@ -260,10 +259,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 alert(error.stack ?? error);
             }
         };
-        element.addEventListener(name, handler, capture);
+        element.addEventListener(name as any, handler, capture as any);
         be.disposable = {
             dispose: () => {
-                element.removeEventListener(name, handler, capture);
+                element.removeEventListener(name as any, handler, capture as any);
                 be.disposable.dispose = () => undefined;
             }
         };
@@ -503,13 +502,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return this.disposables.add(d);
     }
 
-    protected render(node: XNode, e?: any, creator?: any): void {
-
-        creator = creator || this;
+    protected render(node: XNode, e: any = this.element, creator: any = this): void {
 
         const app = this.app;
 
-        e = e || this.element;
         const attr = node.attributes;
         if (attr) {
             for (const key in attr) {
@@ -526,7 +522,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                         const localXNode = item[localXNodeSymbol];
                         if (localXNode) {
                             if (item.isTemplate) {
-                                this.setLocalValue(e, key, AtomBridge.toTemplate(app, item, creator));
+                                this.setLocalValue(e, key, this.toTemplate(app, item, creator));
                                 continue;
                             }
                             this.setLocalValue(e, key, this.createNode(app, null, item, creator));
@@ -590,7 +586,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             // }
             const t = iterator.attributes && iterator.attributes.template;
             if (t) {
-                this.setLocalValue(e, t, AtomBridge.toTemplate(app, iterator, creator));
+                console.warn(`This path is deprecated, check who is calling it.`);
+                this.setLocalValue(e, t, this.toTemplate(app, iterator, creator));
                 continue;
             }
 

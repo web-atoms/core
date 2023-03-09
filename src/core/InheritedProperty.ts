@@ -1,6 +1,48 @@
+import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomBinder } from "./AtomBinder";
-import { AtomBridge } from "./AtomBridge";
-import { INotifyPropertyChanging } from "./types";
+
+const cache = {};
+
+function getSymbolKey(name: string) {
+    return cache[name] ??= Symbol(name);
+}
+
+function refreshInherited(ac: AtomControl, key: any, storageKey: any) {
+    const e = ac.element;
+    if (!e) {
+        // control is disposed !!
+        return;
+    }
+    AtomBinder.refreshValue(ac, key);
+    let start = e.firstElementChild as HTMLElement;
+    if (!start) {
+        return;
+    }
+    const stack = [start];
+    while (stack.length) {
+        start = stack.pop();
+        while (start) {
+            let firstChild = start.firstElementChild as HTMLElement;
+            const childControl = start.atomControl;
+            if (childControl) {
+                if (childControl[storageKey] === undefined) {
+                    AtomBinder.refreshValue(childControl, key);
+                } else {
+                    // we will not refresh this element
+                    firstChild = void 0;
+                }
+            }
+            if (firstChild) {
+                stack.push(firstChild);
+            }
+            start = start.nextElementSibling as HTMLElement;
+        }
+    }
+}
+
+export function getOwnInheritedProperty(target: any, key: string) {
+    return target[getSymbolKey(key)];
+}
 
 /**
  * Use this decorator only to watch property changes in `onPropertyChanged` method.
@@ -14,9 +56,7 @@ export function InheritedProperty(target: any, key: string): any {
     // property value
     const iVal: any = target[key];
 
-    const keyName = typeof Symbol === "undefined"
-        ? ("_" + key)
-        : Symbol(`${key}`);
+    const keyName = getSymbolKey(key);
 
     target[keyName] = iVal;
 
@@ -46,7 +86,7 @@ export function InheritedProperty(target: any, key: string): any {
 
         this[keyName] = newVal;
 
-        AtomBridge.refreshInherited(this, key);
+        refreshInherited(this, key, keyName);
     };
 
     // delete property

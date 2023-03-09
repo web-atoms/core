@@ -1,6 +1,8 @@
 import { App } from "../App";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
+import { CancelToken } from "../core/types";
+import XNode from "../core/XNode";
 import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
 import { AtomViewModel, Watch } from "./AtomViewModel";
@@ -14,7 +16,7 @@ export interface IActionOptions {
      * has finished, pass null to not display message.
      * @default null
      */
-    success?: string | FormattedString;
+    success?: string | FormattedString | XNode;
 
     /**
      * Title for success message
@@ -33,7 +35,7 @@ export interface IActionOptions {
      * Ask for confirmation before invoking this method
      * @default null
      */
-    confirm?: string;
+    confirm?: string | XNode;
 
     /**
      * Title for confirm message
@@ -57,6 +59,16 @@ export interface IActionOptions {
      * Closes the current popup/window by calling viewModel.close, returned result will be sent in close
      */
     close?: boolean;
+
+    /**
+     * Authorize user, if not empty role
+     */
+    authorize?: string[] | boolean;
+}
+
+export interface IAuthorize {
+    authorize: string[] | boolean;
+    authorized: boolean;
 }
 
 /**
@@ -70,6 +82,7 @@ export interface IActionOptions {
  */
 export default function Action(
     {
+        authorize = void 0,
         success = null,
         successTitle = "Done",
         successMode = "notify",
@@ -94,6 +107,10 @@ export default function Action(
                     const ns = app.resolve(NavigationService) as NavigationService;
                     try {
 
+                        if (authorize && !App.authorize()) {
+                            return;
+                        }
+
                         if (validate) {
                             if (!vm.isValid) {
                                 const vMsg = typeof validate === "boolean"
@@ -105,7 +122,7 @@ export default function Action(
                         }
 
                         if (confirm) {
-                            if (! await ns.confirm(confirm, confirmTitle || "Confirm")) {
+                            if (! await ns.confirm(confirm as any, confirmTitle || "Confirm")) {
                                 return;
                             }
                         }
@@ -115,29 +132,39 @@ export default function Action(
                             const result = await pe;
                             if (close) {
                                 if (success) {
-                                    await ns.notify(success, successTitle, NotifyType.Information, notifyDelay);
+                                    await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
                                 }
                                 vm.close?.(result);
                                 return result;
                             }
                             if (success) {
                                 if (successMode === "notify") {
-                                    await ns.notify(success, successTitle, NotifyType.Information, notifyDelay);
+                                    await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
                                     return result;
                                 }
-                                await ns.alert(success, successTitle);
+                                await ns.alert(success as any, successTitle);
                                 return result;
                             }
                             return result;
                         }
+                        if (close) {
+                            if (success) {
+                                await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
+                            }
+                            vm.close?.(pe);
+                            return pe;
+                        }
                     } catch (e) {
-                        if (/^(cancelled|canceled|timeout)$/i.test(e.toString().trim())) {
+                        if (CancelToken.isCancelled(e)) {
+                            return;
+                        }
+                        if (/^timeout$/i.test(e.toString().trim())) {
                             // tslint:disable-next-line: no-console
                             console.warn(e);
                             return;
                         }
-                        if (e instanceof JsonError && e.json?.detail) {
-                            await ns.alert(e.json.detail, e.message);
+                        if (e.detail) {
+                            await ns.alert(e.detail, e.message);
                             return;
                         }
                         await ns.alert(e, "Error");
