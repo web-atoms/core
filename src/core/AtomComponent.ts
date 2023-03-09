@@ -3,20 +3,247 @@ import { AtomBridge } from "../core/AtomBridge";
 import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement,
     IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types";
 import { Inject } from "../di/Inject";
+import { TypeKey } from "../di/TypeKey";
 import { NavigationService } from "../services/NavigationService";
+import { AtomStyle } from "../web/styles/AtomStyle";
+import { AtomStyleSheet } from "../web/styles/AtomStyleSheet";
+import { AtomBinder } from "./AtomBinder";
 import { AtomDisposableList } from "./AtomDisposableList";
 import { AtomOnce } from "./AtomOnce";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
 import Bind, { bindSymbol } from "./Bind";
+import { BindableProperty } from "./BindableProperty";
+import FormattedString from "./FormattedString";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
+import WebImage from "./WebImage";
 import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol,
     elementFactorySymbol, IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
 
-interface IEventObject<T> {
+const isAtomControl = isControl;
 
-    element: T;
+const fromHyphenToCamel = (input: string) => input.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+
+declare global {
+    // tslint:disable-next-line:interface-name
+    export interface HTMLElement {
+        atomControl: AtomControl;
+        _logicalParent: HTMLElement;
+        _templateParent: AtomControl;
+    }
+}
+
+const defaultStyleSheets: { [key: string]: AtomStyle } = {};
+function setAttribute(name: string) {
+    return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+        e.setAttribute(name, value);
+    };
+}
+
+function setEvent(name: string) {
+    return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+        (ctrl as any).bindEvent(e, name, value);
+    };
+}
+function setStyle(name: string, applyUnit?: string) {
+    if (applyUnit) {
+        return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+            if (typeof value === "number") {
+                e.style[name] = value + applyUnit;
+                return;
+            }
+            e.style[name] = value;
+        };
+    }
+    return (ctrl: AtomControl, e: HTMLElement, value: any) => {
+        e.style[name] = value;
+    };
+}
+
+function disposeChildren(owner: AtomControl, e: HTMLElement) {
+    if (!e) {
+        return;
+    }
+    let s = e.firstElementChild;
+    while (s) {
+        const c = s as HTMLElement;
+        s = s.nextElementSibling as HTMLElement;
+        const ac = c.atomControl;
+        if (ac) {
+            ac.dispose();
+            c.remove();
+            continue;
+        }
+        disposeChildren(owner, c);
+        owner.unbind(c);
+        owner.unbindEvent(c);
+        c.remove();
+    }
+}
+
+export interface ISetters {
+    // tslint:disable-next-line: ban-types
+    [key: string | symbol]: (ctrl: AtomControl, e: HTMLElement, value: any) => void;
+}
+
+export const ElementValueSetters: ISetters = {
+    text(ctrl: AtomControl, e: HTMLElement, value: any) {
+        e.textContent = value;
+    },
+    ["class"](ctrl: AtomControl, e: HTMLElement, value: any) {
+        if (typeof value === "string") {
+            e.className = value;
+            return;
+        }
+        (ctrl as any).setElementClass(e, value, true);
+    },
+    alt: setAttribute("alt"),
+    title: setAttribute("title"),
+    href: setAttribute("href"),
+    target: setAttribute("target"),
+    style: setAttribute("style"),
+    styleLeft: setStyle("left", "px"),
+    styleTop: setStyle("top", "px"),
+    styleBottom: setStyle("bottom", "px"),
+    styleRight: setStyle("right", "px"),
+    styleWidth: setStyle("width", "px"),
+    styleHeight: setStyle("height", "px"),
+    stylePosition: setStyle("position"),
+    styleFontSize: setStyle("fontSize", "px"),
+    styleFontFamily: setStyle("fontFamily"),
+    styleFontWeight: setStyle("fontWeight"),
+    styleBorder: setStyle("border"),
+    styleBorderWidth: setStyle("borderWidth", "px"),
+    styleBorderColor: setStyle("borderColor"),
+    styleColor: setStyle("color"),
+    styleBackgroundColor: setStyle("backgroundColor"),
+    dir: setAttribute("dir"),
+    name: setAttribute("name"),
+    tabIndex: setAttribute("tabIndex"),
+    contentEditable: setAttribute("contentEditable"),
+    eventClick: setEvent("click"),
+    eventKeydown: setEvent("keydown"),
+    eventKeyup: setEvent("keyup"),
+    eventKeypress: setEvent("keypress"),
+    eventMousedown: setEvent("mousedown"),
+    eventMouseup: setEvent("mouseup"),
+    eventMousemove: setEvent("mousemove"),
+
+    src(ctrl: AtomControl, e: any, value: any) {
+        if (value && /^http\:/i.test(value)) {
+            e.src = value.substring(5);
+            return;
+        }
+        e.src = value;
+    },
+    styleClass(ctrl: any, e: any, value: any) {
+        ctrl.setElementClass(e, value);
+    },
+    styleDisplay(ctrl: AtomControl, e: HTMLElement, value) {
+        if (typeof value === "boolean") {
+            e.style.display = value ? "" : "none";
+            return;
+        }
+        e.style.display = value;
+    },
+    formattedText(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value instanceof FormattedString) {
+            (value as FormattedString).applyTo(ctrl.app, e);
+        } else {
+            e.textContent = (value || "").toString();
+        }
+    },
+    disabled(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value) {
+            e.setAttribute("disabled", "");
+            return;
+        }
+        e.removeAttribute("disabled");
+    },
+    autofocus(ctrl: AtomControl, element: HTMLElement, value) {
+        ctrl.app.callLater(() => {
+            const ie = element as HTMLInputElement;
+            if (ie) { ie.focus(); }
+        });
+    },
+    autocomplete(ctrl: AtomControl, element: HTMLElement, value) {
+        ctrl.app.callLater(() => {
+            (element as HTMLInputElement).autocomplete = value;
+        });
+    },
+    onCreate(ctrl: AtomControl, element: HTMLElement, value) {
+        value(ctrl, element);
+    },
+    watch(ctrl: AtomControl, element: HTMLElement, value) {
+        setTimeout((c1: AtomControl, e1: HTMLElement, v1: any) => {
+            e1.dispatchEvent(new CustomEvent("watch", {
+                bubbles: true,
+                cancelable: true,
+                detail: {
+                    control: c1,
+                    value: v1
+                }
+            }));
+        }, 1, ctrl, element, value);
+    },
+    ariaLabel(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value === null) {
+            e.removeAttribute("aria-label");
+            return;
+        }
+        if (typeof value === "object") {
+            value = JSON.stringify(value);
+        }
+        if (typeof value !== "string") {
+            value = value.toString();
+        }
+        e.setAttribute("aria-label", value);
+    },
+    ariaPlaceholder(ctrl: AtomControl, e: HTMLElement, value) {
+        if (value === null) {
+            e.removeAttribute("aria-placeholder");
+            return;
+        }
+        if (typeof value === "object") {
+            value = JSON.stringify(value);
+        }
+        if (typeof value !== "string") {
+            value = value.toString();
+        }
+        e.setAttribute("aria-placeholder", value);
+    }
+};
+
+ElementValueSetters["aria-label"] = ElementValueSetters.ariaLabel;
+ElementValueSetters["aria-placeholder"] = ElementValueSetters.ariaPlaceholder;
+ElementValueSetters["style-display"] = ElementValueSetters.styleDisplay;
+ElementValueSetters["style-left"] = ElementValueSetters.styleLeft;
+ElementValueSetters["style-top"] = ElementValueSetters.styleTop;
+ElementValueSetters["style-bottom"] = ElementValueSetters.styleBottom;
+ElementValueSetters["style-right"] = ElementValueSetters.styleRight;
+ElementValueSetters["style-width"] = ElementValueSetters.styleWidth;
+ElementValueSetters["style-height"] = ElementValueSetters.styleHeight;
+ElementValueSetters["style-position"] = ElementValueSetters.stylePosition;
+ElementValueSetters["style-font-size"] = ElementValueSetters.styleFontSize;
+ElementValueSetters["style-font-family"] = ElementValueSetters.styleFontFamily;
+ElementValueSetters["style-font-weight"] = ElementValueSetters.styleFontWeight;
+ElementValueSetters["style-border"] = ElementValueSetters.styleBorder;
+ElementValueSetters["style-border-width"] = ElementValueSetters.styleBorderWidth;
+ElementValueSetters["style-border-color"] = ElementValueSetters.styleBorderColor;
+ElementValueSetters["style-color"] = ElementValueSetters.styleColor;
+ElementValueSetters["style-background-color"] = ElementValueSetters.styleBackgroundColor;
+ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
+
+let propertyId = 1;
+
+export type PropertyRegistration = ((value) => ({[key: string]: any})) & {
+    property: string;
+};
+
+interface IEventObject {
+
+    element: HTMLElement;
 
     name?: string;
 
@@ -28,13 +255,13 @@ interface IEventObject<T> {
 
 }
 
-export interface IAtomComponent<T> {
-    element: T;
+export interface IAtomComponent {
+    element: HTMLElement;
     data: any;
     viewModel: any;
     localViewModel: any;
     app: App;
-    setLocalValue(e: T, name: string, value: any): void;
+    setLocalValue(e: HTMLElement, name: string, value: any): void;
     hasProperty(name: string);
     runAfterInit(f: () => void ): void;
 }
@@ -44,32 +271,46 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
 
-const elementFactory = elementFactorySymbol;
-
-const isFactory = isFactorySymbol;
-
-const isAtomControl = isControl;
-
-const localBridge = AtomBridge;
-
-const renderFirst = AtomBridge.platform === "xf";
-
-const attached = attachedSymbol;
-
-const constructorNeedsArguments = constructorNeedsArgumentsSymbol;
-
-export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
-    implements IAtomComponent<IAtomElement>,
+export class AtomControl implements
     INotifyPropertyChanged {
 
     public static readonly [isControl] = true;
 
     public static readonly [isFactorySymbol] = true;
 
-    // public element: T;
+    public static from<T = AtomControl>(e1: Element | EventTarget): T {
+        let e = e1 as any;
+        while (e) {
+            const { atomControl } = e;
+            if (atomControl) {
+                return atomControl as T;
+            }
+            e = e._logicalParent ?? e.parentElement;
+        }
+    }
+
+    public static registerProperty(
+        attributeName: string,
+        attributeValue: string,
+        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): PropertyRegistration {
+        const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
+        ElementValueSetters[setterSymbol] = setter;
+        function setterFx(v) {
+            return {
+                [setterSymbol]: v
+            };
+        }
+        setterFx.toString = () => {
+            return setterSymbol;
+        };
+        setterFx.property = setterSymbol;
+        return setterFx;
+    }
+
+    // public element: HTMLElement;
     public readonly disposables: AtomDisposableList;
 
-    public readonly element: T;
+    public readonly element: HTMLElement;
 
     @InheritedProperty
     public data: any;
@@ -80,72 +321,76 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     @InheritedProperty
     public localViewModel: any;
 
+    @BindableProperty
+    public renderer: XNode;
+
+    public defaultControlStyle: any;
+
     protected pendingInits: Array<() => void>;
 
     private mInvalidated: any = 0;
 
     private mPendingPromises: { [key: string]: Promise<any> } = {};
 
-    // private mData: any = undefined;
-    // public get data(): any {
-    //     if (this.mData !== undefined) {
-    //         return this.mData;
-    //     }
-    //     const parent = this.parent;
-    //     if (parent) {
-    //         return parent.data;
-    //     }
-    //     return undefined;
-    // }
+    public get parent(): AtomControl {
+        let e = this.element._logicalParent || this.element.parentElement;
+        if (!e) {
+            return null;
+        }
+        while (e) {
+            const ac = e.atomControl;
+            if (ac) {
+                return ac;
+            }
+            e = e._logicalParent || e.parentElement;
+        }
+    }
 
-    // public set data(v: any) {
-    //     this.mData = v;
-    //     AtomBridge.refreshInherited(this, "data");
-    // }
+    /**
+     * Represents associated AtomStyleSheet with this visual hierarchy. AtomStyleSheet is
+     * inherited by default.
+     */
+    public get theme(): AtomStyleSheet {
+        return this.mTheme ||
+            this.mCachedTheme ||
+            (this.mCachedTheme = (this.parent ? this.parent.theme : this.app.resolve(AtomStyleSheet, false, null) ));
+    }
+    public set theme(v: AtomStyleSheet) {
+        this.mTheme = v;
+        bridgeInstance.refreshInherited(this, "theme");
+    }
 
-    // private mViewModel: any = undefined;
-    // public get viewModel(): any {
-    //     if (this.mViewModel !== undefined) {
-    //         return this.mViewModel;
-    //     }
-    //     const parent = this.parent;
-    //     if (parent) {
-    //         return parent.viewModel;
-    //     }
-    //     return undefined;
-    // }
 
-    // public set viewModel(v: any) {
-    //     const old = this.mViewModel;
-    //     if (old && old.dispose) {
-    //         old.dispose();
-    //     }
-    //     this.mViewModel = v;
-    //     AtomBridge.refreshInherited(this, "viewModel");
-    // }
+    private mControlStyle: AtomStyle;
+    public get controlStyle(): AtomStyle {
+        if (this.mControlStyle === undefined) {
+            const key = TypeKey.get(this.defaultControlStyle || this.constructor);
 
-    // private mLocalViewModel: any = undefined;
-    // public get localViewModel(): any {
-    //     if (this.mLocalViewModel !== undefined) {
-    //         return this.mLocalViewModel;
-    //     }
-    //     const parent = this.parent;
-    //     if (parent) {
-    //         return parent.localViewModel;
-    //     }
-    //     return undefined;
-    // }
+            this.mControlStyle = defaultStyleSheets[key];
+            if (this.mControlStyle) {
+                return this.mControlStyle;
+            }
 
-    // public set localViewModel(v: any) {
-    //     const old = this.mLocalViewModel;
-    //     if (old && old.dispose) {
-    //         old.dispose();
-    //     }
-    //     this.mLocalViewModel = v;
-    //     AtomBridge.refreshInherited(this, "localViewModel");
-    // }
+            if (this.defaultControlStyle) {
+                this.mControlStyle = defaultStyleSheets[key] ||
+                ( defaultStyleSheets[key] = this.theme.createNamedStyle(this.defaultControlStyle, key));
+            }
+            this.mControlStyle = this.mControlStyle || null;
+        }
+        return this.mControlStyle;
+    }
 
-    public abstract get parent(): TC;
+    public set controlStyle(v: AtomStyle) {
+        if (v instanceof AtomStyle) {
+            this.mControlStyle = v;
+        } else {
+            const key = TypeKey.get(v);
+            this.mControlStyle = defaultStyleSheets[key] ||
+            ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key));
+        }
+        AtomBinder.refreshValue(this, "controlStyle");
+        this.invalidate();
+    }
 
     /** Do not ever use, only available as intellisense feature for
      * vs code editor.
@@ -159,13 +404,16 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     //     return AtomBridge.instance.templateParent(this.element);
     // }
 
-    private readonly eventHandlers: Array<IEventObject<T>>;
+    private readonly eventHandlers: IEventObject[];
 
-    private readonly bindings: Array<PropertyBinding<T>>;
+    private readonly bindings: Array<PropertyBinding<HTMLElement>>;
+
+    private mTheme: AtomStyleSheet;
+    private mCachedTheme: AtomStyleSheet;
 
     constructor(
         @Inject public readonly app: App,
-        element: T = null) {
+        element: HTMLElement = null) {
         this.disposables = new AtomDisposableList();
         this.bindings = [];
         this.eventHandlers = [];
@@ -178,10 +426,18 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         app.callLater(() => a.dispose());
     }
 
-    public abstract atomParent(e: T): TC;
+    public atomParent(e: HTMLElement) {
+        while (e) {
+            const ac = e.atomControl;
+            if (ac) {
+                return ac;
+            }
+            e = e._logicalParent ?? e.parentElement;
+        }
+    }
 
     public bind(
-        element: T,
+        element: HTMLElement,
         name: string,
         path: PathList[],
         twoWays?: boolean | string[],
@@ -207,10 +463,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     /**
      * Remove all bindings associated with given element and optional name
-     * @param element T
+     * @param element HTMLElement
      * @param name string
      */
-    public unbind(element: T, name?: string): void {
+    public unbind(element: HTMLElement, name?: string): void {
         const toDelete = this.bindings.filter( (x) => x.element === element && (!name || (x.name === name)));
         for (const iterator of toDelete) {
             iterator.dispose();
@@ -219,7 +475,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public bindEvent(
-        element: T,
+        element: HTMLElement,
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string,
@@ -230,7 +486,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         if (!method) {
             return;
         }
-        const be: IEventObject<T> = {
+        const be: IEventObject<HTMLElement> = {
             element,
             name,
             handler: method
@@ -277,7 +533,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public unbindEvent(
-        element: T,
+        element: HTMLElement,
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string): void {
@@ -331,7 +587,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
      * @param name string
      * @param value any
      */
-    public setPrimitiveValue(element: T, name: string, value: any): void {
+    public setPrimitiveValue(element: HTMLElement, name: string, value: any): void {
         const p = value as Promise<any>;
         if (p && p.then && p.catch) {
             // tslint:disable-next-line: no-console
@@ -368,7 +624,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    public setLocalValue(element: T, name: string, value: any): void {
+    public setLocalValue(element: HTMLElement, name: string, value: any): void {
 
         // if value is a promise
         const p = value as Promise<any>;
@@ -400,7 +656,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    public dispose(e?: T): void {
+    public dispose(e?: HTMLElement): void {
 
         if (this.mInvalidated) {
             clearTimeout(this.mInvalidated);
@@ -447,11 +703,37 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    public abstract append(element: T | TC): TC;
+    public append(element: AtomControl | HTMLElement | Text): AtomControl {
+        if (element instanceof AtomControl) {
+            this.element.appendChild(element.element);
+        } else {
+            this.element.appendChild(element);
+        }
+        return this;
+    }
+
+    public updateSize(): void {
+        this.onUpdateSize();
+        bridgeInstance.visitDescendents(this.element, (e, ac) => {
+            if (ac) {
+                ac.updateSize();
+                return false;
+            }
+            return true;
+        });
+    }
 
     // tslint:disable-next-line:no-empty
     public onPropertyChanged(name: string): void {
-
+        switch (name) {
+            case "theme":
+                this.mCachedTheme = null;
+                AtomBinder.refreshValue(this, "style");
+                break;
+            case "renderer":
+                this.rendererChanged();
+                break;
+        }
     }
 
     public beginEdit(): IDisposable {
@@ -500,6 +782,17 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     public registerDisposable(d: IDisposable): IDisposable {
         return this.disposables.add(d);
+    }
+
+    protected rendererChanged() {
+        disposeChildren(this, this.element);
+        this.element.innerHTML = "";
+        const r = this.renderer;
+        if (!r) {
+            return;
+        }
+        delete this.render;
+        this.render(r);
     }
 
     protected render(node: XNode, e: any = this.element, creator: any = this): void {
@@ -584,10 +877,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             //     }
             //     continue;
             // }
-            const t = iterator.attributes && iterator.attributes.template;
-            if (t) {
+            const HTMLElement = iterator.attributes && iterator.attributes.template;
+            if (HTMLElement) {
                 console.warn(`This path is deprecated, check who is calling it.`);
-                this.setLocalValue(e, t, this.toTemplate(app, iterator, creator));
+                this.setLocalValue(e, HTMLElement, this.toTemplate(app, iterator, creator));
                 continue;
             }
 
@@ -624,9 +917,107 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     protected preCreate(): void {
 
     }
+    protected setElementValue(element: HTMLElement, name: string, value: any): void {
 
-    protected setElementValue(element: T, name: string, value: any): void {
-        AtomBridge.instance.setValue(element, name, value);
+        if (value === undefined) {
+            return;
+        }
+
+        const setter = ElementValueSetters[name];
+        if (setter !== void 0) {
+            setter(this, element, value);
+            return;
+        }
+
+        if (/^(data|aria)\-/.test(name)) {
+            if (value === null) {
+                element.removeAttribute(name);
+                return;
+            }
+            if (typeof value === "object") {
+                value = JSON.stringify(value);
+            }
+            if (typeof value !== "string") {
+                value = value.toString();
+            }
+            element.setAttribute(name, value);
+            return;
+        }
+
+        if (/^style/.test(name)) {
+            name = name.substring(5);
+            if (name.startsWith("-")) {
+                name = fromHyphenToCamel(name.substring(1));
+            } else {
+                name = name.charAt(0).toLowerCase() + name.substring(1);
+            }
+
+            if (value instanceof WebImage) {
+                value = `url(${value})`;
+            }
+            element.style[name] = value;
+            return;
+        }
+
+        if (/^event/.test(name)) {
+            name = name.substring(5);
+            if (name.startsWith("-")) {
+                name = fromHyphenToCamel(name.substring(1));
+            } else {
+                name = name.charAt(0).toLowerCase() + name.substring(1);
+            }
+
+            this.bindEvent(element, name, value);
+            return;
+        }
+
+        if (name.startsWith("aria-")) {
+            element.setAttribute(name, value);
+        } else {
+            element[name] = value;
+        }
+    }
+
+    protected setElementClass(element: HTMLElement, value: any, clear?: boolean): void {
+        const s = value;
+        if (s && typeof s === "object") {
+            if (!s.className) {
+                if (clear) {
+                    let sr = "";
+                    for (const key in s) {
+                        if (s.hasOwnProperty(key)) {
+                            const sv = s[key];
+                            if (sv) {
+                                sr += (sr ? (" " + key) : key);
+                            }
+                        }
+                    }
+                    element.className = sr;
+                    return;
+                }
+                for (const key in s) {
+                    if (s.hasOwnProperty(key)) {
+                        const sv = s[key];
+                        if (sv) {
+                            if (!element.classList.contains(key)) {
+                                element.classList.add(key);
+                            }
+                        } else {
+                            if (element.classList.contains(key)) {
+                                element.classList.remove(key);
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+        }
+        const sv1 = s ? (s.className || s.toString()) : "";
+        element.className = sv1;
+    }
+
+    protected onUpdateSize(): void {
+        // pending !!
     }
 
     protected resolve<TService>(
@@ -655,15 +1046,139 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return result;
     }
 
-    protected abstract createNode(app, e, iterator, creator);
+    protected createNode(app, e, iterator, creator) {
+        const name = iterator.name;
+        const attributes = iterator.attributes;
+        if (typeof name === "string") {
+            const element = document.createElement(name);
+            if (name === "input") {
+                if (!attributes.autocomplete) {
+                    this.app.callLater(() => {
+                        (element as HTMLInputElement).autocomplete = "google-stop";
+                    });
+                }
+            }
+            e?.appendChild(element);
+            this.render(iterator, element, creator);
+            return element;
+        }
 
-    protected abstract toTemplate(app, iterator, creator);
+        if (name[isAtomControl]) {
+            const forName = attributes?.for;
+            const ctrl = new (name)(app,
+                forName ? document.createElement(forName) : undefined);
+            const element = ctrl.element ;
+            e?.appendChild(element);
+            ctrl.render(iterator, element, creator);
+            return element;
+        }
 
-    protected abstract get factory(): any;
+        throw new Error(`not implemented create for ${iterator.name}`);
+    }
+
+    protected toTemplate(app, iterator, creator) {
+
+        if (iterator.isTemplate) {
+            return this.toTemplate(app, iterator.children[0], creator);
+        }
+
+        const name = iterator.name;
+        if (typeof name === "string") {
+            return class Template extends AtomControl {
+                constructor(a = app, e = document.createElement(name)) {
+                    super(a, e);
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, undefined, creator);
+                }
+            };
+        }
+
+        if (name[isAtomControl]) {
+
+            const forName = name.attributes?.for;
+
+            if (forName) {
+                return class Template extends (name as any) {
+                    constructor(a = app, e = document.createElement(forName)) {
+                        super(a, e);
+                    }
+
+                    public create() {
+                        super.create();
+                        this.render(iterator, undefined, creator);
+                    }
+                };
+            }
+
+            return class Template extends (name as any) {
+                constructor(a = app, e) {
+                    super(a, e);
+                }
+
+                public create() {
+                    super.create();
+                    this.render(iterator, undefined, creator);
+                }
+            };
+        }
+
+        throw new Error(`Creating template from ${name} not supported`);
+
+    }
+
+    protected removeAllChildren(e: HTMLElement): void {
+        let child = e.firstElementChild as HTMLElement;
+        while (child) {
+            const c = child;
+            child = child.nextElementSibling as HTMLElement;
+            const ac = c;
+            if (ac && ac.atomControl) {
+                ac.atomControl.dispose();
+            } else {
+                // remove all children events
+                this.unbindEvent(child);
+                // remove all bindings
+                this.unbind(child);
+            }
+            c.remove();
+        }
+    }
+
+    protected dispatchClickEvent(e: MouseEvent, data: any) {
+        let clickEvent = data.clickEvent;
+        if (!clickEvent) {
+            return;
+        }
+        clickEvent = clickEvent.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        const ce = new CustomEvent(clickEvent, { detail: data, bubbles: true, cancelable: true });
+        e.target.dispatchEvent(ce);
+        if ((ce as any).preventClickEvent) {
+            // ce.preventDefault();
+            e.preventDefault();
+        }
+
+        /** There is a problem with following method, in hierarchy of nodes,
+         * it will not be possible to know which control should execute it
+         */
+
+        // if (!ce.defaultPrevented) {
+        //     if (clickEvent === "invokeMethod") {
+        //         const method = data.method;
+        //         const m = this[method] as Function;
+        //         if (m) {
+        //             this.app.runAsync(() => m.call(this, ce));
+        //         }
+
+        //     }
+        // }
+    }
 
 }
 
-export class PropertyBinding<T extends IAtomElement> implements IDisposable {
+export class PropertyBinding implements IDisposable {
 
     public path: ObjectProperty[][];
 
@@ -677,8 +1192,8 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
     private disposed: boolean;
 
     constructor(
-        private target: IAtomComponent<T> | any,
-        public readonly element: T,
+        private target: AtomControl | any,
+        public readonly element: HTMLElement,
         public readonly name: string,
         path: PathList[],
         private twoWays: boolean | string[],
@@ -717,7 +1232,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
                 }
                 this.isRunning = true;
                 try {
-                    if (this.target instanceof AtomComponent) {
+                    if (this.target instanceof AtomControl) {
                         this.target.setLocalValue(this.element, this.name, cv);
                     } else {
                         this.target[name] = cv;
@@ -729,7 +1244,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
             source
         );
         this.path = this.watcher.path;
-        if (this.target instanceof AtomComponent) {
+        if (this.target instanceof AtomControl) {
             this.target.runAfterInit(() => {
                 if (!this.watcher) {
                     // this is disposed ...
@@ -750,7 +1265,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
 
     public setupTwoWayBinding(): void {
 
-        if (this.target instanceof AtomComponent) {
+        if (this.target instanceof AtomControl) {
             if (this.element
                 && (this.element !== this.target.element || !this.target.hasProperty(this.name))) {
                 // most likely it has change event..
@@ -828,3 +1343,29 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
         this.watcher = null;
     }
 }
+
+document.body.addEventListener("click", (e) => {
+    if (e.defaultPrevented) {
+        return;
+    }
+    const originalTarget = e.target as HTMLElement;
+    const control = AtomControl.from(originalTarget);
+    if (control !== void 0) {
+        const data = new Proxy(originalTarget, {
+            get(target, p) {
+                if (typeof p !== "string") {
+                    return;
+                }
+                while (target) {
+                    const value = target.dataset[p];
+                    if (value !== void 0) {
+                        return value;
+                    }
+                    target = target.parentElement;
+                }
+            }
+        });
+        // @ts-ignore
+        control.dispatchClickEvent(e, data);
+    }
+});
