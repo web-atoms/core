@@ -95,7 +95,7 @@ export class AtomTabbedPage extends AtomControl
                 }))}>
                     <div
                         eventClick={BindPage.event((x) => this.localViewModel.selectedPage = x.data)}
-                        text={BindPage.oneWay((x) => x.data.title)}></div>
+                        text={BindPage.oneWay((x) => x.data.viewModel.title || x.data.title)}></div>
                     <img
                         class="close-button"
                         eventClick={BindPage.event((x) => this.localViewModel.closePage(x.data))}/>
@@ -135,6 +135,10 @@ interface ITabState {
     urls: string[];
     selectedUrl: string;
 }
+
+const toTitleCase = (s: string) => {
+    return s.replace(/([A-Z])/gm, (x, g, i) => i ? " " + x : x);
+};
 
 class AtomTabViewModel extends AtomViewModel {
 
@@ -275,13 +279,13 @@ class AtomTabViewModel extends AtomViewModel {
         // const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         const { view: page, disposables } =
             await AtomLoader.loadView<AtomPage>(url, this.app, true, () => new AtomWindowViewModel(this.app));
-        page.title = "Title";
+        page.title ||= toTitleCase(page.constructor.name);
         page.tag = uriString;
         if (url.query && url.query.title) {
-            page.title = url.query.title.toString();
+            page.title ||= url.query.title.toString();
         }
-
-        page.bind(page.element, "title", [["viewModel", "title"]]);
+        (page as any).viewModelTitle = null;
+        page.bind(page.element, "viewModelTitle", [["viewModel", "title"]]);
 
         page.bind(page.element,
             "styleDisplay",

@@ -23,8 +23,8 @@ const isEvent = /^event/i;
 
 export type bindingFunction<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => any;
 
-export type asyncBindingFunction<T extends IAtomComponent = IAtomComponent>
-    = (control: T, e: any, cancelToken: CancelToken) => Promise<any>;
+export type asyncBindingFunction<TR, T extends IAtomComponent = IAtomComponent>
+    = (control: T, e: any, cancelToken: CancelToken) => Promise<TR>;
 
 export type bindingFunctionCommand<T extends IAtomComponent = IAtomComponent> = (control: T, e?: any) => (p) => void;
 
@@ -226,9 +226,9 @@ export default class Bind {
      * @param sourcePath Lambda Expression for binding
      * @param now Default value to set immediately
      */
-    public static oneTimeAsync<T extends IAtomComponent = IAtomComponent>(
-        sourcePath: asyncBindingFunction<T>,
-        now?: any): any {
+    public static oneTimeAsync<TR, T extends IAtomComponent = IAtomComponent>(
+        sourcePath: asyncBindingFunction<TR, T>,
+        now?: any): Promise<TR> {
         return {
             [bindSymbol](name: string, control: IAtomComponent, e: any) {
                 control.runAfterInit(() => {
@@ -241,7 +241,7 @@ export default class Bind {
                     control.setLocalValue(e, name, now);
                 }
             }
-        };
+        } as any;
     }
 
     /**
@@ -270,8 +270,8 @@ export default class Bind {
         };
     }
 
-    public static oneWayAsync<T extends IAtomComponent = IAtomComponent>(
-        sourcePath: (control: T, e: HTMLElement, cancelToken: CancelToken) => Promise<any>,
+    public static oneWayAsync<TR, T extends IAtomComponent = IAtomComponent>(
+        sourcePath: asyncBindingFunction<TR, T>,
         {
             watchDelayInMS = 250,
             default: defaultValue
@@ -280,7 +280,7 @@ export default class Bind {
             default?: any
         } = {
         }
-    ): any {
+    ): Promise<TR> {
         let pathList;
         let combined;
         let thisPathList;
@@ -344,7 +344,7 @@ export default class Bind {
                     control.setLocalValue(e, name, defaultValue);
                 }
             }
-        };
+        } as any;
     }
 
     /**
