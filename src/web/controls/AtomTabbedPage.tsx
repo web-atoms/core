@@ -95,7 +95,7 @@ export class AtomTabbedPage extends AtomControl
                 }))}>
                     <div
                         eventClick={BindPage.event((x) => this.localViewModel.selectedPage = x.data)}
-                        text={BindPage.oneWay((x) => x.data.viewModel.title || x.data.title)}></div>
+                        text={BindPage.oneWay((x) => (x.data as any).viewModelTitle || x.data.title)}></div>
                     <img
                         class="close-button"
                         eventClick={BindPage.event((x) => this.localViewModel.closePage(x.data))}/>
