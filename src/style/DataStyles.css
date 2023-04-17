@@ -1,0 +1,11 @@
+*[data-font-weight] {
+    font-weight: attr(data-font-weight) !important;
+}
+
+*[data-font-style] {
+    font-style: attr(data-font-style) !important;
+}
+
+*[data-text-align] {
+    text-align: attr(data-text-align) !important;
+}
