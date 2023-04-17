@@ -1,59 +1,30 @@
 let id = 1;
 
-const prefix = "styled-";
+const nextId = () => `.styled-r${id++}`;
 
-export const nextId = () => 
-    `.${prefix}-${id++}`;
+class StyleFragment {
 
-
-export class StyleFragment {
-
-    public static newRule (strings: TemplateStringsArray, ... p: any[]) {
-        const list = [];
-        const children = [];
-        for (let index = 0; index < strings.length; index++) {
-            const element = strings[index];
-            list.push(element);
-            if (index < p.length) {
-                if (typeof p === "object") {
-                    const pc = p instanceof StyleFragment;
-                    children.push(pc);
-                }
-                list.push(p.toString());
-            }
-        }
-        const content = list.join("");
-        return new StyleFragment({ content, children });
+    static newStyle( { selector = "", content = "", children = void 0}) {
+        return new StyleFragment( { selector, content, children })
     }
 
-    public static get newRoot() {
-        return new StyleFragment();
-    }
-
-    private selector: string = "";
+    private selector: string;
     private content: string;
     private children: StyleFragment[];
-    private constructor(
-        {
-            selector = "",
-            content = "",
-            children = null as StyleFragment[]
-        } = {}
-    ) {
+
+    constructor({ selector, content, children }) {
         this.selector = selector;
         this.content = content;
         this.children = children;
     }
 
-    expand(selector?: string) {
-        if (selector) {
-            this.selector = selector;
-        }
-        let content = `${this.selector} {${this.content}}`;
+    expand(selector?) {
+        selector ??= this.selector;
+        let content = `${selector} {${this.content}}`;
         if (this.children) {
             for (const iterator of this.children) {
                 content += "\n";
-                content += iterator.expand();
+                content += iterator.expand(selector + iterator.selector);
             }
         }
         return content;
@@ -63,23 +34,23 @@ export class StyleFragment {
         return this.expand();
     }
 
-    and(selector: string, f: StyleFragment) {
-        f.selector = selector;
-        this.children.push(f);
+    and (selector, sf ) {
+        sf.selector = selector;
+        this.children ??= [];
+        this.children.push(sf);
         return this;
     }
 
-    child(selector: string, f: StyleFragment) {
-        f.selector = selector;
-        f.selector = " > " + f.selector;
-        this.children.push(f);
+    child (selector, sf ) {
+        sf.selector = " > " + selector;
+        this.children ??= [];
+        this.children.push(sf);
         return this;
     }
-
-    nested(selector: string, f: StyleFragment) {
-        f.selector = selector;
-        f.selector = " " + f.selector;
-        this.children.push(f);
+    nested (selector, sf ) {
+        sf.selector = " " + selector;
+        this.children ??= [];
+        this.children.push(sf);
         return this;
     }
 
@@ -98,13 +69,37 @@ export class StyleFragment {
     }
 }
 
-export type IStyleParameter = string | number | ((x: typeof styled) => any);
+export type IStyleFragments = {
+    [key: string]: StyleFragment;
+};
+
+export type IStyleFragmentSet = {
+    [key: string]: IStyleFragments;
+}
+
+const styles: IStyleFragmentSet[] = [];
 
 const styled = {
 
-    css: (strings: TemplateStringsArray, ... p: any[]) => {
-        return StyleFragment.newRule(strings, ... p);
+    get styles() {
+        return styles;
     },
-}
+
+    css: (t: TemplateStringsArray, ... a: any[]) => {
+        let r = "";
+        for (let index = 0; index < t.length; index++) {
+            const element = t[index];
+            r += element;
+            if (index < a.length) {
+                r += a[index];
+            }
+        }
+        return StyleFragment.newStyle( { content: r });
+    },
+
+    add(x: IStyleFragmentSet) {
+        styles.push(x);
+    },
+};
 
 export default styled;
