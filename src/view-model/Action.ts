@@ -1,6 +1,7 @@
 import { App } from "../App";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
+import { StringHelper } from "../core/StringHelper";
 import { CancelToken } from "../core/types";
 import XNode from "../core/XNode";
 import JsonError from "../services/http/JsonError";
@@ -112,6 +113,7 @@ export default function Action(
     return (target, key: string | symbol, descriptor: any): any => {
 
         if (eventName) {
+            eventName = StringHelper.fromHyphenToCamel(eventName);
             const oldCreate = target.beginEdit as Function;
             if(oldCreate) {
                 target.beginEdit = function() {
