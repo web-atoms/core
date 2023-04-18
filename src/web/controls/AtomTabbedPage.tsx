@@ -276,7 +276,7 @@ class AtomTabViewModel extends AtomViewModel {
         // const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         const { view: page, disposables } =
             await AtomLoader.loadView<AtomPage>(url, this.app, true, () => new AtomWindowViewModel(this.app));
-        page.title ||= StringHelper.toTitleCase(page.constructor.name);
+        page.title ||= StringHelper.fromPascalToTitleCase(page.constructor.name);
         page.tag = uriString;
         if (url.query && url.query.title) {
             page.title ||= url.query.title.toString();
