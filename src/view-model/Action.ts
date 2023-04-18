@@ -121,7 +121,7 @@ export default function Action(
                 const c = this as AtomControl;
                 const element = this.element;
 
-                if (eventName) {
+                if (element) {
                     c.bindEvent(element, eventName, async (ce: Event) => {
                         let target = ce.target as HTMLElement;
                         if (target.getAttribute("data-busy") === "true") {
