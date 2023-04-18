@@ -5,10 +5,24 @@ import { CancelToken } from "../core/types";
 import XNode from "../core/XNode";
 import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
+import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
 export interface IActionOptions {
+
+    /**
+     * Execute current action when the specified event will be fired. The benefit is,
+     * the element which has fired this event will have `[data-busy=true]` set so
+     * you can use CSS to disable the button and prevent further executions.
+     */
+    eventName?: string;
+
+    /**
+     * When action is set to automatically execute on the given event fired,
+     * if this is set to true, simultaneous executions will be blocked. Default is true.
+     */
+    blockMultipleExecution?: boolean;
 
     /**
      * Display success message after method successfully executes,
@@ -82,6 +96,8 @@ export interface IAuthorize {
  */
 export default function Action(
     {
+        eventName = void 0,
+        blockMultipleExecution = true,
         authorize = void 0,
         success = null,
         successTitle = "Done",
@@ -170,6 +186,37 @@ export default function Action(
                         await ns.alert(e, "Error");
                     }
                 };
+
+                // setup event if specified...
+                const c = this as AtomControl;
+                const element = this.element;
+                if (element) {
+                    if (eventName) {
+                        c.bindEvent(element, eventName, async (ce: Event) => {
+                            let target = ce.target as HTMLElement;
+                            if (target.getAttribute("data-busy") === "true") {
+                                if (blockMultipleExecution) {
+                                    return;
+                                }
+                            }
+                            try {
+                                while(target && target !== element) {
+                                    target.setAttribute("data-busy", "true");
+                                    target = target.parentElement;
+                                }
+                                const detail = (ce as any).detail;
+                                await fx(detail, ce);
+                            } finally {
+                                target = ce.target as HTMLElement;
+                                while(target && target !== element) {
+                                    target.removeAttribute("data-busy");
+                                    target = target.parentElement;
+                                }
+                            }
+                        });
+                    }
+                }
+
                 Object.defineProperty(vm, key, {
                     value: fx,
                     writable: true,
