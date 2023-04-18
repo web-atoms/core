@@ -112,9 +112,9 @@ export default function Action(
     return (target, key: string | symbol, descriptor: any): any => {
 
         if (eventName) {
-            const oldCreate = target.prototype.beginEdit as Function;
+            const oldCreate = target.beginEdit as Function;
             if(oldCreate) {
-                target.protected.beginEdit = function() {
+                target.beginEdit = function() {
 
                     const result = oldCreate.apply(this, arguments);
 
