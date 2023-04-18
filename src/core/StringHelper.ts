@@ -56,4 +56,8 @@ export class StringHelper {
         return input[0].toLowerCase() + input.substr(1);
     }
 
+    public static fromPascalToTitleCase(s: string) {
+        return s.replace(/([A-Z])/gm, (x, g, i) => i ? " " + x : x);
+    };
+
 }

@@ -24,7 +24,7 @@ document.body.addEventListener("click", (ce: MouseEvent) => {
 
     const cmd = Command.registry.get(clickCommand);
     if (cmd) {
-        cmd.eventScope.dispatchEvent(commandParameter);
+        cmd.eventScope.dispatch(target, commandParameter);
     }
 
 });

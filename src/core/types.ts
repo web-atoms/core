@@ -195,5 +195,5 @@ declare var global: any;
 
 const globalNS = (typeof window !== "undefined" ? window : (global as any)) as any;
 
-export const DI = (globalNS).UMD;
-export const UMD = (globalNS).UMD;
+export const DI = (globalNS).UMD as IUMDClass;
+export const UMD = (globalNS).UMD as IUMDClass;
