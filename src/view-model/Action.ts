@@ -110,6 +110,46 @@ export default function Action(
         notifyDelay = 2000,
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
+
+        if (eventName) {
+            const oldCreate = target.prototype.beginEdit as Function;
+            target.protected.beginEdit = function() {
+
+                const result = oldCreate.apply(this, arguments);
+
+                // initialize here...
+                const c = this as AtomControl;
+                const element = this.element;
+
+                if (eventName) {
+                    c.bindEvent(element, eventName, async (ce: Event) => {
+                        let target = ce.target as HTMLElement;
+                        if (target.getAttribute("data-busy") === "true") {
+                            if (blockMultipleExecution) {
+                                return;
+                            }
+                        }
+                        try {
+                            while(target && target !== element) {
+                                target.setAttribute("data-busy", "true");
+                                target = target.parentElement;
+                            }
+                            const detail = (ce as any).detail;
+                            await c[key](detail, ce);
+                        } finally {
+                            target = ce.target as HTMLElement;
+                            while(target && target !== element) {
+                                target.removeAttribute("data-busy");
+                                target = target.parentElement;
+                            }
+                        }
+                    });
+                }
+
+                return result;
+            };
+        }
+
         const { value } = descriptor;
         return {
             get: function(){
@@ -186,36 +226,6 @@ export default function Action(
                         await ns.alert(e, "Error");
                     }
                 };
-
-                // setup event if specified...
-                const c = this as AtomControl;
-                const element = this.element;
-                if (element) {
-                    if (eventName) {
-                        c.bindEvent(element, eventName, async (ce: Event) => {
-                            let target = ce.target as HTMLElement;
-                            if (target.getAttribute("data-busy") === "true") {
-                                if (blockMultipleExecution) {
-                                    return;
-                                }
-                            }
-                            try {
-                                while(target && target !== element) {
-                                    target.setAttribute("data-busy", "true");
-                                    target = target.parentElement;
-                                }
-                                const detail = (ce as any).detail;
-                                await fx(detail, ce);
-                            } finally {
-                                target = ce.target as HTMLElement;
-                                while(target && target !== element) {
-                                    target.removeAttribute("data-busy");
-                                    target = target.parentElement;
-                                }
-                            }
-                        });
-                    }
-                }
 
                 Object.defineProperty(vm, key, {
                     value: fx,
