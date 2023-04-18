@@ -1,6 +1,6 @@
 let id = 1;
 
-const nextId = () => `.styled-r${id++}`;
+const nextId = () => `styled-r${id++}`;
 
 class StyleFragment {
 
@@ -63,7 +63,9 @@ class StyleFragment {
     installLocal() {
         const selector = nextId();
         const style = document.createElement("style");
-        style.textContent = this.expand(selector);
+        const id = `.${selector}`;
+        style.id = id;
+        style.textContent = this.expand(id);
         document.head.appendChild(style);
         return selector;
     }
