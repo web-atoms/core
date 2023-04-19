@@ -17,7 +17,7 @@ export interface IActionOptions {
      * the element which has fired this event will have `[data-busy=true]` set so
      * you can use CSS to disable the button and prevent further executions.
      */
-    eventName?: string;
+    onEvent?: string;
 
     /**
      * When action is set to automatically execute on the given event fired,
@@ -97,7 +97,7 @@ export interface IAuthorize {
  */
 export default function Action(
     {
-        eventName = void 0,
+        onEvent = void 0,
         blockMultipleExecution = true,
         authorize = void 0,
         success = null,
@@ -112,8 +112,8 @@ export default function Action(
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
 
-        if (eventName) {
-            eventName = StringHelper.fromHyphenToCamel(eventName);
+        if (onEvent) {
+            onEvent = StringHelper.fromHyphenToCamel(onEvent);
             const oldCreate = target.beginEdit as Function;
             if(oldCreate) {
                 target.beginEdit = function() {
@@ -125,7 +125,7 @@ export default function Action(
                     const element = this.element;
 
                     if (element) {
-                        c.bindEvent(element, eventName, async (ce: Event) => {
+                        c.bindEvent(element, onEvent, async (ce: Event) => {
                             let target = ce.target as HTMLElement;
                             if (target.getAttribute("data-busy") === "true") {
                                 if (blockMultipleExecution) {
