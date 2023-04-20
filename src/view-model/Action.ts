@@ -137,9 +137,7 @@ export default function Action(
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
 
-        const isEventString = typeof onEvent === "string";
-
-        if (isEventString || onEvent?.length > 0 ) {
+        if (onEvent?.length > 0 ) {
             const oldCreate = target.beginEdit as Function;
             if(oldCreate) {
                 target.beginEdit = function() {
@@ -154,7 +152,7 @@ export default function Action(
 
                         const handler = onEventHandler(blockMultipleExecution, key);
 
-                        if (isEventString) {
+                        if (typeof onEvent === "string") {
                             c.bindEvent(element, StringHelper.fromHyphenToCamel(onEvent), handler);
                         } else {
                             for (const eventName of onEvent) {
