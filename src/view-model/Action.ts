@@ -1,14 +1,29 @@
 import { App } from "../App";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
+import { StringHelper } from "../core/StringHelper";
 import { CancelToken } from "../core/types";
 import XNode from "../core/XNode";
 import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
+import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
 export interface IActionOptions {
+
+    /**
+     * Execute current action when the specified event will be fired. The benefit is,
+     * the element which has fired this event will have `[data-busy=true]` set so
+     * you can use CSS to disable the button and prevent further executions.
+     */
+    onEvent?: string;
+
+    /**
+     * When action is set to automatically execute on the given event fired,
+     * if this is set to true, simultaneous executions will be blocked. Default is true.
+     */
+    blockMultipleExecution?: boolean;
 
     /**
      * Display success message after method successfully executes,
@@ -82,6 +97,8 @@ export interface IAuthorize {
  */
 export default function Action(
     {
+        onEvent = void 0,
+        blockMultipleExecution = true,
         authorize = void 0,
         success = null,
         successTitle = "Done",
@@ -94,6 +111,49 @@ export default function Action(
         notifyDelay = 2000,
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
+
+        if (onEvent) {
+            onEvent = StringHelper.fromHyphenToCamel(onEvent);
+            const oldCreate = target.beginEdit as Function;
+            if(oldCreate) {
+                target.beginEdit = function() {
+
+                    const result = oldCreate.apply(this, arguments);
+
+                    // initialize here...
+                    const c = this as AtomControl;
+                    const element = this.element;
+
+                    if (element) {
+                        c.bindEvent(element, onEvent, async (ce: Event) => {
+                            let target = ce.target as HTMLElement;
+                            if (target.getAttribute("data-busy") === "true") {
+                                if (blockMultipleExecution) {
+                                    return;
+                                }
+                            }
+                            try {
+                                while(target && target !== element) {
+                                    target.setAttribute("data-busy", "true");
+                                    target = target.parentElement;
+                                }
+                                const detail = (ce as any).detail;
+                                await c[key](detail, ce);
+                            } finally {
+                                target = ce.target as HTMLElement;
+                                while(target && target !== element) {
+                                    target.removeAttribute("data-busy");
+                                    target = target.parentElement;
+                                }
+                            }
+                        });
+                    }
+
+                    return result;
+                };
+            }
+        }
+
         const { value } = descriptor;
         return {
             get: function(){
@@ -170,6 +230,7 @@ export default function Action(
                         await ns.alert(e, "Error");
                     }
                 };
+
                 Object.defineProperty(vm, key, {
                     value: fx,
                     writable: true,
