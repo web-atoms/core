@@ -18,6 +18,36 @@ const loadPopupService = async () => {
     return popupService = (await (import("./PopupService"))).default;
 };
 
+const focus = (popup: PopupWindow) => {
+    const element = popup.element;
+    if (!element) {
+        return;
+    }
+    const host = element.querySelector(`[data-window-element="title"]`);
+    // @ts-expect-error
+    popup.setupDragging(host as HTMLElement);
+    // this.element may become null if it was immediately
+    // closed, very rare case, but possible if
+    // supplied cancelToken was cancelled
+    const anyAutofocus = element.querySelector(`*[autofocus]`);
+    if (!anyAutofocus) {
+        const windowContent = element.querySelector("[data-window-content]");
+        if (windowContent) {
+            const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
+            if (firstInput) {
+                firstInput.focus();
+                return;
+            }
+        }
+
+        const cb = element.querySelector(".popup-close-button") as HTMLButtonElement;
+        if (cb) {
+            cb.focus();
+        }
+        return;
+    }
+};
+
     styled.css `
         position: absolute;
         border: solid 1px lightgray;
@@ -161,6 +191,8 @@ export default class PopupWindow extends AtomControl {
     @BindableProperty
     public closeWarning: string;
 
+    private initialized = false;
+
     public onPropertyChanged(name) {
         super.onPropertyChanged(name);
         switch (name as keyof PopupWindow) {
@@ -267,33 +299,12 @@ export default class PopupWindow extends AtomControl {
             { node }
         </div>);
 
-        this.runAfterInit(() => {
-            if (!this.element) {
-                return;
-            }
-            const host = this.element.querySelector(`[data-window-element="title"]`);
-            this.setupDragging(host as HTMLElement);
-            // this.element may become null if it was immediately
-            // closed, very rare case, but possible if
-            // supplied cancelToken was cancelled
-            const anyAutofocus = this.element.querySelector(`*[autofocus]`);
-            if (!anyAutofocus) {
-                const windowContent = this.element.querySelector("[data-window-content]");
-                if (windowContent) {
-                    const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
-                    if (firstInput) {
-                        firstInput.focus();
-                        return;
-                    }
-                }
-
-                const cb = this.element.querySelector(".popup-close-button") as HTMLButtonElement;
-                if (cb) {
-                    cb.focus();
-                }
-                return;
-            }
-        });
+        if(!this.initialized) {
+            this.initialized = true;
+            this.runAfterInit(() => {
+                setTimeout(focus, 100, this);
+            });
+        }
     }
 
     protected setupDragging(tp: HTMLElement): void {
