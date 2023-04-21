@@ -29,8 +29,8 @@ const loadPopupService = async () => {
         box-shadow: 0 0 20px 1px rgba(0 0 0 / 75%);
 
         display: grid;
-        align-items: center;
-        justify-items: center;
+        align-items: stretch;
+        justify-items: stretch;
         grid-template-rows: auto auto 1fr auto;
         grid-template-columns: auto 1fr auto;
         opacity: 0;
