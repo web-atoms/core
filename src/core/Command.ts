@@ -72,7 +72,7 @@ export default class Command<T = any, TR = any> {
     }
 
     public async dispatchAsync(detail?: T, cancelable?: boolean) {
-        const ce = new CustomEvent(this.eventScope.eventName, { detail, cancelable}) as any as CustomEventEx<T, TR>;
+        const ce = new CustomEvent(this.eventScope.eventType, { detail, cancelable}) as any as CustomEventEx<T, TR>;
         ce.returnResult = true;
         window.dispatchEvent(ce);
         if(ce.executed) {
