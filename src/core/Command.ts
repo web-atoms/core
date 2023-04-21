@@ -54,15 +54,14 @@ export default class Command<T = any, TR = any> {
 
     public listen(r: { app: App, registerDisposable: (d: IDisposable) => void }, handler: (ce: CustomEventEx<T, TR>) => any) {
         const d = this.eventScope.listen((e) => {
-            r.app.runAsync(async () => {
-                const r = handler(e);
-                const ce = e as any;
+            const ce = e as CustomEventEx<any,any>;
+            try {
                 ce.executed = true;
-                ce.promise = r;
-                if (r?.then) {
-                    return await r;
-                }
-            });
+                ce.promise = handler(e);
+            } catch (error) {
+                ce.promise = Promise.reject(error);
+            }
+            r.app.runAsync(() => ce.promise);
         });
         return r.registerDisposable(d);
     }
