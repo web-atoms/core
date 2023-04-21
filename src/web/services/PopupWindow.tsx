@@ -85,7 +85,7 @@ const loadPopupService = async () => {
             margin-bottom: 5px;
         }
 
-    `.installGlobal("[data-popup-window=popup=window]")
+    `.installGlobal("[data-popup-window=popup-window]")
 
 export default class PopupWindow extends AtomControl {
 
