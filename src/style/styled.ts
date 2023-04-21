@@ -105,6 +105,7 @@ class StyleFragment {
         const style = document.createElement("style");
         style.textContent = this.expand(selector);
         document.head.appendChild(style);
+        style.id = selector;
     }
 
     installLocal() {
