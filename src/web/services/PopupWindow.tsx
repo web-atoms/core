@@ -78,6 +78,7 @@ const focus = (popup: PopupWindow) => {
         & > [data-window-element=icon] {
             grid-row: 1;
             grid-column: 1;
+            z-index: 2;
         }
         & > [data-window-element=title] {
             grid-row: 1;
@@ -89,6 +90,7 @@ const focus = (popup: PopupWindow) => {
             cursor: move;
             padding: var(--spacing, 5px);
             color: var(--accent-text-color, #424242);
+            z-index: 2;
         }
         & > [data-window-element=close] {
             grid-row: 1;
@@ -105,6 +107,7 @@ const focus = (popup: PopupWindow) => {
             margin: 5px;
             cursor: pointer;
             text-transform: capitalize;
+            z-index: 2;
         }
         & > [data-window-element=action-bar] {
             grid-row: 1;
@@ -114,6 +117,7 @@ const focus = (popup: PopupWindow) => {
             background-color: var(--accent-color, rgba(211, 211, 211, 0.2));
             border-top-left-radius: 5px;
             border-top-right-radius: 5px;
+            z-index: 1;
         }
         & > [data-window-element=header] {
             margin-top: 5px;
@@ -322,6 +326,7 @@ export default class PopupWindow extends AtomControl {
             class="popup-close-button"
             text="x"
             eventClick={Bind.event(() => this.requestCancel())}/>;
+        this.actionBarRenderer ??= () => <div/>;
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
         a["data-window-element"] = "content";
@@ -330,7 +335,6 @@ export default class PopupWindow extends AtomControl {
         super.render(<div
             viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
             { ... extracted }>
-            <div data-window-element="action-bar"></div>
             { node }
         </div>);
 
