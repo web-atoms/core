@@ -64,12 +64,15 @@ class StyleFragment {
         let parts = en.next();
 
         if (parts.done) {
+            if (!this.content) {
+                return "";
+            }
             return `${selector} {\n${this.content}\n}`;
         }
 
         const first = parts.value;
 
-        let content = `${selector} {\n${first}\n}\n`;
+        let content = first ? `${selector} {\n${first}\n}\n` : "";
 
         let selectorStack = [];
 
