@@ -52,7 +52,7 @@ export default class Command<T = any, TR = any> {
         Command.registry.set(this.name, this);
     }
 
-    public listen<TR = any>(r: { app: App, registerDisposable: (d: IDisposable) => void }, handler: (ce: CustomEventEx<T, TR>) => any) {
+    public listen(r: { app: App, registerDisposable: (d: IDisposable) => void }, handler: (ce: CustomEventEx<T, TR>) => any) {
         const d = this.eventScope.listen((e) => {
             r.app.runAsync(async () => {
                 const r = handler(e);
@@ -71,7 +71,7 @@ export default class Command<T = any, TR = any> {
         this.eventScope.dispatchEvent(detail, cancelable);
     }
 
-    public async dispatchAsync<TR>(detail?: T, cancelable?: boolean) {
+    public async dispatchAsync(detail?: T, cancelable?: boolean) {
         const ce = new CustomEvent(this.eventScope.eventName, { detail, cancelable}) as any as CustomEventEx<T, TR>;
         window.dispatchEvent(ce);
         if(ce.executed) {
