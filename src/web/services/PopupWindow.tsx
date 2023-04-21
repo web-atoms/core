@@ -245,7 +245,7 @@ export default class PopupWindow extends AtomControl {
     protected recreate(renderer, name): HTMLElement {
         const node = this[renderer]?.() ?? undefined;
         for (const e of ChildEnumerator.enumerate(this.element)) {
-            if (e.dataset.pageElement === name) {
+            if (e.getAttribute("data-window-element") === name) {
                 this.dispose(e);
                 e.remove();
                 break;
@@ -259,6 +259,26 @@ export default class PopupWindow extends AtomControl {
         }
         return null;
     }
+
+    /**
+     * This is because if someone changes renderer, entire content will
+     * vanish, so we need to update allow update of only content element
+     * @returns 
+     */
+        protected rendererChanged() {
+            for (const content of ChildEnumerator.where(this.element,
+                (e) => e.getAttribute("data-window-element") === "content")) {
+                this.dispose(content);
+                content.remove();
+            }
+            const r = this.renderer;
+            if (!r) {
+                return;
+            }
+            delete this.render;
+            this.render(r);
+        }
+    
 
     protected preCreate(): void {
         this.title = null;
