@@ -55,6 +55,7 @@ const loadPopupService = async () => {
             text-overflow: ellipsis;
             cursor: move;
             padding: var(--spacing, 5px);
+            color: var(--accent-text-color, #424242);
         }
         & > [data-window-element=close] {
             grid-row: 1;
