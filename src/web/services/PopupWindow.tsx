@@ -125,7 +125,7 @@ const focus = (popup: PopupWindow) => {
         }
         & > [data-window-element=footer] {
             margin-top: 5px;
-            grid-row: 3;
+            grid-row: 4;
             grid-column: 1 / span 3;
             margin-bottom: 5px;
         }
@@ -292,24 +292,22 @@ export default class PopupWindow extends AtomControl {
         }
 
         this.render = super.render;
-        const titleContent: XNode = this.titleRenderer?.() ?? <div
+
+        this.titleRenderer ??= () => <div
             class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>;
-        const closeButton: XNode = this.closeButtonRenderer?.() ?? <button
+        this.closeButtonRenderer ??= () => <button
             class="popup-close-button"
             text="x"
             eventClick={Bind.event(() => this.requestCancel())}/>;
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
         a["data-window-element"] = "content";
-        (titleContent.attributes ??= {})["data-window-element"] = "title";
-        (closeButton.attributes ??= {})["data-window-element"] = "close";
         const extracted = this.extractControlProperties(node);
+
         super.render(<div
             viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
             { ... extracted }>
             <div data-window-element="action-bar"></div>
-            { titleContent }
-            { closeButton }
             { node }
         </div>);
 
