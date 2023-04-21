@@ -56,16 +56,30 @@ const loadPopupService = async () => {
             cursor: move;
             padding: var(--spacing, 5px);
         }
-        & > [data-window-element=close-button] {
+        & > [data-window-element=close] {
             grid-row: 1;
             grid-column: 3;
+            color: white;
+            background-color: red;
+            border-radius: 9999px;
+            border: none;
+            outline: none;
+            /* padding: 5px; */
+            font-family: monospace;
+            height: 20px;
+            width: 20px;
+            margin: 5px;
+            cursor: pointer;
+            text-transform: capitalize;
         }
         & > [data-window-element=action-bar] {
             grid-row: 1;
             grid-column: 1 / span 3;
             align-self: stretch;
             justify-self: stretch;
-            background-color: var(--accent-color, rgba(211, 211, 211, 0.2))
+            background-color: var(--accent-color, rgba(211, 211, 211, 0.2));
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
         }
         & > [data-window-element=header] {
             margin-top: 5px;
@@ -164,7 +178,10 @@ export default class PopupWindow extends AtomControl {
             case "headerRenderer":
                 this.recreate(name, "header");
                 break;
-        }
+            case "closeButtonRenderer":
+                this.recreate(name, "close");
+                break;
+            }
     }
 
     protected init(): any {
@@ -228,17 +245,17 @@ export default class PopupWindow extends AtomControl {
 
     protected render(node: XNode, e?: any, creator?: any): void {
         this.render = super.render;
-        const titleContent = this.titleRenderer?.() ?? <span
+        const titleContent: XNode = this.titleRenderer?.() ?? <div
             class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>;
-        const closeButton = this.closeButtonRenderer?.() ?? <button
+        const closeButton: XNode = this.closeButtonRenderer?.() ?? <button
             class="popup-close-button"
             text="x"
             eventClick={Bind.event(() => this.requestCancel())}/>;
         const a = node.attributes ??= {};
         a["data-window-content"] = "window-content";
         a["data-window-element"] = "content";
-        titleContent["data-window-element"] = "title";
-        closeButton["data-window-element"] = "close";
+        (titleContent.attributes ??= {})["data-window-element"] = "title";
+        (closeButton.attributes ??= {})["data-window-element"] = "close";
         const extracted = this.extractControlProperties(node);
         super.render(<div
             viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
@@ -253,7 +270,7 @@ export default class PopupWindow extends AtomControl {
             if (!this.element) {
                 return;
             }
-            const host = this.element.getElementsByClassName("title-host")[0];
+            const host = this.element.querySelector(`[data-window-element="title"]`);
             this.setupDragging(host as HTMLElement);
             // this.element may become null if it was immediately
             // closed, very rare case, but possible if
