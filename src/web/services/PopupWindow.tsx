@@ -176,16 +176,23 @@ export default class PopupWindow extends AtomControl {
 
     public cancel: (r?) => void;
 
+
+    @BindableProperty
     public titleRenderer: () => XNode;
 
+    @BindableProperty
     public closeButtonRenderer: () => XNode;
 
+    @BindableProperty
     public footerRenderer: () => XNode;
 
+    @BindableProperty
     public headerRenderer: () => XNode;
 
+    @BindableProperty
     public iconRenderer: () => XNode;
 
+    @BindableProperty
     public actionBarRenderer: () => XNode;
 
     @BindableProperty
@@ -277,6 +284,13 @@ export default class PopupWindow extends AtomControl {
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
+
+        // this is because nested render will call `this.` instead of `super.`
+        if (e || node?.attributes?.["data-window-element"]) {
+            super.render(node, e, creator);
+            return;
+        }
+
         this.render = super.render;
         const titleContent: XNode = this.titleRenderer?.() ?? <div
             class="title-text" text={Bind.oneWay(() => this.title || this.viewModelTitle)}/>;
@@ -441,7 +455,7 @@ export class ConfirmPopup extends PopupWindow {
                 />
         </div>;
 
-        this.closeButtonRenderer = () => <div/>;
+        this.closeButtonRenderer = () => <div style-display="none"/>;
     }
 
     protected requestCancel(): Promise<void> {
