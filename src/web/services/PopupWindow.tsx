@@ -23,9 +23,12 @@ const focus = (popup: PopupWindow) => {
     if (!element) {
         return;
     }
-    const host = element.querySelector(`[data-window-element="title"]`);
-    // @ts-expect-error
-    popup.setupDragging(host as HTMLElement);
+    const host = element.querySelector(`[data-window-element="title"]`)
+        ?? element.querySelector(`[data-window-element="action-bar"]`);
+    if(host) {
+        // @ts-expect-error
+        popup.setupDragging(host as HTMLElement);
+    }
     // this.element may become null if it was immediately
     // closed, very rare case, but possible if
     // supplied cancelToken was cancelled
