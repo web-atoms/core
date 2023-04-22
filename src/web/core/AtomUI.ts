@@ -1,5 +1,29 @@
 import { INameValues, IRect } from "../../core/types";
 
+export class AncestorEnumerator {
+
+    public static find(e: HTMLElement, filter: (e: HTMLElement) => any) {
+        let start = e?.parentElement;
+        while (start) {
+            if(filter(start)) {
+                return start;
+            }
+            start = start.parentElement;
+        }
+    }
+
+    public static findSelector(e: HTMLElement, selector: string) {
+        let start = e?.parentElement;
+        while (start) {
+            const found = start.querySelector(selector);
+            if(found) {
+                return found;
+            }
+            start = start.parentElement;
+        }
+    }
+}
+
 // refer http://youmightnotneedjquery.com/
 
 export class ChildEnumerator {
