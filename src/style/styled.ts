@@ -1,9 +1,9 @@
 function *divide (text: string) {
-    const regex = /^(([^\{\n]+\{)|([^\n]*\}))$/gm;
+    const regex = /^(([^\{\n]+\{\s*)|([^\n]*\}\s*))$/gm;
     let m;
     let sentOnce = false;
     let lastIndex = 0;
-    let lastMatch;
+    let lastMatch: string;
     while((m = regex.exec(text)) !== null) {
         // This is necessary to avoid infinite loops with zero-width matches
         if (m.index === regex.lastIndex) {
@@ -20,7 +20,7 @@ function *divide (text: string) {
             continue;
         }
 
-        if (lastMatch.endsWith("}")) {
+        if (lastMatch.includes("}")) {
             yield [lastMatch];
             lastIndex = m.index + match.length;
             lastMatch = match;
@@ -70,9 +70,11 @@ class StyleFragment {
             return `${selector} {\n${this.content}\n}`;
         }
 
-        const first = parts.value;
+        const first = parts.value as string;
 
-        let content = first ? `${selector} {\n${first}\n}\n` : "";
+        let content = first?.trim()
+            ? `${selector} {\n${first}\n}\n`
+            : "";
 
         let selectorStack = [];
 
@@ -91,7 +93,10 @@ class StyleFragment {
             selectorStack.push(selector);
             selector = replaced;                
 
-            content += `${replaced} {\n${value}\n}\n`;
+            // only add rule if it is not empty...
+            if (value?.trim()) {
+                content += `${replaced} {\n${value}\n}\n`;
+            }
         }
 
         return content;
