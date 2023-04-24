@@ -17,7 +17,7 @@ export interface IActionOptions {
      * the element which has fired this event will have `[data-busy=true]` set so
      * you can use CSS to disable the button and prevent further executions.
      */
-    onEvent?: string;
+    onEvent?: string | string[];
 
     /**
      * When action is set to automatically execute on the given event fired,
@@ -86,6 +86,31 @@ export interface IAuthorize {
     authorized: boolean;
 }
 
+const onEventHandler = (blockMultipleExecution, key) => async (ce: Event) => {
+    const element = ce.currentTarget as HTMLElement;
+    const c = element.atomControl;
+    let target = ce.target as HTMLElement;
+    if (target.getAttribute("data-busy") === "true") {
+        if (blockMultipleExecution) {
+            return;
+        }
+    }
+    try {
+        while(target && target !== element) {
+            target.setAttribute("data-busy", "true");
+            target = target.parentElement;
+        }
+        const detail = (ce as any).detail;
+        await c[key](detail, ce);
+    } finally {
+        target = ce.target as HTMLElement;
+        while(target && target !== element) {
+            target.removeAttribute("data-busy");
+            target = target.parentElement;
+        }
+    }
+};
+
 /**
  * Reports an alert to user when an error has occurred
  * or validation has failed.
@@ -112,8 +137,7 @@ export default function Action(
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
 
-        if (onEvent) {
-            onEvent = StringHelper.fromHyphenToCamel(onEvent);
+        if (onEvent?.length > 0 ) {
             const oldCreate = target.beginEdit as Function;
             if(oldCreate) {
                 target.beginEdit = function() {
@@ -125,28 +149,16 @@ export default function Action(
                     const element = this.element;
 
                     if (element) {
-                        c.bindEvent(element, onEvent, async (ce: Event) => {
-                            let target = ce.target as HTMLElement;
-                            if (target.getAttribute("data-busy") === "true") {
-                                if (blockMultipleExecution) {
-                                    return;
-                                }
+
+                        const handler = onEventHandler(blockMultipleExecution, key);
+
+                        if (typeof onEvent === "string") {
+                            c.bindEvent(element, StringHelper.fromHyphenToCamel(onEvent), handler);
+                        } else {
+                            for (const eventName of onEvent) {
+                                c.bindEvent(element, StringHelper.fromHyphenToCamel(eventName), handler);
                             }
-                            try {
-                                while(target && target !== element) {
-                                    target.setAttribute("data-busy", "true");
-                                    target = target.parentElement;
-                                }
-                                const detail = (ce as any).detail;
-                                await c[key](detail, ce);
-                            } finally {
-                                target = ce.target as HTMLElement;
-                                while(target && target !== element) {
-                                    target.removeAttribute("data-busy");
-                                    target = target.parentElement;
-                                }
-                            }
-                        });
+                        }
                     }
 
                     return result;

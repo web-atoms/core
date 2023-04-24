@@ -31,7 +31,13 @@ document.body.addEventListener("click", (ce: MouseEvent) => {
 
 let id = 1;
 
-export default class Command<T = any> {
+export type CustomEventEx<T, TR> = CustomEvent<T> & {
+    executed?: boolean;
+    promise?: Promise<TR>;
+    returnResult?: boolean;
+};
+
+export default class Command<T = any, TR = any> {
 
     public static registry: Map<string, Command> = new Map();
 
@@ -46,14 +52,33 @@ export default class Command<T = any> {
         Command.registry.set(this.name, this);
     }
 
-    public listen(r: { app: App, registerDisposable: (d: IDisposable) => void }, handler: (ce: CustomEvent<T>) => any) {
+    public listen(r: { app: App, registerDisposable: (d: IDisposable) => void }, handler: (ce: CustomEventEx<T, TR>) => any) {
         const d = this.eventScope.listen((e) => {
-            r.app.runAsync(() => handler(e));
+            const ce = e as CustomEventEx<any,any>;
+            try {
+                ce.executed = true;
+                ce.promise = handler(e);
+            } catch (error) {
+                ce.promise = Promise.reject(error);
+            }
+            r.app.runAsync(() => ce.promise);
         });
         return r.registerDisposable(d);
     }
 
     public dispatch(detail?: T, cancelable?: boolean) {
         this.eventScope.dispatchEvent(detail, cancelable);
+    }
+
+    public async dispatchAsync(detail?: T, cancelable?: boolean) {
+        const ce = new CustomEvent(this.eventScope.eventType, { detail, cancelable}) as any as CustomEventEx<T, TR>;
+        ce.returnResult = true;
+        window.dispatchEvent(ce);
+        if(ce.executed) {
+            const promise = ce.promise;
+            if (promise) {
+                return await promise;
+            }
+        }
     }
 }
