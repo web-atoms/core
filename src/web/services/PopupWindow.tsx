@@ -303,7 +303,7 @@ export default class PopupWindow extends AtomControl {
         // });
         this.element.dataset.popupWindow = "popup-window";
 
-        this.runAfterInit(() => this.app.runAsync(() => this.init()));
+        this.runAfterInit(() => this.app.runAsync(() => this.init?.()));
 
         setTimeout((p) => {
             p.dataset.ready = "true";
