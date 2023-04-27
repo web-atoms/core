@@ -338,7 +338,7 @@ export default class PopupWindow extends AtomControl {
             viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
             { ... extracted }>
             { node }
-        </div>);
+        </div>, e, creator);
 
         if(!this.initialized) {
             this.initialized = true;
