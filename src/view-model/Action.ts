@@ -129,10 +129,36 @@ export class MarkBusySet {
         while (start) {
             if (start.tagName === "BUTTON") {
                 yield start;
+                break;
             }
             start = start.parentElement;
         }
     });
+
+    public static buttonOrAnchor = new MarkBusySet(function *(target, currentTarget) {
+        let start = target;
+        while (start) {
+            if (start.tagName === "BUTTON" || start.tagName === "A") {
+                yield start;
+                break;
+            }
+            start = start.parentElement;
+        }
+    });
+
+    public static selector(selector: string) {
+        return new MarkBusySet(function *(target, currentTarget) {
+            let start = target;
+            while (start) {
+                if (start.matches(selector)) {
+                    yield start;
+                    break;
+                }
+                start = start.parentElement;
+            }
+        });
+    }
+
 
     public static allAncestors = new MarkBusySet(function*(target, currentTarget) {
         do {
