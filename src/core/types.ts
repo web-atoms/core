@@ -156,7 +156,7 @@ declare global {
 
     // tslint:disable-next-line
     interface Array<T> {
-        flat(this: Array<T>, depth: number): any[];
+        flat(this: Array<T>, depth?: number): any[];
         groupBy?<TKey>(
             this: Array<T>, 
             keySelector: ((item: T) => TKey)): Array<IKeyedArray<TKey,T>>;
