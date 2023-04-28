@@ -785,7 +785,7 @@ export default class PopupService {
         if (element === document.documentElement) {
             return;
         }
-        if (!this.defaultElementTarget) {
+        if (!this.defaultElementTarget && element !== document.body && element !== document.documentElement) {
             this.defaultElementTarget = element;
         }
         const rect = element.getBoundingClientRect();
