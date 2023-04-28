@@ -1,4 +1,5 @@
 import { App } from "../App";
+import EventScope from "../core/EventScope";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
 import { StringHelper } from "../core/StringHelper";
@@ -18,6 +19,12 @@ export interface IActionOptions {
      * you can use CSS to disable the button and prevent further executions.
      */
     onEvent?: string | string[];
+
+    /**
+     * By default event is listened on current element, however some events are only sent globally
+     * and might end up on parent or window. You can chagne the target by overriding this.
+     */
+    onEventTarget?: EventTarget;
 
     /**
      * When action is set to automatically execute on the given event fired,
@@ -123,6 +130,7 @@ const onEventHandler = (blockMultipleExecution, key) => async (ce: Event) => {
 export default function Action(
     {
         onEvent = void 0,
+        onEventTarget = void 0,
         blockMultipleExecution = true,
         authorize = void 0,
         success = null,
@@ -146,9 +154,13 @@ export default function Action(
 
                     // initialize here...
                     const c = this as AtomControl;
-                    const element = this.element;
+                    let element = this.element;
 
                     if (element) {
+
+                        if (onEventTarget) {
+                            element = onEventTarget;
+                        }
 
                         const handler = onEventHandler(blockMultipleExecution, key);
 
