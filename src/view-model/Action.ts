@@ -12,6 +12,8 @@ import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
+export type onEventSetBusyTypes = "target" | "current-target" | "till-current-target" | "ancestors" | "button";
+
 export interface IActionOptions {
 
     /**
@@ -26,6 +28,14 @@ export interface IActionOptions {
      * and might end up on parent or window. You can chagne the target by overriding this.
      */
     onEventTarget?: EventTarget;
+
+    /**
+     * Set busy will be set to only target of the event. You can change this behaviour by providing
+     * any of target, current-target, ancestors, button. Ancestors will set all ancestors to busy.
+     * `button` will only set busy if target is button or any ancestor is button.
+     */
+
+    onEventSetBusy?: MarkBusySet;
 
     /**
      * When action is set to automatically execute on the given event fired,
@@ -94,7 +104,87 @@ export interface IAuthorize {
     authorized: boolean;
 }
 
-const onEventHandler = (blockMultipleExecution, key) => async (ce: Event) => {
+export class MarkBusySet {
+
+    public static target = new MarkBusySet(function* (t, ct) {
+        yield t;
+    });
+
+    public static currentTarget = new MarkBusySet(function* (t, ct) {
+        yield ct;
+    });
+
+
+    public static tillCurrentTarget = new MarkBusySet(function*(target, currentTarget) {
+        let start = target;
+        do {
+            yield start;
+            start = start.parentElement;
+        } while (start !== currentTarget);
+        yield currentTarget;
+    });
+
+    public static button = new MarkBusySet(function *(target, currentTarget) {
+        let start = target;
+        while (start) {
+            if (start.tagName === "BUTTON") {
+                yield start;
+            }
+            start = start.parentElement;
+        }
+    });
+
+    public static allAncestors = new MarkBusySet(function*(target, currentTarget) {
+        do {
+            yield target;
+            target = target.parentElement;
+        } while (target);
+    });
+
+    private constructor(private set: (target: HTMLElement, currentTarget: HTMLElement) => Iterable<HTMLElement>) {
+
+    }
+
+    public *find(event: Event) {
+        yield *this.set(event.target as HTMLElement, event.currentTarget as HTMLElement);
+    }
+
+}
+
+// function *findAll(element: HTMLElement, currentTarget: HTMLElement, onEventSetBusy: onEventSetBusyTypes) {
+//     let start = element;
+//     switch(onEventSetBusy) {
+//         case "target":
+//             yield start;
+//             return;
+//         case "current-target":
+//             yield currentTarget;
+//             return;
+//         case "button":
+//             while (start) {
+//                 if (start.tagName === "BUTTON") {
+//                     yield start;
+//                     return;
+//                 }
+//                 start = start.parentElement;
+//             }
+//             return;
+//         case "ancestors":
+//             while(start) {
+//                 yield start;
+//                 start = start.parentElement;
+//             }
+//             return;
+//         case "till-current-target":
+//             do {
+//                 yield start;
+//                 start = start.parentElement;
+//             } while (start)
+//             return;
+//     }
+// }
+
+const onEventHandler = (blockMultipleExecution, key, onEventSetBusy: MarkBusySet) => async (ce: Event) => {
     const element = ce.currentTarget as HTMLElement;
     const c = element.atomControl;
     let target = ce.target as HTMLElement;
@@ -104,17 +194,15 @@ const onEventHandler = (blockMultipleExecution, key) => async (ce: Event) => {
         }
     }
     try {
-        while(target && target !== element) {
-            target.setAttribute("data-busy", "true");
-            target = target.parentElement;
+        for (const iterator of onEventSetBusy.find(ce)) {
+            iterator.setAttribute("data-busy", "true");
         }
         const detail = (ce as any).detail;
         await c[key](detail, ce);
     } finally {
         target = ce.target as HTMLElement;
-        while(target && target !== element) {
-            target.removeAttribute("data-busy");
-            target = target.parentElement;
+        for (const iterator of onEventSetBusy.find(ce)) {
+            iterator.removeAttribute("data-busy");
         }
     }
 };
@@ -132,6 +220,7 @@ export default function Action(
     {
         onEvent = void 0,
         onEventTarget = void 0,
+        onEventSetBusy = MarkBusySet.target,
         blockMultipleExecution = true,
         authorize = void 0,
         success = null,
@@ -180,7 +269,7 @@ export default function Action(
                             element = onEventTarget;
                         }
 
-                        const handler = onEventHandler(blockMultipleExecution, key);
+                        const handler = onEventHandler(blockMultipleExecution, key, onEventSetBusy);
 
                         if (typeof onEventName === "string") {
                             c.bindEvent(element, onEventName, handler);
