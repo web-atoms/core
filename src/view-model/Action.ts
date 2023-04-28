@@ -106,6 +106,9 @@ export interface IAuthorize {
 
 export class MarkBusySet {
 
+    public static none = new MarkBusySet(function*() {
+    })
+
     public static target = new MarkBusySet(function* (t, ct) {
         yield t;
     });
