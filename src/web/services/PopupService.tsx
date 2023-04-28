@@ -762,12 +762,18 @@ export interface IPopupAlertOptions {
 }
 export default class PopupService {
 
+    public static defaultElementTarget: HTMLElement;
+
     public static get lastTarget() {
         const { element, x = 0, y = 0 } = lastTarget;
         if (element?.isConnected) {
             return element;
         }
-        const e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
+        let e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
+        if (this.defaultElementTarget?.isConnected
+            && (e === document.documentElement || e === document.body)) {
+                e = this.defaultElementTarget;
+            }
         PopupService.lastTarget = e;
         return e;
     }
@@ -775,6 +781,12 @@ export default class PopupService {
     public static set lastTarget(element: HTMLElement) {
         if (!element.isConnected) {
             return;
+        }
+        if (element === document.documentElement) {
+            return;
+        }
+        if (!this.defaultElementTarget) {
+            this.defaultElementTarget = element;
         }
         const rect = element.getBoundingClientRect();
         lastTarget = {
