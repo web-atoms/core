@@ -149,8 +149,14 @@ export default function Action(
         if (!Array.isArray(onEvent) && typeof onEvent === "object") {
             if (onEvent instanceof Command) {
                 onEvent = onEvent.eventScope.eventName;
+                // all command events will be dispatched on
+                // window or will be bubbled up
+                onEventTarget ??= window;
             } else if (onEvent instanceof EventScope) {
+                // all event scope events will be dispatched on
+                // window or will be bubbled up
                 onEvent = onEvent.eventName;
+                onEventTarget ??= window;
             }
         }
 
