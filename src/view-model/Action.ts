@@ -21,7 +21,7 @@ export interface IActionOptions {
      * the element which has fired this event will have `[data-busy=true]` set so
      * you can use CSS to disable the button and prevent further executions.
      */
-    onEvent?: string | string[] | EventScope | Command;
+    onEvent?: string | string[] | EventScope | EventScope[] | Command | Command[];
 
     /**
      * By default event is listened on current element, however some events are only sent globally
@@ -213,28 +213,47 @@ export class MarkBusySet {
 //     }
 // }
 
-const onEventHandler = (blockMultipleExecution, key, onEventSetBusy: MarkBusySet) => async (ce: Event) => {
+const onEventHandler = (owner, blockMultipleExecution, key, busyKey: symbol, onEventSetBusy: MarkBusySet) => async (ce: Event) => {
     const element = ce.currentTarget as HTMLElement;
-    const c = element.atomControl;
-    let target = ce.target as HTMLElement;
-    if (target.getAttribute("data-busy") === "true") {
+    if (owner[busyKey]) {
         if (blockMultipleExecution) {
             return;
         }
     }
+    owner[busyKey] = true;
     try {
-        for (const iterator of onEventSetBusy.find(ce)) {
-            iterator.setAttribute("data-busy", "true");
+        if (onEventSetBusy) {
+            for (const iterator of onEventSetBusy.find(ce)) {
+                iterator.setAttribute("data-busy", "true");
+            }
         }
         const detail = (ce as any).detail;
-        await c[key](detail, ce);
+        await owner[key](detail, ce);
     } finally {
-        target = ce.target as HTMLElement;
-        for (const iterator of onEventSetBusy.find(ce)) {
-            iterator.removeAttribute("data-busy");
+        delete owner[busyKey];
+        if(onEventSetBusy) {
+            for (const iterator of onEventSetBusy.find(ce)) {
+                iterator.removeAttribute("data-busy");
+            }
         }
     }
 };
+
+const getEventNames = (names: string | Command | EventScope | (string | Command | EventScope)[]): string | string[] => {
+    if (names === null || names === void 0) {
+        return;
+    }
+    if (Array.isArray(names)) {
+        return names.map(getEventNames) as any;
+    }
+    if(names instanceof Command) {
+        return names.eventScope.eventName;
+    }
+    if (names instanceof EventScope) {
+        return names.eventName;
+    }
+    return names;
+}
 
 /**
  * Reports an alert to user when an error has occurred
@@ -249,7 +268,7 @@ export default function Action(
     {
         onEvent = void 0,
         onEventTarget = void 0,
-        onEventSetBusy = MarkBusySet.target,
+        onEventSetBusy,
         blockMultipleExecution = true,
         authorize = void 0,
         success = null,
@@ -264,19 +283,7 @@ export default function Action(
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
 
-        if (!Array.isArray(onEvent) && typeof onEvent === "object") {
-            if (onEvent instanceof Command) {
-                onEvent = onEvent.eventScope.eventName;
-                // all command events will be dispatched on
-                // window or will be bubbled up
-                onEventTarget ??= window;
-            } else if (onEvent instanceof EventScope) {
-                // all event scope events will be dispatched on
-                // window or will be bubbled up
-                onEvent = onEvent.eventName;
-                onEventTarget ??= window;
-            }
-        }
+        onEvent = getEventNames(onEvent);
 
         if (onEvent?.length > 0 ) {
             const oldCreate = target.beginEdit as Function;
@@ -284,6 +291,7 @@ export default function Action(
                 const onEventName = Array.isArray(onEvent)
                     ? onEvent.map(StringHelper.fromHyphenToCamel)
                     : StringHelper.fromHyphenToCamel(onEvent);
+                const busyKey = Symbol("isBusy" + key.toString());
                 target.beginEdit = function() {
 
                     const result = oldCreate.apply(this, arguments);
@@ -298,7 +306,7 @@ export default function Action(
                             element = onEventTarget;
                         }
 
-                        const handler = onEventHandler(blockMultipleExecution, key, onEventSetBusy);
+                        const handler = onEventHandler(c, blockMultipleExecution, key, busyKey, onEventSetBusy);
 
                         if (typeof onEventName === "string") {
                             c.bindEvent(element, onEventName, handler);
