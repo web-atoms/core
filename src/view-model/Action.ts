@@ -1,4 +1,5 @@
 import { App } from "../App";
+import Command from "../core/Command";
 import EventScope from "../core/EventScope";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
@@ -18,7 +19,7 @@ export interface IActionOptions {
      * the element which has fired this event will have `[data-busy=true]` set so
      * you can use CSS to disable the button and prevent further executions.
      */
-    onEvent?: string | string[];
+    onEvent?: string | string[] | EventScope | Command;
 
     /**
      * By default event is listened on current element, however some events are only sent globally
@@ -145,9 +146,20 @@ export default function Action(
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
 
+        if (!Array.isArray(onEvent) && typeof onEvent === "object") {
+            if (onEvent instanceof Command) {
+                onEvent = onEvent.eventScope.eventName;
+            } else if (onEvent instanceof EventScope) {
+                onEvent = onEvent.eventName;
+            }
+        }
+
         if (onEvent?.length > 0 ) {
             const oldCreate = target.beginEdit as Function;
             if(oldCreate) {
+                const onEventName = Array.isArray(onEvent)
+                    ? onEvent.map(StringHelper.fromHyphenToCamel)
+                    : StringHelper.fromHyphenToCamel(onEvent);
                 target.beginEdit = function() {
 
                     const result = oldCreate.apply(this, arguments);
@@ -164,11 +176,11 @@ export default function Action(
 
                         const handler = onEventHandler(blockMultipleExecution, key);
 
-                        if (typeof onEvent === "string") {
-                            c.bindEvent(element, StringHelper.fromHyphenToCamel(onEvent), handler);
+                        if (typeof onEventName === "string") {
+                            c.bindEvent(element, onEventName, handler);
                         } else {
-                            for (const eventName of onEvent) {
-                                c.bindEvent(element, StringHelper.fromHyphenToCamel(eventName), handler);
+                            for (const eventName of onEventName) {
+                                c.bindEvent(element, eventName, handler);
                             }
                         }
                     }
