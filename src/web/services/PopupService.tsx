@@ -698,6 +698,16 @@ function closeHandler(
     container, close) {
     let handler: any = null;
     handler = (e: Event) => {
+
+        // dispatch event once again...
+        if(container?.element) {
+            const ce = new CustomEvent("outsideClick", { detail: e, cancelable: true, bubbles: true});
+            (container.element as HTMLElement).dispatchEvent(ce);
+            if (ce.defaultPrevented) {
+                return;
+            }
+        }
+
         let start = e.target as HTMLElement;
         if (e.defaultPrevented) {
             return;
