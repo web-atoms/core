@@ -239,22 +239,6 @@ const onEventHandler = (owner, blockMultipleExecution, key, busyKey: symbol, onE
     }
 };
 
-const getEventNames = (names: string | Command | EventScope | (string | Command | EventScope)[]): string | string[] => {
-    if (names === null || names === void 0) {
-        return;
-    }
-    if (Array.isArray(names)) {
-        return names.map(getEventNames) as any;
-    }
-    if(names instanceof Command) {
-        return names.eventScope.eventName;
-    }
-    if (names instanceof EventScope) {
-        return names.eventName;
-    }
-    return names;
-}
-
 /**
  * Reports an alert to user when an error has occurred
  * or validation has failed.
@@ -282,6 +266,25 @@ export default function Action(
         notifyDelay = 2000,
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
+
+        const getEventNames = (names: string | Command | EventScope | (string | Command | EventScope)[]): string | string[] => {
+            if (names === null || names === void 0) {
+                return;
+            }
+            if (Array.isArray(names)) {
+                return names.map(getEventNames) as any;
+            }
+            if(names instanceof Command) {
+                onEventTarget ??= window;
+                return names.eventScope.eventName;
+            }
+            if (names instanceof EventScope) {
+                onEventTarget ??= window;
+                return names.eventName;
+            }
+            return names;
+        }
+        
 
         onEvent = getEventNames(onEvent);
 
