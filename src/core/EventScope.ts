@@ -16,6 +16,10 @@ export default class EventScope<T = any> {
         };
     }
 
+    /**
+     * This eventName contains `event-` prefix, use
+     * eventType for direct event binding.
+     */
     public readonly eventName: string;
 
     private constructor(public readonly eventType: string) {

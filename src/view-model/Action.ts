@@ -276,11 +276,11 @@ export default function Action(
             }
             if(names instanceof Command) {
                 onEventTarget ??= window;
-                return names.eventScope.eventName;
+                return names.eventScope.eventType;
             }
             if (names instanceof EventScope) {
                 onEventTarget ??= window;
-                return names.eventName;
+                return names.eventType;
             }
             return names;
         }
