@@ -30,12 +30,19 @@ export interface IActionOptions {
     onEventTarget?: EventTarget;
 
     /**
-     * Set busy will be set to only target of the event. You can change this behaviour by providing
+     * Set busy will be set to only target of the event. You can change this behavior by providing
      * any of target, current-target, ancestors, button. Ancestors will set all ancestors to busy.
      * `button` will only set busy if target is button or any ancestor is button.
      */
 
     onEventSetBusy?: MarkBusySet;
+
+    /**
+     * Defer the execution for given milliseconds, each execution request made before the defer
+     * will cancel previous request and will enqueue the new request. This is helpful in 
+     * preventing multiple simultaneous executions.
+     */
+    defer?: number;
 
     /**
      * When action is set to automatically execute on the given event fired,
@@ -255,6 +262,7 @@ export default function Action(
         onEventSetBusy,
         blockMultipleExecution = true,
         authorize = void 0,
+        defer = void 0,
         success = null,
         successTitle = "Done",
         successMode = "notify",
@@ -294,7 +302,7 @@ export default function Action(
                 const onEventName = Array.isArray(onEvent)
                     ? onEvent.map(StringHelper.fromHyphenToCamel)
                     : StringHelper.fromHyphenToCamel(onEvent);
-                const busyKey = Symbol("isBusy" + key.toString());
+                const busyKey = Symbol.for("isBusy" + key.toString());
                 target.beginEdit = function() {
 
                     const result = oldCreate.apply(this, arguments);
@@ -326,14 +334,33 @@ export default function Action(
         }
 
         const { value } = descriptor;
+
+        const deferSymbol = defer ? Symbol.for(`${key.toString()}Defer`) : void 0;
+
         return {
             get: function(){
                 const vm = this;
+                
                 // tslint:disable-next-line: ban-types
                 const oldMethod = value;
                 // tslint:disable-next-line:only-arrow-functions
                 const fx = async function( ... a: any[]) {
                     const vm = this;
+
+                    if (defer) {
+                        const previous = vm[deferSymbol];
+                        if (previous === void 0 || previous > 0) {
+                            if (previous > 0) {
+                                clearTimeout(previous);
+                            }
+                            vm[deferSymbol] = setTimeout(() => {
+                                vm[deferSymbol] = 0;
+                                return vm[key](... a);
+                            }, defer);
+                            return;
+                        }
+                    }
+
                     const app = vm.app as App;
                     const ns = app.resolve(NavigationService) as NavigationService;
                     try {
