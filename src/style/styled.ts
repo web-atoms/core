@@ -103,7 +103,7 @@ class StyleFragment {
     }
 
     toString() {
-        return this.expand();
+        return this.content.replace(/\\n/g,"");
     }
 
     installGlobal(selector: string = "") {
