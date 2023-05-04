@@ -106,19 +106,37 @@ class StyleFragment {
         return this.content.replace(/\\n/g,"");
     }
 
-    installGlobal(selector: string = "") {
+    /**
+     * Installs style globally, without appending it with any class
+     * @param selector global selector if any
+     * @param id id of style element
+     * @param description description if any
+     */
+    installGlobal(selector: string = "", id: string = selector, description?: string) {
         const style = document.createElement("style");
         style.textContent = this.expand(selector);
+        if (description) {
+            style.setAttribute("data-desc", description);
+        }
         document.head.appendChild(style);
-        style.id = selector;
+        style.id = id;
     }
 
-    installLocal() {
+    /**
+     * Installs style with an auto generated class name
+     * @param prefix prefix of an element if any
+     * @param description description if any
+     * @returns string
+     */
+    installLocal(prefix: string = "", description?: string) {
         const selector = nextId();
         const style = document.createElement("style");
-        const id = `.${selector}`;
+        const id = `${prefix}.${selector}`;
         style.id = id;
         style.textContent = this.expand(id);
+        if (description) {
+            style.setAttribute("data-desc", description);
+        }
         document.head.appendChild(style);
         return selector;
     }
