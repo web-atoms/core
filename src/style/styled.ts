@@ -50,6 +50,8 @@ class StyleFragment {
 
     private selector: string;
     private content: string;
+    private id?: string;
+    private description?: string;
 
     constructor({ selector, content }) {
         this.selector = selector;
@@ -112,7 +114,7 @@ class StyleFragment {
      * @param id id of style element
      * @param description description if any
      */
-    installGlobal(selector: string = "", id: string = selector, description?: string) {
+    installGlobal(selector: string = "", id: string = this.id || selector, description?: string) {
         const style = document.createElement("style");
         style.textContent = this.expand(selector);
         if (description) {
@@ -128,7 +130,7 @@ class StyleFragment {
      * @param description description if any
      * @returns string
      */
-    installLocal(prefix: string = "", description?: string) {
+    installLocal(prefix: string = "", description: string = this.description) {
         const selector = nextId();
         const style = document.createElement("style");
         const id = `${prefix}.${selector}`;
@@ -139,6 +141,15 @@ class StyleFragment {
         }
         document.head.appendChild(style);
         return selector;
+    }
+
+    withId(id: string) {
+        this.id = id;
+        return this;
+    }
+    withDescription(description: string) {
+        this.description = description;
+        return this;
     }
 }
 
