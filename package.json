@@ -1,6 +1,6 @@
 {
   "name": "@web-atoms/core",
-  "version": "2.2.87",
+  "version": "2.2.88",
   "description": "Web Atoms Core",
   "main": "index.js",
   "scripts": {
