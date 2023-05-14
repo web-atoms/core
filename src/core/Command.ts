@@ -41,7 +41,10 @@ export default class Command<T = any, TR = any> {
 
     public static registry: Map<string, Command> = new Map();
 
-    public get clickEventName() {
+    /**
+     * This name does not contain `event-` prefix
+     */
+    public get eventName() {
         return this.eventScope.eventType;
     }
 
