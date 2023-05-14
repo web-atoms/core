@@ -41,6 +41,10 @@ export default class Command<T = any, TR = any> {
 
     public static registry: Map<string, Command> = new Map();
 
+    public get clickEventName() {
+        return this.eventScope.eventType;
+    }
+
     constructor(
         public readonly name: string = `command${id++}`,
         public readonly eventScope: EventScope<T> = EventScope.create<T>(),
