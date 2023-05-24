@@ -235,7 +235,7 @@ const onEventHandler = (owner, blockMultipleExecution, key, busyKey: symbol, onE
             }
         }
         const detail = (ce as any).detail;
-        await owner[key](detail, ce);
+        return await owner[key](detail, ce);
     } finally {
         delete owner[busyKey];
         if(onEventSetBusy) {
