@@ -129,6 +129,7 @@ const focus = (popup: PopupWindow) => {
             grid-row: 3;
             grid-column: 1 / span 3;
             position: relative;
+            overflow: auto;
         }
         & > [data-window-element=footer] {
             margin-top: 5px;
@@ -303,7 +304,8 @@ export default class PopupWindow extends AtomControl {
         // });
         this.element.dataset.popupWindow = "popup-window";
 
-        this.runAfterInit(() => this.app.runAsync(() => this.init?.()));
+        // init will be called if parameters are set...
+        // this.runAfterInit(() => this.app.runAsync(() => this.init?.()));
 
         setTimeout((p) => {
             p.dataset.ready = "true";
@@ -336,7 +338,7 @@ export default class PopupWindow extends AtomControl {
             viewModelTitle={Bind.oneWay(() => this.viewModel.title)}
             { ... extracted }>
             { node }
-        </div>);
+        </div>, e, creator);
 
         if(!this.initialized) {
             this.initialized = true;

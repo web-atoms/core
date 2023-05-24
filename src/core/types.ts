@@ -156,10 +156,45 @@ declare global {
 
     // tslint:disable-next-line
     interface Array<T> {
+        flat(this: Array<T>, depth?: number): any[];
         groupBy?<TKey>(
             this: Array<T>, 
             keySelector: ((item: T) => TKey)): Array<IKeyedArray<TKey,T>>;
     }
+
+    interface ObjectConstructor {
+        values(t: any): any[];
+    }
+}
+
+Object.values ??= function (t) {
+    const r = [];
+    for (const key in t) {
+        if (Object.prototype.hasOwnProperty.call(t, key)) {
+            const element = t[key];
+            r.push(element);
+        }
+    }
+    return r;
+}
+
+Array.prototype.flat ??= function (depth = 1) {
+    const r = [];
+    const flat = depth > 0;
+    const nestDepth = depth - 1;
+    const nestFlat = nestDepth > 0;
+    for (const iterator of this) {
+        if (flat && Array.isArray(iterator)) {
+            if (nestFlat) {
+                r.push(... iterator.flat(nestDepth));
+                continue;
+            }
+            r.push(... iterator);
+            continue;
+        }
+        r.push(iterator);
+    }
+    return r;
 }
 
 // tslint:disable-next-line

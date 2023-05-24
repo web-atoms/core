@@ -1,9 +1,9 @@
 function *divide (text: string) {
-    const regex = /^(([^\{\n]+\{)|([^\n]*\}))$/gm;
+    const regex = /^(([^\{\n]+\{[\tx20]*)|([^\n\}]*\}[\t\x20]*))$/gm;
     let m;
     let sentOnce = false;
     let lastIndex = 0;
-    let lastMatch;
+    let lastMatch: string;
     while((m = regex.exec(text)) !== null) {
         // This is necessary to avoid infinite loops with zero-width matches
         if (m.index === regex.lastIndex) {
@@ -20,7 +20,7 @@ function *divide (text: string) {
             continue;
         }
 
-        if (lastMatch.endsWith("}")) {
+        if (lastMatch.includes("}")) {
             yield [lastMatch];
             lastIndex = m.index + match.length;
             lastMatch = match;
@@ -50,6 +50,8 @@ class StyleFragment {
 
     private selector: string;
     private content: string;
+    private id?: string;
+    private description?: string;
 
     constructor({ selector, content }) {
         this.selector = selector;
@@ -70,9 +72,11 @@ class StyleFragment {
             return `${selector} {\n${this.content}\n}`;
         }
 
-        const first = parts.value;
+        const first = parts.value as string;
 
-        let content = first ? `${selector} {\n${first}\n}\n` : "";
+        let content = first?.trim()
+            ? `${selector} {\n${first}\n}\n`
+            : "";
 
         let selectorStack = [];
 
@@ -91,31 +95,61 @@ class StyleFragment {
             selectorStack.push(selector);
             selector = replaced;                
 
-            content += `${replaced} {\n${value}\n}\n`;
+            // only add rule if it is not empty...
+            if (value?.trim()) {
+                content += `${replaced} {\n${value}\n}\n`;
+            }
         }
 
         return content;
     }
 
     toString() {
-        return this.expand();
+        return this.content.replace(/\\n/g,"");
     }
 
-    installGlobal(selector: string = "") {
+    /**
+     * Installs style globally, without appending it with any class
+     * @param selector global selector if any
+     * @param id id of style element
+     * @param description description if any
+     */
+    installGlobal(selector: string = "", id: string = this.id || selector, description?: string) {
         const style = document.createElement("style");
         style.textContent = this.expand(selector);
+        if (description) {
+            style.setAttribute("data-desc", description);
+        }
         document.head.appendChild(style);
-        style.id = selector;
+        style.id = id;
     }
 
-    installLocal() {
+    /**
+     * Installs style with an auto generated class name
+     * @param prefix prefix of an element if any
+     * @param description description if any
+     * @returns string
+     */
+    installLocal(prefix: string = "", description: string = this.description) {
         const selector = nextId();
         const style = document.createElement("style");
-        const id = `.${selector}`;
+        const id = `${prefix}.${selector}`;
         style.id = id;
         style.textContent = this.expand(id);
+        if (description) {
+            style.setAttribute("data-desc", description);
+        }
         document.head.appendChild(style);
         return selector;
+    }
+
+    withId(id: string) {
+        this.id = id;
+        return this;
+    }
+    withDescription(description: string) {
+        this.description = description;
+        return this;
     }
 }
 

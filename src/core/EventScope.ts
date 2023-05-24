@@ -16,6 +16,10 @@ export default class EventScope<T = any> {
         };
     }
 
+    /**
+     * This eventName contains `event-` prefix, use
+     * eventType or toString for direct event binding.
+     */
     public readonly eventName: string;
 
     private constructor(public readonly eventType: string) {
@@ -95,6 +99,10 @@ export default class EventScope<T = any> {
         const ce = new CustomEvent(this.eventType, { detail, cancelable, bubbles: false });
         window.dispatchEvent(ce);
         return ce;
+    }
+
+    public toString() {
+        return this.eventType;
     }
 
 }

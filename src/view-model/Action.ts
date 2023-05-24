@@ -1,4 +1,6 @@
 import { App } from "../App";
+import Command from "../core/Command";
+import EventScope from "../core/EventScope";
 import FormattedString from "../core/FormattedString";
 import sleep from "../core/sleep";
 import { StringHelper } from "../core/StringHelper";
@@ -10,6 +12,8 @@ import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomViewModel, Watch } from "./AtomViewModel";
 import { registerInit } from "./baseTypes";
 
+export type onEventSetBusyTypes = "target" | "current-target" | "till-current-target" | "ancestors" | "button";
+
 export interface IActionOptions {
 
     /**
@@ -17,7 +21,28 @@ export interface IActionOptions {
      * the element which has fired this event will have `[data-busy=true]` set so
      * you can use CSS to disable the button and prevent further executions.
      */
-    onEvent?: string | string[];
+    onEvent?: string | string[] | EventScope | EventScope[] | Command | Command[];
+
+    /**
+     * By default event is listened on current element, however some events are only sent globally
+     * and might end up on parent or window. You can chagne the target by overriding this.
+     */
+    onEventTarget?: EventTarget;
+
+    /**
+     * Set busy will be set to only target of the event. You can change this behavior by providing
+     * any of target, current-target, ancestors, button. Ancestors will set all ancestors to busy.
+     * `button` will only set busy if target is button or any ancestor is button.
+     */
+
+    onEventSetBusy?: MarkBusySet;
+
+    /**
+     * Defer the execution for given milliseconds, each execution request made before the defer
+     * will cancel previous request and will enqueue the new request. This is helpful in 
+     * preventing multiple simultaneous executions.
+     */
+    defer?: number;
 
     /**
      * When action is set to automatically execute on the given event fired,
@@ -86,27 +111,137 @@ export interface IAuthorize {
     authorized: boolean;
 }
 
-const onEventHandler = (blockMultipleExecution, key) => async (ce: Event) => {
+export class MarkBusySet {
+
+    public static none = new MarkBusySet(function*() {
+    })
+
+    public static target = new MarkBusySet(function* (t, ct) {
+        yield t;
+    });
+
+    public static currentTarget = new MarkBusySet(function* (t, ct) {
+        yield ct;
+    });
+
+
+    public static tillCurrentTarget = new MarkBusySet(function*(target, currentTarget) {
+        let start = target;
+        do {
+            yield start;
+            start = start.parentElement;
+        } while (start !== currentTarget);
+        yield currentTarget;
+    });
+
+    public static button = new MarkBusySet(function *(target, currentTarget) {
+        let start = target;
+        while (start) {
+            if (start.tagName === "BUTTON") {
+                yield start;
+                break;
+            }
+            start = start.parentElement;
+        }
+    });
+
+    public static buttonOrAnchor = new MarkBusySet(function *(target, currentTarget) {
+        let start = target;
+        while (start) {
+            if (start.tagName === "BUTTON" || start.tagName === "A") {
+                yield start;
+                break;
+            }
+            start = start.parentElement;
+        }
+    });
+
+    public static selector(selector: string) {
+        return new MarkBusySet(function *(target, currentTarget) {
+            let start = target;
+            while (start) {
+                if (start.matches(selector)) {
+                    yield start;
+                    break;
+                }
+                start = start.parentElement;
+            }
+        });
+    }
+
+
+    public static allAncestors = new MarkBusySet(function*(target, currentTarget) {
+        do {
+            yield target;
+            target = target.parentElement;
+        } while (target);
+    });
+
+    private constructor(private set: (target: HTMLElement, currentTarget: HTMLElement) => Iterable<HTMLElement>) {
+
+    }
+
+    public *find(event: Event) {
+        yield *this.set(event.target as HTMLElement, event.currentTarget as HTMLElement);
+    }
+
+}
+
+// function *findAll(element: HTMLElement, currentTarget: HTMLElement, onEventSetBusy: onEventSetBusyTypes) {
+//     let start = element;
+//     switch(onEventSetBusy) {
+//         case "target":
+//             yield start;
+//             return;
+//         case "current-target":
+//             yield currentTarget;
+//             return;
+//         case "button":
+//             while (start) {
+//                 if (start.tagName === "BUTTON") {
+//                     yield start;
+//                     return;
+//                 }
+//                 start = start.parentElement;
+//             }
+//             return;
+//         case "ancestors":
+//             while(start) {
+//                 yield start;
+//                 start = start.parentElement;
+//             }
+//             return;
+//         case "till-current-target":
+//             do {
+//                 yield start;
+//                 start = start.parentElement;
+//             } while (start)
+//             return;
+//     }
+// }
+
+const onEventHandler = (owner, blockMultipleExecution, key, busyKey: symbol, onEventSetBusy: MarkBusySet) => async (ce: Event) => {
     const element = ce.currentTarget as HTMLElement;
-    const c = element.atomControl;
-    let target = ce.target as HTMLElement;
-    if (target.getAttribute("data-busy") === "true") {
+    if (owner[busyKey]) {
         if (blockMultipleExecution) {
             return;
         }
     }
+    owner[busyKey] = true;
     try {
-        while(target && target !== element) {
-            target.setAttribute("data-busy", "true");
-            target = target.parentElement;
+        if (onEventSetBusy) {
+            for (const iterator of onEventSetBusy.find(ce)) {
+                iterator.setAttribute("data-busy", "true");
+            }
         }
         const detail = (ce as any).detail;
-        await c[key](detail, ce);
+        return await owner[key](detail, ce);
     } finally {
-        target = ce.target as HTMLElement;
-        while(target && target !== element) {
-            target.removeAttribute("data-busy");
-            target = target.parentElement;
+        delete owner[busyKey];
+        if(onEventSetBusy) {
+            for (const iterator of onEventSetBusy.find(ce)) {
+                iterator.removeAttribute("data-busy");
+            }
         }
     }
 };
@@ -123,8 +258,11 @@ const onEventHandler = (blockMultipleExecution, key) => async (ce: Event) => {
 export default function Action(
     {
         onEvent = void 0,
+        onEventTarget = void 0,
+        onEventSetBusy,
         blockMultipleExecution = true,
         authorize = void 0,
+        defer = void 0,
         success = null,
         successTitle = "Done",
         successMode = "notify",
@@ -137,26 +275,55 @@ export default function Action(
     }: IActionOptions = {}) {
     return (target, key: string | symbol, descriptor: any): any => {
 
+        const getEventNames = (names: string | Command | EventScope | (string | Command | EventScope)[]): string | string[] => {
+            if (names === null || names === void 0) {
+                return;
+            }
+            if (Array.isArray(names)) {
+                return names.map(getEventNames) as any;
+            }
+            if(names instanceof Command) {
+                onEventTarget ??= window;
+                return names.eventScope.eventType;
+            }
+            if (names instanceof EventScope) {
+                onEventTarget ??= window;
+                return names.eventType;
+            }
+            return names;
+        }
+        
+
+        onEvent = getEventNames(onEvent);
+
         if (onEvent?.length > 0 ) {
             const oldCreate = target.beginEdit as Function;
             if(oldCreate) {
+                const onEventName = Array.isArray(onEvent)
+                    ? onEvent.map(StringHelper.fromHyphenToCamel)
+                    : StringHelper.fromHyphenToCamel(onEvent);
+                const busyKey = Symbol.for("isBusy" + key.toString());
                 target.beginEdit = function() {
 
                     const result = oldCreate.apply(this, arguments);
 
                     // initialize here...
                     const c = this as AtomControl;
-                    const element = this.element;
+                    let element = this.element;
 
                     if (element) {
 
-                        const handler = onEventHandler(blockMultipleExecution, key);
+                        if (onEventTarget) {
+                            element = onEventTarget;
+                        }
 
-                        if (typeof onEvent === "string") {
-                            c.bindEvent(element, StringHelper.fromHyphenToCamel(onEvent), handler);
+                        const handler = onEventHandler(c, blockMultipleExecution, key, busyKey, onEventSetBusy);
+
+                        if (typeof onEventName === "string") {
+                            c.bindEvent(element, onEventName, handler);
                         } else {
-                            for (const eventName of onEvent) {
-                                c.bindEvent(element, StringHelper.fromHyphenToCamel(eventName), handler);
+                            for (const eventName of onEventName) {
+                                c.bindEvent(element, eventName, handler);
                             }
                         }
                     }
@@ -167,14 +334,33 @@ export default function Action(
         }
 
         const { value } = descriptor;
+
+        const deferSymbol = defer ? Symbol.for(`${key.toString()}Defer`) : void 0;
+
         return {
             get: function(){
                 const vm = this;
+                
                 // tslint:disable-next-line: ban-types
                 const oldMethod = value;
                 // tslint:disable-next-line:only-arrow-functions
                 const fx = async function( ... a: any[]) {
                     const vm = this;
+
+                    if (defer) {
+                        const previous = vm[deferSymbol];
+                        if (previous === void 0 || previous > 0) {
+                            if (previous > 0) {
+                                clearTimeout(previous);
+                            }
+                            vm[deferSymbol] = setTimeout(() => {
+                                vm[deferSymbol] = 0;
+                                return vm[key](... a);
+                            }, defer);
+                            return;
+                        }
+                    }
+
                     const app = vm.app as App;
                     const ns = app.resolve(NavigationService) as NavigationService;
                     try {
