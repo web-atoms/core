@@ -42,6 +42,30 @@ let id = 1;
 
 const nextId = () => `styled-r${id++}`;
 
+const globalLow = document.createElement("meta");
+globalLow.name = "low-priority-style";
+document.head.appendChild(globalLow);
+
+const global = document.createElement("meta");
+global.name = "global-priority-style";
+document.head.appendChild(global);
+
+const globalHigh = document.createElement("meta");
+globalHigh.name = "global-high-priority-style";
+document.head.appendChild(globalHigh);
+
+const localLow = document.createElement("meta");
+localLow.name = "local-low-priority-style";
+document.head.appendChild(localLow);
+
+const local = document.createElement("meta");
+local.name = "local-priority-style";
+document.head.appendChild(local);
+
+const localHigh = document.createElement("meta");
+localHigh.name = "high-priority-style";
+document.head.appendChild(localHigh);
+
 class StyleFragment {
 
     static newStyle( { selector = "", content = ""}) {
@@ -52,6 +76,7 @@ class StyleFragment {
     private content: string;
     private id?: string;
     private description?: string;
+    private order: string = "default";
 
     constructor({ selector, content }) {
         this.selector = selector;
@@ -149,6 +174,11 @@ class StyleFragment {
     }
     withDescription(description: string) {
         this.description = description;
+        return this;
+    }
+
+    withOrder(order: "low" | "high") {
+        this.order = order;
         return this;
     }
 }
