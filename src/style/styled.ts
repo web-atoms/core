@@ -43,27 +43,27 @@ let id = 1;
 const nextId = () => `styled-r${id++}`;
 
 const globalLow = document.createElement("meta");
-globalLow.name = "low-priority-style";
+globalLow.name = "global-low-style";
 document.head.appendChild(globalLow);
 
 const global = document.createElement("meta");
-global.name = "global-priority-style";
+global.name = "global-style";
 document.head.appendChild(global);
 
 const globalHigh = document.createElement("meta");
-globalHigh.name = "global-high-priority-style";
+globalHigh.name = "global-high-style";
 document.head.appendChild(globalHigh);
 
 const localLow = document.createElement("meta");
-localLow.name = "local-low-priority-style";
+localLow.name = "local-low-style";
 document.head.appendChild(localLow);
 
 const local = document.createElement("meta");
-local.name = "local-priority-style";
+local.name = "local-style";
 document.head.appendChild(local);
 
 const localHigh = document.createElement("meta");
-localHigh.name = "high-priority-style";
+localHigh.name = "local-high-style";
 document.head.appendChild(localHigh);
 
 class StyleFragment {
@@ -76,7 +76,7 @@ class StyleFragment {
     private content: string;
     private id?: string;
     private description?: string;
-    private order: string = "default";
+    private order: string = "low";
 
     constructor({ selector, content }) {
         this.selector = selector;
@@ -145,7 +145,18 @@ class StyleFragment {
         if (description) {
             style.setAttribute("data-desc", description);
         }
-        document.head.appendChild(style);
+        switch(this.order) {
+            case "low":
+                document.head.insertBefore(style, globalLow);
+                break;
+            case "default":
+            case "medium":
+                document.head.insertBefore(style, global);
+                break;
+            case "high":
+                document.head.insertBefore(style, globalHigh);
+                break;
+        }
         style.id = id;
     }
 
@@ -164,7 +175,18 @@ class StyleFragment {
         if (description) {
             style.setAttribute("data-desc", description);
         }
-        document.head.appendChild(style);
+        switch(this.order) {
+            case "low":
+                document.head.insertBefore(style, localLow);
+                break;
+            case "default":
+            case "medium":
+                document.head.insertBefore(style, local);
+                break;
+            case "high":
+                document.head.insertBefore(style, localHigh);
+                break;
+        }
         return selector;
     }
 
@@ -177,7 +199,13 @@ class StyleFragment {
         return this;
     }
 
-    withOrder(order: "low" | "high") {
+    /**
+     * Order of installation.
+     * 
+     * @param order low | medium | high - default is low
+     * @returns 
+     */
+    withOrder(order: "low" | "medium" | "high") {
         this.order = order;
         return this;
     }
