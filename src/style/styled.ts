@@ -32,7 +32,7 @@ function *divide (text: string) {
         lastMatch = match;
     }
 
-    if(lastMatch?.endsWith("}")) {
+    if(lastMatch?.includes("}")) {
         yield [lastMatch.trim()];
     }
 };
