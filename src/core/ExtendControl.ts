@@ -1,24 +1,14 @@
-import { AtomControl } from "../web/controls/AtomControl";
-import { AtomListBox } from "../web/controls/AtomListBox";
+type IAtomControl = new (... args: any[]) => {};
 
-export default function ExtendControl<T extends typeof AtomControl>(ctrl: T): T & { prototype: { init(): any; } } {
+export default function ExtendControl<T extends IAtomControl>(ctrl:T) {
 
-    // @ts-expect-error
-    abstract class ExtendedControl extends (ctrl as any as T) {
-        constructor(app, e = document.createElement("div")) {
-            super(app, e);
-            this.runAfterInit(() => this.app.runAsync(() => this.init()));
+    abstract class ExtendedControl extends ctrl {
+        constructor(... args: any[]) {
+            super(... args);
+            (this as any).runAfterInit(() => (this as any).app.runAsync(() => this.init()));
         }
 
         abstract init(): Promise<any>;
     }
-    return ExtendedControl as any;
-}
-
-export class A extends ExtendControl(AtomListBox) {
-
-    init() {
-        
-    }
-    
+    return ExtendedControl;
 }
