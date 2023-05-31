@@ -34,14 +34,14 @@ const focus = (popup: PopupWindow) => {
     // supplied cancelToken was cancelled
     const anyAutofocus = element.querySelector(`*[autofocus]`);
     if (!anyAutofocus) {
-        const windowContent = element.querySelector("[data-window-content]");
-        if (windowContent) {
-            const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
-            if (firstInput) {
-                firstInput.focus();
-                return;
-            }
-        }
+        // const windowContent = element.querySelector("[data-window-content]");
+        // if (windowContent) {
+        //     const firstInput = windowContent.querySelector("input,button,a") as HTMLInputElement;
+        //     if (firstInput) {
+        //         firstInput.focus();
+        //         return;
+        //     }
+        // }
 
         const cb = element.querySelector(".popup-close-button") as HTMLButtonElement;
         if (cb) {
@@ -49,6 +49,7 @@ const focus = (popup: PopupWindow) => {
         }
         return;
     }
+    (anyAutofocus as HTMLElement).focus?.();
 };
 
     styled.css `
@@ -130,6 +131,7 @@ const focus = (popup: PopupWindow) => {
             grid-column: 1 / span 3;
             position: relative;
             overflow: auto;
+            padding: var(--spacing-medium, 7px);
         }
         & > [data-window-element=footer] {
             margin-top: 5px;
