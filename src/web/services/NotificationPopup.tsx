@@ -1,21 +1,18 @@
-import Bind from "../../core/Bind";
-import Colors from "../../core/Colors";
 import XNode from "../../core/XNode";
-import StyleRule from "../../style/StyleRule";
-import CSS from "../styles/CSS";
+import styled from "../../style/styled";
 import { PopupWindow } from "./PopupService";
 
-const css = CSS(StyleRule("notification-popup")
-    .padding(5)
-    .fontSize("larger")
-    .nested(StyleRule(".error")
-        .color(Colors.red)
-        .borderColor(Colors.red)
-    )
-    .nested(StyleRule(".warning")
-        .backgroundColor(Colors.lightYellow)
-    )
-);
+const css = styled.css `
+    padding: 5px;
+    font-size: larger;
+    & .error {
+        color: red;
+        border-color: red;
+    }
+    & .warning {
+        background-color: lightyellow;
+    }
+`.installLocal();
 
 export default function NotificationPopup({
     message,

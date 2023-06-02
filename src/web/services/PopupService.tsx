@@ -1,17 +1,11 @@
 import { App } from "../../App";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
-import Bind from "../../core/Bind";
-import { BindableProperty } from "../../core/BindableProperty";
-import Colors from "../../core/Colors";
 import { getOwnInheritedProperty } from "../../core/InheritedProperty";
-import sleep from "../../core/sleep";
 import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
 import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
-import DISingleton from "../../di/DISingleton";
-import StyleRule from "../../style/StyleRule";
-import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
+import styled from "../../style/styled";
 import { AtomControl } from "../controls/AtomControl";
-import CSS from "../styles/CSS";
+
 
 import PopupWindowA, { ConfirmPopup } from "./PopupWindow";
 
@@ -24,90 +18,143 @@ document.body.addEventListener("click", (e) => {
     }
 });
 
-CSS(StyleRule()
-    .custom("contain", "none !important")
-, "[data-force-contain=none]");
+    styled.css `
 
-CSS(StyleRule()
-    .position("relative")
-    .height(0)
-    .width(0)
-    .left(0)
-    .child(StyleRule("*")
-        .position("absolute")
-        .left(0)
-        .top(0)
-        .padding(5)
-        .maxHeight(300)
-        .overflow("auto")
-        .borderRadius(5)
-        .backgroundColor(Colors.white)
-        .zIndex(200)
-        .defaultBoxShadow()
-    )
-, "*[data-inline-popup=left]");
+    [data-force-contain=none] {
+        contain: none !important; 
+    }
 
-CSS(StyleRule()
-    .position("absolute")
-    .height(0)
-    .width(0)
-    .right(0)
-    .child(StyleRule("*")
-        .position("absolute")
-        .right(0)
-        .top(0)
-        .padding(5)
-        .maxHeight(300)
-        .overflow("auto")
-        .borderRadius(5)
-        .backgroundColor(Colors.white)
-        .zIndex(200)
-        .defaultBoxShadow()
-    )
-, "*[data-inline-popup=right]");
+    *[data-inline-popup=left] {
+        position: relative;
+        height: 0px;
+        width: 0px;
+        left: 0px; 
+        
+        & > * {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            padding: 5px;
+            max-height: 300px;
+            overflow: auto;
+            border-radius: 5px;
+            background-color: #ffffff;
+            z-index: 200;
+            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
+            border: solid 1px rgba(0, 0, 0, 0.05); 
+        }
+    }
 
-CSS(StyleRule()
-    .position("relative")
-    .height(0)
-    .width(0)
-    .left(0)
-    .child(StyleRule("*")
-        .position("absolute")
-        .left(0)
-        .top(0)
-        .padding(5)
-        .maxHeight(300)
-        .overflow("auto")
-        .borderRadius(5)
-        .backgroundColor(Colors.white)
-        .zIndex(200)
-        .defaultBoxShadow()
-    )
-, "*[data-inline-popup=inline-left]");
+    *[data-inline-popup=right] {
+        position: absolute;
+        height: 0px;
+        width: 0px;
+        right: 0px; 
+    
+    
+        & > * {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            padding: 5px;
+            max-height: 300px;
+            overflow: auto;
+            border-radius: 5px;
+            background-color: #ffffff;
+            z-index: 200;
+            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
+            border: solid 1px rgba(0, 0, 0, 0.05); 
+        }
+    }
 
-CSS(StyleRule("popup")
-    .position("fixed")
-    .left("50%")
-    .top("50%")
-    .transform("translate(-50%, -50%)" as any)
-    .zIndex(10000)
-    .padding(5)
-    .backgroundColor(Colors.white)
-    .border("solid 1px lightgray")
-    .borderRadius(5)
-    .boxShadow("rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;")
-    .display("inline-block")
-, "*[data-center-popup]");
+    *[data-inline-popup=inline-left] {
+        position: relative;
+        height: 0px;
+        width: 0px;
+        left: 0px; 
 
+        & > * {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            padding: 5px;
+            max-height: 300px;
+            overflow: auto;
+            border-radius: 5px;
+            background-color: #ffffff;
+            z-index: 200;
+            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
+            border: solid 1px rgba(0, 0, 0, 0.05); 
+        }
+    }
 
-const popupCss = CSS(StyleRule("popup")
-    .padding(5)
-    .backgroundColor(Colors.white)
-    .border("solid 1px lightgray")
-    .borderRadius(5)
-    .boxShadow("rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;")
-    .display("inline-block")
-);
+    *[data-center-popup] {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        padding: 5px;
+        background-color: #ffffff;
+        border: solid 1px lightgray;
+        border-radius: 5px;
+        box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;;
+        display: inline-block; 
+    }    
+
+    div[data-confirm-popup=confirm-popup] {
+
+        display: grid; 
+    
+        & .yes {
+            border-radius: 9999px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border-width: 1px;
+            border-color: #00000000;
+            margin: 5px;
+            margin-right: 10px;
+            background-color: #90ee90; 
+        }
+        
+        & .no {
+            border-radius: 9999px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border-width: 1px;
+            border-color: #00000000;
+            margin: 5px;
+            margin-right: 10px;
+            background-color: #ff0000;
+            color: #ffffff; 
+        }
+            
+        & .cancel {
+            border-radius: 9999px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border-width: 1px;
+            border-color: #00000000;
+            margin: 5px;
+            margin-right: 10px;
+            background-color: #808080;
+        }
+        
+        & > [data-element=message] {
+            overflow: auto; 
+        }    
+    }
+
+`.withId("popup-service-styles").installGlobal();
+
+const popupCss = styled.css `
+    padding: 5px;
+    background-color: #ffffff;
+    border: solid 1px lightgray;
+    border-radius: 5px;
+    box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;;
+    display: inline-block;
+`.installLocal();
 
 export interface IPopupOptions {
     /**
@@ -152,92 +199,6 @@ export interface IDialogOptions {
 
     maximize?: boolean;
 }
-
-// CSS(StyleRule()
-//     .position("absolute")
-//     .border("solid 1px lightgray")
-//     .borderRadius(5)
-//     .backgroundColor(Colors.white)
-//     .top("50%")
-//     .left("50%")
-//     .transform("translate(-50%,-50%)" as any)
-//     .boxShadow("0 0 20px 1px rgb(0 0 0 / 75%)")
-//     .display("grid")
-//     .alignItems("center")
-//     .justifyItems("center")
-//     .gridTemplateRows("auto 1fr")
-//     .gridTemplateColumns("1fr")
-//     .opacity("0")
-//     .transition("opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32)")
-//     .and(StyleRule("[data-ready=true]")
-//         .opacity("1")
-//     )
-//     .and(StyleRule("[data-dragging=true]")
-//         .opacity("0.5")
-//     )
-//     .child(StyleRule(".title")
-//         .justifySelf("stretch")
-//         .display("flex")
-//         .minWidth(0)
-//         .backgroundColor(Colors.lightGray.withAlphaPercent(0.2))
-//         .padding(5)
-//         .alignItems("center")
-//         .justifyItems("center")
-//         .child(
-//             StyleRule(".title-text")
-//             .cursor("move")
-//             .flexStretch()
-//             .textEllipsis()
-//         )
-//         .child(StyleRule("*")
-//             .flex("1 1 100%")
-//         )
-//         .child(StyleRule(".popup-close-button")
-//             .fontFamily("arial")
-//             .fontSize(15)
-//             .flex("1 0 auto")
-//             .cursor("pointer")
-//             .width(30)
-//             .height(30)
-//             .backgroundColor(Colors.red.withAlphaPercent(0.1))
-//             .border("none")
-//             .borderRadius(9999)
-//             .textTransform("capitalize")
-//             .hoverBackgroundColor(Colors.red)
-//         )
-//     )
-//     .child(StyleRule("*[data-window-content=window-content]")
-//         .margin(5)
-//         .alignSelf("stretch")
-//         .justifySelf("stretch")
-//         .flexStretch()
-//         .overflow("auto")
-//         // This is done to avoid absolute position
-//         // to run out of content area
-//         .position("relative")
-//         // .display("flex")
-//         // .child(StyleRule("*")
-//         //     .flex("1 1 100%")
-//         // )
-//         // .and(StyleRule("[data-window-content-fill] > *")
-//         //     .maximizeAbsolute()
-//         // )
-//     )
-//     .child(StyleRule(" * > .command-bar")
-//         .backgroundColor(Colors.lightGray.withAlphaPercent(0.6))
-//         .display("flex")
-//         .margin(0)
-//         .padding(5)
-//         .gap(5)
-//         .nested(StyleRule("button")
-//             .borderWidth(1)
-//             .borderRadius(9999)
-//             .padding(5)
-//             .paddingLeft(10)
-//             .paddingRight(10)
-//         )
-//     )
-// , "*[data-popup-window=popup-window]");
 
 export class PopupControl extends AtomControl {
 
@@ -496,44 +457,6 @@ export class PopupControl extends AtomControl {
 
 // // @ts-ignore
 // delete PopupWindow.prototype.init;
-
-CSS(StyleRule()
-    .display("grid")
-    .nested(StyleRule(".yes")
-        .borderRadius(9999)
-        .paddingLeft(10)
-        .paddingRight(10)
-        .borderWidth(1)
-        .borderColor(Colors.transparent)
-        .margin(5)
-        .marginRight(10)
-        .backgroundColor(Colors.lightGreen)
-    )
-    .nested(StyleRule(".no")
-        .borderRadius(9999)
-        .paddingLeft(10)
-        .paddingRight(10)
-        .borderWidth(1)
-        .borderColor(Colors.transparent)
-        .margin(5)
-        .marginRight(10)
-        .backgroundColor(Colors.red)
-        .color(Colors.white)
-    )
-    .nested(StyleRule(".cancel")
-        .borderRadius(9999)
-        .paddingLeft(10)
-        .paddingRight(10)
-        .borderWidth(1)
-        .borderColor(Colors.transparent)
-        .margin(5)
-        .marginRight(10)
-        .backgroundColor(Colors.gray)
-    )
-    .child(StyleRule("[data-element=message]")
-        .overflow("auto")
-    )
-, "div[data-confirm-popup=confirm-popup]");
 
 // class ConfirmPopup extends PopupWindow {
 
