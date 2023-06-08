@@ -24,7 +24,7 @@ export function getTemplateParent(e: HTMLElement) {
 export class AtomWindowFrameTemplate extends AtomTemplate {
 
     public get templateParent(): AtomWindow {
-        return getTemplateParent(this.element);
+        return getTemplateParent(this.element) as AtomWindow;
     }
 
     public commandPresenter: HTMLElement;
