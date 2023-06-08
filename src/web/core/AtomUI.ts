@@ -12,12 +12,19 @@ export class AncestorEnumerator {
         }
     }
 
+    /**
+     * Finds the parent element that matches given selector. It does not
+     * return element that contains the selector.
+     * @param e target Element
+     * @param selector selector to match
+     * @returns 
+     */
     public static findSelector(e: HTMLElement, selector: string) {
         let start = e?.parentElement;
         while (start) {
-            const found = start.querySelector(selector);
+            const found = start.matches(selector);
             if(found) {
-                return found as HTMLElement;
+                return start as HTMLElement;
             }
             start = start.parentElement;
         }
