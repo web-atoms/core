@@ -6,7 +6,7 @@ export class AncestorEnumerator {
         let start = e?.parentElement;
         while (start) {
             if(filter(start)) {
-                return start;
+                return start as HTMLElement;
             }
             start = start.parentElement;
         }
@@ -17,7 +17,7 @@ export class AncestorEnumerator {
         while (start) {
             const found = start.querySelector(selector);
             if(found) {
-                return found;
+                return found as HTMLElement;
             }
             start = start.parentElement;
         }
