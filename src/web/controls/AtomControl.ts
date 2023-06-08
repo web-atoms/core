@@ -683,6 +683,21 @@ window.addEventListener("click", (e) => {
     }
 
     const originalTarget = e.target as HTMLElement;
+    let start = originalTarget;
+    while (start) {
+        if (start.tagName === "A") {
+            if(start.getAttribute("data-click-event") === null) {
+                // let default handler run here
+                return;
+            }
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            break;
+        }
+        start = start.parentNode as HTMLElement;
+    }
+
     let control = AtomControl.from(originalTarget);
     if (control !== void 0) {
         const data = new Proxy(originalTarget, {
