@@ -104,7 +104,7 @@ export class AtomWindowFrameTemplate extends AtomTemplate {
 class AtomWindowTitleTemplate extends AtomControl {
 
     public get templateParent(): AtomWindow {
-        return getTemplateParent(this.element);
+        return getTemplateParent(this.element) as AtomWindow;
     }
 
     protected create(): void {
