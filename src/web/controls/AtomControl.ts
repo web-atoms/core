@@ -661,10 +661,27 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 }
 
-document.body.addEventListener("click", (e) => {
+const getSelection = () => {
+    const sel = window.getSelection();
+    if (sel.rangeCount) {
+        var frag = sel.getRangeAt(0).cloneContents();
+        var el = document.createElement("div");
+        el.appendChild(frag);
+        return el.innerHTML;
+    }
+    return "";
+};
+
+// any cancellation must happen at body level...
+window.addEventListener("click", (e) => {
     if (e.defaultPrevented) {
         return;
     }
+
+    if(getSelection()) {
+        return;
+    }
+
     const originalTarget = e.target as HTMLElement;
     let control = AtomControl.from(originalTarget);
     if (control !== void 0) {
