@@ -60,7 +60,7 @@ export default class Command<T = any, TR = any> {
         }
     }
 
-    public static create<TIn, TOut>({
+    public static create<TIn = any, TOut = any>({
         name = `command${id++}`,
         eventScope = EventScope.create<TIn>(),
         route,
