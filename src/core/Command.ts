@@ -101,6 +101,10 @@ export default class Command<T = any, TR = any> {
         Command.registry.set(this.name, this);
     }
 
+    public displayRoute(p: any = {}) {
+        return this.routeObj.substitute(p);
+    }
+
     public withRoute(route: string, order = 0) {
         this.routeObj = Route.create(route, order);
         Command.routes.push(this);
