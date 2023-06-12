@@ -102,7 +102,7 @@ export default class Command<T = any, TR = any> {
     }
 
     public displayRoute(p: any = {}) {
-        return this.routeObj.substitute(p);
+        return Route.encodeUrl(this.routeObj.substitute(p));
     }
 
     public withRoute(route: string, order = 0) {

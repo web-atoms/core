@@ -66,6 +66,15 @@ export class Variable {
 
 export default class Route {
 
+    /**
+     * Useful when we want to test urls locally, we can prefix url with `#!` etc
+     * @param url url to encode
+     * @returns string
+     */
+    public static encodeUrl(url: string) {
+        return url;
+    }
+
     public static create<T>(route: string, order: number = 0) {
         if (!route.startsWith("/")) {
             throw new Error("String Route must start with /");
