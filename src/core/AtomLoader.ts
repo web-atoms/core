@@ -161,7 +161,6 @@ export class AtomLoader {
             let params;
             if ("parameters" in view) {
                 params = (view as any).parameters;
-                params[displayRouteSymbol] = route;
             }
             if (!vm) {
                 params = (view as any).parameters ??= {};
@@ -170,6 +169,9 @@ export class AtomLoader {
             }
             if (title) {
                 (view as any).title = title;
+            }
+            if (params) {
+                params[displayRouteSymbol] = route;
             }
             if ((vm || params) && parameters) {
                 for (const key in parameters) {
