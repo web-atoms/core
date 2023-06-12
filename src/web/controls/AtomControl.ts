@@ -661,11 +661,43 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
 }
 
-document.body.addEventListener("click", (e) => {
+const getSelection = () => {
+    const sel = window.getSelection();
+    if (sel.rangeCount) {
+        var frag = sel.getRangeAt(0).cloneContents();
+        var el = document.createElement("div");
+        el.appendChild(frag);
+        return el.innerHTML;
+    }
+    return "";
+};
+
+// any cancellation must happen at body level...
+window.addEventListener("click", (e) => {
     if (e.defaultPrevented) {
         return;
     }
+
+    if(getSelection()) {
+        return;
+    }
+
     const originalTarget = e.target as HTMLElement;
+    let start = originalTarget;
+    while (start) {
+        if (start.tagName === "A") {
+            if(start.getAttribute("data-click-event") === null) {
+                // let default handler run here
+                return;
+            }
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            break;
+        }
+        start = start.parentNode as HTMLElement;
+    }
+
     let control = AtomControl.from(originalTarget);
     if (control !== void 0) {
         const data = new Proxy(originalTarget, {

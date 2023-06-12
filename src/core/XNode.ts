@@ -33,6 +33,7 @@ export class RootObject {
 
 export interface IElementAttributes {
     [key: string]: unknown;
+    "data-click-event"?: string;
     eventClick?: any;
     eventBlur?: any;
     eventFocus?: any;

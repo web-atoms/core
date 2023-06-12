@@ -240,18 +240,21 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
         const handler = (e) => {
             try {
-                const r = (method as any)(e);
+                let r = (method as any)(e);
                 e.executed = true;
-                e.promise = e.promise ? Promise.all([r, e.promise]) : r;
-                if (r?.catch) {
-                    return r.catch((c) => {
-                        if (CancelToken.isCancelled(c ?? "Unknown error")) {
-                            return;
-                        }
-                        alert(c.stack ?? c);
-                    });
+                if (r) {
+                    r = r.then ? r : Promise.resolve(r);
+                    e.promise = e.promise ? Promise.all([r, e.promise]) : r;
+                    if (r?.catch) {
+                        return r.catch((c) => {
+                            if (CancelToken.isCancelled(c ?? "Unknown error")) {
+                                return;
+                            }
+                            alert(c.stack ?? c);
+                        });
+                    }
+                    return r;
                 }
-                return r;
             } catch (error) {
                 if (CancelToken.isCancelled(error)) {
                     return;
@@ -543,8 +546,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             if (!iterator) {
                 continue;
             }
-            if (typeof iterator === "string") {
-                e.appendChild(document.createTextNode(iterator));
+            if (!iterator[localXNodeSymbol]) {
+                e.appendChild(document.createTextNode(iterator.toString()));
                 continue;
             }
             if (iterator.isProperty) {

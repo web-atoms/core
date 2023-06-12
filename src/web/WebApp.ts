@@ -49,8 +49,24 @@ export default class WebApp extends App {
         this.put(AtomStyleSheet, v);
     }
 
-    private mContextId: number = 1;
+    private mContextId: number;
     public get contextId(): string {
+        // let us set contextId
+        this.mContextId ??=  parseInt((this.url.hash.contextId || "0").toString(), 10);
+        if (!this.mContextId) {
+            //  create new context Id in session...
+            for (let index = 0; index < 100; index++) {
+                const cid = `contextId${index}`;
+                const cidData = sessionStorage.getItem(`contextId${index}`);
+                if (!cidData) {
+                    this.mContextId = index;
+                    sessionStorage.setItem(cid, cid);
+                    this.url.hash.contextId = index;
+                    this.syncUrl();
+                    break;
+                }
+            }
+        }
         return `contextId_${this.mContextId}`;
     }
 
@@ -70,23 +86,6 @@ export default class WebApp extends App {
         this.put(BusyIndicatorService, this.resolve(WebBusyIndicatorService));
 
         ServiceCollection.instance.registerSingleton(AtomStyleSheet, (sp) => sp.resolve(AtomTheme));
-
-        // let us set contextId
-        this.mContextId =  parseInt((this.url.hash.contextId || "0").toString(), 10);
-        if (!this.mContextId) {
-            //  create new context Id in session...
-            for (let index = 0; index < 100; index++) {
-                const cid = `contextId${index}`;
-                const cidData = sessionStorage.getItem(`contextId${index}`);
-                if (!cidData) {
-                    this.mContextId = index;
-                    sessionStorage.setItem(cid, cid);
-                    this.url.hash.contextId = index;
-                    this.syncUrl();
-                    break;
-                }
-            }
-        }
 
         window.addEventListener("hashchange", () => {
             this.hashUpdater.run(() => {

@@ -7,6 +7,7 @@ import { AtomOnce } from "../../core/AtomOnce";
 import { AtomUri } from "../../core/AtomUri";
 import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
+import { StringHelper } from "../../core/StringHelper";
 import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
 import XNode from "../../core/XNode";
 import { Inject } from "../../di/Inject";
@@ -95,7 +96,7 @@ export class AtomTabbedPage extends AtomControl
                 }))}>
                     <div
                         eventClick={BindPage.event((x) => this.localViewModel.selectedPage = x.data)}
-                        text={BindPage.oneWay((x) => x.data.title)}></div>
+                        text={BindPage.oneWay((x) => (x.data as any).viewModelTitle || x.data.title)}></div>
                     <img
                         class="close-button"
                         eventClick={BindPage.event((x) => this.localViewModel.closePage(x.data))}/>
@@ -275,13 +276,13 @@ class AtomTabViewModel extends AtomViewModel {
         // const page: AtomPage = (new (popupType)(this.app)) as AtomPage;
         const { view: page, disposables } =
             await AtomLoader.loadView<AtomPage>(url, this.app, true, () => new AtomWindowViewModel(this.app));
-        page.title = "Title";
+        page.title ||= StringHelper.fromPascalToTitleCase(page.constructor.name);
         page.tag = uriString;
         if (url.query && url.query.title) {
-            page.title = url.query.title.toString();
+            page.title ||= url.query.title.toString();
         }
-
-        page.bind(page.element, "title", [["viewModel", "title"]]);
+        (page as any).viewModelTitle = null;
+        page.bind(page.element, "viewModelTitle", [["viewModel", "title"]]);
 
         page.bind(page.element,
             "styleDisplay",
