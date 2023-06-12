@@ -105,6 +105,15 @@ export default class Command<T = any, TR = any> {
         this.routeObj = Route.create(route, order);
         Command.routes.push(this);
         Command.routes.sort((a, b) => a.route.order - b.route.order);
+        document.body.addEventListener(this.eventName, (e: CustomEvent) => {
+            try {
+                let route = this.routeObj.substitute(e.detail);
+                e.detail[routeSymbol] = route;
+                e.detail[displayRouteSymbol] = route;
+            }catch (error) {
+                console.error(error);
+            }
+        }, true);
         return this;
     }
 
