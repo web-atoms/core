@@ -546,8 +546,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
             if (!iterator) {
                 continue;
             }
-            if (typeof iterator === "string") {
-                e.appendChild(document.createTextNode(iterator));
+            switch(typeof iterator) {
+                case "string":
+                case "boolean":
+                case "bigint":
+                case "number":
+                    e.appendChild(document.createTextNode(iterator.toString()));
                 continue;
             }
             if (iterator.isProperty) {
