@@ -5,6 +5,7 @@ import { StringHelper } from "./StringHelper";
 import type { IDisposable } from "./types";
 
 export const routeSymbol = Symbol("routeSymbol");
+export const displayRouteSymbol = Symbol("displayRouteSymbol");
 
 document.body.addEventListener("click", (ce: MouseEvent) => {
     let target = ce.target as HTMLElement;
@@ -54,6 +55,7 @@ export default class Command<T = any, TR = any> {
             const params = iterator.route.matches(route);
             if (params) {
                 params[routeSymbol] = route;
+                params[displayRouteSymbol] = "";
                 iterator.dispatch(params, true);
                 return iterator;
             }
@@ -122,16 +124,25 @@ export default class Command<T = any, TR = any> {
 
     public dispatch(detail?: T, cancelable?: boolean) {
         if (this.route) {
-            const d = detail ??= {} as any;
-            d[routeSymbol] ??= this.route.substitute(d);
+            detail = this.updateRoute(detail);
         }
         this.eventScope.dispatchEvent(detail, cancelable);
     }
 
+    private updateRoute(detail: T) {
+        const d = detail ??= {} as any;
+        let r = d[routeSymbol];
+        if (r === null || r === void 0) {
+            r = this.route.substitute(d);
+            d[routeSymbol] = r;
+            d[displayRouteSymbol] = r;
+        }
+        return detail;
+    }
+
     public async dispatchAsync(detail?: T, cancelable?: boolean) {
         if (this.route) {
-            const d = detail ??= {} as any;
-            d[routeSymbol] ??= this.route.substitute(d);
+            detail = this.updateRoute(detail);
         }
         const ce = new CustomEvent(this.eventScope.eventType, { detail, cancelable}) as any as CustomEventEx<T, TR>;
         ce.returnResult = true;
