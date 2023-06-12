@@ -552,6 +552,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 case "bigint":
                 case "number":
                     e.appendChild(document.createTextNode(iterator.toString()));
+                    continue;
+            }
+            if (!iterator[localXNodeSymbol]) {
+                e.appendChild(document.createTextNode(iterator.toString()));
                 continue;
             }
             if (iterator.isProperty) {
