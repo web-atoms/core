@@ -117,7 +117,7 @@ export default class Command<T = any, TR = any> {
         Command.registry.set(this.name, this);
     }
 
-    public displayRoute(p: any = {}) {
+    public displayRoute(p: Partial<T>) {
         return Route.encodeUrl(this.routeObj.substitute(p));
     }
 
