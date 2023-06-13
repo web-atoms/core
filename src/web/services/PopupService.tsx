@@ -548,7 +548,7 @@ function findHostAndPosition(opener: HTMLElement) {
         if (root.classList.contains("popup-host")) {
             break;
         }
-        if (root.dataset.popUpHost === "yes") {
+        if (root.getAttribute("data-pop-up-host") === "yes") {
             break;
         }
     } while (true);
@@ -602,7 +602,7 @@ export const disableContain = (ce: HTMLElement) => {
         const style = window.getComputedStyle(ce);
         const isNotNone = style.contain !== "none";
         if (isNotNone) {
-            ce.dataset.forceContain = "none";
+            ce.setAttribute("data-force-contain", "none");
             containNoneList.push(ce);
         }
         ce = ce.parentElement;
@@ -610,7 +610,7 @@ export const disableContain = (ce: HTMLElement) => {
 
     return () => {
         for (const iterator of containNoneList) {
-            delete iterator.dataset.forceContain;
+            iterator.removeAttribute("data-force-contain");
         }
     };
 };

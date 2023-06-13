@@ -12,7 +12,7 @@ document.body.addEventListener("click", (ce: MouseEvent) => {
     let clickCommand;
     let commandParameter;
     while (target) {
-        clickCommand = target.dataset.clickCommand;
+        clickCommand = target.getAttribute("data-click-command");
         const cp = (target as any).commandParameter;
         if (cp) {
             commandParameter = cp;
