@@ -56,8 +56,8 @@ export default class Command<T = any, TR = any> {
 
         const index = route.indexOf("?");
         if (index !== -1) {
-            sp = new URLSearchParams(route.substring(0, index));
-            route = route.substring(index + 1);
+            sp = new URLSearchParams(route.substring(index + 1));
+            route = route.substring(0, index);
         } else {
             sp = new URLSearchParams("");
         }
