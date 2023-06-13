@@ -75,7 +75,11 @@ export default class Command<T = any, TR = any> {
         routeOrder?: number;
         registerOnClick?: (p: TIn) => any
     }) {
-        return new Command<TIn, TOut>(name, eventScope, registerOnClick).withRoute(route, routeOrder);
+        const cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
+        if(route) {
+            return cmd.withRoute(route, routeOrder);
+        }
+        return cmd;
     }
 
     /**
