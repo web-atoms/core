@@ -5,6 +5,7 @@ import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
 import type { AtomControl } from "../web/controls/AtomControl";
 import type { AtomDisposableList } from "./AtomDisposableList";
 import { AtomUri } from "./AtomUri";
+import { displayRouteSymbol } from "./Command";
 import { getOwnInheritedProperty } from "./InheritedProperty";
 import { CancelToken, DI, IClassOf, IDisposable } from "./types";
 
@@ -146,7 +147,7 @@ export class AtomLoader {
 
     public static async loadClass<T extends AtomControl>(
         url: string | any,
-        { title, ... parameters }: any = {},
+        { title, [displayRouteSymbol]: route, ... parameters }: any = {},
         app: App): Promise<T> {
 
         const busyIndicator = app.createBusyIndicator({
@@ -163,9 +164,14 @@ export class AtomLoader {
             }
             if (!vm) {
                 params = (view as any).parameters ??= {};
+            } else {
+                console.warn("ViewModel is deprecated");
             }
             if (title) {
                 (view as any).title = title;
+            }
+            if (params) {
+                params[displayRouteSymbol] = route;
             }
             if ((vm || params) && parameters) {
                 for (const key in parameters) {

@@ -5,13 +5,14 @@ import { StringHelper } from "./StringHelper";
 import type { IDisposable } from "./types";
 
 export const routeSymbol = Symbol("routeSymbol");
+export const displayRouteSymbol = Symbol("displayRouteSymbol");
 
 document.body.addEventListener("click", (ce: MouseEvent) => {
     let target = ce.target as HTMLElement;
     let clickCommand;
     let commandParameter;
     while (target) {
-        clickCommand = target.dataset.clickCommand;
+        clickCommand = target.getAttribute("data-click-command");
         const cp = (target as any).commandParameter;
         if (cp) {
             commandParameter = cp;
@@ -50,30 +51,47 @@ export default class Command<T = any, TR = any> {
     public static invokeRoute(route: string = location.hash.startsWith("#!")
         ? location.hash.substring(2)
         : location.pathname) {
+
+        let sp: URLSearchParams;
+
+        const index = route.indexOf("?");
+        if (index !== -1) {
+            sp = new URLSearchParams(route.substring(0, index));
+            route = route.substring(index + 1);
+        } else {
+            sp = new URLSearchParams("");
+        }
         for (const iterator of this.routes) {
-            const params = iterator.route.matches(route);
+            const params = iterator.route.matches(route, sp);
             if (params) {
                 params[routeSymbol] = route;
+                params[displayRouteSymbol] = "";
                 iterator.dispatch(params, true);
                 return iterator;
             }
         }
     }
 
-    public static create<TIn, TOut>({
+    public static create<TIn = any, TOut = any>({
         name = `command${id++}`,
         eventScope = EventScope.create<TIn>(),
         route,
+        routeQueries,
         routeOrder = 0,
         registerOnClick
     }: {
         name?: string;
         eventScope?: EventScope<TIn>,
         route?: string;
+        routeQueries?: string[],
         routeOrder?: number;
         registerOnClick?: (p: TIn) => any
     }) {
-        return new Command<TIn, TOut>(name, eventScope, registerOnClick).withRoute(route, routeOrder);
+        const cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
+        if(route) {
+            return cmd.withRoute(route, routeQueries, routeOrder);
+        }
+        return cmd;
     }
 
     /**
@@ -99,10 +117,23 @@ export default class Command<T = any, TR = any> {
         Command.registry.set(this.name, this);
     }
 
-    public withRoute(route: string, order = 0) {
-        this.routeObj = Route.create(route, order);
+    public displayRoute(p: any = {}) {
+        return Route.encodeUrl(this.routeObj.substitute(p));
+    }
+
+    public withRoute(route: string, queries?: string[], order = 0) {
+        this.routeObj = Route.create(route, queries, order);
         Command.routes.push(this);
         Command.routes.sort((a, b) => a.route.order - b.route.order);
+        document.body.addEventListener(this.eventName, (e: CustomEvent) => {
+            try {
+                let route = this.routeObj.substitute(e.detail);
+                e.detail[routeSymbol] = route;
+                e.detail[displayRouteSymbol] = route;
+            }catch (error) {
+                console.error(error);
+            }
+        }, true);
         return this;
     }
 
@@ -122,16 +153,25 @@ export default class Command<T = any, TR = any> {
 
     public dispatch(detail?: T, cancelable?: boolean) {
         if (this.route) {
-            const d = detail ??= {} as any;
-            d[routeSymbol] ??= this.route.substitute(d);
+            detail = this.updateRoute(detail);
         }
         this.eventScope.dispatchEvent(detail, cancelable);
     }
 
+    private updateRoute(detail: T) {
+        const d = detail ??= {} as any;
+        let r = d[routeSymbol];
+        if (r === null || r === void 0) {
+            r = this.route.substitute(d);
+            d[routeSymbol] = r;
+            d[displayRouteSymbol] = r;
+        }
+        return detail;
+    }
+
     public async dispatchAsync(detail?: T, cancelable?: boolean) {
         if (this.route) {
-            const d = detail ??= {} as any;
-            d[routeSymbol] ??= this.route.substitute(d);
+            detail = this.updateRoute(detail);
         }
         const ce = new CustomEvent(this.eventScope.eventType, { detail, cancelable}) as any as CustomEventEx<T, TR>;
         ce.returnResult = true;

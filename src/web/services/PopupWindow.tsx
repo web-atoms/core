@@ -304,13 +304,13 @@ export default class PopupWindow extends AtomControl {
         //         document.body.removeEventListener("keydown", handler);
         //     }
         // });
-        this.element.dataset.popupWindow = "popup-window";
+        this.element.setAttribute("data-popup-window", "popup-window");
 
         // init will be called if parameters are set...
         // this.runAfterInit(() => this.app.runAsync(() => this.init?.()));
 
-        setTimeout((p) => {
-            p.dataset.ready = "true";
+        setTimeout((p: HTMLElement) => {
+            p.setAttribute("data-ready", "true");
         }, 10, this.element);
     }
 
@@ -460,7 +460,7 @@ export class ConfirmPopup extends PopupWindow {
         this.noLabel = "No";
         this.cancelLabel = null;
 
-        this.element.dataset.confirmPopup = "confirm-popup";
+        this.element.setAttribute("data-confirm-popup", "confirm-popup");
 
         this.footerRenderer = () => <div>
             <button
