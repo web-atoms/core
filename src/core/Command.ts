@@ -51,8 +51,18 @@ export default class Command<T = any, TR = any> {
     public static invokeRoute(route: string = location.hash.startsWith("#!")
         ? location.hash.substring(2)
         : location.pathname) {
+
+        let sp: URLSearchParams;
+
+        const index = route.indexOf("?");
+        if (index !== -1) {
+            sp = new URLSearchParams(route.substring(0, index));
+            route = route.substring(index + 1);
+        } else {
+            sp = new URLSearchParams("");
+        }
         for (const iterator of this.routes) {
-            const params = iterator.route.matches(route);
+            const params = iterator.route.matches(route, sp);
             if (params) {
                 params[routeSymbol] = route;
                 params[displayRouteSymbol] = "";
@@ -66,18 +76,20 @@ export default class Command<T = any, TR = any> {
         name = `command${id++}`,
         eventScope = EventScope.create<TIn>(),
         route,
+        routeQueries,
         routeOrder = 0,
         registerOnClick
     }: {
         name?: string;
         eventScope?: EventScope<TIn>,
         route?: string;
+        routeQueries?: string[],
         routeOrder?: number;
         registerOnClick?: (p: TIn) => any
     }) {
         const cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
-            return cmd.withRoute(route, routeOrder);
+            return cmd.withRoute(route, routeQueries, routeOrder);
         }
         return cmd;
     }
@@ -109,8 +121,8 @@ export default class Command<T = any, TR = any> {
         return Route.encodeUrl(this.routeObj.substitute(p));
     }
 
-    public withRoute(route: string, order = 0) {
-        this.routeObj = Route.create(route, order);
+    public withRoute(route: string, queries?: string[], order = 0) {
+        this.routeObj = Route.create(route, queries, order);
         Command.routes.push(this);
         Command.routes.sort((a, b) => a.route.order - b.route.order);
         document.body.addEventListener(this.eventName, (e: CustomEvent) => {
