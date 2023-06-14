@@ -25,7 +25,7 @@ export interface IActionOptions {
 
     /**
      * By default event is listened on current element, however some events are only sent globally
-     * and might end up on parent or window. You can chagne the target by overriding this.
+     * and might end up on parent or window. You can change the target by overriding this.
      */
     onEventTarget?: EventTarget;
 
@@ -94,6 +94,11 @@ export interface IActionOptions {
      * @default Error
      */
     validateTitle?: string;
+
+    /**
+     * dispatch event after successful execution.
+     */
+    dispatchEvent?: string | EventScope;
 
     /**
      * Closes the current popup/window by calling viewModel.close, returned result will be sent in close
@@ -261,6 +266,7 @@ export default function Action(
         onEventTarget = void 0,
         onEventSetBusy,
         blockMultipleExecution = true,
+        dispatchEvent,
         authorize = void 0,
         defer = void 0,
         success = null,
@@ -385,33 +391,28 @@ export default function Action(
                             }
                         }
 
-                        const pe = oldMethod.apply(vm, a);
-                        if (pe && pe.then) {
-                            const result = await pe;
-                            if (close) {
-                                if (success) {
-                                    await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
-                                }
-                                vm.close?.(result);
-                                return result;
-                            }
-                            if (success) {
-                                if (successMode === "notify") {
-                                    await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
-                                    return result;
-                                }
+                        let result = oldMethod.apply(vm, a);
+                        if (result?.then) {
+                            result = await result;
+                        }
+                        if (success) {
+                            if (successMode === "notify") {
+                                await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
+                            } else {
                                 await ns.alert(success as any, successTitle);
-                                return result;
                             }
-                            return result;
                         }
                         if (close) {
-                            if (success) {
-                                await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
-                            }
-                            vm.close?.(pe);
-                            return pe;
+                            vm.close?.(result);
                         }
+                        if (dispatchEvent) {
+                            const element = (vm.element ?? document.body) as HTMLElement;
+                            if (typeof dispatchEvent !== "string") {
+                                dispatchEvent = dispatchEvent.eventType;
+                            }
+                            element.dispatchEvent(new CustomEvent(dispatchEvent, { detail: result, bubbles: true }));
+                        }
+                        return result;
                     } catch (e) {
                         if (CancelToken.isCancelled(e)) {
                             return;
