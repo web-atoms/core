@@ -1,5 +1,6 @@
 import DateTime from "@web-atoms/date-time/dist/DateTime";
-import { CancelToken } from "./types";
+import { CancelToken, IDisposable } from "./types";
+import type { AtomControl } from "../web/controls/AtomControl";
 
 const key = DateTime.now.msSinceEpoch;
 let id = 1;
@@ -24,6 +25,11 @@ export default class EventScope<T = any> {
 
     private constructor(public readonly eventType: string) {
         this.eventName = `event-${this.eventType}`;
+    }
+
+    public subscribe(control: AtomControl, handler: (ce: CustomEvent<T>) => any)
+    {
+        return control.bindEvent(window as any, this.eventType, handler);
     }
 
     public listen(fx: (ce: CustomEvent<T>) => any) {
