@@ -355,13 +355,17 @@ export default function Action(
 
                     if (defer) {
                         const previous = vm[deferSymbol];
-                        if (previous === void 0 || previous > 0) {
+                        if (previous !== 0) {
                             if (previous > 0) {
                                 clearTimeout(previous);
                             }
                             vm[deferSymbol] = setTimeout(() => {
+                                // this will force us to execute method...
                                 vm[deferSymbol] = 0;
-                                return vm[key](... a);
+                                const r = vm[key](... a);
+                                // we need to delete symbol to restart deferring
+                                delete vm[deferSymbol];
+                                return r;
                             }, defer);
                             return;
                         }
