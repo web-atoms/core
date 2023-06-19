@@ -739,7 +739,9 @@ export default class PopupService {
                 protected create(): void {
                     this.render(<div>
                         { isMsgXNode ? message : <div data-element="message" text={message}/> }
-                        { detail && (isDetailXNode ? detail : <details  data-element="details" text={detail}/>)}
+                        { detail && (isDetailXNode ? detail : <details data-element="details">
+                            <pre text={detail}/>
+                        </details>)}
                     </div>);
                 }
             };

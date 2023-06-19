@@ -140,7 +140,7 @@ const focus = (popup: PopupWindow) => {
             padding-bottom: 5px;
             background-color: var(--command-bar-color, #80808025);
 
-            &.buttons > button {
+            & > button, & > * > button {
                 border-radius: 9999px;
                 padding: 5px;
                 padding-left: 20px;
@@ -421,6 +421,7 @@ delete PopupWindow.prototype.init;
 
     styled.css `
         & >[data-window-element=content] > [data-element=details] {
+            margin-top: 5px;
             overflow: auto;
             max-width: 80vw;
             max-height: 50vh;
