@@ -646,11 +646,7 @@ export default class PopupService {
 
             if (isModal) {
                 const bg = document.createElement("div");
-                bg.style.position = "absolute";
-                bg.style.right = "0";
-                bg.style.bottom = "0";
-                bg.style.left = "0";
-                bg.style.top = "0";
+                bg.setAttribute("data-window-modal-background","background");
                 host.appendChild(bg);
 
                 const onBack = (e: CustomEvent) => {

@@ -70,6 +70,14 @@ const focus = (popup: PopupWindow) => {
         opacity: 0;
         transition: opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32) ;
 
+        [data-window-modal-background=background] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
         &[data-no-width=true] {
             max-width: 70vw;
             min-width: 300px;
