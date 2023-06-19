@@ -70,6 +70,15 @@ const focus = (popup: PopupWindow) => {
         opacity: 0;
         transition: opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32) ;
 
+        &[data-no-width=true] {
+            max-width: 70vw;
+            min-width: 300px;
+        }
+        &[data-no-height=true] {
+            max-height: 70vh;
+            min-height: 100px;
+        }
+
         &[data-ready=true] {
             opacity: 1;
         }
