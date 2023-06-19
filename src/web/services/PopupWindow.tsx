@@ -137,7 +137,19 @@ const focus = (popup: PopupWindow) => {
             margin-top: 5px;
             grid-row: 4;
             grid-column: 1 / span 3;
-            margin-bottom: 5px;
+            padding-bottom: 5px;
+            background-color: var(--command-bar-color, #80808025);
+
+            &.buttons > button{
+                border-radius: 9999px;
+                padding: 5px;
+                padding-left: 20px;
+                padding-right: 20px;
+                border-width: 1px;
+                border-color: transparent;
+                margin: 5px;
+                margin-left: 10px;
+            }            
         }
 
     `.installGlobal("[data-popup-window=popup-window]")
@@ -412,15 +424,6 @@ delete PopupWindow.prototype.init;
             overflow: auto;
             max-width: 80vw;
             max-height: 50vh;
-        }
-        & > .buttons[data-window-element=footer] > button{
-            border-radius: 9999px;
-            padding-left: 10px;
-            padding-right: 10px;
-            border-width: 1px;
-            border-color: transparent;
-            margin: 5px;
-            margin-right: 5px;
         }
         & > .buttons > .yes {
             background-color: lightgreen;

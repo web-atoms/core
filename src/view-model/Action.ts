@@ -5,6 +5,7 @@ import FormattedString from "../core/FormattedString";
 import { StringHelper } from "../core/StringHelper";
 import { CancelToken } from "../core/types";
 import XNode from "../core/XNode";
+import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
 import type { AtomControl } from "../web/controls/AtomControl";
 import PopupService from "../web/services/PopupService";
@@ -390,13 +391,15 @@ export default function Action(
                             console.warn(e);
                             return;
                         }
-                        if (e.detail) {
-                            await PopupService.alert({
-                                message: e.message,
-                                title: "Error",
-                                detail: e.detail
-                            });
-                            return;
+                        if (e instanceof JsonError) {
+                            if (e.details) {
+                                await PopupService.alert({
+                                    message: e.message,
+                                    title: "Error",
+                                    detail: e.details
+                                });
+                                return;
+                            }
                         }
                         await ns.alert(e, "Error");
                     }
