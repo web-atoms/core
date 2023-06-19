@@ -140,7 +140,7 @@ const focus = (popup: PopupWindow) => {
             padding-bottom: 5px;
             background-color: var(--command-bar-color, #80808025);
 
-            &.buttons > button{
+            &.buttons > button {
                 border-radius: 9999px;
                 padding: 5px;
                 padding-left: 20px;

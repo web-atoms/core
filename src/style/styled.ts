@@ -119,9 +119,9 @@ class StyleFragment {
 
             let keySelector = key.replace("{", "");
 
-            const replace = /\&/.test(keySelector);
-
             const isMedia = /\@/.test(keySelector);
+
+            const replace = !isMedia;
 
             const replaced = replace
                 ? selector.split(",").map((x) => keySelector.replace(/\&/g, x).trim()).join(",")
