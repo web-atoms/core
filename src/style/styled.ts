@@ -114,8 +114,8 @@ class StyleFragment {
             }
 
             let keySelector = key.replace("{", "");
-
-            const replaced = keySelector.replace(/\&/g, selector).trim();
+            const replaced = selector.split(",").map((x) => keySelector.replace(/\&/g, x).trim()).join(",");
+            // const replaced = keySelector.replace(/\&/g, selector).trim();
             // push stack...
             selectorStack.push(selector);
             selector = replaced;                
