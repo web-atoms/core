@@ -430,7 +430,7 @@ delete PopupWindow.prototype.init;
         & > [data-window-element=footer] {
 
             & > .yes {
-                background-color: lightgreen;
+                background-color: #01af01;
                 color: white;
             }
             & > .no {
