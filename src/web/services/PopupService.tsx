@@ -102,49 +102,6 @@ document.body.addEventListener("click", (e) => {
         display: inline-block; 
     }    
 
-    div[data-confirm-popup=confirm-popup] {
-
-        display: grid; 
-    
-        & .yes {
-            border-radius: 9999px;
-            padding-left: 10px;
-            padding-right: 10px;
-            border-width: 1px;
-            border-color: #00000000;
-            margin: 5px;
-            margin-right: 10px;
-            background-color: #90ee90; 
-        }
-        
-        & .no {
-            border-radius: 9999px;
-            padding-left: 10px;
-            padding-right: 10px;
-            border-width: 1px;
-            border-color: #00000000;
-            margin: 5px;
-            margin-right: 10px;
-            background-color: #ff0000;
-            color: #ffffff; 
-        }
-            
-        & .cancel {
-            border-radius: 9999px;
-            padding-left: 10px;
-            padding-right: 10px;
-            border-width: 1px;
-            border-color: #00000000;
-            margin: 5px;
-            margin-right: 10px;
-            background-color: #808080;
-        }
-        
-        & > [data-element=message] {
-            overflow: auto; 
-        }    
-    }
-
 `.withId("popup-service-styles").installGlobal();
 
 const popupCss = styled.css `
