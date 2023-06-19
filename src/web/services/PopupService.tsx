@@ -580,8 +580,7 @@ export default class PopupService {
                 let heightSet = false;
 
                 if (maximize) {
-                    element.style.width = "95%";
-                    element.style.height = "95%";
+                    element.setAttribute("data-maximize","true");
                     widthSet = heightSet = true;
                 } else {
                     if (width) {
@@ -611,8 +610,6 @@ export default class PopupService {
                 }
 
                 if (!widthSet) {
-                    // element.style.maxWidth = "95%";
-                    // element.style.minWidth = "300px";
                     element.setAttribute("data-no-width", "true");
                 }
                 if (!heightSet) {
