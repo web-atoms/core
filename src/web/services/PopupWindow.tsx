@@ -137,6 +137,7 @@ const focus = (popup: PopupWindow) => {
             margin-top: 5px;
             grid-row: 4;
             grid-column: 1 / span 3;
+            padding-top: 5px;
             padding-bottom: 5px;
             background-color: var(--command-bar-color, #80808025);
 
