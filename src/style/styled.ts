@@ -110,19 +110,38 @@ class StyleFragment {
 
             if (key.endsWith("}")) {
                 selector = selectorStack.pop();
+                if (selector === "@") {
+                    content += "\n}\n";
+                    selector = selectorStack.pop();
+                }
                 continue;
             }
 
             let keySelector = key.replace("{", "");
-            const replaced = selector.split(",").map((x) => keySelector.replace(/\&/g, x).trim()).join(",");
+
+            const replace = /\&/.test(keySelector);
+
+            const isMedia = /\@/.test(keySelector);
+
+            const replaced = replace
+                ? selector.split(",").map((x) => keySelector.replace(/\&/g, x).trim()).join(",")
+                : keySelector;
+
             // const replaced = keySelector.replace(/\&/g, selector).trim();
             // push stack...
             selectorStack.push(selector);
-            selector = replaced;                
+            selector = replace ? replaced : selector;
+            if (isMedia) {
+                selectorStack.push("@");
+            }
 
             // only add rule if it is not empty...
             if (value?.trim()) {
                 content += `${replaced} {\n${value}\n}\n`;
+            } else {
+                if (isMedia) {
+                    content += `${replaced} {\n`;
+                }
             }
         }
 
