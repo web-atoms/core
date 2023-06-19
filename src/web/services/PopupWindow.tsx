@@ -408,6 +408,11 @@ export default class PopupWindow extends AtomControl {
 delete PopupWindow.prototype.init;
 
     styled.css `
+        & >[data-window-element=content] > [data-element=details] {
+            overflow: auto;
+            max-width: 80vw;
+            max-height: 50vh;
+        }
         & > .buttons[data-window-element=footer] > button{
             border-radius: 9999px;
             padding-left: 10px;

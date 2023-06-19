@@ -2,15 +2,12 @@ import { App } from "../App";
 import Command from "../core/Command";
 import EventScope from "../core/EventScope";
 import FormattedString from "../core/FormattedString";
-import sleep from "../core/sleep";
 import { StringHelper } from "../core/StringHelper";
 import { CancelToken } from "../core/types";
 import XNode from "../core/XNode";
-import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
 import type { AtomControl } from "../web/controls/AtomControl";
-import { AtomViewModel, Watch } from "./AtomViewModel";
-import { registerInit } from "./baseTypes";
+import PopupService from "../web/services/PopupService";
 
 export type onEventSetBusyTypes = "target" | "current-target" | "till-current-target" | "ancestors" | "button";
 
@@ -191,39 +188,6 @@ export class MarkBusySet {
     }
 
 }
-
-// function *findAll(element: HTMLElement, currentTarget: HTMLElement, onEventSetBusy: onEventSetBusyTypes) {
-//     let start = element;
-//     switch(onEventSetBusy) {
-//         case "target":
-//             yield start;
-//             return;
-//         case "current-target":
-//             yield currentTarget;
-//             return;
-//         case "button":
-//             while (start) {
-//                 if (start.tagName === "BUTTON") {
-//                     yield start;
-//                     return;
-//                 }
-//                 start = start.parentElement;
-//             }
-//             return;
-//         case "ancestors":
-//             while(start) {
-//                 yield start;
-//                 start = start.parentElement;
-//             }
-//             return;
-//         case "till-current-target":
-//             do {
-//                 yield start;
-//                 start = start.parentElement;
-//             } while (start)
-//             return;
-//     }
-// }
 
 const onEventHandler = (owner, blockMultipleExecution, key, busyKey: symbol, onEventSetBusy: MarkBusySet) => async (ce: Event) => {
     const element = ce.currentTarget as HTMLElement;
@@ -427,7 +391,11 @@ export default function Action(
                             return;
                         }
                         if (e.detail) {
-                            await ns.alert(e.detail, e.message);
+                            await PopupService.alert({
+                                message: e.message,
+                                title: "Error",
+                                detail: e.detail
+                            });
                             return;
                         }
                         await ns.alert(e, "Error");

@@ -679,6 +679,7 @@ let lastTarget = {
 export interface IPopupAlertOptions {
     message: string | XNode;
     title?: string;
+    detail?: string | XNode;
     yesLabel?: string;
     noLabel?: string;
     cancelLabel?: string;
@@ -721,20 +722,31 @@ export default class PopupService {
 
     public static async alert({
         message,
+        detail,
         title = "Alert",
         yesLabel = "Ok"
     }: IPopupAlertOptions): Promise<boolean> {
         try {
+            const isMsgXNode = message instanceof XNode;
+            const isDetailXNode = detail && detail instanceof XNode;
+            if (isMsgXNode) {
+                (message.attributes ??= {})["data-element"] = "message";
+            }
+            if (isDetailXNode) {
+                (detail.attributes ??= {})["data-element"] = "details";
+            }
             const popup = class extends ConfirmPopup {
                 protected create(): void {
                     this.render(<div>
-                        { message instanceof XNode ? message : <div text={message}/> }
+                        { isMsgXNode ? message : <div data-element="message" text={message}/> }
+                        { detail && (isDetailXNode ? detail : <details  data-element="details" text={detail}/>)}
                     </div>);
                 }
             };
             return await popup.showModal<boolean>({
                 parameters: {
                     message,
+                    detail,
                     yesLabel,
                     noLabel: ""
                 },
