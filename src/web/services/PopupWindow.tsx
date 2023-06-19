@@ -427,17 +427,20 @@ delete PopupWindow.prototype.init;
             max-width: 80vw;
             max-height: 50vh;
         }
-        & > .buttons > .yes {
-            background-color: lightgreen;
-            color: white;
-        }
-        & > .buttons > .no {
-            background-color: red;
-            color: white;
-        }
-        & > .buttons > .cancel {
-            background-color: gray;
-            color: white;
+        & > [data-window-element=footer] {
+
+            & > .yes {
+                background-color: lightgreen;
+                color: white;
+            }
+            & > .no {
+                background-color: red;
+                color: white;
+            }
+            & > .cancel {
+                background-color: gray;
+                color: white;
+            }
         }
     `.installGlobal("[data-confirm-popup=confirm-popup]")
 
