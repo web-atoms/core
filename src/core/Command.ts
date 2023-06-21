@@ -128,27 +128,27 @@ export default class Command<T = any, TR = any> {
         if (openPage) {
             let pageType: any;
             cmd.listener = async (ce) => ce.detail.returnResult
-                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await openPage()), ce.detail)
-                : PageCommands.openPage(pageType ??= defaultOrSelf(await openPage()), ce.detail);
+                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await openPage()), ce.detail ?? {})
+                : PageCommands.openPage(pageType ??= defaultOrSelf(await openPage()), ce.detail ?? {});
         }
 
         if (pushPage) {            
             let pageType: any;
             cmd.listener = async (ce) => ce.detail.returnResult
-                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPage()), ce.detail)
-                : PageCommands.pushPage(pageType ??= defaultOrSelf(await pushPage()), ce.detail);
+                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPage()), ce.detail ?? {})
+                : PageCommands.pushPage(pageType ??= defaultOrSelf(await pushPage()), ce.detail ?? {});
         }
 
         if (pushPageForResult) {
             let pageType: any;
-            cmd.listener = async (ce) => PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResult()), ce.detail);
+            cmd.listener = async (ce) => PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResult()), ce.detail ?? {});
         }
 
         if (pushPageForResultOrCancel) {
             let pageType: any;
             cmd.listener = async (ce) => {
                 try {
-                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail);
+                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail ?? {});
                 } catch (e) {
                     if(CancelToken.isCancelled(e)) {
                         return;
