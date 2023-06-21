@@ -50,11 +50,18 @@ export class PageCommands {
 
 declare let UMD: any;
 
-export type IPage<TIn, TOut> = 
-    abstract new (... a: any[]) => {
+export type IPage<TIn, TOut> = {
+    default: abstract new (... a: any[]) => {
         parameters: TIn;
         close(result: TOut): any;
-    };
+    }
+} | (abstract new (... a: any[]) => {
+    parameters: TIn;
+    close(result: TOut): any;
+});
+
+
+const defaultOrSelf = (x) => x?.default ?? x;
 
 export default class Command<T = any, TR = any> {
 
@@ -111,13 +118,15 @@ export default class Command<T = any, TR = any> {
         }
 
         if (openPage) {
-            cmd.installer = async (ce) => PageCommands.openPage(await openPage(), ce.detail);
+            let pageType: any;
+            cmd.installer = async (ce) => PageCommands.openPage( pageType ??= defaultOrSelf(await openPage()), ce.detail);
         }
 
         if (pushPage) {            
+            let pageType: any;
             cmd.installer = async (ce) => ce.detail.returnResult
-                ? PageCommands.pushPageForResult(await pushPage(), ce.detail)
-                : PageCommands.pushPage(await pushPage(), ce.detail);
+                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPage()), ce.detail)
+                : PageCommands.pushPage(pageType ??= defaultOrSelf(await pushPage()), ce.detail);
         }
 
 
