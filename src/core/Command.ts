@@ -2,7 +2,7 @@ import type { App } from "../App";
 import EventScope from "./EventScope";
 import Route from "./Route";
 import { StringHelper } from "./StringHelper";
-import type { IDisposable } from "./types";
+import { CancelToken, type IDisposable } from "./types";
 
 export const routeSymbol = Symbol("routeSymbol");
 export const displayRouteSymbol = Symbol("displayRouteSymbol");
@@ -101,7 +101,10 @@ export default class Command<T = any, TR = any> {
         routeOrder = 0,
         openPage,
         pushPage,
-        registerOnClick
+        registerOnClick,
+        pushPageForResult,
+        pushPageForResultOrCancel,
+        listener
     }: {
         name?: string;
         eventScope?: EventScope<TIn>,
@@ -110,12 +113,17 @@ export default class Command<T = any, TR = any> {
         routeOrder?: number;
         registerOnClick?: (p: TIn) => any,
         openPage?: (() => Promise<IPage<TIn, TOut>>),
-        pushPage?: (() => Promise<IPage<TIn, TOut>>)
+        pushPage?: (() => Promise<IPage<TIn, TOut>>),
+        pushPageForResult?: (() => Promise<IPage<TIn, TOut>>),
+        pushPageForResultOrCancel?: (() => Promise<IPage<TIn, TOut>>),
+        listener: ((ce: CustomEvent) => any)
     }) {
         let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
             cmd = cmd.withRoute(route, routeQueries, routeOrder);
         }
+
+        cmd.listener = listener;
 
         if (openPage) {
             let pageType: any;
@@ -131,6 +139,24 @@ export default class Command<T = any, TR = any> {
                 : PageCommands.pushPage(pageType ??= defaultOrSelf(await pushPage()), ce.detail);
         }
 
+        if (pushPageForResult) {
+            let pageType: any;
+            cmd.listener = async (ce) => PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResult()), ce.detail);
+        }
+
+        if (pushPageForResultOrCancel) {
+            let pageType: any;
+            cmd.listener = async (ce) => {
+                try {
+                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResult()), ce.detail);
+                } catch (e) {
+                    if(CancelToken.isCancelled(e)) {
+                        return;
+                    }
+                    console.error(e);
+                }
+            };
+        }
 
         return cmd;
     }
