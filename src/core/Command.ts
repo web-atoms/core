@@ -131,7 +131,7 @@ export default class Command<T = any, TR = any> {
                 const p = ce.detail ?? {};
                 return p.returnResult
                 ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await openPage()), p)
-                : PageCommands.pushPage(pageType ??= defaultOrSelf(await openPage()), p);
+                : PageCommands.openPage(pageType ??= defaultOrSelf(await openPage()), p);
             }
         }
 
