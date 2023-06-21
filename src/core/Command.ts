@@ -42,6 +42,14 @@ export type CustomEventEx<T, TR> = CustomEvent<T> & {
     returnResult?: boolean;
 };
 
+export class PageCommands {
+    public static pushPage: (page, parameters) => any;
+    public static pushPageForResult: (page, parameters) => Promise<any>;
+    public static openPage: (page, parameters) => any;
+}
+
+declare let UMD: any;
+
 export default class Command<T = any, TR = any> {
 
     public static registry: Map<string, Command> = new Map();
@@ -78,6 +86,8 @@ export default class Command<T = any, TR = any> {
         route,
         routeQueries,
         routeOrder = 0,
+        openPage,
+        pushPage,
         registerOnClick
     }: {
         name?: string;
@@ -85,14 +95,42 @@ export default class Command<T = any, TR = any> {
         route?: string;
         routeQueries?: string[],
         routeOrder?: number;
-        registerOnClick?: (p: TIn) => any
+        registerOnClick?: (p: TIn) => any,
+        openPage?: string | (() => Promise<any>),
+        pushPage?: string | (() => Promise<any>)
     }) {
-        const cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
+        let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
-            return cmd.withRoute(route, routeQueries, routeOrder);
+            cmd = cmd.withRoute(route, routeQueries, routeOrder);
         }
+
+        if (openPage) {
+            if (typeof openPage === "string") {
+                const moduleName = openPage;
+                openPage = () => UMD.import(moduleName);
+            }
+            // @ts-expect-error
+            cmd.installer = async (ce) => PageCommands.openPage(await openPage(), ce.detail);
+        }
+
+        if (pushPage) {
+            if (typeof pushPage === "string") {
+                const moduleName = pushPage;
+                pushPage = () => UMD.import(moduleName);
+            }
+            
+            cmd.installer = async (ce) => ce.detail.returnResult
+                    // @ts-expect-error
+                ? PageCommands.pushPageForResult(await pushPage(), ce.detail)
+                    // @ts-expect-error
+                : PageCommands.pushPage(await pushPage(), ce.detail);
+        }
+
+
         return cmd;
     }
+
+    private installer: (ce: CustomEvent) => any;
 
     /**
      * This name does not contain `event-` prefix
@@ -183,4 +221,20 @@ export default class Command<T = any, TR = any> {
             }
         }
     }
+}
+
+export class Commands {
+
+    public static install(app: { registerDisposable(d: IDisposable): IDisposable }) {
+        for (const key in this) {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+                const element = this[key];
+                if (element instanceof Command) {
+                    // @ts-expect-error
+                    element.listen(app, element.installer);
+                }
+            }
+        }
+    }
+
 }
