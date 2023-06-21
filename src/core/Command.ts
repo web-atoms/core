@@ -50,6 +50,13 @@ export class PageCommands {
 
 declare let UMD: any;
 
+export interface IPage<TIn, TOut> {
+    new (... a: any[]): {
+        parameters: TIn;
+        close(result: TOut): any;
+    }
+}
+
 export default class Command<T = any, TR = any> {
 
     public static registry: Map<string, Command> = new Map();
@@ -96,8 +103,8 @@ export default class Command<T = any, TR = any> {
         routeQueries?: string[],
         routeOrder?: number;
         registerOnClick?: (p: TIn) => any,
-        openPage?: string | (() => Promise<any>),
-        pushPage?: string | (() => Promise<any>)
+        openPage?: (() => Promise<IPage<TIn, TOut>>),
+        pushPage?: (() => Promise<IPage<TIn, TOut>>)
     }) {
         let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
@@ -105,24 +112,12 @@ export default class Command<T = any, TR = any> {
         }
 
         if (openPage) {
-            if (typeof openPage === "string") {
-                const moduleName = openPage;
-                openPage = () => UMD.import(moduleName);
-            }
-            // @ts-expect-error
             cmd.installer = async (ce) => PageCommands.openPage(await openPage(), ce.detail);
         }
 
-        if (pushPage) {
-            if (typeof pushPage === "string") {
-                const moduleName = pushPage;
-                pushPage = () => UMD.import(moduleName);
-            }
-            
+        if (pushPage) {            
             cmd.installer = async (ce) => ce.detail.returnResult
-                    // @ts-expect-error
                 ? PageCommands.pushPageForResult(await pushPage(), ce.detail)
-                    // @ts-expect-error
                 : PageCommands.pushPage(await pushPage(), ce.detail);
         }
 
