@@ -119,12 +119,14 @@ export default class Command<T = any, TR = any> {
 
         if (openPage) {
             let pageType: any;
-            cmd.installer = async (ce) => PageCommands.openPage( pageType ??= defaultOrSelf(await openPage()), ce.detail);
+            cmd.listener = async (ce) => ce.detail.returnResult
+                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await openPage()), ce.detail)
+                : PageCommands.openPage(pageType ??= defaultOrSelf(await openPage()), ce.detail);
         }
 
         if (pushPage) {            
             let pageType: any;
-            cmd.installer = async (ce) => ce.detail.returnResult
+            cmd.listener = async (ce) => ce.detail.returnResult
                 ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPage()), ce.detail)
                 : PageCommands.pushPage(pageType ??= defaultOrSelf(await pushPage()), ce.detail);
         }
@@ -133,7 +135,7 @@ export default class Command<T = any, TR = any> {
         return cmd;
     }
 
-    private installer: (ce: CustomEvent) => any;
+    private listener: (ce: CustomEvent) => any;
 
     /**
      * This name does not contain `event-` prefix
@@ -178,7 +180,12 @@ export default class Command<T = any, TR = any> {
         return this;
     }
 
-    public listen(r: { app: App, registerDisposable: (d: IDisposable) => void }, handler: (ce: CustomEventEx<T, TR>) => any) {
+    public listen(
+        r: { app: App, registerDisposable: (d: IDisposable) => void },
+        handler: (ce: CustomEventEx<T, TR>) => any = this.listener) {
+        if (!handler) {
+            throw new Error("Handler must be specified...");
+        }
         const d = this.eventScope.listen((e) => {
             const ce = e as CustomEventEx<any,any>;
             try {
@@ -228,13 +235,12 @@ export default class Command<T = any, TR = any> {
 
 export class Commands {
 
-    public static install(app: { registerDisposable(d: IDisposable): IDisposable }) {
+    public static install(app: { app: any, registerDisposable(d: IDisposable): IDisposable }) {
         for (const key in this) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
                 const element = this[key];
                 if (element instanceof Command) {
-                    // @ts-expect-error
-                    element.listen(app, element.installer);
+                    element.listen(app);
                 }
             }
         }
