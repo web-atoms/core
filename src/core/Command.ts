@@ -51,7 +51,7 @@ export class PageCommands {
 declare let UMD: any;
 
 export type IPage<TIn, TOut> = 
-    new (... a: any[]) => {
+    abstract new (... a: any[]) => {
         parameters: TIn;
         close(result: TOut): any;
     };
