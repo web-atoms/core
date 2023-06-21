@@ -116,7 +116,7 @@ export default class Command<T = any, TR = any> {
         pushPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResult?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResultOrCancel?: (() => Promise<IPage<TIn, TOut>>),
-        listener: ((ce: CustomEvent) => any)
+        listener?: ((ce: CustomEvent) => any)
     }) {
         let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
@@ -148,7 +148,7 @@ export default class Command<T = any, TR = any> {
             let pageType: any;
             cmd.listener = async (ce) => {
                 try {
-                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResult()), ce.detail);
+                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail);
                 } catch (e) {
                     if(CancelToken.isCancelled(e)) {
                         return;
