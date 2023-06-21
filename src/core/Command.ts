@@ -50,12 +50,11 @@ export class PageCommands {
 
 declare let UMD: any;
 
-export interface IPage<TIn, TOut> {
-    new (... a: any[]): {
+export type IPage<TIn, TOut> = 
+    new (... a: any[]) => {
         parameters: TIn;
         close(result: TOut): any;
-    }
-}
+    };
 
 export default class Command<T = any, TR = any> {
 
