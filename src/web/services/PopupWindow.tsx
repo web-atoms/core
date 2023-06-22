@@ -69,6 +69,7 @@ const focus = (popup: PopupWindow) => {
         grid-template-columns: auto 1fr auto;
         opacity: 0;
         transition: opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32) ;
+        overflow: hidden;
 
         [data-window-modal-background=background] {
             position: absolute;
