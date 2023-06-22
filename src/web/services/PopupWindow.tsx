@@ -157,6 +157,10 @@ const focus = (popup: PopupWindow) => {
             position: relative;
             overflow: auto;
             padding: var(--spacing-medium, 7px);
+            &[data-maximize=true] {
+                width: 90%;
+                height: 90%;
+            }
         }
         & > [data-window-element=footer] {
             margin-top: 5px;
