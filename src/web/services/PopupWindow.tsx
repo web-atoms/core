@@ -89,10 +89,8 @@ const focus = (popup: PopupWindow) => {
         }
 
         &[data-maximize=true] {
-            & > [data-window-element=content] {
-                width: 90%;
-                height: 90%;
-            }
+            width: 90%;
+            height: 90%;
         }
 
         &[data-ready=true] {
@@ -158,8 +156,8 @@ const focus = (popup: PopupWindow) => {
             overflow: auto;
             padding: var(--spacing-medium, 7px);
             &[data-maximize=true] {
-                width: 90%;
-                height: 90%;
+                width: 90vw;
+                height: 90vh;
             }
         }
         & > [data-window-element=footer] {
