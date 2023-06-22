@@ -89,8 +89,10 @@ const focus = (popup: PopupWindow) => {
         }
 
         &[data-maximize=true] {
-            max-width: 90%;
-            max-height: 90%;
+            & > [data-window-element=content] {
+                width: 90%;
+                height: 90%;
+            }
         }
 
         &[data-ready=true] {
