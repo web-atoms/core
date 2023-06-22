@@ -80,11 +80,11 @@ const focus = (popup: PopupWindow) => {
         }
 
         &[data-no-width=true] {
-            max-width: 70vw;
+            max-width: 95%;
             min-width: 300px;
         }
         &[data-no-height=true] {
-            max-height: 70vh;
+            max-height: 95%;
             min-height: 100px;
         }
 
