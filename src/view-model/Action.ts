@@ -2,15 +2,13 @@ import { App } from "../App";
 import Command from "../core/Command";
 import EventScope from "../core/EventScope";
 import FormattedString from "../core/FormattedString";
-import sleep from "../core/sleep";
 import { StringHelper } from "../core/StringHelper";
 import { CancelToken } from "../core/types";
 import XNode from "../core/XNode";
 import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
 import type { AtomControl } from "../web/controls/AtomControl";
-import { AtomViewModel, Watch } from "./AtomViewModel";
-import { registerInit } from "./baseTypes";
+import PopupService from "../web/services/PopupService";
 
 export type onEventSetBusyTypes = "target" | "current-target" | "till-current-target" | "ancestors" | "button";
 
@@ -25,7 +23,7 @@ export interface IActionOptions {
 
     /**
      * By default event is listened on current element, however some events are only sent globally
-     * and might end up on parent or window. You can chagne the target by overriding this.
+     * and might end up on parent or window. You can change the target by overriding this.
      */
     onEventTarget?: EventTarget;
 
@@ -94,6 +92,11 @@ export interface IActionOptions {
      * @default Error
      */
     validateTitle?: string;
+
+    /**
+     * dispatch event after successful execution.
+     */
+    dispatchEvent?: string | EventScope;
 
     /**
      * Closes the current popup/window by calling viewModel.close, returned result will be sent in close
@@ -187,39 +190,6 @@ export class MarkBusySet {
 
 }
 
-// function *findAll(element: HTMLElement, currentTarget: HTMLElement, onEventSetBusy: onEventSetBusyTypes) {
-//     let start = element;
-//     switch(onEventSetBusy) {
-//         case "target":
-//             yield start;
-//             return;
-//         case "current-target":
-//             yield currentTarget;
-//             return;
-//         case "button":
-//             while (start) {
-//                 if (start.tagName === "BUTTON") {
-//                     yield start;
-//                     return;
-//                 }
-//                 start = start.parentElement;
-//             }
-//             return;
-//         case "ancestors":
-//             while(start) {
-//                 yield start;
-//                 start = start.parentElement;
-//             }
-//             return;
-//         case "till-current-target":
-//             do {
-//                 yield start;
-//                 start = start.parentElement;
-//             } while (start)
-//             return;
-//     }
-// }
-
 const onEventHandler = (owner, blockMultipleExecution, key, busyKey: symbol, onEventSetBusy: MarkBusySet) => async (ce: Event) => {
     const element = ce.currentTarget as HTMLElement;
     if (owner[busyKey]) {
@@ -261,6 +231,7 @@ export default function Action(
         onEventTarget = void 0,
         onEventSetBusy,
         blockMultipleExecution = true,
+        dispatchEvent,
         authorize = void 0,
         defer = void 0,
         success = null,
@@ -349,13 +320,17 @@ export default function Action(
 
                     if (defer) {
                         const previous = vm[deferSymbol];
-                        if (previous === void 0 || previous > 0) {
+                        if (previous !== 0) {
                             if (previous > 0) {
                                 clearTimeout(previous);
                             }
                             vm[deferSymbol] = setTimeout(() => {
+                                // this will force us to execute method...
                                 vm[deferSymbol] = 0;
-                                return vm[key](... a);
+                                const r = vm[key](... a);
+                                // we need to delete symbol to restart deferring
+                                delete vm[deferSymbol];
+                                return r;
                             }, defer);
                             return;
                         }
@@ -385,33 +360,28 @@ export default function Action(
                             }
                         }
 
-                        const pe = oldMethod.apply(vm, a);
-                        if (pe && pe.then) {
-                            const result = await pe;
-                            if (close) {
-                                if (success) {
-                                    await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
-                                }
-                                vm.close?.(result);
-                                return result;
-                            }
-                            if (success) {
-                                if (successMode === "notify") {
-                                    await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
-                                    return result;
-                                }
+                        let result = oldMethod.apply(vm, a);
+                        if (result?.then) {
+                            result = await result;
+                        }
+                        if (success) {
+                            if (successMode === "notify") {
+                                await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
+                            } else {
                                 await ns.alert(success as any, successTitle);
-                                return result;
                             }
-                            return result;
                         }
                         if (close) {
-                            if (success) {
-                                await ns.notify(success as any, successTitle, NotifyType.Information, notifyDelay);
-                            }
-                            vm.close?.(pe);
-                            return pe;
+                            vm.close?.(result);
                         }
+                        if (dispatchEvent) {
+                            const element = (vm.element ?? document.body) as HTMLElement;
+                            if (typeof dispatchEvent !== "string") {
+                                dispatchEvent = dispatchEvent.eventType;
+                            }
+                            element.dispatchEvent(new CustomEvent(dispatchEvent, { detail: result, bubbles: true }));
+                        }
+                        return result;
                     } catch (e) {
                         if (CancelToken.isCancelled(e)) {
                             return;
@@ -421,9 +391,15 @@ export default function Action(
                             console.warn(e);
                             return;
                         }
-                        if (e.detail) {
-                            await ns.alert(e.detail, e.message);
-                            return;
+                        if (e instanceof JsonError) {
+                            if (e.details) {
+                                await PopupService.alert({
+                                    message: e.message,
+                                    title: "Error",
+                                    detail: e.details
+                                });
+                                return;
+                            }
                         }
                         await ns.alert(e, "Error");
                     }

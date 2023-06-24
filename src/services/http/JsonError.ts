@@ -10,10 +10,10 @@ export default class JsonError extends Error {
         return this.json.paramErrors ?? [];
     }
 
-    public get detail() {
+    public get details() {
         if (this.json.paramErrors) {
             return this.errors.map((x) => `${x.name}: ${x.reason}`).join("\n");
         }
-        return this.json?.detail ?? this.message;
+        return this.json?.details;
     }
 }

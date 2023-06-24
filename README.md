@@ -1,102 +1,32 @@
 [![Action Status](https://github.com/web-atoms/core/workflows/Build/badge.svg)](https://github.com/web-atoms/core/actions) [![npm version](https://badge.fury.io/js/%40web-atoms%2Fcore.svg)](https://badge.fury.io/js/%40web-atoms%2Fcore) [![codecov](https://codecov.io/gh/web-atoms/core/branch/master/graph/badge.svg)](https://codecov.io/gh/web-atoms/core)
 
 # Web-Atoms Core
-Web Atoms Core is a UI abstraction framework along with powerful MVVM pattern to design modern Web Applications.
+Lightweight JavaScript framework with MVU Pattern with Data Binding in JSX.
 
-> Note, Xamarin Forms support is now deprecated, as we are migrating to new mobile framework.
+> Note, MVVM is now deprecated, we have realized that MVVM often adds more code then the benefits. Since JavaScript allows mixin, its easy to incorporate
+> reusable logic with mixin rather than MVVM. MVU pattern is better suitable for faster development.
 
 ## Web Features
-1. Functional Components
-2. Abstract Atom Component
-3. Abstract Device API (Browser Service, Message Broadcast)
-4. Theme and styles support without CSS
-5. One time, One way and Two way binding support
-6. Simple dependency Injection
-7. In built simple unit testing framework
-8. UMD module support
-9. Full featured MVVM Framework with powerful validation
-
-## Folder structure
-1. All views for web must be placed under "web" folder inside "src" folder.
-2. All views for Xamarin Forms must be placed under "xf" folder inside "src" folder.
-
-### Example folder structure
-```
-src
-+--images
-|  +--AddButton.svg
-|
-+--view-Models
-|  +--TaskListViewModel.ts
-|  +--TaskEditorViewModel.ts
-|
-+--web
-   +--tasks
-      +--TaskListView.tsx
-      +--TaskEditorView.tsx
-```
-
-### Example View Model
-
-```typescript
-
-export class UserListViewModel extends AtomViewModel {
-
-    public user: any;
-
-    public list: IUser[];
-
-    public search: string = null;
-
-    /// Dependency Injection
-    @Inject
-    private listService: ListService;
-
-    /// @validate decorator will process this accessor
-    /// in a way that it will always return null till
-    /// you call this.isValid. After this.isValid is 
-    /// called, it will display an error if data is invalid
-    @Validate
-    public get errorName(): string {
-        return this.user.name ? "" : "Name cannot be empty";
-    }
-
-    /// You can bind UI element to this field, @watch decorator
-    /// will process this accessor in a way that UI element bound
-    /// to this field will automatically update whenever any of
-    /// fields referenced in this method is updated anywhere else
-    @Watch
-    public get name(): string {
-        return `${this.user.firstName} ${this.user.lastName}`;
-    }
-
-    /// this will be called immediately after the view model 
-    /// has been initialized
-    /// this will refresh automatically when `this.search` is updated
-    /// refresh will work for all (this.*.*.*) properties at any level
-    @Load({ init: true, watch: true })
-    public async loadItems(ct: CancelToken): Promise<void> {
-        this.list = await this.listService.loadItems(this.search, ct);
-    }
-
-    /// this will validate all accessors before executing the action
-    /// and display success message if action was successful
-    @Action({ validate: true, success: "Added successfully" })
-    public async addNew(): Promise<any> {
-        ... 
-    }
-
-}
-
-```
+1. Data Binding, simple arrow functions to bind the UI elements
+2. Styled Support
+3. AtomRepeater - Lightweight List Control to manage list of items
+4. Chips control
+5. Dual View support (Mobile and Desktop)
+6. Smallest syntax
+7. Faster rendering
+8. Simple Data Validations
+9. RetroFit inspired REST API Support
+10. No additional build configurations
+11. Event re routing, it helps in reducing number of event listeners on page.
+12. UMD and SystemJS Module Loader
+13. Packer, to pack all JavaScript in single module along with dynamic module loader support
+14. FetchBuilder, fetch builder allows you to build REST request in fluent way and execute them with single `await`.
 
 ## Web Controls
-1. AtomComboBox (wrapper for SELECT element)
+1. ComboBox (wrapper for SELECT element)
 2. AtomControl (base class for all other controls)
-3. AtomItemsControl
-4. AtomListBox
-5. AtomPageView (control browser that hosts other control referenced by url)
-6. AtomWindow
+3. AtomRepeater
+4. PopupWindow, PopupWindowPage
 
 ## Services
 1. WindowService - to host AtomWindow and retrieve result

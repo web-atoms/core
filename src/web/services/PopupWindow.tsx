@@ -69,6 +69,29 @@ const focus = (popup: PopupWindow) => {
         grid-template-columns: auto 1fr auto;
         opacity: 0;
         transition: opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32) ;
+        overflow: hidden;
+
+        [data-window-modal-background=background] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        &[data-no-width=true] {
+            max-width: 95%;
+            min-width: 300px;
+        }
+        &[data-no-height=true] {
+            max-height: 95%;
+            min-height: 100px;
+        }
+
+        &[data-maximize=true] {
+            width: 90%;
+            height: 90%;
+        }
 
         &[data-ready=true] {
             opacity: 1;
@@ -132,12 +155,29 @@ const focus = (popup: PopupWindow) => {
             position: relative;
             overflow: auto;
             padding: var(--spacing-medium, 7px);
+            &[data-maximize=true] {
+                width: 90vw;
+                height: 90vh;
+            }
         }
         & > [data-window-element=footer] {
             margin-top: 5px;
             grid-row: 4;
             grid-column: 1 / span 3;
-            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            background-color: var(--command-bar-color, #80808025);
+
+            & > button, & > * > button {
+                border-radius: 9999px;
+                padding: 5px;
+                padding-left: 20px;
+                padding-right: 20px;
+                border-width: 1px;
+                border-color: transparent;
+                margin: 5px;
+                margin-left: 10px;
+            }            
         }
 
     `.installGlobal("[data-popup-window=popup-window]")
@@ -408,26 +448,26 @@ export default class PopupWindow extends AtomControl {
 delete PopupWindow.prototype.init;
 
     styled.css `
-        & > .buttons[data-window-element=footer] > button{
-            border-radius: 9999px;
-            padding-left: 10px;
-            padding-right: 10px;
-            border-width: 1px;
-            border-color: transparent;
-            margin: 5px;
-            margin-right: 5px;
+        & >[data-window-element=content] > [data-element=details] {
+            margin-top: 5px;
+            overflow: auto;
+            max-width: 80vw;
+            max-height: 50vh;
         }
-        & > .buttons > .yes {
-            background-color: lightgreen;
-            color: white;
-        }
-        & > .buttons > .no {
-            background-color: red;
-            color: white;
-        }
-        & > .buttons > .cancel {
-            background-color: gray;
-            color: white;
+        & > [data-window-element=footer] {
+
+            & > .yes {
+                background-color: #01af01;
+                color: white;
+            }
+            & > .no {
+                background-color: red;
+                color: white;
+            }
+            & > .cancel {
+                background-color: gray;
+                color: white;
+            }
         }
     `.installGlobal("[data-confirm-popup=confirm-popup]")
 

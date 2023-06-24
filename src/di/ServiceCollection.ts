@@ -40,7 +40,7 @@ export class ServiceCollection {
         id?: string): ServiceDescription {
         ArrayHelper.remove(this.registrations, (r) => id ? r.id === id : r.type === type);
         if (!id) {
-            id = TypeKey.get(type) + this.ids;
+            id = TypeKey.get(type);
             this.ids ++;
         }
         const sd = new ServiceDescription(id, scope, type, factory);

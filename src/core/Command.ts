@@ -2,7 +2,7 @@ import type { App } from "../App";
 import EventScope from "./EventScope";
 import Route from "./Route";
 import { StringHelper } from "./StringHelper";
-import type { IDisposable } from "./types";
+import { CancelToken, type IDisposable } from "./types";
 
 export const routeSymbol = Symbol("routeSymbol");
 export const displayRouteSymbol = Symbol("displayRouteSymbol");
@@ -42,6 +42,27 @@ export type CustomEventEx<T, TR> = CustomEvent<T> & {
     returnResult?: boolean;
 };
 
+export class PageCommands {
+    public static pushPage: (page, parameters) => any;
+    public static pushPageForResult: (page, parameters) => Promise<any>;
+    public static openPage: (page, parameters) => any;
+}
+
+declare let UMD: any;
+
+export type IPage<TIn, TOut> = {
+    default: abstract new (... a: any[]) => {
+        parameters: TIn;
+        close(result: TOut): any;
+    }
+} | (abstract new (... a: any[]) => {
+    parameters: TIn;
+    close(result: TOut): any;
+});
+
+
+const defaultOrSelf = (x) => x?.default ?? x;
+
 export default class Command<T = any, TR = any> {
 
     public static registry: Map<string, Command> = new Map();
@@ -56,8 +77,8 @@ export default class Command<T = any, TR = any> {
 
         const index = route.indexOf("?");
         if (index !== -1) {
-            sp = new URLSearchParams(route.substring(0, index));
-            route = route.substring(index + 1);
+            sp = new URLSearchParams(route.substring(index + 1));
+            route = route.substring(0, index);
         } else {
             sp = new URLSearchParams("");
         }
@@ -78,21 +99,75 @@ export default class Command<T = any, TR = any> {
         route,
         routeQueries,
         routeOrder = 0,
-        registerOnClick
+        openPage,
+        pushPage,
+        registerOnClick,
+        pushPageForResult,
+        pushPageForResultOrCancel,
+        listener
     }: {
         name?: string;
         eventScope?: EventScope<TIn>,
         route?: string;
         routeQueries?: string[],
         routeOrder?: number;
-        registerOnClick?: (p: TIn) => any
+        registerOnClick?: (p: TIn) => any,
+        openPage?: (() => Promise<IPage<TIn, TOut>>),
+        pushPage?: (() => Promise<IPage<TIn, TOut>>),
+        pushPageForResult?: (() => Promise<IPage<TIn, TOut>>),
+        pushPageForResultOrCancel?: (() => Promise<IPage<TIn, TOut>>),
+        listener?: ((ce: CustomEvent) => any)
     }) {
-        const cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
+        let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
-            return cmd.withRoute(route, routeQueries, routeOrder);
+            cmd = cmd.withRoute(route, routeQueries, routeOrder);
         }
+
+        cmd.listener = listener;
+
+        if (openPage) {
+            let pageType: any;
+            cmd.listener = async (ce) => { 
+                const p = ce.detail ?? {};
+                return p.returnResult
+                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await openPage()), p)
+                : PageCommands.openPage(pageType ??= defaultOrSelf(await openPage()), p);
+            }
+        }
+
+        if (pushPage) {            
+            let pageType: any;
+            cmd.listener = async (ce) => {
+                const p = ce.detail ?? {};
+                return p.returnResult
+                ? PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPage()), p)
+                : PageCommands.pushPage(pageType ??= defaultOrSelf(await pushPage()), p);
+            };
+        }
+
+        if (pushPageForResult) {
+            let pageType: any;
+            cmd.listener = async (ce) => PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResult()), ce.detail ?? {});
+        }
+
+        if (pushPageForResultOrCancel) {
+            let pageType: any;
+            cmd.listener = async (ce) => {
+                try {
+                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail ?? {});
+                } catch (e) {
+                    if(CancelToken.isCancelled(e)) {
+                        return;
+                    }
+                    console.error(e);
+                }
+            };
+        }
+
         return cmd;
     }
+
+    private listener: (ce: CustomEvent) => any;
 
     /**
      * This name does not contain `event-` prefix
@@ -117,7 +192,7 @@ export default class Command<T = any, TR = any> {
         Command.registry.set(this.name, this);
     }
 
-    public displayRoute(p: any = {}) {
+    public displayRoute(p: Partial<T>) {
         return Route.encodeUrl(this.routeObj.substitute(p));
     }
 
@@ -137,7 +212,12 @@ export default class Command<T = any, TR = any> {
         return this;
     }
 
-    public listen(r: { app: App, registerDisposable: (d: IDisposable) => void }, handler: (ce: CustomEventEx<T, TR>) => any) {
+    public listen(
+        r: { app: App, registerDisposable: (d: IDisposable) => void },
+        handler: (ce: CustomEventEx<T, TR>) => any = this.listener) {
+        if (!handler) {
+            throw new Error("Handler must be specified...");
+        }
         const d = this.eventScope.listen((e) => {
             const ce = e as CustomEventEx<any,any>;
             try {
@@ -183,4 +263,19 @@ export default class Command<T = any, TR = any> {
             }
         }
     }
+}
+
+export class Commands {
+
+    public static install(app: { app: any, registerDisposable(d: IDisposable): IDisposable }) {
+        for (const key in this) {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+                const element = this[key];
+                if (element instanceof Command) {
+                    element.listen(app);
+                }
+            }
+        }
+    }
+
 }
