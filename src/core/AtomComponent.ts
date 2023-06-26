@@ -243,10 +243,11 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
                 let r = (method as any)(e);
                 e.executed = true;
                 if (r) {
+                    const originalReturn = r;
                     r = r.then ? r : Promise.resolve(r);
-                    e.promise = e.promise ? Promise.all([r, e.promise]) : r;
-                    if (r?.catch) {
-                        return r.catch((c) => {
+                    e.promise = e.promise ? e.promise.then(() => r) : r;
+                    if (originalReturn.catch) {
+                        return originalReturn.catch((c) => {
                             if (CancelToken.isCancelled(c ?? "Unknown error")) {
                                 return;
                             }
