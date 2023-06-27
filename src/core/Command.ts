@@ -1,7 +1,6 @@
 import type { App } from "../App";
 import EventScope from "./EventScope";
 import Route from "./Route";
-import { StringHelper } from "./StringHelper";
 import { CancelToken, type IDisposable } from "./types";
 
 export const routeSymbol = Symbol("routeSymbol");
@@ -72,6 +71,10 @@ export default class Command<T = any, TR = any> {
     public static invokeRoute(route: string = location.hash.startsWith("#!")
         ? location.hash.substring(2)
         : location.pathname) {
+
+        if (route.startsWith("#!")) {
+            route = route.substring(2);
+        }
 
         let sp: URLSearchParams;
 
