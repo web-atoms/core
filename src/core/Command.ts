@@ -1,7 +1,6 @@
 import type { App } from "../App";
 import EventScope from "./EventScope";
 import Route from "./Route";
-import { StringHelper } from "./StringHelper";
 import { CancelToken, type IDisposable } from "./types";
 
 export const routeSymbol = Symbol("routeSymbol");
@@ -73,6 +72,10 @@ export default class Command<T = any, TR = any> {
         ? location.hash.substring(2)
         : location.pathname) {
 
+        if (route.startsWith("#!")) {
+            route = route.substring(2);
+        }
+
         let sp: URLSearchParams;
 
         const index = route.indexOf("?");
@@ -99,6 +102,7 @@ export default class Command<T = any, TR = any> {
         route,
         routeQueries,
         routeOrder = 0,
+        routeDefaults,
         openPage,
         pushPage,
         registerOnClick,
@@ -111,6 +115,7 @@ export default class Command<T = any, TR = any> {
         route?: string;
         routeQueries?: string[],
         routeOrder?: number;
+        routeDefaults?: Partial<TIn>,
         registerOnClick?: (p: TIn) => any,
         openPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPage?: (() => Promise<IPage<TIn, TOut>>),
@@ -120,7 +125,7 @@ export default class Command<T = any, TR = any> {
     }) {
         let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
-            cmd = cmd.withRoute(route, routeQueries, routeOrder);
+            cmd = cmd.withRoute(route, routeQueries, routeOrder, routeDefaults);
         }
 
         cmd.listener = listener;
@@ -181,6 +186,8 @@ export default class Command<T = any, TR = any> {
         return this.routeObj;
     }
 
+    public defaults?: any;
+
     constructor(
         public readonly name: string = `command${id++}`,
         public readonly eventScope: EventScope<T> = EventScope.create<T>(),
@@ -196,13 +203,24 @@ export default class Command<T = any, TR = any> {
         return Route.encodeUrl(this.routeObj.substitute(p));
     }
 
-    public withRoute(route: string, queries?: string[], order = 0) {
+    public withRoute(route: string, queries?: string[], order = 0, defaults?: any) {
         this.routeObj = Route.create(route, queries, order);
         Command.routes.push(this);
         Command.routes.sort((a, b) => a.route.order - b.route.order);
         document.body.addEventListener(this.eventName, (e: CustomEvent) => {
             try {
-                let route = this.routeObj.substitute(e.detail);
+                const { detail } = e;
+                if (defaults) {
+                    for (const key in defaults) {
+                        if (Object.prototype.hasOwnProperty.call(defaults, key)) {
+                            const element = defaults[key];
+                            if (detail[key] === void 0) {
+                                detail[key] = element;
+                            }
+                        }
+                    }
+                }
+                let route = this.routeObj.substitute(detail);
                 e.detail[routeSymbol] = route;
                 e.detail[displayRouteSymbol] = route;
             }catch (error) {

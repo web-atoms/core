@@ -4,6 +4,7 @@ import { AtomBridge, AtomElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
+import Command from "../../core/Command";
 import FormattedString from "../../core/FormattedString";
 import WebImage from "../../core/WebImage";
 import XNode, { elementFactorySymbol, isControl } from "../../core/XNode";
@@ -686,9 +687,21 @@ window.addEventListener("click", (e) => {
     let start = originalTarget;
     while (start) {
         if (start.tagName === "A") {
-            if(start.getAttribute("data-click-event") === null) {
+            const clickEvent = start.getAttribute("data-click-event");
+            if(clickEvent === null) {
                 // let default handler run here
+                // get href...
                 return;
+            }
+            if (clickEvent === "route") {
+                const { href } = start as any;
+                if (href) {
+                    if(Command.invokeRoute(href)) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        e.stopPropagation();
+                    }
+                }
             }
             e.preventDefault();
             e.stopImmediatePropagation();
