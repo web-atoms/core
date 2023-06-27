@@ -121,7 +121,7 @@ export default class Command<T = any, TR = any> {
         pushPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResult?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResultOrCancel?: (() => Promise<IPage<TIn, TOut>>),
-        listener?: ((ce: CustomEvent) => any)
+        listener?: ((ce: CustomEvent<TIn>) => any)
     }) {
         let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
