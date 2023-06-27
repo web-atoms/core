@@ -2,7 +2,7 @@ import Bind from "../../core/Bind";
 import { BindableProperty } from "../../core/BindableProperty";
 import XNode from "../../core/XNode";
 import sleep from "../../core/sleep";
-import { IClassOf, IDisposable, IRect } from "../../core/types";
+import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
 import styled from "../../style/styled";
 import { AtomControl } from "../controls/AtomControl";
 import { ChildEnumerator } from "../core/AtomUI";
@@ -226,7 +226,6 @@ export default class PopupWindow extends AtomControl {
 
     public cancel: (r?) => void;
 
-
     @BindableProperty
     public titleRenderer: () => XNode;
 
@@ -247,6 +246,8 @@ export default class PopupWindow extends AtomControl {
 
     @BindableProperty
     public closeWarning: string;
+
+    protected readonly cancelToken: CancelToken;
 
     private initialized = false;
 
@@ -330,6 +331,14 @@ export default class PopupWindow extends AtomControl {
     protected preCreate(): void {
         this.title = null;
         this.viewModelTitle = null;
+        const c = new CancelToken();
+        // @ts-expect-error
+        this.cancelToken = c;
+        this.registerDisposable({
+            dispose() {
+                c.cancel();
+            }
+        });
         const handler = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 this.app.runAsync(() => this.requestCancel());
