@@ -120,7 +120,7 @@ export default class Command<T = any, TR = any> {
         routeDefaults?: Partial<TIn>,
         registerOnClick?: (p: TIn) => any,
         pageLoader?: (() => Promise<IPage<TIn, TOut>>),
-        pageListener?: ((page: any) => (ce: CustomEvent<TIn>) => any),
+        pageListener?: ((page: IPage<TIn, TOut>) => (ce: CustomEvent<TIn>) => any),
         openPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResult?: (() => Promise<IPage<TIn, TOut>>),
