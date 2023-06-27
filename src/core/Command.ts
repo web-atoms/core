@@ -115,7 +115,7 @@ export default class Command<T = any, TR = any> {
         route?: string;
         routeQueries?: string[],
         routeOrder?: number;
-        routeDefaults?: object,
+        routeDefaults?: Partial<TIn>,
         registerOnClick?: (p: TIn) => any,
         openPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPage?: (() => Promise<IPage<TIn, TOut>>),
