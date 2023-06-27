@@ -224,8 +224,16 @@ export default class Command<T = any, TR = any> {
         Command.registry.set(this.name, this);
     }
 
-    public displayRoute(p: Partial<T>) {
-        return Route.encodeUrl(this.routeObj.substitute(p));
+    public displayRoute(p: Partial<T>, absoluteUrl = false) {
+        let route = Route.encodeUrl(this.routeObj.substitute(p));
+        if (absoluteUrl) {
+            if (route.startsWith("#!")) {
+                route = location.href.split("#")[0] + route;
+            } else if(route.startsWith("/")) {
+                route = location.protocol + "//" + location.host + route;
+            }
+        }
+        return route;
     }
 
     public withRoute(route: string, queries?: string[], order = 0, defaults?: any) {
