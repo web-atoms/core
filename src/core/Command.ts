@@ -1,4 +1,5 @@
 import type { App } from "../App";
+import type { AtomControl } from "../web/controls/AtomControl";
 import EventScope from "./EventScope";
 import Route from "./Route";
 import { CancelToken, type IDisposable } from "./types";
@@ -304,12 +305,15 @@ export default class Command<T = any, TR = any> {
 
 export class Commands {
 
-    public static install(app: { app: any, registerDisposable(d: IDisposable): IDisposable }) {
+    protected static app: App;
+
+    public static install(control: AtomControl) {
+        this.app = control.app;
         for (const key in this) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
                 const element = this[key];
                 if (element instanceof Command) {
-                    element.listen(app);
+                    element.listen(control);
                 }
             }
         }
