@@ -229,6 +229,7 @@ export default class Command<T = any, TR = any> {
         document.body.addEventListener(this.eventName, (e: CustomEvent) => {
             try {
                 const { detail } = e;
+                let route = this.routeObj.substitute(detail);
                 if (defaults) {
                     for (const key in defaults) {
                         if (Object.prototype.hasOwnProperty.call(defaults, key)) {
@@ -239,7 +240,6 @@ export default class Command<T = any, TR = any> {
                         }
                     }
                 }
-                let route = this.routeObj.substitute(detail);
                 e.detail[routeSymbol] = route;
                 e.detail[displayRouteSymbol] = route;
             }catch (error) {
