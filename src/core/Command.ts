@@ -73,8 +73,13 @@ export default class Command<T = any, TR = any> {
         ? location.hash.substring(2)
         : location.pathname) {
 
-        if (route.startsWith("#!")) {
-            route = route.substring(2);
+        if (/^http(s)?\:\/\//i.test(route)) {
+            const url = new URL(route);
+            route = url.hash.startsWith("#!") ? url.hash.substring(2) : url.pathname;
+        } else {
+            if (route.startsWith("#!")) {
+                route = route.substring(2);
+            }
         }
 
         let sp: URLSearchParams;
