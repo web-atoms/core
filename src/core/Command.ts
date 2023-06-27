@@ -103,6 +103,8 @@ export default class Command<T = any, TR = any> {
         routeQueries,
         routeOrder = 0,
         routeDefaults,
+        pageLoader,
+        pageListener,
         openPage,
         pushPage,
         registerOnClick,
@@ -117,6 +119,8 @@ export default class Command<T = any, TR = any> {
         routeOrder?: number;
         routeDefaults?: Partial<TIn>,
         registerOnClick?: (p: TIn) => any,
+        pageLoader?: (() => Promise<IPage<TIn, TOut>>),
+        pageListener?: ((page: any) => (ce: CustomEvent<TIn>) => any),
         openPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResult?: (() => Promise<IPage<TIn, TOut>>),
@@ -162,6 +166,21 @@ export default class Command<T = any, TR = any> {
                     return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail ?? {});
                 } catch (e) {
                     if(CancelToken.isCancelled(e)) {
+                        return;
+                    }
+                    console.error(e);
+                }
+            };
+        }
+
+        if (pageLoader) {
+            let pageType: any;
+            cmd.listener = async (ce) => {
+                try {
+                    pageType ??= defaultOrSelf(await pageLoader());
+                    return pageListener(pageType)(ce);
+                } catch (e) {
+                    if (CancelToken.isCancelled(e)) {
                         return;
                     }
                     console.error(e);
