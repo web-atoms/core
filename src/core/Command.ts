@@ -1,4 +1,5 @@
 import type { App } from "../App";
+import type { AtomControl } from "../web/controls/AtomControl";
 import EventScope from "./EventScope";
 import Route from "./Route";
 import { CancelToken, type IDisposable } from "./types";
@@ -103,6 +104,8 @@ export default class Command<T = any, TR = any> {
         routeQueries,
         routeOrder = 0,
         routeDefaults,
+        pageLoader,
+        pageListener,
         openPage,
         pushPage,
         registerOnClick,
@@ -117,11 +120,13 @@ export default class Command<T = any, TR = any> {
         routeOrder?: number;
         routeDefaults?: Partial<TIn>,
         registerOnClick?: (p: TIn) => any,
+        pageLoader?: (() => Promise<IPage<TIn, TOut>>),
+        pageListener?: ((page: IPage<TIn, TOut>) => (ce: CustomEvent<TIn>) => any),
         openPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPage?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResult?: (() => Promise<IPage<TIn, TOut>>),
         pushPageForResultOrCancel?: (() => Promise<IPage<TIn, TOut>>),
-        listener?: ((ce: CustomEvent) => any)
+        listener?: ((ce: CustomEvent<TIn>) => any)
     }) {
         let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
@@ -159,9 +164,24 @@ export default class Command<T = any, TR = any> {
             let pageType: any;
             cmd.listener = async (ce) => {
                 try {
-                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail ?? {});
+                    return await PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail ?? {});
                 } catch (e) {
                     if(CancelToken.isCancelled(e)) {
+                        return;
+                    }
+                    console.error(e);
+                }
+            };
+        }
+
+        if (pageLoader) {
+            let pageType: any;
+            cmd.listener = async (ce) => {
+                try {
+                    pageType ??= defaultOrSelf(await pageLoader());
+                    return pageListener(pageType)(ce);
+                } catch (e) {
+                    if (CancelToken.isCancelled(e)) {
                         return;
                     }
                     console.error(e);
@@ -210,6 +230,7 @@ export default class Command<T = any, TR = any> {
         document.body.addEventListener(this.eventName, (e: CustomEvent) => {
             try {
                 const { detail } = e;
+                let route = this.routeObj.substitute(detail);
                 if (defaults) {
                     for (const key in defaults) {
                         if (Object.prototype.hasOwnProperty.call(defaults, key)) {
@@ -220,7 +241,6 @@ export default class Command<T = any, TR = any> {
                         }
                     }
                 }
-                let route = this.routeObj.substitute(detail);
                 e.detail[routeSymbol] = route;
                 e.detail[displayRouteSymbol] = route;
             }catch (error) {
@@ -285,12 +305,15 @@ export default class Command<T = any, TR = any> {
 
 export class Commands {
 
-    public static install(app: { app: any, registerDisposable(d: IDisposable): IDisposable }) {
+    protected static app: App;
+
+    public static install(control: AtomControl) {
+        this.app = control.app;
         for (const key in this) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
                 const element = this[key];
                 if (element instanceof Command) {
-                    element.listen(app);
+                    element.listen(control);
                 }
             }
         }
