@@ -38,7 +38,7 @@ Lightweight JavaScript framework with MVU Pattern with Data Binding in JSX.
 2. Do not use `namespace`
 3. Organize single module in single TypeScript file
 4. Import only required module and retain naming convention
-5. Do not define any default export
+5. Use default export for UI component
 6. No `Atom.get` and `Atom.set`
 7. Do not use underscore `_` anywhere, not in field name not in get/set
 8. Do not use `set_name` method name, instead use `get name()` and `set name(v: T)` syntax for properties.
