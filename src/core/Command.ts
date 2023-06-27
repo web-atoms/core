@@ -163,7 +163,7 @@ export default class Command<T = any, TR = any> {
             let pageType: any;
             cmd.listener = async (ce) => {
                 try {
-                    return PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail ?? {});
+                    return await PageCommands.pushPageForResult(pageType ??= defaultOrSelf(await pushPageForResultOrCancel()), ce.detail ?? {});
                 } catch (e) {
                     if(CancelToken.isCancelled(e)) {
                         return;
