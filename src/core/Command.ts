@@ -71,7 +71,8 @@ export default class Command<T = any, TR = any> {
 
     public static invokeRoute(route: string = location.hash.startsWith("#!")
         ? location.hash.substring(2)
-        : location.pathname) {
+        : location.pathname,
+        forceDisplay = false) {
 
         if (/^http(s)?\:\/\//i.test(route)) {
             const url = new URL(route);
@@ -95,7 +96,7 @@ export default class Command<T = any, TR = any> {
             const params = iterator.route.matches(route, sp);
             if (params) {
                 params[routeSymbol] = route;
-                params[displayRouteSymbol] = "";
+                params[displayRouteSymbol] = forceDisplay ? route : "";
                 iterator.dispatch(params, true);
                 return iterator;
             }
@@ -286,7 +287,7 @@ export default class Command<T = any, TR = any> {
         if (this.route) {
             detail = this.updateRoute(detail);
         }
-        this.eventScope.dispatchEvent(detail, cancelable);
+        this.eventScope.dispatch(document.body, detail, { cancelable, bubbles: true });
     }
 
     private updateRoute(detail: T) {

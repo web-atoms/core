@@ -696,7 +696,7 @@ window.addEventListener("click", (e) => {
             if (clickEvent === "route") {
                 const { href } = start as any;
                 if (href) {
-                    if(Command.invokeRoute(href)) {
+                    if(Command.invokeRoute(href, true)) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
                         e.stopPropagation();
