@@ -241,26 +241,27 @@ export default class Command<T = any, TR = any> {
         this.routeObj = Route.create(route, queries, order);
         Command.routes.push(this);
         Command.routes.sort((a, b) => a.route.order - b.route.order);
-        document.body.addEventListener(this.eventName, (e: CustomEvent) => {
-            try {
-                const { detail } = e;
-                let route = this.routeObj.substitute(detail);
-                if (defaults) {
-                    for (const key in defaults) {
-                        if (Object.prototype.hasOwnProperty.call(defaults, key)) {
-                            const element = defaults[key];
-                            if (detail[key] === void 0) {
-                                detail[key] = element;
-                            }
-                        }
-                    }
-                }
-                e.detail[routeSymbol] = route;
-                e.detail[displayRouteSymbol] = route;
-            }catch (error) {
-                console.error(error);
-            }
-        }, true);
+        this.defaults = defaults;
+        // document.body.addEventListener(this.eventName, (e: CustomEvent) => {
+        //     try {
+        //         const { detail } = e;
+        //         let route = this.routeObj.substitute(detail);
+        //         if (defaults) {
+        //             for (const key in defaults) {
+        //                 if (Object.prototype.hasOwnProperty.call(defaults, key)) {
+        //                     const element = defaults[key];
+        //                     if (detail[key] === void 0) {
+        //                         detail[key] = element;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         e.detail[routeSymbol] = route;
+        //         e.detail[displayRouteSymbol] = route;
+        //     }catch (error) {
+        //         console.error(error);
+        //     }
+        // }, true);
         return this;
     }
 
@@ -297,6 +298,17 @@ export default class Command<T = any, TR = any> {
             r = this.route.substitute(d);
             d[routeSymbol] = r;
             d[displayRouteSymbol] = r;
+        }
+        const { defaults } = this;
+        if (defaults) {
+            for (const key in defaults) {
+                if (Object.prototype.hasOwnProperty.call(defaults, key)) {
+                    const element = defaults[key];
+                    if (d[key] === void 0) {
+                        d[key] = element;
+                    }
+                }
+            }
         }
         return detail;
     }
