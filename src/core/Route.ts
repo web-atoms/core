@@ -17,7 +17,7 @@ export class Variable {
             return `(/(?<${this.variable}>.+)?)?`;
         }
         if (this.optional) {
-            return `(/(?<${this.variable}>[^\\/]+))?`;
+            return `(/?(?<${this.variable}>[^\\/]+))?`;
         }
         return `/(?<${this.variable}>[^\\/]+)`;
     }
