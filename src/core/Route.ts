@@ -141,7 +141,7 @@ export default class Route {
         }
 
         if(!catchAll) {
-            regex += "$";
+            regex += "\\/?$";
         }
 
         this.regex = new RegExp(regex, "i");
