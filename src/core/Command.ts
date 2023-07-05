@@ -74,8 +74,11 @@ export default class Command<T = any, TR = any> {
         : location.pathname,
         forceDisplay = false) {
 
+        let sp: URLSearchParams;
+
         if (/^http(s)?\:\/\//i.test(route)) {
             const url = new URL(route);
+            sp = url.searchParams;
             route = url.hash.startsWith("#!") ? url.hash.substring(2) : url.pathname;
         } else {
             if (route.startsWith("#!")) {
@@ -83,14 +86,12 @@ export default class Command<T = any, TR = any> {
             }
         }
 
-        let sp: URLSearchParams;
-
         const index = route.indexOf("?");
         if (index !== -1) {
             sp = new URLSearchParams(route.substring(index + 1));
             route = route.substring(0, index);
         } else {
-            sp = new URLSearchParams("");
+            sp ??= new URLSearchParams("");
         }
         for (const iterator of this.routes) {
             const params = iterator.route.matches(route, sp);
