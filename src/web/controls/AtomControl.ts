@@ -294,7 +294,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     private mControlStyle: AtomStyle;
     public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
-            const key = TypeKey.get(this.defaultControlStyle || this.constructor);
+            const key = TypeKey.getName(this.defaultControlStyle || this.constructor);
 
             this.mControlStyle = defaultStyleSheets[key];
             if (this.mControlStyle) {
@@ -314,7 +314,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (v instanceof AtomStyle) {
             this.mControlStyle = v;
         } else {
-            const key = TypeKey.get(v);
+            const key = TypeKey.getName(v);
             this.mControlStyle = defaultStyleSheets[key] ||
             ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key));
         }
