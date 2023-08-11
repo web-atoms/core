@@ -337,11 +337,9 @@ export class Commands {
     public static install(control: AtomControl) {
         this.app = control.app;
         for (const key in this) {
-            if (Object.prototype.hasOwnProperty.call(this, key)) {
-                const element = this[key];
-                if (element instanceof Command) {
-                    element.listen(control);
-                }
+            const element = this[key];
+            if (element instanceof Command) {
+                element.listen(control);
             }
         }
     }
