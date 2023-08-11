@@ -151,7 +151,7 @@ export class AtomLoader {
         app: App): Promise<T> {
 
         const busyIndicator = app.createBusyIndicator({
-            title: url.toString(),
+            title: url?.toString(),
             description: `Loading View ${url}`
         });
 
