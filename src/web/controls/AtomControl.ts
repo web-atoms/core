@@ -557,7 +557,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             if (name === "input") {
                 if (!attributes.autocomplete) {
                     this.app.callLater(() => {
-                        (element as HTMLInputElement).autocomplete = "google-stop";
+                        (element as HTMLInputElement).autocomplete = "google-stop" as any;
                     });
                 }
             }
