@@ -97,7 +97,9 @@ export default class Command<T = any, TR = any> {
             const params = iterator.route.matches(route, sp);
             if (params) {
                 params[routeSymbol] = route;
-                params[displayRouteSymbol] = forceDisplay ? route : "";
+                params[displayRouteSymbol] = forceDisplay
+                    ? (sp.size > 0 ? `${route}?${sp.toString()}` : route)
+                    : "";
                 iterator.dispatch(params, true);
                 return iterator;
             }
