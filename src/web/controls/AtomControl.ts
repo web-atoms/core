@@ -174,7 +174,9 @@ export const ElementValueSetters: ISetters = {
     autofocus(ctrl: AtomControl, element: HTMLElement, value) {
         ctrl.app.callLater(() => {
             const ie = element as HTMLInputElement;
-            if (ie) { ie.focus(); }
+            if (ie) {
+                setTimeout(() => requestAnimationFrame(() => ie.focus()), 100);
+            }
         });
     },
     autocomplete(ctrl: AtomControl, element: HTMLElement, value) {
