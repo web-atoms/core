@@ -1,3 +1,4 @@
+import { CancelToken } from "../core/types";
 import JsonError from "./http/JsonError";
 
 export function buildUrl(strings: TemplateStringsArray, ... p: any[]) {
@@ -39,6 +40,18 @@ export default class FetchBuilder {
     }
 
     private constructor(private readonly request: IRequest) {
+    }
+
+    public cancelToken(cancelToken: CancelToken) {
+        const ac = new AbortController();
+        cancelToken.registerForCancel(() => ac.abort());
+        return this.signal(ac.signal);
+    }
+
+    public signal(signal: AbortSignal) {
+        return this.append({
+            signal
+        });
     }
 
     public form(name: string, value: string) {
