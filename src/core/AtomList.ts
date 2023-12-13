@@ -179,7 +179,8 @@ import { IDisposable } from "./types";
             if (item instanceof Function) {
                 let index: number = 0;
                 let removed: boolean = false;
-                for (const it of this) {
+                for (let index = 0; index <= this.length;) {
+                    const it = this[index];
                     if (item(it)) {
                         this.removeAt(index);
                         removed = true;
