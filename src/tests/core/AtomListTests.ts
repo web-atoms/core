@@ -31,6 +31,16 @@ export class AtomListTest extends TestItem {
         const list = [1, 2, 3, 4, 5];
 
         // remove all even numbers...
+        list.remove((x) => x <= 2);
+
+        Assert.equals(3, list.length);
+    }
+
+    @Test
+    public removeMultipleWithFirst(): void {
+        const list = [1, 2, 3, 4, 5];
+
+        // remove all even numbers...
         list.remove((x) => (x % 2) === 0);
 
         Assert.equals(3, list.length);
