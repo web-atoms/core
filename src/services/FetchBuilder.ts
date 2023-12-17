@@ -54,9 +54,18 @@ export default class FetchBuilder {
         });
     }
 
-    public form(name: string, value: string) {
+    public form(name: string, value: Blob);
+    public form(name: string, value: Blob, fileName: string);
+    public form(name: string, value: string | Blob, fileName?: string ) {
         const body = this.request.body as FormData ?? new FormData();
-        body.append(name, value);
+        if (fileName) {
+            if (typeof value === "string") {
+                throw new Error("value must be a blob with content type set correctly.");
+            }
+            body.append(name, value as Blob, fileName)
+        } else {
+            body.append(name, value);
+        }
         return this.append ({ body });
     }
 
