@@ -54,7 +54,7 @@ export default class FetchBuilder {
         });
     }
 
-    public form(name: string, value: Blob);
+    public form(name: string, value: string);
     public form(name: string, value: Blob, fileName: string);
     public form(name: string, value: string | Blob, fileName?: string ) {
         const body = this.request.body as FormData ?? new FormData();
