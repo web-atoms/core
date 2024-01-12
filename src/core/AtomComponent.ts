@@ -51,6 +51,8 @@ export abstract class AtomComponent implements
     @InheritedProperty
     public localViewModel: any;
 
+    public creator: any;
+
     protected pendingInits: Array<() => void>;
 
     private mInvalidated: any = 0;
@@ -477,7 +479,7 @@ export abstract class AtomComponent implements
         return this.disposables.add(d);
     }
 
-    protected render(node: XNode, e: any = this.element, creator: any = (this as any).creator || this): void {
+    protected render(node: XNode, e: any = this.element, creator: any = this.creator || this): void {
 
         const app = this.app;
 
