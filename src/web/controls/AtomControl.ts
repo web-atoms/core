@@ -572,6 +572,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             const forName = attributes?.for;
             const ctrl = new (name)(app,
                 forName ? document.createElement(forName) : undefined);
+            ctrl.creator = creator;
             const element = ctrl.element ;
             e?.appendChild(element);
             ctrl.render(iterator, element, creator);

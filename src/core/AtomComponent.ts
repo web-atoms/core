@@ -506,7 +506,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return this.disposables.add(d);
     }
 
-    protected render(node: XNode, e: any = this.element, creator: any = this): void {
+    protected render(node: XNode, e: any = this.element, creator: any = (this as any).creator || this): void {
 
         const app = this.app;
 
