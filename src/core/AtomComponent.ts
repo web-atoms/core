@@ -136,7 +136,7 @@ export abstract class AtomComponent implements
 
     constructor(
         @Inject public readonly app: App,
-        element: HTMLElement = null) {
+        element = null as HTMLElement) {
         this.disposables = new AtomDisposableList();
         this.bindings = [];
         this.eventHandlers = [];
