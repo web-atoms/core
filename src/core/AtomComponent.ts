@@ -1,23 +1,21 @@
 import { App } from "../App";
-import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement,
+import { ArrayHelper, CancelToken, IAnyInstanceType, 
     IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types";
 import { Inject } from "../di/Inject";
-import { NavigationService } from "../services/NavigationService";
 import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomDisposableList } from "./AtomDisposableList";
-import { AtomOnce } from "./AtomOnce";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
-import Bind, { bindSymbol } from "./Bind";
-import { setValue, visitDescendents, watchProperty } from "./Hacks";
+import { bindSymbol } from "./Bind";
+import { visitDescendents, watchProperty } from "./Hacks";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol,
-    elementFactorySymbol, IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
+import XNode, { 
+    IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
 
-interface IEventObject<T> {
+interface IEventObject {
 
-    element: T;
+    element: HTMLElement;
 
     name?: string;
 
@@ -29,31 +27,8 @@ interface IEventObject<T> {
 
 }
 
-export interface IAtomComponent<T> {
-    element: T;
-    data: any;
-    viewModel: any;
-    localViewModel: any;
-    app: App;
-    setLocalValue(e: T, name: string, value: any): void;
-    hasProperty(name: string);
-    runAfterInit(f: () => void ): void;
-}
-
-const objectHasOwnProperty = Object.prototype.hasOwnProperty;
-
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
-
-const elementFactory = elementFactorySymbol;
-
-const isFactory = isFactorySymbol;
-
-const isAtomControl = isControl;
-
-const attached = attachedSymbol;
-
-const constructorNeedsArguments = constructorNeedsArgumentsSymbol;
 
 export abstract class AtomComponent implements
     INotifyPropertyChanged {
@@ -155,7 +130,7 @@ export abstract class AtomComponent implements
     //     return AtomBridge.instance.templateParent(this.element);
     // }
 
-    private readonly eventHandlers: Array<IEventObject<HTMLElement>>;
+    private readonly eventHandlers: Array<IEventObject>;
 
     private readonly bindings: Array<PropertyBinding>;
 
@@ -226,7 +201,7 @@ export abstract class AtomComponent implements
         if (!method) {
             return;
         }
-        const be: IEventObject<HTMLElement> = {
+        const be: IEventObject = {
             element,
             name,
             handler: method
