@@ -174,7 +174,9 @@ export const ElementValueSetters: ISetters = {
     autofocus(ctrl: AtomControl, element: HTMLElement, value) {
         ctrl.app.callLater(() => {
             const ie = element as HTMLInputElement;
-            if (ie) { ie.focus(); }
+            if (ie) {
+                setTimeout(() => requestAnimationFrame(() => ie.focus()), 100);
+            }
         });
     },
     autocomplete(ctrl: AtomControl, element: HTMLElement, value) {
@@ -294,7 +296,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     private mControlStyle: AtomStyle;
     public get controlStyle(): AtomStyle {
         if (this.mControlStyle === undefined) {
-            const key = TypeKey.get(this.defaultControlStyle || this.constructor);
+            const key = TypeKey.getName(this.defaultControlStyle || this.constructor);
 
             this.mControlStyle = defaultStyleSheets[key];
             if (this.mControlStyle) {
@@ -314,7 +316,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         if (v instanceof AtomStyle) {
             this.mControlStyle = v;
         } else {
-            const key = TypeKey.get(v);
+            const key = TypeKey.getName(v);
             this.mControlStyle = defaultStyleSheets[key] ||
             ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key));
         }
@@ -557,7 +559,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             if (name === "input") {
                 if (!attributes.autocomplete) {
                     this.app.callLater(() => {
-                        (element as HTMLInputElement).autocomplete = "google-stop";
+                        (element as HTMLInputElement).autocomplete = "google-stop" as any;
                     });
                 }
             }
@@ -696,7 +698,7 @@ window.addEventListener("click", (e) => {
             if (clickEvent === "route") {
                 const { href } = start as any;
                 if (href) {
-                    if(Command.invokeRoute(href)) {
+                    if(Command.invokeRoute(href, true)) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
                         e.stopPropagation();

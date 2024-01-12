@@ -18,7 +18,7 @@ export class AtomStyleSheet implements INotifyPropertyChanging {
     }
 
     public getNamedStyle<T extends AtomStyle>(c: IClassOf<T>): AtomStyle {
-        const name = TypeKey.get(c);
+        const name = TypeKey.getName(c);
         return this.createNamedStyle(c, name);
     }
 

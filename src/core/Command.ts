@@ -71,26 +71,35 @@ export default class Command<T = any, TR = any> {
 
     public static invokeRoute(route: string = location.hash.startsWith("#!")
         ? location.hash.substring(2)
-        : location.pathname) {
-
-        if (route.startsWith("#!")) {
-            route = route.substring(2);
-        }
+        : location.pathname,
+        forceDisplay = false) {
 
         let sp: URLSearchParams;
+
+        if (/^http(s)?\:\/\//i.test(route)) {
+            const url = new URL(route);
+            sp = url.searchParams;
+            route = url.hash.startsWith("#!") ? url.hash.substring(2) : url.pathname;
+        } else {
+            if (route.startsWith("#!")) {
+                route = route.substring(2);
+            }
+        }
 
         const index = route.indexOf("?");
         if (index !== -1) {
             sp = new URLSearchParams(route.substring(index + 1));
             route = route.substring(0, index);
         } else {
-            sp = new URLSearchParams("");
+            sp ??= new URLSearchParams("");
         }
         for (const iterator of this.routes) {
             const params = iterator.route.matches(route, sp);
             if (params) {
                 params[routeSymbol] = route;
-                params[displayRouteSymbol] = "";
+                params[displayRouteSymbol] = forceDisplay
+                    ? (sp.size > 0 ? `${route}?${sp.toString()}` : route)
+                    : "";
                 iterator.dispatch(params, true);
                 return iterator;
             }
@@ -219,34 +228,43 @@ export default class Command<T = any, TR = any> {
         Command.registry.set(this.name, this);
     }
 
-    public displayRoute(p: Partial<T>) {
-        return Route.encodeUrl(this.routeObj.substitute(p));
+    public displayRoute(p: Partial<T>, absoluteUrl = false) {
+        let route = Route.encodeUrl(this.routeObj.substitute(p));
+        if (absoluteUrl) {
+            if (route.startsWith("#!")) {
+                route = location.href.split("#")[0] + route;
+            } else if(route.startsWith("/")) {
+                route = location.protocol + "//" + location.host + route;
+            }
+        }
+        return route;
     }
 
     public withRoute(route: string, queries?: string[], order = 0, defaults?: any) {
         this.routeObj = Route.create(route, queries, order);
         Command.routes.push(this);
         Command.routes.sort((a, b) => a.route.order - b.route.order);
-        document.body.addEventListener(this.eventName, (e: CustomEvent) => {
-            try {
-                const { detail } = e;
-                let route = this.routeObj.substitute(detail);
-                if (defaults) {
-                    for (const key in defaults) {
-                        if (Object.prototype.hasOwnProperty.call(defaults, key)) {
-                            const element = defaults[key];
-                            if (detail[key] === void 0) {
-                                detail[key] = element;
-                            }
-                        }
-                    }
-                }
-                e.detail[routeSymbol] = route;
-                e.detail[displayRouteSymbol] = route;
-            }catch (error) {
-                console.error(error);
-            }
-        }, true);
+        this.defaults = defaults;
+        // document.body.addEventListener(this.eventName, (e: CustomEvent) => {
+        //     try {
+        //         const { detail } = e;
+        //         let route = this.routeObj.substitute(detail);
+        //         if (defaults) {
+        //             for (const key in defaults) {
+        //                 if (Object.prototype.hasOwnProperty.call(defaults, key)) {
+        //                     const element = defaults[key];
+        //                     if (detail[key] === void 0) {
+        //                         detail[key] = element;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         e.detail[routeSymbol] = route;
+        //         e.detail[displayRouteSymbol] = route;
+        //     }catch (error) {
+        //         console.error(error);
+        //     }
+        // }, true);
         return this;
     }
 
@@ -273,7 +291,7 @@ export default class Command<T = any, TR = any> {
         if (this.route) {
             detail = this.updateRoute(detail);
         }
-        this.eventScope.dispatchEvent(detail, cancelable);
+        this.eventScope.dispatch(document.body, detail, { cancelable, bubbles: true });
     }
 
     private updateRoute(detail: T) {
@@ -283,6 +301,17 @@ export default class Command<T = any, TR = any> {
             r = this.route.substitute(d);
             d[routeSymbol] = r;
             d[displayRouteSymbol] = r;
+        }
+        const { defaults } = this;
+        if (defaults) {
+            for (const key in defaults) {
+                if (Object.prototype.hasOwnProperty.call(defaults, key)) {
+                    const element = defaults[key];
+                    if (d[key] === void 0) {
+                        d[key] = element;
+                    }
+                }
+            }
         }
         return detail;
     }
@@ -310,11 +339,9 @@ export class Commands {
     public static install(control: AtomControl) {
         this.app = control.app;
         for (const key in this) {
-            if (Object.prototype.hasOwnProperty.call(this, key)) {
-                const element = this[key];
-                if (element instanceof Command) {
-                    element.listen(control);
-                }
+            const element = this[key];
+            if (element instanceof Command) {
+                element.listen(control);
             }
         }
     }

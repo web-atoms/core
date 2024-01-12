@@ -66,10 +66,12 @@ const localHigh = document.createElement("meta");
 localHigh.name = "local-high-style";
 document.head.appendChild(localHigh);
 
+// export type IStyleFragment = Partial<StyleFragment>;
+
 class StyleFragment {
 
     static newStyle( { selector = "", content = ""}) {
-        return new StyleFragment( { selector, content })
+        return new StyleFragment( { selector, content }) as Partial<StyleFragment>;
     }
 
     private selector: string;

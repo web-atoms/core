@@ -273,7 +273,8 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
         if (host.dataset.popUpHost === "yes") {
             return host;
         }
-        host = host.offsetParent as HTMLElement;
+        const parent = (host.offsetParent ?? host.parentElement) as HTMLElement;
+        host = parent;
         if (host.classList.contains("page-host")) {
             // we have reached popup host...
             host = current;
@@ -286,7 +287,7 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
             continue;
         }
         offset.x += host.offsetLeft;
-        offset.y += host.offsetTop - (host.offsetParent?.scrollTop ?? 0);
+        offset.y += host.offsetTop - (parent?.scrollTop ?? 0);
     }
     return host;
 }

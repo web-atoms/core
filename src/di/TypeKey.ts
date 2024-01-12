@@ -19,6 +19,16 @@ export class TypeKey {
     }
 
     // private static keys: AtomMap<any, any> = new AtomMap();
+
+    public static getName(c: any) {
+        return TypeKey.keys.getOrCreate(c, (c1) => {
+            const key = `${c1.name || "key"}${TypeKey.keys.size}`;
+            return key;
+        });
+    }
+
+    private static keys: AtomMap<any, any> = new AtomMap();
+
 }
 
 // if (Map !== undefined) {

@@ -17,7 +17,7 @@ export class Variable {
             return `(/(?<${this.variable}>.+)?)?`;
         }
         if (this.optional) {
-            return `(/(?<${this.variable}>[^\\/]+))?`;
+            return `(/?(?<${this.variable}>[^\\/]+))?`;
         }
         return `/(?<${this.variable}>[^\\/]+)`;
     }
@@ -141,7 +141,7 @@ export default class Route {
         }
 
         if(!catchAll) {
-            regex += "$";
+            regex += "\\/?$";
         }
 
         this.regex = new RegExp(regex, "i");

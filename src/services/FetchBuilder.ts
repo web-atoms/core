@@ -1,3 +1,4 @@
+import { CancelToken } from "../core/types";
 import JsonError from "./http/JsonError";
 
 export function buildUrl(strings: TemplateStringsArray, ... p: any[]) {
@@ -41,9 +42,30 @@ export default class FetchBuilder {
     private constructor(private readonly request: IRequest) {
     }
 
-    public form(name: string, value: string) {
+    public cancelToken(cancelToken: CancelToken) {
+        const ac = new AbortController();
+        cancelToken.registerForCancel(() => ac.abort());
+        return this.signal(ac.signal);
+    }
+
+    public signal(signal: AbortSignal) {
+        return this.append({
+            signal
+        });
+    }
+
+    public form(name: string, value: string): FetchBuilder;
+    public form(name: string, value: Blob, fileName: string): FetchBuilder;
+    public form(name: string, value: string | Blob, fileName?: string ): FetchBuilder {
         const body = this.request.body as FormData ?? new FormData();
-        body.append(name, value);
+        if (fileName) {
+            if (typeof value === "string") {
+                throw new Error("value must be a blob with content type set correctly.");
+            }
+            body.append(name, value as Blob, fileName)
+        } else {
+            body.append(name, value);
+        }
         return this.append ({ body });
     }
 

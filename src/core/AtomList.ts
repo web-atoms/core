@@ -177,11 +177,13 @@ import { IDisposable } from "./types";
         public remove(item: T | ((i: T) => boolean)): boolean {
 
             if (item instanceof Function) {
-                let index: number = 0;
                 let removed: boolean = false;
-                for (const it of this) {
+                for (let index = 0; index < this.length;) {
+                    const it = this[index];
                     if (item(it)) {
-                        this.removeAt(index);
+                        this.splice(index, 1);
+                        AtomBinder.invokeItemsEvent(this, "remove", index, it);
+                        AtomBinder.refreshValue(this, "length");
                         removed = true;
                         continue;
                     }
