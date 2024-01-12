@@ -1,5 +1,5 @@
-import { AtomBridge } from "../../core/AtomBridge";
 import { BindableProperty } from "../../core/BindableProperty";
+import { visitDescendents } from "../../core/Hacks";
 import { IRect } from "../../core/types";
 import { AtomControl } from "./AtomControl";
 
@@ -263,7 +263,7 @@ export class AtomGridView extends AtomControl {
         host.style.left = `${colStart}px`;
         host.style.width = `${colSize}px`;
 
-        AtomBridge.instance.visitDescendents(host, (el, ac) => {
+        visitDescendents(host, (el, ac) => {
             if (ac) {
                 ac.invalidate();
                 return false;

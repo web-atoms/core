@@ -1,6 +1,6 @@
 import { AtomComponent } from "./AtomComponent";
 
-export default function InjectProperty(target: AtomComponent<any, any>, key: string): void {
+export default function InjectProperty(target: AtomComponent, key: string): void {
 
     Object.defineProperty(target, key, {
         get: function() {

@@ -1,11 +1,11 @@
 import { App } from "../../App";
 import { AtomBinder } from "../../core/AtomBinder";
-import { AtomBridge, AtomElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
 import Command from "../../core/Command";
 import FormattedString from "../../core/FormattedString";
+import { refreshInherited, visitDescendents } from "../../core/Hacks";
 import WebImage from "../../core/WebImage";
 import XNode, { elementFactorySymbol, isControl } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
@@ -30,8 +30,6 @@ declare var bridge;
 if (typeof bridge !== "undefined" && bridge.platform) {
     throw new Error("AtomControl of Web should not be used with Xamarin Forms");
 }
-
-const bridgeInstance = AtomBridge.instance;
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -257,7 +255,7 @@ export type PropertyRegistration = ((value) => ({[key: string]: any})) & {
 /**
  * AtomControl class represents UI Component for a web browser.
  */
-export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
+export class AtomControl extends AtomComponent {
 
     public static from<T = AtomControl>(e1: Element | EventTarget): T {
         let e = e1 as any;
@@ -338,7 +336,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
     public set theme(v: AtomStyleSheet) {
         this.mTheme = v;
-        bridgeInstance.refreshInherited(this, "theme");
+        refreshInherited(this, "theme");
     }
 
     /**
@@ -400,7 +398,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public updateSize(): void {
         this.onUpdateSize();
-        bridgeInstance.visitDescendents(this.element, (e, ac) => {
+        visitDescendents(this.element, (e, ac) => {
             if (ac) {
                 ac.updateSize();
                 return false;
@@ -572,7 +570,6 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             const forName = attributes?.for;
             const ctrl = new (name)(app,
                 forName ? document.createElement(forName) : undefined);
-            ctrl.creator = creator;
             const element = ctrl.element ;
             e?.appendChild(element);
             ctrl.render(iterator, element, creator);
@@ -734,5 +731,3 @@ window.addEventListener("click", (e) => {
         control.dispatchClickEvent(e, data);
     }
 });
-
-bridgeInstance.controlFactory = AtomControl;

@@ -2,7 +2,6 @@ import { AjaxOptions } from "./AjaxOptions";
 
 import { App } from "../../App";
 import { Atom } from "../../Atom";
-import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { TypeKey } from "../../di/TypeKey";
@@ -637,15 +636,15 @@ export class BaseService {
             throw new Error("cancelled");
         }
 
-        if (AtomBridge.instance.ajax) {
-            return await new Promise<AjaxOptions>((resolve, reject) => {
-                AtomBridge.instance.ajax(url, options, (r) => {
-                    resolve(options);
-                }, (e) => {
-                    reject(e);
-                }, null);
-            });
-        }
+        // if (AtomBridge.instance.ajax) {
+        //     return await new Promise<AjaxOptions>((resolve, reject) => {
+        //         AtomBridge.instance.ajax(url, options, (r) => {
+        //             resolve(options);
+        //         }, (e) => {
+        //             reject(e);
+        //         }, null);
+        //     });
+        // }
 
         const xhr = new XMLHttpRequest();
 
