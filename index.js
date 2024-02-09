@@ -5,6 +5,31 @@
     let index = src.lastIndexOf("/");
     src = src.substring(0, index);
 
+    function loadScript(url) {
+        return new Promise((resolve, reject) => {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = url;
+            var s = script;
+            s.onerror = function (e) {
+                alert(`Script ${url} failed to load`);
+                console.error(`${url} failed to load ${e.stack || e}`);
+                reject(e);
+            };
+            s.onload = s.onreadystatechange = function () {
+            if ((s.readyState && s.readyState !== "complete" && s.readyState !== "loaded")) {
+                console.error("error loading " + url);
+                reject(`error loading ${url}`);
+                return;
+            }
+            s.onload = s.onreadystatechange = null;
+                resolve();
+                s.remove();
+            };
+            document.body.appendChild(s);
+        });
+    }
+
     function loadPackage() {
 
         let package = script.getAttribute("data-package");
@@ -29,22 +54,7 @@
         const viewUrl = `${packageRoot}/${view}${packed ? ".pack" : ""}${min ? ".min" : ""}.js`;
         const viewName = `${package}/${view}`;
 
-        (function (url, success, error) {
-            var script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src = url;
-            var s = script;
-            s.onerror = function (e) { alert("Script " + url + " failed to load"); if (error) error(e); else console.error(e); };
-            s.onload = s.onreadystatechange = function () {
-            if ((s.readyState && s.readyState !== "complete" && s.readyState !== "loaded")) {
-            if (error) error(); else console.error("error loading " + url);
-                return;
-            }
-            s.onload = s.onreadystatechange = null;
-                success();
-            };
-            document.body.appendChild(s);
-        }) (viewUrl, function () {
+        loadScript(viewUrl).then(() => {
             function empty () {
                 return function () {
                     return null
