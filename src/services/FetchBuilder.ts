@@ -57,6 +57,9 @@ export default class FetchBuilder {
     public form(name: string, value: string): FetchBuilder;
     public form(name: string, value: Blob, fileName: string): FetchBuilder;
     public form(name: string, value: string | Blob, fileName?: string ): FetchBuilder {
+        if (value === void 0) {
+            return this;
+        }
         const body = this.request.body as FormData ?? new FormData();
         if (fileName) {
             if (typeof value === "string") {
@@ -94,6 +97,9 @@ export default class FetchBuilder {
     }
 
     public query(name: string, value: any, encode = true) {
+        if (value === void 0) {
+            return this;
+        }
         let url = this.request.url;
         if (encode) {
             value = encodeURIComponent(value);
