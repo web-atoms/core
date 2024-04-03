@@ -685,10 +685,11 @@ window.addEventListener("click", (e) => {
 
     const originalTarget = e.target as HTMLElement;
     let start = originalTarget;
+    let clickEvent;
     while (start) {
+        clickEvent ||= start.getAttribute("data-click-event");
         if (start.tagName === "A") {
-            const clickEvent = start.getAttribute("data-click-event");
-            if(clickEvent === null) {
+            if(!clickEvent) {
                 // let default handler run here
                 // get href...
                 return;
