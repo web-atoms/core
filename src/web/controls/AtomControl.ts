@@ -686,7 +686,8 @@ window.addEventListener("click", (e) => {
     const originalTarget = e.target as HTMLElement;
     let start = originalTarget;
     let clickEvent;
-    while (start) {
+    const end = document.body;
+    while (start && start !== end ) {
         clickEvent ||= start.getAttribute("data-click-event");
         if (start.tagName === "A") {
             if(!clickEvent) {
