@@ -334,7 +334,9 @@ export class App extends ServiceProvider {
                 // tslint:disable-next-line:no-console
                 console.error(typeof e === "string" ? e : JSON.stringify(e));
             });
+            return;
         }
+        indicator.dispose();
     }
 
 }
