@@ -14,6 +14,8 @@ declare var UMD: any;
 
 export default class WebApp extends App {
 
+    public readonly initPromise: Promise<void>;
+
     public get parentElement(): HTMLElement {
         return document.body;
     }
@@ -91,6 +93,10 @@ export default class WebApp extends App {
             this.hashUpdater.run(() => {
                 this.url = new AtomUri(location.href);
             });
+        });
+
+        this.initPromise = new Promise<void>((resolve, reject) => {
+            this.onReady(resolve);
         });
 
         // following must be done automatically by the user as we may need different and newer version
