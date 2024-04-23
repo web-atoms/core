@@ -56,7 +56,8 @@ const focus = (popup: PopupWindow) => {
         position: absolute;
         border: solid 1px lightgray;
         border-radius: 5px;
-        background-color: white;
+        background-color: canvas;
+        color: canvastext;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
