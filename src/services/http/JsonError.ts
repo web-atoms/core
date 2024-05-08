@@ -11,8 +11,9 @@ export default class JsonError extends Error {
     }
 
     public get details() {
-        if (this.json.paramErrors) {
-            return this.errors.map((x) => `${x.name}: ${x.reason}`).join("\n");
+        const { errors } = this;
+        if (errors.length) {
+            return errors.map((x) => `${x.name}: ${x.reason}`).join("\n");
         }
         return this.json?.details;
     }
