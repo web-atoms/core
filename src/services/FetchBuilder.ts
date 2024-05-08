@@ -149,7 +149,11 @@ export default class FetchBuilder {
         const type = r.headers.get("content-type");
         if (/\/json/i.test(type)) {
             const json = await r.json();
-            throw new JsonError(`Failed for ${this.request.url}`, json);
+            throw new JsonError(json.title
+            ?? json.detail
+            ?? json.message
+            ?? json.exceptionMessage
+            ?? "Json Server Error", json);
         }
         const text = await r.text();
         throw new Error(`Failed for ${this.request.url}\n${text}`);
