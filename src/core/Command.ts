@@ -65,6 +65,8 @@ const defaultOrSelf = (x) => x?.default ?? x;
 
 export default class Command<T = any, TR = any> {
 
+    public static routePrefix = "";
+
     public static registry: Map<string, Command> = new Map();
 
     public static routes: Command[] = [];
@@ -139,6 +141,11 @@ export default class Command<T = any, TR = any> {
     }) {
         let cmd = new Command<TIn, TOut>(name, eventScope, registerOnClick)
         if(route) {
+            if (this.routePrefix) {
+                if(!route.startsWith(this.routePrefix)) {
+                    route = this.routePrefix + route;
+                }
+            }
             cmd = cmd.withRoute(route, routeQueries, routeOrder, routeDefaults);
         }
 
