@@ -673,8 +673,12 @@ const getSelection = () => {
     return "";
 };
 
+const body = document.body;
+const html = body.parentElement;
+
 // any cancellation must happen at body level...
 window.addEventListener("click", (e) => {
+
     if (e.defaultPrevented) {
         return;
     }
@@ -685,9 +689,11 @@ window.addEventListener("click", (e) => {
 
     const originalTarget = e.target as HTMLElement;
     let start = originalTarget;
+    if (originalTarget === html) {
+        return;
+    }
     let clickEvent;
-    const end = document.body;
-    while (start && start !== end ) {
+    while (start && start !== body ) {
         clickEvent ||= start.getAttribute("data-click-event");
         if (start.tagName === "A") {
             if(!clickEvent) {
