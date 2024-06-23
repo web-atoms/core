@@ -1,35 +1,13 @@
 import type { ObjectPositionType } from "../style/StyleRule";
 import type { AtomControl } from "../web/controls/AtomControl";
-import Bind, { bindSymbol } from "./Bind";
 import type { ColorItem } from "./Colors";
-import { IClassOf, IDisposable } from "./types";
+import type { IClassOf } from "./types";
 
 export interface IAttributes {
     [key: string]: string | number | null | any;
 }
 
-declare var bridge: any;
-
-export class RootObject {
-
-    public get vsProps(): {
-        [k in keyof this]?: this[k] | Bind
-    } | { [k: string]: any } | {} {
-        return undefined;
-    }
-
-    public addEventListener(name: string, handler: EventListenerOrEventListenerObject): IDisposable {
-        return bridge.addEventHandler(this, name, handler);
-    }
-
-    public appendChild(e: any) {
-        bridge.appendChild(this, e);
-    }
-
-    public dispatchEvent(evt: Event) {
-        bridge.dispatchEvent(evt);
-    }
-}
+// declare var bridge: any;
 
 export interface IElementAttributes {
     [key: string]: unknown;
@@ -165,8 +143,6 @@ export default class XNode {
 
     public static elementFactory = elementFactorySymbol;
 
-    public static bindSymbol = bindSymbol;
-
     public static isTemplate = isTemplateSymbol;
 
     public static prepareAttached = attach;
@@ -230,62 +206,62 @@ export default class XNode {
     //     } as any;
     // }
 
-    public static getClass(fullTypeName: string, assemblyName: string) {
-        const n = fullTypeName + ";" + assemblyName;
-        const cx = XNode.classes[n] || (XNode.classes[n] =
-            bridge.getClass(
-                fullTypeName,
-                assemblyName,
-                RootObject,
-                (name, isProperty, isTemplate) =>
-                    (a?: any, ... nodes: any[]) => new XNode(name, a, nodes, isProperty, isTemplate )));
-        return cx;
-    }
+    // public static getClass(fullTypeName: string, assemblyName: string) {
+    //     const n = fullTypeName + ";" + assemblyName;
+    //     const cx = XNode.classes[n] || (XNode.classes[n] =
+    //         bridge.getClass(
+    //             fullTypeName,
+    //             assemblyName,
+    //             RootObject,
+    //             (name, isProperty, isTemplate) =>
+    //                 (a?: any, ... nodes: any[]) => new XNode(name, a, nodes, isProperty, isTemplate )));
+    //     return cx;
+    // }
 
-    public static factory = (name, isProperty, isTemplate) => (a?: any, ... nodes: any[]) => {
-        return new XNode(name, a, nodes, isProperty, isTemplate);
-    }
+    // public static factory = (name, isProperty, isTemplate) => (a?: any, ... nodes: any[]) => {
+    //     return new XNode(name, a, nodes, isProperty, isTemplate);
+    // }
 
-    /**
-     * Declares Root Namespace and Assembly. You can use return function to
-     * to declare the type
-     * @param ns Root Namespace
-     */
-    public static namespace(ns: string, assemblyName: string) {
-        return (type: string, isTemplate?: boolean) => {
-            return (c) => {
-                // static properties !!
-                for (const key in c) {
-                    if (c.hasOwnProperty(key)) {
-                        const element = c[key];
-                        if (element) {
-                            const n = ns + "." + type + ":" + key + ";" + assemblyName;
-                            const af: any = (a) => {
-                                const r = {
-                                    [n]: a
-                                };
-                                Object.defineProperty(r, "toString", {
-                                    value: () => n,
-                                    enumerable: false,
-                                    configurable: false
-                                });
-                                return r;
-                            };
-                            af.factory = (a?: any, ... nodes: any[]) =>
-                                new XNode(n, a, nodes, true, element.isTemplate );
-                            af.toString = () => n;
-                            c[key] = af;
-                        }
-                    }
-                }
-                const tn = ns + "." + type + ";" + assemblyName;
-                c.factory = (a?: any, ... nodes: XNode[]) => {
-                    return new XNode(tn, a, nodes, false, isTemplate);
-                };
-                c.toString = () => tn;
-            };
-        };
-    }
+    // /**
+    //  * Declares Root Namespace and Assembly. You can use return function to
+    //  * to declare the type
+    //  * @param ns Root Namespace
+    //  */
+    // public static namespace(ns: string, assemblyName: string) {
+    //     return (type: string, isTemplate?: boolean) => {
+    //         return (c) => {
+    //             // static properties !!
+    //             for (const key in c) {
+    //                 if (c.hasOwnProperty(key)) {
+    //                     const element = c[key];
+    //                     if (element) {
+    //                         const n = ns + "." + type + ":" + key + ";" + assemblyName;
+    //                         const af: any = (a) => {
+    //                             const r = {
+    //                                 [n]: a
+    //                             };
+    //                             Object.defineProperty(r, "toString", {
+    //                                 value: () => n,
+    //                                 enumerable: false,
+    //                                 configurable: false
+    //                             });
+    //                             return r;
+    //                         };
+    //                         af.factory = (a?: any, ... nodes: any[]) =>
+    //                             new XNode(n, a, nodes, true, element.isTemplate );
+    //                         af.toString = () => n;
+    //                         c[key] = af;
+    //                     }
+    //                 }
+    //             }
+    //             const tn = ns + "." + type + ";" + assemblyName;
+    //             c.factory = (a?: any, ... nodes: XNode[]) => {
+    //                 return new XNode(tn, a, nodes, false, isTemplate);
+    //             };
+    //             c.toString = () => tn;
+    //         };
+    //     };
+    // }
 
     public static create(
         // tslint:disable-next-line: ban-types
@@ -332,6 +308,6 @@ export default class XNode {
     }
 }
 
-if (typeof bridge !== "undefined") {
-    bridge.XNode = XNode;
-}
+// if (typeof bridge !== "undefined") {
+//     bridge.XNode = XNode;
+// }

@@ -4,17 +4,17 @@ export interface IPropertyTypes {
     [key: string]: {new ()};
 }
 
-export class InjectedTypes {
+export const InjectedTypes = {
 
-    public static paramList: {
+    paramList: {} as {
         [key: string]: Array<{ new ()}>
-    } = {};
+    },
 
-    public static propertyList: {
+    propertyList: {} as {
         [key: string]: IPropertyTypes
-    } = {};
+    },
 
-    public static getParamList(key: any, typeKey1: any): Array<{ new ()}> {
+    getParamList(key: any, typeKey1: any): Array<{ new ()}> {
         let plist = InjectedTypes.paramList[typeKey1];
 
         // We need to find @Inject for base types if
@@ -33,9 +33,9 @@ export class InjectedTypes {
         }
 
         return plist;
-    }
+    },
 
-    public static getPropertyList(key: any, typeKey1: any): IPropertyTypes {
+    getPropertyList(key: any, typeKey1: any): IPropertyTypes {
         let plist = InjectedTypes.propertyList[typeKey1];
 
         // We need to find @Inject for base types if

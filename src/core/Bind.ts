@@ -83,11 +83,11 @@ export type bindingFunctionCommand<T extends IAtomComponent = IAtomComponent> = 
 //         b.thisPathList || b.pathList, (b.eventList as any) || true, null, b.thisPathList ? creator : undefined);
 // }
 
-function twoWaysConvert(name: string, b: Bind, control: IAtomComponent, e: any, creator: any) {
-    control.bind(e,
-        name,
-        b.thisPathList || b.pathList, (b.eventList as any) || true, null, b.thisPathList ? creator : undefined);
-}
+// function twoWaysConvert(name: string, b: typeof Bind, control: IAtomComponent, e: any, creator: any) {
+//     control.bind(e,
+//         name,
+//         b.thisPathList || b.pathList, (b.eventList as any) || true, null, b.thisPathList ? creator : undefined);
+// }
 
 // function presenter(name: string, b: Bind, control: IAtomComponent, e: any) {
 //     const n = b.name || name;
@@ -113,7 +113,7 @@ export interface ILVM<T> extends IAtomComponent {
 }
 
 export interface IBinder<T extends IAtomComponent> {
-    presenter(name?: string): Bind;
+    presenter(name?: string): ReturnType<typeof Bind.presenter>;
 
     event(handler: (control: T, e?: CustomEvent) => void): any;
 
@@ -122,44 +122,44 @@ export interface IBinder<T extends IAtomComponent> {
      * @param path Lambda Expression for binding
      * @param now Default value to set immediately
      */
-    oneTime(path: bindingFunction<T>, now?: any): Bind;
+    oneTime(path: bindingFunction<T>, now?: any): ReturnType<typeof Bind.oneTime>;
 
     /**
      * Bind the expression one way
      * @param path Lambda Expression for binding
      * @param now Default value to set immediately
      */
-    oneWay(path: bindingFunction<T>, now?: any): Bind;
+    oneWay(path: bindingFunction<T>, now?: any): ReturnType<typeof Bind.oneWay>;
 
     /**
      * Setup two way binding with given expression
      * @param path Lambda Expression for binding
      * @param events events on auto refresh
      */
-    twoWays(path: bindingFunction<T>, events?: string[]): Bind;
+    twoWays(path: bindingFunction<T>, events?: string[]): ReturnType<typeof Bind.twoWays>;
 }
 
 export const bindSymbol = Symbol("Bind");
 
-export default class Bind {
+const Bind = {
 
-    public static forControl<C extends IAtomComponent>(): IBinder<C> {
+    forControl<C extends IAtomComponent>(): IBinder<C> {
         return Bind as any;
-    }
+    },
 
-    public static forData<D>(): IBinder<IData<D>> {
+    forData<D>(): IBinder<IData<D>> {
         return Bind as any;
-    }
+    },
 
-    public static forViewModel<D>(): IBinder<IVM<D>> {
+    forViewModel<D>(): IBinder<IVM<D>> {
         return Bind as any;
-    }
+    },
 
-    public static forLocalViewModel<D>(): IBinder<ILVM<D>> {
+    pforLocalViewModel<D>(): IBinder<ILVM<D>> {
         return Bind as any;
-    }
+    },
 
-    public static presenter(name?: string | ((c: any) => any)): any {
+    presenter(name?: string | ((c: any) => any)): any {
         return {
             [bindSymbol](cn: string, control: IAtomComponent, e: any, creator: any) {
                 if (typeof name === "function") {
@@ -177,10 +177,10 @@ export default class Bind {
                 ((c && c.atomControl) || control)[n] = e;
             }
         };
-    }
+    },
 
     // tslint:disable-next-line: ban-types
-    public static event<T extends IAtomComponent = IAtomComponent>(
+    event<T extends IAtomComponent = IAtomComponent>(
         sourcePath: (control: T, e?: CustomEvent) => void): any {
         return {
             [bindSymbol](name: string, control: IAtomComponent, e: any) {
@@ -199,14 +199,14 @@ export default class Bind {
                 });
             }
         };
-    }
+    },
 
     /**
      * Bind the expression one time
      * @param sourcePath Lambda Expression for binding
      * @param now Default value to set immediately
      */
-     public static oneTime<T extends IAtomComponent = IAtomComponent>(
+     oneTime<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         now?: any): any {
         return {
@@ -219,14 +219,14 @@ export default class Bind {
                 }
             }
         };
-    }
+    },
 
     /**
      * Bind the expression one time
      * @param sourcePath Lambda Expression for binding
      * @param now Default value to set immediately
      */
-    public static oneTimeAsync<TR, T extends IAtomComponent = IAtomComponent>(
+    oneTimeAsync<TR, T extends IAtomComponent = IAtomComponent>(
         sourcePath: asyncBindingFunction<TR, T>,
         now?: any): Promise<TR> {
         return {
@@ -242,7 +242,7 @@ export default class Bind {
                 }
             }
         } as any;
-    }
+    },
 
     /**
      * Bind the expression one way with source, you cannot reference
@@ -251,7 +251,7 @@ export default class Bind {
      * @param path Lambda Expression for binding
      * @param now Default value to set immediately
      */
-    public static source<T>(
+    source<T>(
         source: T,
         path: (x: { control: IAtomComponent, source: T }) => any,
         now?: any): any {
@@ -268,9 +268,9 @@ export default class Bind {
                 }
             }
         };
-    }
+    },
 
-    public static oneWayAsync<TR, T extends IAtomComponent = IAtomComponent>(
+    oneWayAsync<TR, T extends IAtomComponent = IAtomComponent>(
         sourcePath: asyncBindingFunction<TR, T>,
         {
             watchDelayInMS = 250,
@@ -345,14 +345,14 @@ export default class Bind {
                 }
             }
         } as any;
-    }
+    },
 
     /**
      * Bind the expression one way
      * @param sourcePath Lambda Expression for binding
      * @param now Default value to set immediately
      */
-     public static oneWay<T extends IAtomComponent = IAtomComponent>(
+     oneWay<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         now?: any): any {
 
@@ -411,7 +411,7 @@ export default class Bind {
                 }
             }
         };
-    }
+    },
 
     /**
      * Setup two way binding with given expression
@@ -419,7 +419,7 @@ export default class Bind {
      * @param events events on auto refresh
      * @param converter IValueConverter for value conversion
      */
-     public static twoWays<T extends IAtomComponent = IAtomComponent>(
+     twoWays<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         events?: string[],
         converter?: IValueConverter): any {
@@ -456,7 +456,7 @@ export default class Bind {
                     thisPathList ? creator : undefined);
             }
         };
-    }
+    },
 
         /**
      * Bind the expression one way with source, you cannot reference
@@ -465,19 +465,19 @@ export default class Bind {
      * @param path Lambda Expression for binding
      * @param now Default value to set immediately
      */
-    public static sourceTwoWays<T>(
-            source: T,
-            path: (x: { control: IAtomComponent, source: T }) => any,
-            events: string[] = ["input", "cut", "paste", "change"]): any {
-    
-            const lists = parsePath(path, false).map((x) => ["this", ... x]);
-            return {
-                [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
-                    const self = { control, source };
-                    control.bind(e, name, lists, events as any, lists, self);
-                }
-            };
-        }
+    sourceTwoWays<T>(
+        source: T,
+        path: (x: { control: IAtomComponent, source: T }) => any,
+        events: string[] = ["input", "cut", "paste", "change"]): any {
+
+        const lists = parsePath(path, false).map((x) => ["this", ... x]);
+        return {
+            [bindSymbol](name: string, control: IAtomComponent, e: any, creator: any) {
+                const self = { control, source };
+                control.bind(e, name, lists, events as any, lists, self);
+            }
+        };
+    },
 
     // public static twoWaysConvert<T extends IAtomComponent = IAtomComponent>(
     //     sourcePath: bindingFunction<T>): Bind {
@@ -494,7 +494,7 @@ export default class Bind {
      * @param sourcePath binding lambda expression
      * @param converter Optional value converter
      */
-    public static twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
+    twoWaysImmediate<T extends IAtomComponent = IAtomComponent>(
         sourcePath: bindingFunction<T>,
         converter?: IValueConverter): any {
         return this.twoWays(sourcePath, ["change", "input", "paste", "cut"], converter);
@@ -506,47 +506,49 @@ export default class Bind {
         // return b;
     }
 
-    public readonly sourcePath: bindingFunction;
+    // public readonly sourcePath: bindingFunction;
 
-    public readonly pathList: string[][];
+    // public readonly pathList: string[][];
 
-    public readonly thisPathList: string[][];
+    // public readonly thisPathList: string[][];
 
-    public readonly combined: string[][];
+    // public readonly combined: string[][];
 
-    constructor(
-        public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
-        sourcePath: bindingFunction,
-        public readonly name?: string,
-        public readonly eventList?: string[]
-        ) {
-        this.sourcePath = sourcePath;
-        this[bindSymbol] = true;
-        if (!this.sourcePath) {
-            return;
-        }
-        if (Array.isArray(this.sourcePath)) {
-            this.pathList = this.sourcePath as any;
-            // this.setupFunction = null;
-        } else {
-            const lists = parsePathLists(this.sourcePath);
-            if (lists.combined.length) {
-                this.combined = lists.combined;
-            }
-            if (lists.pathList.length) {
-                this.pathList = lists.pathList;
-            }
-            if (lists.thisPath.length) {
-                this.thisPathList = lists.thisPath;
-            }
+    // constructor(
+    //     public readonly setupFunction: ((name: string, b: Bind, c: IAtomComponent, e: any, self?: any) => void),
+    //     sourcePath: bindingFunction,
+    //     public readonly name?: string,
+    //     public readonly eventList?: string[]
+    //     ) {
+    //     this.sourcePath = sourcePath;
+    //     this[bindSymbol] = true;
+    //     if (!this.sourcePath) {
+    //         return;
+    //     }
+    //     if (Array.isArray(this.sourcePath)) {
+    //         this.pathList = this.sourcePath as any;
+    //         // this.setupFunction = null;
+    //     } else {
+    //         const lists = parsePathLists(this.sourcePath);
+    //         if (lists.combined.length) {
+    //             this.combined = lists.combined;
+    //         }
+    //         if (lists.pathList.length) {
+    //             this.pathList = lists.pathList;
+    //         }
+    //         if (lists.thisPath.length) {
+    //             this.thisPathList = lists.thisPath;
+    //         }
 
-            // if (setupFunction === oneWay) {
-            //     if (!(this.combined || this.pathList || this.thisPathList)) {
-            //         throw new Error(`Failed to setup binding for ${this.sourcePath}, parsing failed`);
-            //     }
-            // }
-        }
+    //         // if (setupFunction === oneWay) {
+    //         //     if (!(this.combined || this.pathList || this.thisPathList)) {
+    //         //         throw new Error(`Failed to setup binding for ${this.sourcePath}, parsing failed`);
+    //         //     }
+    //         // }
+    //     }
 
-    }
+    // }
 
 }
+
+export default Bind;
