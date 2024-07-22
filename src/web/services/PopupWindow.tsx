@@ -70,7 +70,7 @@ const focus = (popup: PopupWindow) => {
         grid-template-columns: auto 1fr auto;
         opacity: 0;
         transition: opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32) ;
-        overflow: visible;
+        overflow: hidden;
 
         [data-window-modal-background=background] {
             position: absolute;
@@ -109,7 +109,7 @@ const focus = (popup: PopupWindow) => {
             grid-row: 1;
             grid-column: 2;
             font-size: medium;
-            overflow: visible;
+            overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             cursor: move;
