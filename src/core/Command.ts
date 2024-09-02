@@ -73,7 +73,7 @@ export default class Command<T = any, TR = any> {
 
     public static invokeRoute(route: string = location.hash.startsWith("#!")
         ? location.hash.substring(2)
-        : location.pathname,
+        : location.href,
         forceDisplay = false) {
 
         let sp: URLSearchParams;
