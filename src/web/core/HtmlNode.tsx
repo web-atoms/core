@@ -123,7 +123,12 @@ function render(node: XNode, root: HTMLElement): void {
                     continue;
                 }
                 if (key.length > 5 && /^style/.test(key)) {
-                    root.style[fromHyphenToCamel(key.substring(5))] = element;
+                    // root.style[fromHyphenToCamel(key.substring(6))] = element;
+                    if (/^style\-/.test(key)) {
+                        root.style.setProperty(key.substring(6), element);
+                    } else {
+                        root.style[fromHyphenToCamel(key.substring(6))] = element;
+                    }
                     continue;
                 }
                 if (/^data-/i.test(key)) {
