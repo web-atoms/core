@@ -633,6 +633,12 @@ export abstract class AtomComponent implements
         return result;
     }
 
+    protected pushInit() {
+        this.runAfterInit(() => {
+            (this as any).init?.()?.catch((error) => CancelToken.isCancelled(error) ? void 0 : console.error(error));
+        })
+    }
+
     protected abstract createNode(app, e, iterator, creator);
 
     protected abstract toTemplate(app, iterator, creator);
