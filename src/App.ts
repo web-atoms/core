@@ -311,11 +311,13 @@ export class App extends ServiceProvider {
     }
 
     protected invokeReady(): void {
-        for (const iterator of this.readyHandlers) {
-            this.invokeReadyHandler(iterator);
+        if (this.invokeReadyHandler) {
+            for (const iterator of this.readyHandlers) {
+                this.invokeReadyHandler(iterator);
+            }
         }
         this.readyHandlers = null;
-}
+    }
 
     // tslint:disable-next-line:ban-types
     private invokeReadyHandler(f: () => any): void {
