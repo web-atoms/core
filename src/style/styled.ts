@@ -266,3 +266,5 @@ const styled = {
 };
 
 export default styled;
+
+export const svgAsCssDataUrl = (text: string) => `url(${JSON.stringify(`data:image/svg+xml,${text}`)})`;
