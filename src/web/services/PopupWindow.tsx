@@ -183,6 +183,10 @@ const focus = (popup: PopupWindow) => {
 
     `.installGlobal("[data-popup-window=popup-window]")
 
+    styled.css `
+        position: fixed;
+    `.installGlobal("body > div[data-popup-window=popup-window], body > div[data-window-modal-background]");
+
 export default class PopupWindow extends AtomControl {
 
     public static async showWindow<T>(options?: IDialogOptions): Promise<T>;
