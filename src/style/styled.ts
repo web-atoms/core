@@ -42,29 +42,27 @@ let id = 1;
 
 const nextId = () => `styled-r${id++}`;
 
-const globalLow = document.createElement("meta");
-globalLow.name = "global-low-style";
-document.head.appendChild(globalLow);
+let first = document.head.firstElementChild;
 
-const global = document.createElement("meta");
-global.name = "global-style";
-document.head.appendChild(global);
+const addMarker = (name) => {
+    const m = document.createElement("meta");
+    m.name = name;
+    if (first) {
+        first.insertAdjacentElement("afterend", m);
+    } else {
+        document.head.insertAdjacentElement("afterbegin", m);
+    }
+    first = m;
+    return m;
+}
 
-const globalHigh = document.createElement("meta");
-globalHigh.name = "global-high-style";
-document.head.appendChild(globalHigh);
+const globalLow = addMarker("global-low-style");
+const global = addMarker("global-style");
+const globalHigh = addMarker("global-high-style");
 
-const localLow = document.createElement("meta");
-localLow.name = "local-low-style";
-document.head.appendChild(localLow);
-
-const local = document.createElement("meta");
-local.name = "local-style";
-document.head.appendChild(local);
-
-const localHigh = document.createElement("meta");
-localHigh.name = "local-high-style";
-document.head.appendChild(localHigh);
+const localLow = addMarker("local-low-style");
+const local = addMarker("local-style");
+const localHigh = addMarker("local-high-style");
 
 // export type IStyleFragment = Partial<StyleFragment>;
 
