@@ -178,7 +178,7 @@ Object.values ??= function (t) {
     return r;
 }
 
-Array.prototype.flat ??= function (depth = 1) {
+const flat = Array.prototype.flat ?? function (depth = 1) {
     const r = [];
     const flat = depth > 0;
     const nestDepth = depth - 1;
@@ -195,10 +195,9 @@ Array.prototype.flat ??= function (depth = 1) {
         r.push(iterator);
     }
     return r;
-}
+};
 
-// tslint:disable-next-line
-Array.prototype["groupBy"] = <any> function (keySelector: any) {
+const groupBy = Array.prototype.groupBy ?? function (keySelector: any) {
     const map = new Map();
     const groups = [];
     for (const iterator of this) {
@@ -215,6 +214,18 @@ Array.prototype["groupBy"] = <any> function (keySelector: any) {
     map.clear();
     return groups;
 };
+
+Object.defineProperties(Array.prototype, {
+    flat: {
+        enumerable: false,
+        value: flat
+    },
+    groupBy: {
+        enumerable: false,
+        value: groupBy
+    }
+})
+
 
 export interface IUMDClass {
     debug: boolean;
