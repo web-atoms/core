@@ -218,11 +218,13 @@ const groupBy = Array.prototype.groupBy ?? function (keySelector: any) {
 Object.defineProperties(Array.prototype, {
     flat: {
         enumerable: false,
-        value: flat
+        value: flat,
+        configurable: true
     },
     groupBy: {
         enumerable: false,
-        value: groupBy
+        value: groupBy,
+        configurable: true
     }
 })
 
