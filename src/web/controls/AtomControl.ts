@@ -478,8 +478,12 @@ export class AtomControl extends AtomComponent {
             return;
         }
 
-        if (name.startsWith("aria-")) {
-            element.setAttribute(name, value);
+        if (name.startsWith("attr-")) {
+            if (value === null) {
+                element.removeAttribute(name.substring(5));
+                return;
+            }
+            element.setAttribute(name.substring(5), value);
         } else {
             element[name] = value;
         }
