@@ -78,4 +78,12 @@ export default class RouteTest extends AtomTest {
         Assert.equals("/feed/post/2?a=9&", url);
     }
 
+    @Test
+    public parsePrefix() {
+        let r = Route.create("/@{channel}/{tag}");
+
+        let p = r.matches("/@social/mail");
+        Assert.equals("social",p.channel);
+        Assert.equals("mail",p.tag);
+    }
 }

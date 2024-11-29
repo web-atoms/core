@@ -12,6 +12,9 @@ export class Variable {
 
     public readonly optional: boolean;
 
+    public prefix = "";
+    public suffix = "";
+
     public get regex() {
         if (this.catchAll) {
             return `(/(?<${this.variable}>.+)?)?`;
@@ -19,7 +22,7 @@ export class Variable {
         if (this.optional) {
             return `(/?(?<${this.variable}>[^\\/]+))?`;
         }
-        return `/(?<${this.variable}>[^\\/]+)`;
+        return `/${ StringHelper.escapeRegExp(this.prefix)}(?<${this.variable}>[^\\/]{1,500})${ StringHelper.escapeRegExp(this.suffix)}`;
     }
 
     constructor(public readonly variable: string, public readonly name?: string) {
@@ -118,19 +121,42 @@ export default class Route {
             if (regex.length > 2) {
                 this.substitutions.push("/");
             }
-            if (!iterator.startsWith("{")) {
+
+            const match = /\{(\*?[\p{L}:]{1,50}\??)\}/u.exec(iterator);
+
+            if (!match) {
                 this.substitutions.push(iterator);
                 regex += StringHelper.escapeRegExp("/");
                 regex += StringHelper.escapeRegExp(iterator);
                 continue;
             }
 
-            if (!iterator.endsWith("}")) {
-                throw new Error("invalid route, missing end curly brace");
-            }
+            const start = match.index;
+            const index = match[0].length;
+            const name = match[1];
 
-            const v = new Variable(iterator.substring(1, iterator.length - 1));
+            const prefix = iterator.substring(0, start);
+            const suffix = iterator.substring(index + 1);
 
+            // if (start === -1) {
+            //     this.substitutions.push(iterator);
+            //     regex += StringHelper.escapeRegExp("/");
+            //     regex += StringHelper.escapeRegExp(iterator);
+            //     continue;
+            // }
+
+            // const end = iterator.indexOf("}");
+            // if (end === -1) {
+            //     throw new Error("invalid route, missing end curly brace");
+            // }
+
+            // if (!iterator.endsWith("}")) {
+            //     throw new Error("invalid route, missing end curly brace");
+            // }
+
+            const v = new Variable(name);
+            v.prefix = prefix;
+            v.suffix = suffix;
             regex += v.regex;
 
             this.variables.push(v);
