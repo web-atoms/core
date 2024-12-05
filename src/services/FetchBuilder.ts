@@ -84,12 +84,18 @@ export default class FetchBuilder {
     // }
 
     public signal(signal: AbortSignal) {
+        if (!signal) {
+            return this;
+        }
         return this.append({
             signal
         });
     }
 
     public cancelToken(ct: CancelToken) {
+        if (!ct) {
+            return this;
+        }
         const ac = new AbortController();
         const signal = ac.signal;
         ct.registerForCancel(() => ac.abort());
