@@ -1,6 +1,6 @@
 import { CancelToken } from "../core/types";
 
-type IRequest = { dispatcher?: any, fetchProxy?: any, url?: string, log?: (...a: any[]) => void, logError?: (...a: any[]) => void } & RequestInit;
+type IRequest = { jsonPostProcessor?: (x) => any, dispatcher?: any, fetchProxy?: any, url?: string, log?: (...a: any[]) => void, logError?: (...a: any[]) => void } & RequestInit;
 
 export default class FetchBuilder {
 
@@ -176,10 +176,17 @@ export default class FetchBuilder {
         return result;
     }
 
+    public jsonPostProcessor(jsonPostProcessor: (x) => any) {
+        return this.append({ jsonPostProcessor });
+    }
+
     public async asJsonResponse<T = any>(ensureSuccess = true) {
-        return this.execute<T>(ensureSuccess, async (x) => {
+        return this.execute<T>(ensureSuccess, async (x, jsonPostProcessor) => {
             if(!/json/i.test(x.headers.get("content-type"))) {
                 throw new Error(`Failed to parse json from ${this.request.url}\n${await x.text()}`);
+            }
+            if (jsonPostProcessor) {
+                return x.json().then(jsonPostProcessor) as T;
             }
             return x.json() as T;
         });
@@ -202,12 +209,12 @@ export default class FetchBuilder {
     }
 
     public async execute<T>(ensureSuccess = true,
-        postProcessor: (r: Response) => T | Promise<T>): Promise<{ result: T, headers: any, status: number }> {
+        postProcessor: (r: Response, next?: (data) => any) => T | Promise<T>): Promise<{ result: T, headers: any, status: number }> {
 
         let { log, logError } = this.request;
         try {
 
-            const { headers, fetchProxy } = this.request;
+            const { headers, fetchProxy, jsonPostProcessor } = this.request;
             const r = await (fetchProxy ?? fetch)(this.request.url, this.request);
             if (ensureSuccess) {
                 if (r.status > 300) {
@@ -249,7 +256,7 @@ export default class FetchBuilder {
                     }
                 }
             }
-            const result = await postProcessor(r);
+            const result = await postProcessor(r, jsonPostProcessor);
             if (log) {
                 log(`${r.status} ${r.statusText || "OK"}`)
                 log(result);
