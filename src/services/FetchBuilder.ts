@@ -2,7 +2,7 @@ import { CancelToken } from "../core/types";
 
 type IRequest = { dispatcher?: any, fetchProxy?: any, url?: string, log?: (...a: any[]) => void, logError?: (...a: any[]) => void } & RequestInit;
 
-class FetchBuilder {
+export default class FetchBuilder {
 
     static JsonError: typeof JsonError;
     
@@ -289,5 +289,3 @@ class JsonError extends Error {
 }
 
 FetchBuilder.JsonError = JsonError;
-
-export = FetchBuilder;
