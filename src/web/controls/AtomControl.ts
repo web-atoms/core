@@ -247,9 +247,9 @@ ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
 
 let propertyId = 1;
 
-export type PropertyRegistration = ((value) => ({[key: string]: any})) & {
+export type PropertyRegistration<T> = ((value: T) => ({[key: string]: T}) & {
     property: string;
-};
+});
 
 
 /**
@@ -268,13 +268,13 @@ export class AtomControl extends AtomComponent {
         }
     }
 
-    public static registerProperty(
+    public static registerProperty<T = any>(
         attributeName: string,
         attributeValue: string,
-        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): PropertyRegistration {
+        setter: (ctrl: AtomControl, element: HTMLElement, value: T) => void): PropertyRegistration<T> {
         const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
-        function setterFx(v) {
+        function setterFx(v: T) {
             return {
                 [setterSymbol]: v
             };
@@ -283,7 +283,7 @@ export class AtomControl extends AtomComponent {
             return setterSymbol;
         };
         setterFx.property = setterSymbol;
-        return setterFx;
+        return setterFx as any;
     }
 
     @BindableProperty
