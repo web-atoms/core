@@ -1,18 +1,9 @@
 import XNode from "../../core/XNode";
-import styled from "../../style/styled";
 import { PopupWindow } from "./PopupService";
 
-const css = styled.css `
-    padding: 5px;
-    font-size: larger;
-    & .error {
-        color: red;
-        border-color: red;
-    }
-    & .warning {
-        background-color: lightyellow;
-    }
-`.installLocal();
+import "./NotifcationPopup.global.less";
+
+const css = "web-atoms-notification-popup";
 
 export default function NotificationPopup({
     message,

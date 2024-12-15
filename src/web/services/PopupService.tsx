@@ -1,13 +1,14 @@
 import { App } from "../../App";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { getOwnInheritedProperty } from "../../core/InheritedProperty";
-import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
-import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
-import styled from "../../style/styled";
+import { CancelToken } from "../../core/types";
+import XNode from "../../core/XNode";
 import { AtomControl } from "../controls/AtomControl";
 
+import "./PopupService.global.less";
 
 import PopupWindowA, { ConfirmPopup } from "./PopupWindow";
+
 
 export const PopupWindow = PopupWindowA;
 
@@ -18,100 +19,7 @@ document.body.addEventListener("click", (e) => {
     }
 });
 
-    styled.css `
-
-    [data-force-contain=none] {
-        contain: none !important; 
-    }
-
-    *[data-inline-popup=left] {
-        position: relative;
-        height: 0px;
-        width: 0px;
-        left: 0px; 
-        
-        & > * {
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            padding: 5px;
-            max-height: 300px;
-            overflow: auto;
-            border-radius: 5px;
-            background-color: #ffffff;
-            z-index: 200;
-            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
-            border: solid 1px rgba(0, 0, 0, 0.05); 
-        }
-    }
-
-    *[data-inline-popup=right] {
-        position: absolute;
-        height: 0px;
-        width: 0px;
-        right: 0px; 
-    
-    
-        & > * {
-            position: absolute;
-            right: 0px;
-            top: 0px;
-            padding: 5px;
-            max-height: 300px;
-            overflow: auto;
-            border-radius: 5px;
-            background-color: #ffffff;
-            z-index: 200;
-            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
-            border: solid 1px rgba(0, 0, 0, 0.05); 
-        }
-    }
-
-    *[data-inline-popup=inline-left] {
-        position: relative;
-        height: 0px;
-        width: 0px;
-        left: 0px; 
-
-        & > * {
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            padding: 5px;
-            max-height: 300px;
-            overflow: auto;
-            border-radius: 5px;
-            background-color: #ffffff;
-            z-index: 200;
-            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
-            border: solid 1px rgba(0, 0, 0, 0.05); 
-        }
-    }
-
-    *[data-center-popup] {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10000;
-        padding: 5px;
-        background-color: #ffffff;
-        border: solid 1px lightgray;
-        border-radius: 5px;
-        box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;;
-        display: inline-block; 
-    }    
-
-`.withId("popup-service-styles").installGlobal();
-
-const popupCss = styled.css `
-    padding: 5px;
-    background-color: #ffffff;
-    border: solid 1px lightgray;
-    border-radius: 5px;
-    box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;;
-    display: inline-block;
-`.installLocal();
+const popupCss = "web-atoms-popup-local";
 
 export interface IPopupOptions {
     /**

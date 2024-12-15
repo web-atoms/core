@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@web-atoms/module-loader": "^2.1.33",
+    "@web-atoms/module-loader": "^2.1.47",
     "@web-atoms/unit-test": "^1.0.46",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
