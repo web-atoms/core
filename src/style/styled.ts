@@ -44,8 +44,17 @@ const nextId = () => `styled-r${id++}`;
 
 let first = document.head.firstElementChild;
 
+const markers = {
+
+};
+
 const addMarker = (name) => {
-    const m = document.createElement("meta");
+    let m = document.head.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
+    if (m) {
+        first = m;
+        return markers[name] = m;
+    }
+    m = document.createElement("meta");
     m.name = name;
     if (first) {
         first.insertAdjacentElement("afterend", m);
@@ -53,16 +62,16 @@ const addMarker = (name) => {
         document.head.insertAdjacentElement("afterbegin", m);
     }
     first = m;
-    return m;
+    return markers[name] = m;
 }
 
-const globalLow = addMarker("global-low-style");
-const global = addMarker("global-style");
-const globalHigh = addMarker("global-high-style");
+addMarker("global-low-style");
+addMarker("global-style");
+addMarker("global-high-style");
 
-const localLow = addMarker("local-low-style");
-const local = addMarker("local-style");
-const localHigh = addMarker("local-high-style");
+addMarker("local-low-style");
+addMarker("local-style");
+addMarker("local-high-style");
 
 // export type IStyleFragment = Partial<StyleFragment>;
 
@@ -166,14 +175,14 @@ class StyleFragment {
         }
         switch(this.order) {
             case "low":
-                document.head.insertBefore(style, globalLow);
+                document.head.insertBefore(style, markers["global-low"]);
                 break;
             case "default":
             case "medium":
-                document.head.insertBefore(style, global);
+                document.head.insertBefore(style, markers["global"]);
                 break;
             case "high":
-                document.head.insertBefore(style, globalHigh);
+                document.head.insertBefore(style, markers["global-high"]);
                 break;
         }
         style.id = id;
@@ -196,14 +205,14 @@ class StyleFragment {
         }
         switch(this.order) {
             case "low":
-                document.head.insertBefore(style, localLow);
+                document.head.insertBefore(style, markers["local-low"]);
                 break;
             case "default":
             case "medium":
-                document.head.insertBefore(style, local);
+                document.head.insertBefore(style, markers["local"]);
                 break;
             case "high":
-                document.head.insertBefore(style, localHigh);
+                document.head.insertBefore(style, markers["local-high"]);
                 break;
         }
         return selector;
