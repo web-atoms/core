@@ -65,13 +65,13 @@ const addMarker = (name) => {
     return markers[name] = m;
 }
 
-addMarker("global-low-style");
-addMarker("global-style");
-addMarker("global-high-style");
+addMarker("global-low-marker");
+addMarker("global-marker");
+addMarker("global-high-marker");
 
-addMarker("local-low-style");
-addMarker("local-style");
-addMarker("local-high-style");
+addMarker("local-low-marker");
+addMarker("local-marker");
+addMarker("local-high-marker");
 
 // export type IStyleFragment = Partial<StyleFragment>;
 
@@ -175,14 +175,14 @@ class StyleFragment {
         }
         switch(this.order) {
             case "low":
-                document.head.insertBefore(style, markers["global-low"]);
+                document.head.insertBefore(style, markers["global-low-marker"]);
                 break;
             case "default":
             case "medium":
-                document.head.insertBefore(style, markers["global"]);
+                document.head.insertBefore(style, markers["global-marker"]);
                 break;
             case "high":
-                document.head.insertBefore(style, markers["global-high"]);
+                document.head.insertBefore(style, markers["global-high-marker"]);
                 break;
         }
         style.id = id;
@@ -205,14 +205,14 @@ class StyleFragment {
         }
         switch(this.order) {
             case "low":
-                document.head.insertBefore(style, markers["local-low"]);
+                document.head.insertBefore(style, markers["local-low-marker"]);
                 break;
             case "default":
             case "medium":
-                document.head.insertBefore(style, markers["local"]);
+                document.head.insertBefore(style, markers["local-marker"]);
                 break;
             case "high":
-                document.head.insertBefore(style, markers["local-high"]);
+                document.head.insertBefore(style, markers["local-high-marker"]);
                 break;
         }
         return selector;
