@@ -247,9 +247,10 @@ ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
 
 let propertyId = 1;
 
-export type PropertyRegistration<T> = ((value: T) => ({[key: string]: T}) & {
+export interface PropertyRegistration<T> {
+    (value: T): ({[key: string]: T});
     property: string;
-});
+};
 
 
 /**
