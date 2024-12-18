@@ -7,6 +7,7 @@
             "label": "All Build",
             "dependsOn":[
                 "TypeScript Build Watch",
+                "Less Build Watch",
                 "Web Atoms Dev Server",
             ],
             "problemMatcher": [],
@@ -20,6 +21,16 @@
             "type": "typescript",
             "tsconfig": "tsconfig.json",
             "option": "watch",
+        },
+        {
+            "label": "Less Build Watch",
+            "type": "shell",
+            "command": "npx",
+            "args": [
+                "jex",
+                "build.jsx",
+                "--watch"
+            ]
         },
         {
             "label": "Web Atoms Dev Server",

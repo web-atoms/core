@@ -17,7 +17,6 @@ jobs:
       - run: npm install
       - run: npm install -g codecov
       - run: npm install -D istanbul remap-istanbul @web-atoms/ts-to-systemjs
-      - run: npm install -D gulp gulp-less gulp-rename gulp-sourcemaps
       - run: tsc
       # - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
       # - run: typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
@@ -28,7 +27,7 @@ jobs:
         env:
           CODECOV_TOKEN: ${{secrets.codecov_token}}
       - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
-      - run: gulp
+      - run: npx jex ./build.jsx
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
