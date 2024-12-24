@@ -281,7 +281,8 @@ export default class FetchBuilder {
                 if (/^https?\:\/\//i.test(newUrl)) {
                     url = newUrl;
                 } else {
-                    url = (new URL(newUrl, url)).toString();
+                    const fullUrl = new URL(url, location.href);
+                    url = (new URL(newUrl, fullUrl)).toString();
                 }
             }
         }
