@@ -7,6 +7,11 @@ import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
 import { BusyIndicatorService, IBackgroundTaskInfo } from "./services/BusyIndicatorService";
 
+import "./core/AtomList";
+import "@web-atoms/date-time/dist/DateTime";
+import "@web-atoms/date-time/dist/TimeSpan";
+
+
 declare var UMD: any;
 
 export type AtomAction = (channel: string, data: any) => void;
