@@ -28,7 +28,7 @@
     "@neurospeech/jex": "^1.0.112",
     "@web-atoms/pack": "1.0.105",
     "@web-atoms/module-loader": "^2.1.47",
-    "@web-atoms/unit-test": "^1.0.47",
+    "@web-atoms/unit-test": "^1.0.54",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
     "jsdom": "^23.2.0",
