@@ -297,6 +297,23 @@ export default class PopupService {
         if (element?.isConnected) {
             return element;
         }
+
+
+        const targets = this.targetPath;
+        if (targets) {
+            for(;;) {
+                const first = targets[0];
+                if (!first) {
+                    break;
+                }
+                if (first.isConnected) {
+                    lastTarget = { element: first , x, y};
+                    return first;
+                }
+                targets.splice(0, 1);
+            }
+        }
+
         let e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
         if (this.defaultElementTarget?.isConnected
             && (e === document.documentElement || e === document.body)) {
@@ -313,6 +330,18 @@ export default class PopupService {
         if (element === document.documentElement) {
             return;
         }
+
+        let start = element;
+        const targets = [start];
+        while(start) {
+            start = start.parentElement;
+            if (start) {
+                targets.push(start);
+            }
+        }
+
+        this.targetPath = targets;
+
         if (!this.defaultElementTarget && element !== document.body && element !== document.documentElement) {
             this.defaultElementTarget = element;
         }
@@ -727,5 +756,7 @@ export default class PopupService {
 
         return container;
     }
+
+    private static targetPath: HTMLElement[] = [];
 
 }
