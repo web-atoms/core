@@ -21,6 +21,11 @@ export default class RouteTest extends AtomTest {
         Assert.isNull(r.matches("/public/jobs/a"));
 
         Assert.isNotNull(r.matches("/public/jobs"));
+
+        r = Route.create("/public/jobs/{id:number?}");
+        p = r.matches("/public/jobs/3-");
+        Assert.isNull(p);
+
     }
 
     

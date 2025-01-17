@@ -15,14 +15,20 @@ export class Variable {
     public prefix = "";
     public suffix = "";
 
+    private readonly parseAsNumber: boolean;
+
     public get regex() {
         if (this.catchAll) {
             return `(/(?<${this.variable}>.+)?)?`;
         }
-        if (this.optional) {
-            return `(/?(?<${this.variable}>[^\\/]+))?`;
+        let r = "[^\\/]{1,500}";
+        if (this.parseAsNumber) {
+            r = "[0-9]{1,500}";
         }
-        return `/${ StringHelper.escapeRegExp(this.prefix)}(?<${this.variable}>[^\\/]{1,500})${ StringHelper.escapeRegExp(this.suffix)}`;
+        if (this.optional) {
+            return `(/?(?<${this.variable}>${r}))?`;
+        }
+        return `/${ StringHelper.escapeRegExp(this.prefix)}(?<${this.variable}>${r})${ StringHelper.escapeRegExp(this.suffix)}`;
     }
 
     constructor(public readonly variable: string, public readonly name?: string) {
@@ -43,6 +49,7 @@ export class Variable {
 
             switch(parseAs) {
                 case "number":
+                    this.parseAsNumber = true;
                     this.convert = (v) => {
                         const r = parseFloat(v);
                         if (Number.isNaN(r)) {
