@@ -170,12 +170,13 @@ export default class FetchBuilder {
                 if (value === void 0) {
                     continue;
                 }
-                if (encode) {
-                    if (encodeObjectAsJson) {
-                        if (typeof value === "object" && value !== null) {
-                            value = JSON.stringify(value);
-                        }
+                if (encodeObjectAsJson) {
+                    if (typeof value === "object" && value !== null) {
+                        value = JSON.stringify(value);
                     }
+                    encode = true;
+                }
+                if (encode) {
                     value = encodeURIComponent(value);
                 }
                 const name = encodeURIComponent(key);
