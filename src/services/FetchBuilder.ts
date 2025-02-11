@@ -144,7 +144,7 @@ export default class FetchBuilder {
         return this.append({ url });
     }
 
-    public query(name: string, value: any, encode = true) {
+    public query(name: any, value: any, encode = true) {
         if (value === void 0) {
             return this;
         }
@@ -158,6 +158,31 @@ export default class FetchBuilder {
         } else {
             url += `&${name}=${value}`;
         }
+        return this.append({ url });
+    }
+
+    public queries(obj: { [key: string]: any}, encode = true, encodeObjectAsJson = true) {
+        let url = this.request.url;
+        let prefix = url.indexOf("?") === -1 ? "&" : "?";
+        for (const key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                let value = obj[key];
+                if (value === void 0) {
+                    continue;
+                }
+                if (encode) {
+                    if (encodeObjectAsJson) {
+                        if (typeof value === "object" && value !== null) {
+                            value = JSON.stringify(value);
+                        }
+                    }
+                    value = encodeURIComponent(value);
+                }
+                const name = encodeURIComponent(key);
+                url += `${prefix}${name}=${value}`;
+                prefix = "&"
+            }
+        }        
         return this.append({ url });
     }
 
