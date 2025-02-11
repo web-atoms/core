@@ -163,7 +163,7 @@ export default class FetchBuilder {
 
     public queries(obj: { [key: string]: any}, encode = true, encodeObjectAsJson = true) {
         let url = this.request.url;
-        let prefix = url.indexOf("?") === -1 ? "&" : "?";
+        let prefix = url.indexOf("?") === -1 ? "?" : "&";
         for (const key in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 let value = obj[key];
