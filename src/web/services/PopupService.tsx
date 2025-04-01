@@ -5,7 +5,7 @@ import { CancelToken } from "../../core/types";
 import XNode from "../../core/XNode";
 import { AtomControl } from "../controls/AtomControl";
 
-import "./PopupService.global.less";
+import "./PopupService.global.css";
 
 import PopupWindowA, { ConfirmPopup } from "./PopupWindow";
 

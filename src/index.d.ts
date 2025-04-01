@@ -13,7 +13,7 @@ declare module "*.jpeg" {
     export default value;
 }
 
-declare module "*.less" {
+declare module "*.css" {
     const value: string;
     export default value;
 }

@@ -6,6 +6,8 @@
   "scripts": {
     "test1": "node ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
     "test": "istanbul cover ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
+    "build-css": "npx postcss src/**/*.css --base src --dir dist --map",
+    "build-css-watch": "npx postcss src/**/*.css --base src --dir dist --map -w",
     "posttest": "remap-istanbul -i ./coverage/coverage.json -t html -o ./html-report",
     "postversion": "git push --follow-tags"
   },
@@ -26,8 +28,8 @@
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
     "@neurospeech/jex": "^1.0.112",
-    "@web-atoms/pack": "1.0.105",
-    "@web-atoms/module-loader": "^2.1.47",
+    "@web-atoms/pack": "1.0.111",
+    "@web-atoms/module-loader": "^2.1.89",
     "@web-atoms/unit-test": "^1.0.54",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
@@ -37,7 +39,12 @@
     "test-dom": "^1.0.0",
     "tslib": "^2.4.1",
     "xmlhttprequest": "^1.8.0",
-    "less": "^4.2.1"
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
+    "postcss-import": "^16.1.0",
+    "postcss-import-ext-glob": "^2.1.1",
+    "postcss-nested": "^7.0.2",
+    "postcss-preset-env": "^10.1.5"
   },
   "dependencies": {
     "@web-atoms/date-time": "^1.1.3",

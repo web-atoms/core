@@ -1,7 +1,7 @@
 import XNode from "../../core/XNode";
 import { PopupWindow } from "./PopupService";
 
-import "./NotifcationPopup.global.less";
+import "./NotifcationPopup.global.css";
 
 const css = "web-atoms-notification-popup";
 

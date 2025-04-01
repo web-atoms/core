@@ -8,7 +8,7 @@ import { ChildEnumerator } from "../core/AtomUI";
 import type PopupService from "./PopupService";
 import type { IDialogOptions } from "./PopupService";
 
-import "./PopupWindow.global.less";
+import "./PopupWindow.global.css";
 
 let popupService: typeof PopupService;
 
