@@ -27,7 +27,7 @@ jobs:
         env:
           CODECOV_TOKEN: ${{secrets.codecov_token}}
       - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
-      - run: npx postcss "./src/**/*.css" --base ./src --dir ./dist --map --verbose
+      - run: npm run build-css
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
