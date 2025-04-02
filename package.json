@@ -6,8 +6,8 @@
   "scripts": {
     "test1": "node ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
     "test": "istanbul cover ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
-    "build-css": "npx postcss \"./src/**/*.css\" --base ./src --dir ./dist --map --verbose",
-    "build-css-watch": "npx postcss \"./src/**/*.css\" --base src --dir dist --map -w",
+    "build-css": "npx jex ./build.jsx",
+    "build-css-watch": "npx jex ./build.jsx --watch",
     "posttest": "remap-istanbul -i ./coverage/coverage.json -t html -o ./html-report",
     "postversion": "git push --follow-tags"
   },
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@neurospeech/jex": "^1.0.112",
+    "@neurospeech/jex": "^1.0.115",
     "@web-atoms/pack": "1.0.111",
     "@web-atoms/module-loader": "^2.1.89",
     "@web-atoms/unit-test": "^1.0.54",
