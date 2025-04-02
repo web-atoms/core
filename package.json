@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/neurospeech/web-atoms-core#readme",
   "devDependencies": {
-    "@neurospeech/jex": "^1.0.115",
+    "@neurospeech/jex": "^1.0.116",
     "@web-atoms/pack": "1.0.111",
     "@web-atoms/module-loader": "^2.1.89",
     "@web-atoms/unit-test": "^1.0.54",
