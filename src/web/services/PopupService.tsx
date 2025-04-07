@@ -197,7 +197,7 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
         offset.x += host.offsetLeft;
         offset.y += host.offsetTop - (parent?.scrollTop ?? 0);
     }
-    return host;
+    return host ?? document.body;
 }
 
 export const disableContain = (ce: HTMLElement) => {
