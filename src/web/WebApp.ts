@@ -10,6 +10,8 @@ import { WindowService } from "./services/WindowService";
 import { AtomStyleSheet } from "./styles/AtomStyleSheet";
 import { AtomTheme } from "./styles/AtomTheme";
 
+import "../elements/AtomPopover";
+
 declare var UMD: any;
 
 export default class WebApp extends App {
