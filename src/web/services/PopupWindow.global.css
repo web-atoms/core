@@ -15,7 +15,7 @@
     transition: opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32) ;
     overflow: hidden;
 
-    [not-ready] {
+    &[not-ready] {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
