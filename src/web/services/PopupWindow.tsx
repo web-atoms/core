@@ -202,6 +202,7 @@ export default class PopupWindow extends AtomControl {
     protected preCreate(): void {
         this.title = null;
         this.viewModelTitle = null;
+        this.element.setAttribute("not-ready", "1");
         const c = new CancelToken();
         // @ts-expect-error
         this.cancelToken = c;
@@ -232,6 +233,15 @@ export default class PopupWindow extends AtomControl {
         setTimeout((p: HTMLElement) => {
             p.setAttribute("data-ready", "true");
         }, 10, this.element);
+
+        setTimeout((p: HTMLElement) => {
+            const parent = (p.offsetParent ?? document.body) as HTMLElement;
+            const left = `${(parent.offsetWidth - p.offsetWidth) / 2}px`;
+            const top = `${(parent.offsetHeight - p.offsetHeight) / 2}px`;
+            p.style.left = left;
+            p.style.top = top;
+            p.removeAttribute("not-ready");
+        }, 1000, this.element);
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
