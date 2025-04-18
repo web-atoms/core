@@ -290,11 +290,10 @@ export default class PopupWindow extends AtomControl {
             // const offset = AtomUI.screenOffset(tp);
             const element = this.element;
             const offset = { x: element.offsetLeft, y: element.offsetTop };
-            offset.x -= element.offsetWidth / 2;
-            offset.y -= element.offsetHeight / 2;
-            element.style.left = offset.x + "px";
-            element.style.top = offset.y + "px";
-            element.style.transform = "none";
+            // offset.x -= element.offsetWidth / 2;
+            // offset.y -= element.offsetHeight / 2;
+            // element.style.left = offset.x + "px";
+            // element.style.top = offset.y + "px";
             this.element.dataset.dragging = "true";
             const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
