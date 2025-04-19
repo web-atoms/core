@@ -90,13 +90,6 @@ export interface IElementAttributes {
 
 }
 
-interface IAnchorPopover extends IElementAttributes {
-    "anchor-left": "parent-left" | "parent-right",
-    "anchor-right": "parent-left" | "parent-right",
-    "anchor-top": "parent-top" | "parent-bottom",
-    "anchor-bottom": "parent-top" | "parent-bottom"
-}
-
 // tslint:disable-next-line: no-namespace
 declare global {
 
@@ -117,8 +110,6 @@ declare global {
 
         // tslint:disable-next-line
         interface IntrinsicElements extends IAllHtmlElements {
-
-            "atom-pop-over": IAnchorPopover;
 
         }
     }
