@@ -26,7 +26,7 @@ export class Variable {
             r = "[0-9]{1,500}";
         }
         if (this.optional) {
-            return `(/?(?<${this.variable}>${r}))?`;
+            return `((/?$)|(/?(?<${this.variable}>${r}))?)`;
         }
         return `/${ StringHelper.escapeRegExp(this.prefix)}(?<${this.variable}>${r})${ StringHelper.escapeRegExp(this.suffix)}`;
     }
@@ -144,22 +144,6 @@ export default class Route {
 
             const prefix = iterator.substring(0, start);
             const suffix = iterator.substring(index + 1);
-
-            // if (start === -1) {
-            //     this.substitutions.push(iterator);
-            //     regex += StringHelper.escapeRegExp("/");
-            //     regex += StringHelper.escapeRegExp(iterator);
-            //     continue;
-            // }
-
-            // const end = iterator.indexOf("}");
-            // if (end === -1) {
-            //     throw new Error("invalid route, missing end curly brace");
-            // }
-
-            // if (!iterator.endsWith("}")) {
-            //     throw new Error("invalid route, missing end curly brace");
-            // }
 
             const v = new Variable(name);
             v.prefix = prefix;
