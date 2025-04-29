@@ -26,7 +26,7 @@ export class Variable {
             r = "[0-9]{1,500}";
         }
         if (this.optional) {
-            return `((/?$)|(/?(?<${this.variable}>${r}))?)`;
+            return `(/(?<${this.variable}>${r}))?`;
         }
         return `/${ StringHelper.escapeRegExp(this.prefix)}(?<${this.variable}>${r})${ StringHelper.escapeRegExp(this.suffix)}`;
     }

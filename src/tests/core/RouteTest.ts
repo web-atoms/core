@@ -91,4 +91,13 @@ export default class RouteTest extends AtomTest {
         Assert.equals("social",p.channel);
         Assert.equals("mail",p.tag);
     }
+
+
+    @Test
+    public parsePhotos() {
+        let r = Route.create("/@{channel}/photos/{start?}");
+
+        let p = r.matches("/@joren-duskeye-social/photoshoot-event-dmet");
+        Assert.isNull(p);
+    }
 }
