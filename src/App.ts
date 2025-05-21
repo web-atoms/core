@@ -120,6 +120,8 @@ export class App extends ServiceProvider {
         return true;
     }
 
+    public static current: App;
+
     public readonly dispatcher: AtomDispatcher;
 
     public readonly screen: IScreen;
@@ -132,7 +134,6 @@ export class App extends ServiceProvider {
 
     private bag: any;
 
-    private busyIndicators: IDisposable[] = [];
     private busyIndicatorService: BusyIndicatorService;
     // tslint:disable-next-line:ban-types
     private readyHandlers: Array<() => any> = [];
@@ -153,6 +154,7 @@ export class App extends ServiceProvider {
 
     constructor() {
         super(null);
+        App.current = this;
         this.screen = {};
         this.bag = {};
         this.put(App, this);

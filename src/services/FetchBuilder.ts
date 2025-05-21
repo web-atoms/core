@@ -1,6 +1,15 @@
-import { CancelToken } from "../core/types";
+import { App } from "../App";
+import { CancelToken, IDisposable } from "../core/types";
+import { BusyIndicatorService } from "./BusyIndicatorService";
 
-type IRequest = { jsonPostProcessor?: (x) => any, dispatcher?: any, fetchProxy?: any, url?: string, log?: (...a: any[]) => void, logError?: (...a: any[]) => void } & RequestInit;
+type IRequest = {
+    jsonPostProcessor?: (x) => any,
+    dispatcher?: any,
+    fetchProxy?: any,
+    url?: string,
+    hideBusyIndicator?,
+    log?: (...a: any[]) => void, logError?: (...a: any[]) => void
+} & RequestInit;
 
 export default class FetchBuilder {
 
@@ -237,60 +246,66 @@ export default class FetchBuilder {
     public async execute<T>(ensureSuccess = true,
         postProcessor: (r: Response, next?: (data) => any) => T | Promise<T>): Promise<{ result: T, headers: any, status: number }> {
 
-        let { log, logError } = this.request;
+        let { log, logError, hideBusyIndicator } = this.request;
+        let d:IDisposable;
         try {
+            d = !hideBusyIndicator ? App.current.createBusyIndicator() : null;
+            try {
 
-            const { headers, fetchProxy, jsonPostProcessor } = this.request;
-            const r = await (fetchProxy ?? fetch)(this.request.url, this.request);
-            if (ensureSuccess) {
-                if (r.status > 300) {
-                    log = logError;
-                    log?.(`fetch: ${this.request.method ?? "GET"} ${this.request.url}`);
-                    if (log && headers) {
-                        for (const key in headers) {
-                            if (headers.hasOwnProperty(key)) {
-                                log?.(`${key}: ${headers[key]}`);
+                const { headers, fetchProxy, jsonPostProcessor } = this.request;
+                const r = await (fetchProxy ?? fetch)(this.request.url, this.request);
+                if (ensureSuccess) {
+                    if (r.status > 300) {
+                        log = logError;
+                        log?.(`fetch: ${this.request.method ?? "GET"} ${this.request.url}`);
+                        if (log && headers) {
+                            for (const key in headers) {
+                                if (headers.hasOwnProperty(key)) {
+                                    log?.(`${key}: ${headers[key]}`);
+                                }
                             }
                         }
-                    }
-                    log?.(`${r.status} ${r.statusText || "Http Error"}`);
-                    const type = r.headers.get("content-type");
-                    if (/\/json/i.test(type)) {
-                        const json: any = await r.json();
-                        log?.(json);
-                        const message = json.title
-                        ?? json.detail
-                        ?? json.message
-                        ?? json.exceptionMessage
-                        ?? "Json Server Error";
+                        log?.(`${r.status} ${r.statusText || "Http Error"}`);
+                        const type = r.headers.get("content-type");
+                        if (/\/json/i.test(type)) {
+                            const json: any = await r.json();
+                            log?.(json);
+                            const message = json.title
+                            ?? json.detail
+                            ?? json.message
+                            ?? json.exceptionMessage
+                            ?? "Json Server Error";
+                            log = null;
+                            logError = null;
+                            throw new JsonError(message, json);
+                        }
+                        const text = await r.text();
+                        log?.(text);
                         log = null;
                         logError = null;
-                        throw new JsonError(message, json);
-                    }
-                    const text = await r.text();
-                    log?.(text);
-                    log = null;
-                    logError = null;
-                    throw new Error(`Fetch failed with error ${r.status} for ${this.request.url}\n${text}`);
-                }
-            }
-            log?.(`${this.request.method ?? "GET"} ${this.request.url}`);
-            if (log && headers) {
-                for (const key in headers) {
-                    if (headers.hasOwnProperty(key)) {
-                        log?.(`${key}: ${headers[key]}`);
+                        throw new Error(`Fetch failed with error ${r.status} for ${this.request.url}\n${text}`);
                     }
                 }
+                log?.(`${this.request.method ?? "GET"} ${this.request.url}`);
+                if (log && headers) {
+                    for (const key in headers) {
+                        if (headers.hasOwnProperty(key)) {
+                            log?.(`${key}: ${headers[key]}`);
+                        }
+                    }
+                }
+                const result = await postProcessor(r, jsonPostProcessor);
+                if (log) {
+                    log(`${r.status} ${r.statusText || "OK"}`)
+                    log(result);
+                }
+                return { result, headers: r.headers, status: r.status };
+            } catch (error) {
+                log?.(error);
+                throw error;
             }
-            const result = await postProcessor(r, jsonPostProcessor);
-            if (log) {
-                log(`${r.status} ${r.statusText || "OK"}`)
-                log(result);
-            }
-            return { result, headers: r.headers, status: r.status };
-        } catch (error) {
-            log?.(error);
-            throw error;
+        } finally {
+            d?.dispose();
         }
     }
 
