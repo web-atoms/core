@@ -401,7 +401,7 @@ export default function Action(
                                 return;
                             }
                         }
-                        ns.alert(e, "Error").catch(console.error);
+                        await ns.alert(e, "Error");
                     }
                 };
 
