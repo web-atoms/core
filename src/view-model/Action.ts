@@ -384,12 +384,12 @@ export default function Action(
                         return result;
                     } catch (e) {
                         if (CancelToken.isCancelled(e)) {
-                            return;
+                            throw e;
                         }
                         if (/^timeout$/i.test(e.toString().trim())) {
                             // tslint:disable-next-line: no-console
                             console.warn(e);
-                            return;
+                            throw new Error("cancelled");
                         }
                         if (e instanceof JsonError) {
                             if (e.details) {
@@ -398,10 +398,11 @@ export default function Action(
                                     title: "Error",
                                     detail: e.details
                                 });
-                                return;
+                                throw new Error("cancelled");
                             }
                         }
                         await ns.alert(e, "Error");
+                        throw new Error("cancelled");
                     }
                 };
 
