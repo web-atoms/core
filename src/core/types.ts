@@ -66,6 +66,8 @@ export type CancelReason = "cancelled" | "timeout";
 
 export const ignoreValue: any = Symbol("ignore");
 
+export const errorHandled = Symbol("errorHandled");
+
 /**
  *
  *
@@ -75,6 +77,11 @@ export const ignoreValue: any = Symbol("ignore");
 export class CancelToken implements IDisposable {
 
     public static isCancelled(e: any) {
+
+        if (e[errorHandled]) {
+            return true;
+        }
+
         if (/^(cancelled$|canceled$|aborterror\:)/i.test(e.message ?? e.toString().trim())) {
             return true;
         }

@@ -3,7 +3,7 @@ import Command from "../core/Command";
 import EventScope from "../core/EventScope";
 import FormattedString from "../core/FormattedString";
 import { StringHelper } from "../core/StringHelper";
-import { CancelToken } from "../core/types";
+import { CancelToken, errorHandled } from "../core/types";
 import XNode from "../core/XNode";
 import JsonError from "../services/http/JsonError";
 import { NavigationService, NotifyType } from "../services/NavigationService";
@@ -386,10 +386,11 @@ export default function Action(
                         if (CancelToken.isCancelled(e)) {
                             throw e;
                         }
+                        e[errorHandled] = true;
                         if (/^timeout$/i.test(e.toString().trim())) {
                             // tslint:disable-next-line: no-console
                             console.warn(e);
-                            throw new Error("cancelled");
+                            throw e;
                         }
                         if (e instanceof JsonError) {
                             if (e.details) {
@@ -398,11 +399,11 @@ export default function Action(
                                     title: "Error",
                                     detail: e.details
                                 });
-                                throw new Error("cancelled");
+                                throw e;
                             }
                         }
                         await ns.alert(e, "Error");
-                        throw new Error("cancelled");
+                        throw e;
                     }
                 };
 
