@@ -21,7 +21,7 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
 
     private indicators: number = 0;
 
-    public createIndicator(): IDisposable {
+    public createIndicator(): Disposable {
 
         const host = document.createElement("div");
         const popup = new AtomControl(this.app, host);
@@ -70,6 +70,10 @@ export class WebBusyIndicatorService extends BusyIndicatorService {
             }
         });
 
-        return popup;
+        return {
+            [Symbol.dispose]() {
+                popup.dispose();
+            }
+        }
     }
 }

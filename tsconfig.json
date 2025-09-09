@@ -16,7 +16,8 @@
         "jsxFactory": "XNode.create",
         "lib": [
             "es6",
-            "dom"
+            "dom",
+            "ESNext.Disposable"
         ]
     },
     "include": [

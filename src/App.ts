@@ -166,7 +166,7 @@ export class App extends ServiceProvider {
         }, 5);
     }
 
-    public createBusyIndicator(taskInfo?: IBackgroundTaskInfo ): IDisposable {
+    public createBusyIndicator(taskInfo?: IBackgroundTaskInfo ): Disposable {
         this.busyIndicatorService = this.busyIndicatorService
             || this.resolve(BusyIndicatorService);
         return this.busyIndicatorService.createIndicator(taskInfo);
@@ -334,10 +334,10 @@ export class App extends ServiceProvider {
         if (a && a.then && a.catch) {
             a.then((r) => {
                 // do nothing
-                indicator.dispose();
+                indicator[Symbol.dispose]();
             });
             a.catch((e) => {
-                indicator.dispose();
+                indicator[Symbol.dispose]();
                 // tslint:disable-next-line:no-console
                 // console.error("XFApp.onReady");
                 // tslint:disable-next-line:no-console
@@ -345,7 +345,7 @@ export class App extends ServiceProvider {
             });
             return;
         }
-        indicator.dispose();
+        indicator[Symbol.dispose]();
     }
 
 }
