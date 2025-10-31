@@ -229,19 +229,19 @@ export default class PopupWindow extends AtomControl {
 
         // init will be called if parameters are set...
         // this.runAfterInit(() => this.app.runAsync(() => this.init?.()));
-
-        setTimeout((p: HTMLElement) => {
+        const p = this.element;
+        this.bindEvent(this.element, "popupReady", (e) => {
+            if (e.defaultPrevented) {
+                return;
+            }
             p.setAttribute("data-ready", "true");
-        }, 10, this.element);
-
-        setTimeout((p: HTMLElement) => {
             const parent = (p.offsetParent ?? document.body) as HTMLElement;
             const left = `${(parent.offsetWidth - p.offsetWidth) / 2}px`;
             const top = `${(parent.offsetHeight - p.offsetHeight) / 2}px`;
             p.style.left = left;
             p.style.top = top;
             p.removeAttribute("not-ready");
-        }, 1000, this.element);
+        });
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
