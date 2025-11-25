@@ -579,6 +579,8 @@ export default class PopupService {
                     } else {
                         setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
                     }
+                } else {
+                    setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
                 }
                 cancelToken?.registerForCancel(cancel);
                 isModal = modal;
