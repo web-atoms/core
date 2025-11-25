@@ -574,10 +574,10 @@ export default class PopupService {
                                 }
                             });
                         } else {
-                            control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true }));
+                            setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
                         }
                     } else {
-                        control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true }));
+                        setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
                     }
                 }
                 cancelToken?.registerForCancel(cancel);
