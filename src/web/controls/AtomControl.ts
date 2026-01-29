@@ -170,6 +170,9 @@ export const ElementValueSetters: ISetters = {
         e.removeAttribute("disabled");
     },
     autofocus(ctrl: AtomControl, element: HTMLElement, value) {
+        if (value === false) {
+            return;
+        }
         ctrl.app.callLater(() => {
             const ie = element as HTMLInputElement;
             if (ie) {
