@@ -347,7 +347,7 @@ export class AtomControl extends AtomComponent {
      * Gets Parent AtomControl of this control.
      */
     public get parent(): AtomControl {
-        let e = this.element._logicalParent || this.element.parentElement;
+        let e = this.element?._logicalParent || this.element?.parentElement;
         if (!e) {
             return null;
         }

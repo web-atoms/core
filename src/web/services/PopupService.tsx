@@ -275,12 +275,6 @@ function closeHandler(
 
 let popupId = 1001;
 
-let lastTarget = {
-    element: null,
-    x: 10,
-    y: 10
-};
-
 export interface IPopupAlertOptions {
     message: string | XNode;
     title?: string;
