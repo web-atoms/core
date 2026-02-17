@@ -4,6 +4,7 @@ import { getOwnInheritedProperty } from "../../core/InheritedProperty";
 import { CancelToken } from "../../core/types";
 import XNode from "../../core/XNode";
 import { AtomControl } from "../controls/AtomControl";
+import { LastTarget } from "./LastTarget";
 
 import "./PopupService.global.css";
 
@@ -290,68 +291,76 @@ export interface IPopupAlertOptions {
 }
 export default class PopupService {
 
-    public static defaultElementTarget: HTMLElement;
-
-    public static get lastTarget() {
-        const { element, x = 0, y = 0 } = lastTarget;
-        if (element?.isConnected) {
-            return element;
-        }
-
-
-        const targets = this.targetPath;
-        if (targets) {
-            for(;;) {
-                const first = targets[0];
-                if (!first) {
-                    break;
-                }
-                if (first.isConnected) {
-                    lastTarget = { element: first , x, y};
-                    return first;
-                }
-                targets.splice(0, 1);
-            }
-        }
-
-        let e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
-        if (this.defaultElementTarget?.isConnected
-            && (e === document.documentElement || e === document.body)) {
-                e = this.defaultElementTarget;
-            }
-        PopupService.lastTarget = e;
-        return e;
+    public static get lastTarget(): HTMLElement {
+        return LastTarget.target;
     }
 
-    public static set lastTarget(element: HTMLElement) {
-        if (!element.isConnected) {
-            return;
-        }
-        if (element === document.documentElement) {
-            return;
-        }
-
-        let start = element;
-        const targets = [start];
-        while(start) {
-            start = start.parentElement;
-            if (start) {
-                targets.push(start);
-            }
-        }
-
-        this.targetPath = targets;
-
-        if (!this.defaultElementTarget && element !== document.body && element !== document.documentElement) {
-            this.defaultElementTarget = element;
-        }
-        const rect = element.getBoundingClientRect();
-        lastTarget = {
-            element,
-            x: rect.left + (rect.width / 2),
-            y: rect.top + (rect.height / 2)
-        };
+    public static set lastTarget(v: HTMLElement) {
+        LastTarget.target = v;
     }
+
+    // public static defaultElementTarget: HTMLElement;
+
+    // public static get lastTarget() {
+    //     const { element, x = 0, y = 0 } = lastTarget;
+    //     if (element?.isConnected) {
+    //         return element;
+    //     }
+
+
+    //     const targets = this.targetPath;
+    //     if (targets) {
+    //         for(;;) {
+    //             const first = targets[0];
+    //             if (!first) {
+    //                 break;
+    //             }
+    //             if (first.isConnected) {
+    //                 lastTarget = { element: first , x, y};
+    //                 return first;
+    //             }
+    //             targets.splice(0, 1);
+    //         }
+    //     }
+
+    //     let e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
+    //     if (this.defaultElementTarget?.isConnected
+    //         && (e === document.documentElement || e === document.body)) {
+    //             e = this.defaultElementTarget;
+    //         }
+    //     PopupService.lastTarget = e;
+    //     return e;
+    // }
+
+    // public static set lastTarget(element: HTMLElement) {
+    //     if (!element.isConnected) {
+    //         return;
+    //     }
+    //     if (element === document.documentElement) {
+    //         return;
+    //     }
+
+    //     let start = element;
+    //     const targets = [start];
+    //     while(start) {
+    //         start = start.parentElement;
+    //         if (start) {
+    //             targets.push(start);
+    //         }
+    //     }
+
+    //     this.targetPath = targets;
+
+    //     if (!this.defaultElementTarget && element !== document.body && element !== document.documentElement) {
+    //         this.defaultElementTarget = element;
+    //     }
+    //     const rect = element.getBoundingClientRect();
+    //     lastTarget = {
+    //         element,
+    //         x: rect.left + (rect.width / 2),
+    //         y: rect.top + (rect.height / 2)
+    //     };
+    // }
 
     public static async alert({
         message,
