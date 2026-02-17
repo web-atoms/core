@@ -1,7 +1,7 @@
 import { descendentElementIterator } from "../core/AtomUI";
 
 interface IElementTarget {
-    target: HTMLElement;
+    target: WeakRef<HTMLElement>;
     previous: IElementTarget;
 }
 
@@ -17,8 +17,9 @@ export const LastTarget = {
                 break;
             }
             const { target, previous } = current;
-            if(target.isConnected) {
-                return target;
+            const t = target.deref();
+            if(t?.isConnected) {
+                return t;
             }
             if(!previous) {
                 break;
@@ -35,7 +36,7 @@ export const LastTarget = {
     },
     set target(target: HTMLElement) {
         current = {
-            target,
+            target: new WeakRef(target),
             previous: current
         };
     }

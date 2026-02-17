@@ -17,7 +17,8 @@
         "lib": [
             "es6",
             "dom",
-            "ESNext.Disposable"
+            "ESNext.Disposable",
+            "ES2021.WeakRef"
         ]
     },
     "include": [
