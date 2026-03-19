@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "es2020",
+        "module":"nodenext",
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "moduleResolution": "nodenext",
+        "outDir": "dist-esm",
+        "downlevelIteration": false,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "allowSyntheticDefaultImports": true,
+        "lib": [
+            "es6",
+            "dom"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+		"node_modules",
+		"tests"
+    ]
+}
