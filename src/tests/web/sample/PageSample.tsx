@@ -3,11 +3,7 @@ import { AtomViewModel } from "../../../view-model/AtomViewModel.js";
 import { AtomControl } from "../../../web/controls/AtomControl.js";
 import { AtomListBox } from "../../../web/controls/AtomListBox.js";
 
-class PageSampleViewModel extends AtomViewModel {}
-
 export default class PageSample extends AtomControl {
-
-    public viewModel: PageSampleViewModel;
 
     protected create() {
         super.create();
