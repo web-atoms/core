@@ -1,8 +1,8 @@
-import { IValueConverter } from "../core/IValueConverter";
-import { StringHelper } from "../core/StringHelper";
-import { RegisterSingleton } from "../di/RegisterSingleton";
+import { IValueConverter } from "../core/IValueConverter.js";
+import { StringHelper } from "../core/StringHelper.js";
+import { RegisterSingleton } from "../di/RegisterSingleton.js";
 
-import DateTime from "@web-atoms/date-time/dist/DateTime";
+import DateTime from "@web-atoms/date-time/dist/DateTime.js";
 
 export const dateFormatISORegEx = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/;
 export const dateFormatMSRegEx = /^\/Date\((d|-|.*)\)[\/|\\]$/;

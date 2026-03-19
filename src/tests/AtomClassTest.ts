@@ -1,8 +1,8 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { Atom } from "../Atom";
-import { CancelToken } from "../core/types";
-import { AtomTest } from "../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { Atom } from "../Atom.js";
+import { CancelToken } from "../core/types.js";
+import { AtomTest } from "../unit/AtomTest.js";
 
 export class AtomClassTest extends AtomTest {
 

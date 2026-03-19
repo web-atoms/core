@@ -1,5 +1,5 @@
-import FormattedError from "./FormattedError";
-import Markdown from "./Markdown";
+import FormattedError from "./FormattedError.js";
+import Markdown from "./Markdown.js";
 
 export default class MarkdownError extends FormattedError {
     constructor(text: string) {

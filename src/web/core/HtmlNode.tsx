@@ -1,8 +1,8 @@
-import XNode, { elementFactorySymbol } from "../../core/XNode";
-import { AtomStyleRules } from "../../style/StyleRule";
-import { ElementValueSetters } from "../controls/AtomControl";
-import { AtomUI, descendentElementIterator } from "./AtomUI";
-import Encoder from "./Encoder";
+import XNode, { elementFactorySymbol } from "../../core/XNode.js";
+import { AtomStyleRules } from "../../style/StyleRule.js";
+import { ElementValueSetters } from "../controls/AtomControl.js";
+import { AtomUI, descendentElementIterator } from "./AtomUI.js";
+import Encoder from "./Encoder.js";
 export const encoder = Encoder("entity");
 
 export interface IKeyValuePair {

@@ -1,12 +1,12 @@
-import Bind from "../../core/Bind";
-import { BindableProperty } from "../../core/BindableProperty";
-import XNode from "../../core/XNode";
-import sleep from "../../core/sleep";
-import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
-import { AtomControl } from "../controls/AtomControl";
-import { ChildEnumerator } from "../core/AtomUI";
-import type PopupService from "./PopupService";
-import type { IDialogOptions } from "./PopupService";
+import Bind from "../../core/Bind.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import XNode from "../../core/XNode.js";
+import sleep from "../../core/sleep.js";
+import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types.js";
+import { AtomControl } from "../controls/AtomControl.js";
+import { ChildEnumerator } from "../core/AtomUI.js";
+import type PopupService from "./PopupService.js";
+import type { IDialogOptions } from "./PopupService.js";
 
 import "./PopupWindow.global.css";
 
@@ -16,7 +16,7 @@ const loadPopupService = async () => {
     if (popupService) {
         return popupService;
     }
-    return popupService = (await (import("./PopupService"))).default;
+    return popupService = (await (import("./PopupService.js"))).default as any as typeof PopupService;
 };
 
 const focus = (popup: PopupWindow) => {

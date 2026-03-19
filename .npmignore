@@ -3,6 +3,7 @@ coverage
 html-report
 package-lock.json
 dist/tests
+dist-esm/tests
 src/tests
 .github
 .vscode

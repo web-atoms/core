@@ -1,14 +1,14 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { Atom } from "../../../Atom";
-import { CancelToken } from "../../../core/types";
-import { JsonService } from "../../../services/JsonService";
-import { NavigationService } from "../../../services/NavigationService";
-import { AtomTest } from "../../../unit/AtomTest";
-import AtomWebTest from "../../../unit/AtomWebTest";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import { AtomWindow } from "../../../web/controls/AtomWindow";
-import { WindowService } from "../../../web/services/WindowService";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { Atom } from "../../../Atom.js";
+import { CancelToken } from "../../../core/types.js";
+import { JsonService } from "../../../services/JsonService.js";
+import { NavigationService } from "../../../services/NavigationService.js";
+import { AtomTest } from "../../../unit/AtomTest.js";
+import AtomWebTest from "../../../unit/AtomWebTest.js";
+import { AtomControl } from "../../../web/controls/AtomControl.js";
+import { AtomWindow } from "../../../web/controls/AtomWindow.js";
+import { WindowService } from "../../../web/services/WindowService.js";
 
 function createEvent<T extends Event>(name, ... a: any[]): T {
     const e = document.createEvent(name);

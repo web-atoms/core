@@ -1,10 +1,10 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { AtomUri } from "../../core/AtomUri";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { AtomUri } from "../../core/AtomUri.js";
 import { AtomViewModel, BindableBroadcast,
-    BindableReceive, Receive, Validate, waitForReady, Watch } from "../../view-model/AtomViewModel";
-import BindableUrlParameter from "../../view-model/BindableUrlParameter";
-import AtomWebTest from "../../unit/AtomWebTest";
+    BindableReceive, Receive, Validate, waitForReady, Watch } from "../../view-model/AtomViewModel.js";
+import BindableUrlParameter from "../../view-model/BindableUrlParameter.js";
+import AtomWebTest from "../../unit/AtomWebTest.js";
 
 declare var global: any;
 

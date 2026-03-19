@@ -1,7 +1,7 @@
-import { App } from "../../App";
-import { Inject } from "../../di/Inject";
-import { AtomControl } from "./AtomControl";
-import { AtomItemsControl } from "./AtomItemsControl";
+import { App } from "../../App.js";
+import { Inject } from "../../di/Inject.js";
+import { AtomControl } from "./AtomControl.js";
+import { AtomItemsControl } from "./AtomItemsControl.js";
 
 export class AtomComboBox extends AtomItemsControl {
 

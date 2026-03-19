@@ -1,7 +1,7 @@
-import { IValueConverter } from "../core/IValueConverter";
-import { PropertyBinding } from "../core/PropertyBinding";
-import { IDisposable } from "../core/types";
-import { AtomViewModel } from "./AtomViewModel";
+import { IValueConverter } from "../core/IValueConverter.js";
+import { PropertyBinding } from "../core/PropertyBinding.js";
+import { IDisposable } from "../core/types.js";
+import { AtomViewModel } from "./AtomViewModel.js";
 
 /**
  * Binds source property to target property with optional two ways

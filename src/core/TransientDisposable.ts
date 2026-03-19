@@ -1,4 +1,4 @@
-import { IDisposable } from "./types";
+import { IDisposable } from "./types.js";
 
 export default abstract class TransientDisposable implements IDisposable {
 

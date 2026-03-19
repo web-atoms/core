@@ -1,5 +1,5 @@
-import { AtomBinder, IWatchableObject, IWatchFunctionCollection, WatchFunction } from "./AtomBinder";
-import { IDisposable } from "./types";
+import { AtomBinder, IWatchableObject, IWatchFunctionCollection, WatchFunction } from "./AtomBinder.js";
+import { IDisposable } from "./types.js";
 
     /**
      *

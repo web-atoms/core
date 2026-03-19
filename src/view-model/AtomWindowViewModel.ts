@@ -1,7 +1,7 @@
-import { AtomBinder } from "../core/AtomBinder";
-import { BindableProperty } from "../core/BindableProperty";
-import { NavigationService } from "../services/NavigationService";
-import { AtomViewModel } from "./AtomViewModel";
+import { AtomBinder } from "../core/AtomBinder.js";
+import { BindableProperty } from "../core/BindableProperty.js";
+import { NavigationService } from "../services/NavigationService.js";
+import { AtomViewModel } from "./AtomViewModel.js";
 
 /**
  * This view model should be used with WindowService to create and open window.

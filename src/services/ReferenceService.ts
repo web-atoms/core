@@ -1,4 +1,4 @@
-import DISingleton from "../di/DISingleton";
+import DISingleton from "../di/DISingleton.js";
 
 export class ObjectReference {
 

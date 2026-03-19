@@ -1,8 +1,8 @@
-import { BindableProperty } from "../../core/BindableProperty";
-import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
-import { AtomListBoxStyle } from "../styles/AtomListBoxStyle";
-import { AtomControl } from "./AtomControl";
-import { AtomItemsControl } from "./AtomItemsControl";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI.js";
+import { AtomListBoxStyle } from "../styles/AtomListBoxStyle.js";
+import { AtomControl } from "./AtomControl.js";
+import { AtomItemsControl } from "./AtomItemsControl.js";
 
 export class AtomListBox extends AtomItemsControl {
 

@@ -1,7 +1,7 @@
-import { App } from "../../App";
-import { IClassOf, INameValuePairs, INotifyPropertyChanging } from "../../core/types";
-import { TypeKey } from "../../di/TypeKey";
-import { AtomStyle } from "./AtomStyle";
+import { App } from "../../App.js";
+import { IClassOf, INameValuePairs, INotifyPropertyChanging } from "../../core/types.js";
+import { TypeKey } from "../../di/TypeKey.js";
+import { AtomStyle } from "./AtomStyle.js";
 
 export class AtomStyleSheet implements INotifyPropertyChanging {
 

@@ -1,8 +1,8 @@
-import Bind from "../../core/Bind";
-import { BindableProperty } from "../../core/BindableProperty";
-import XNode from "../../core/XNode";
-import AtomNotificationStyle from "../styles/AtomNotificationStyle";
-import { AtomControl } from "./AtomControl";
+import Bind from "../../core/Bind.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import XNode from "../../core/XNode.js";
+import AtomNotificationStyle from "../styles/AtomNotificationStyle.js";
+import { AtomControl } from "./AtomControl.js";
 
 export default class AtomNotification extends AtomControl {
 

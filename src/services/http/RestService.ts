@@ -1,13 +1,13 @@
-import { AjaxOptions } from "./AjaxOptions";
+import { AjaxOptions } from "./AjaxOptions.js";
 
-import { App } from "../../App";
-import { Atom } from "../../Atom";
-import { CancelToken, INameValuePairs } from "../../core/types";
-import { Inject } from "../../di/Inject";
-import { TypeKey } from "../../di/TypeKey";
-import CacheService, { CacheSeconds } from "../CacheService";
-import { IJsonParserOptions, JsonService } from "../JsonService";
-import JsonError from "./JsonError";
+import { App } from "../../App.js";
+import { Atom } from "../../Atom.js";
+import { CancelToken, INameValuePairs } from "../../core/types.js";
+import { Inject } from "../../di/Inject.js";
+import { TypeKey } from "../../di/TypeKey.js";
+import CacheService, { CacheSeconds } from "../CacheService.js";
+import { IJsonParserOptions, JsonService } from "../JsonService.js";
+import JsonError from "./JsonError.js";
 
 declare var UMD: any;
 

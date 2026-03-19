@@ -1,7 +1,7 @@
-import { Atom } from "../../Atom";
-import Colors from "../../core/Colors";
-import { AtomWindowStyle } from "./AtomWindowStyle";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { Atom } from "../../Atom.js";
+import Colors from "../../core/Colors.js";
+import { AtomWindowStyle } from "./AtomWindowStyle.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 export default class AtomAlertWindowStyle extends AtomWindowStyle {
 

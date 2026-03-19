@@ -1,9 +1,9 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { AtomBinder, IWatchableObject, symbolBindable } from "../../core/AtomBinder";
-import { AtomList } from "../../core/AtomList";
-import { AtomWatcher } from "../../core/AtomWatcher";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { AtomBinder, IWatchableObject, symbolBindable } from "../../core/AtomBinder.js";
+import { AtomList } from "../../core/AtomList.js";
+import { AtomWatcher } from "../../core/AtomWatcher.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 
 interface ICustomer {
     firstName: string;

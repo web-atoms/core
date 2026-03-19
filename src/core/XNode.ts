@@ -1,8 +1,8 @@
-import type { ObjectPositionType } from "../style/StyleRule";
-import type { AtomControl } from "../web/controls/AtomControl";
-import Bind, { bindSymbol } from "./Bind";
-import type { ColorItem } from "./Colors";
-import { IClassOf, IDisposable } from "./types";
+import type { ObjectPositionType } from "../style/StyleRule.js";
+import type { AtomControl } from "../web/controls/AtomControl.js";
+import Bind, { bindSymbol } from "./Bind.js";
+import type { ColorItem } from "./Colors.js";
+import { IClassOf, IDisposable } from "./types.js";
 
 export interface IAttributes {
     [key: string]: string | number | null | any;

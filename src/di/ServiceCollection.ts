@@ -1,6 +1,6 @@
-import { ArrayHelper } from "../core/types";
-import { ServiceProvider } from "./ServiceProvider";
-import { TypeKey } from "./TypeKey";
+import { ArrayHelper } from "../core/types.js";
+import { ServiceProvider } from "./ServiceProvider.js";
+import { TypeKey } from "./TypeKey.js";
 
 export type ServiceFactory = (sp: ServiceProvider) => any;
 

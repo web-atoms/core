@@ -1,7 +1,7 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { dateFormatISORegEx, JsonService } from "../../services/JsonService";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { dateFormatISORegEx, JsonService } from "../../services/JsonService.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 
 export class JsonServiceTest extends AtomTest {
 

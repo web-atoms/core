@@ -1,7 +1,7 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { StringHelper } from "../../core/StringHelper";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { StringHelper } from "../../core/StringHelper.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 export class StringHelperTest extends AtomTest {
     @Test
     public camelToHyphen(): void {

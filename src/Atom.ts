@@ -1,6 +1,6 @@
-import { App } from "./App";
-import { AtomDispatcher } from "./core/AtomDispatcher";
-import { CancelToken, IAnyInstanceType, INameValuePairs } from "./core/types";
+import { App } from "./App.js";
+import { AtomDispatcher } from "./core/AtomDispatcher.js";
+import { CancelToken, IAnyInstanceType, INameValuePairs } from "./core/types.js";
 
 export class Atom {
 

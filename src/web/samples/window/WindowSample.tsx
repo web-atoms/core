@@ -1,7 +1,7 @@
-import Bind from "../../../core/Bind";
-import XNode from "../../../core/XNode";
-import { NavigationService } from "../../../services/NavigationService";
-import { AtomControl } from "../../controls/AtomControl";
+import Bind from "../../../core/Bind.js";
+import XNode from "../../../core/XNode.js";
+import { NavigationService } from "../../../services/NavigationService.js";
+import { AtomControl } from "../../controls/AtomControl.js";
 
 export default class WindowSample extends AtomControl {
 

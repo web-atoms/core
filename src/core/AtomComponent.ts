@@ -1,17 +1,17 @@
-import { App } from "../App";
+import { App } from "../App.js";
 import { ArrayHelper, CancelToken, IAnyInstanceType, 
-    IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types";
-import { Inject } from "../di/Inject";
-import type { AtomControl } from "../web/controls/AtomControl";
-import { AtomDisposableList } from "./AtomDisposableList";
-import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
-import { bindSymbol } from "./Bind";
-import { visitDescendents, watchProperty } from "./Hacks";
-import { InheritedProperty } from "./InheritedProperty";
-import { IValueConverter } from "./IValueConverter";
-import { PropertyMap } from "./PropertyMap";
+    IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types.js";
+import { Inject } from "../di/Inject.js";
+import type { AtomControl } from "../web/controls/AtomControl.js";
+import { AtomDisposableList } from "./AtomDisposableList.js";
+import { AtomWatcher, ObjectProperty } from "./AtomWatcher.js";
+import { bindSymbol } from "./Bind.js";
+import { visitDescendents, watchProperty } from "./Hacks.js";
+import { InheritedProperty } from "./InheritedProperty.js";
+import { IValueConverter } from "./IValueConverter.js";
+import { PropertyMap } from "./PropertyMap.js";
 import XNode, { 
-    IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
+    IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode.js";
 
 interface IEventObject {
 

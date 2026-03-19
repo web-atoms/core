@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es2020",
         "module":"nodenext",
+        "incremental": true,
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
@@ -11,9 +12,14 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "allowSyntheticDefaultImports": true,
+        "importHelpers": true,
+        "jsx": "react",
+        "jsxFactory": "XNode.create",
         "lib": [
             "es6",
-            "dom"
+            "dom",
+            "ESNext.Disposable",
+            "ES2021.WeakRef"
         ]
     },
     "include": [

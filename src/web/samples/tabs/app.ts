@@ -1,6 +1,6 @@
-import { NavigationService } from "../../../services/NavigationService";
-import { AtomTabbedPage } from "../../controls/AtomTabbedPage";
-import WebApp from "../../WebApp";
+import { NavigationService } from "../../../services/NavigationService.js";
+import { AtomTabbedPage } from "../../controls/AtomTabbedPage.js";
+import WebApp from "../../WebApp.js";
 
 export class TabApp extends WebApp {
     public main(): void {

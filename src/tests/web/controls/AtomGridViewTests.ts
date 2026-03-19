@@ -1,12 +1,12 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import { App } from "../../../App";
-import { Atom } from "../../../Atom";
-import { AtomTest } from "../../../unit/AtomTest";
-import AtomWebTest from "../../../unit/AtomWebTest";
-import { AtomGridView } from "../../../web/controls/AtomGridView";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import TestItem from "@web-atoms/unit-test/dist/TestItem.js";
+import { App } from "../../../App.js";
+import { Atom } from "../../../Atom.js";
+import { AtomTest } from "../../../unit/AtomTest.js";
+import AtomWebTest from "../../../unit/AtomWebTest.js";
+import { AtomGridView } from "../../../web/controls/AtomGridView.js";
 
 @Category("Grid view")
 export class TestCase extends AtomWebTest {

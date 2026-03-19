@@ -1,8 +1,8 @@
-import { App } from "../../../../App";
-import { Inject } from "../../../../di/Inject";
-import { NavigationService } from "../../../../services/NavigationService";
-import { AtomViewModel } from "../../../../view-model/AtomViewModel";
-import { AtomTabbedPage } from "../../../controls/AtomTabbedPage";
+import { App } from "../../../../App.js";
+import { Inject } from "../../../../di/Inject.js";
+import { NavigationService } from "../../../../services/NavigationService.js";
+import { AtomViewModel } from "../../../../view-model/AtomViewModel.js";
+import { AtomTabbedPage } from "../../../controls/AtomTabbedPage.js";
 
 export default class TabHost extends AtomTabbedPage {
 

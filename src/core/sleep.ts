@@ -1,4 +1,4 @@
-import { CancelToken } from "./types";
+import { CancelToken } from "./types.js";
 
 export default function sleep(timeInMS: number, ct?: CancelToken, throwOnCancel = true) {
     let token = 0;

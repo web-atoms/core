@@ -1,8 +1,8 @@
-import { App } from "../../../../App";
-import { AtomControl } from "../../../controls/AtomControl";
-import { AtomGridSplitter } from "../../../controls/AtomGridSplitter";
-import { AtomGridView } from "../../../controls/AtomGridView";
-import { AtomItemsControl } from "../../../controls/AtomItemsControl";
+import { App } from "../../../../App.js";
+import { AtomControl } from "../../../controls/AtomControl.js";
+import { AtomGridSplitter } from "../../../controls/AtomGridSplitter.js";
+import { AtomGridView } from "../../../controls/AtomGridView.js";
+import { AtomItemsControl } from "../../../controls/AtomItemsControl.js";
 
 export class MovieList extends AtomGridView {
 

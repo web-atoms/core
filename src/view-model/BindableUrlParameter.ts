@@ -1,7 +1,7 @@
-import { BindableProperty } from "../core/BindableProperty";
-import { AtomViewModel } from "./AtomViewModel";
-import { registerInit } from "./baseTypes";
-import bindUrlParameter from "./bindUrlParameter";
+import { BindableProperty } from "../core/BindableProperty.js";
+import { AtomViewModel } from "./AtomViewModel.js";
+import { registerInit } from "./baseTypes.js";
+import bindUrlParameter from "./bindUrlParameter.js";
 
 export default function BindableUrlParameter(name: string): any {
     return (target: AtomViewModel, key: string | string, descriptor: PropertyDecorator): void => {

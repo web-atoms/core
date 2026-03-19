@@ -1,5 +1,5 @@
-import { AtomViewModel } from "./AtomViewModel";
-import { registerInit, viewModelInitFunc } from "./baseTypes";
+import { AtomViewModel } from "./AtomViewModel.js";
+import { registerInit, viewModelInitFunc } from "./baseTypes.js";
 /**
  * Setups a timer and disposes automatically when view model is destroyed. This will execute
  * given function only once unless `repeat` argument is `true`.

@@ -1,5 +1,5 @@
-import XNode from "../../core/XNode";
-import { PopupWindow } from "./PopupService";
+import XNode from "../../core/XNode.js";
+import { PopupWindow } from "./PopupService.js";
 
 import "./NotifcationPopup.global.css";
 

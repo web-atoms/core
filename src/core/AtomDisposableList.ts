@@ -1,4 +1,4 @@
-import { IDisposable } from "./types";
+import { IDisposable } from "./types.js";
 
 export class AtomDisposableList implements IDisposable {
 

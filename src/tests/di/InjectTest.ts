@@ -1,8 +1,8 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import DISingleton from "../../di/DISingleton";
-import { Inject } from "../../di/Inject";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import DISingleton from "../../di/DISingleton.js";
+import { Inject } from "../../di/Inject.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 
 export default class InjectTest extends AtomTest {
 

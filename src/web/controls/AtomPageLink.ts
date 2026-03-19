@@ -1,12 +1,12 @@
-import { App } from "../../App";
-import { BindableProperty } from "../../core/BindableProperty";
-import { CancelToken, IClassOf } from "../../core/types";
-import XNode from "../../core/XNode";
-import { IPageOptions, NavigationService } from "../../services/NavigationService";
-import AtomPageLinkStyle from "../styles/AtomPageLinkStyle";
-import { AtomStyle } from "../styles/AtomStyle";
-import { IStyleDeclaration } from "../styles/IStyleDeclaration";
-import { AtomControl } from "./AtomControl";
+import { App } from "../../App.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { CancelToken, IClassOf } from "../../core/types.js";
+import XNode from "../../core/XNode.js";
+import { IPageOptions, NavigationService } from "../../services/NavigationService.js";
+import AtomPageLinkStyle from "../styles/AtomPageLinkStyle.js";
+import { AtomStyle } from "../styles/AtomStyle.js";
+import { IStyleDeclaration } from "../styles/IStyleDeclaration.js";
+import { AtomControl } from "./AtomControl.js";
 
 export class AtomPageLink extends AtomControl {
 

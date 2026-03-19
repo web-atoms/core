@@ -1,12 +1,12 @@
-import { App } from "../../../../App";
-import Bind from "../../../../core/Bind";
-import { BindableProperty } from "../../../../core/BindableProperty";
-import XNode from "../../../../core/XNode";
-import { Inject } from "../../../../di/Inject";
-import { AtomWindowViewModel } from "../../../../view-model/AtomWindowViewModel";
-import { AtomGridView } from "../../../controls/AtomGridView";
-import { AtomListBox } from "../../../controls/AtomListBox";
-import { MovieService } from "../../MovieService";
+import { App } from "../../../../App.js";
+import Bind from "../../../../core/Bind.js";
+import { BindableProperty } from "../../../../core/BindableProperty.js";
+import XNode from "../../../../core/XNode.js";
+import { Inject } from "../../../../di/Inject.js";
+import { AtomWindowViewModel } from "../../../../view-model/AtomWindowViewModel.js";
+import { AtomGridView } from "../../../controls/AtomGridView.js";
+import { AtomListBox } from "../../../controls/AtomListBox.js";
+import { MovieService } from "../../MovieService.js";
 
 export default class Page1 extends AtomGridView {
     protected create(): void {

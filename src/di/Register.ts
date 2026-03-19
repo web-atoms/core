@@ -1,6 +1,6 @@
-import { DI } from "../core/types";
-import { IMockOrInject } from "./IMockOrInject";
-import { Scope, ServiceCollection } from "./ServiceCollection";
+import { DI } from "../core/types.js";
+import { IMockOrInject } from "./IMockOrInject.js";
+import { Scope, ServiceCollection } from "./ServiceCollection.js";
 
 export interface IServiceDef {
     id?: string;

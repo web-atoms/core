@@ -7,6 +7,7 @@
             "label": "All Build",
             "dependsOn":[
                 "TypeScript Build Watch",
+                "TypeScript ESM Build Watch",
                 "Build CSS Watch",
                 "Web Atoms Dev Server",
             ],
@@ -20,6 +21,12 @@
             "label": "TypeScript Build Watch",
             "type": "typescript",
             "tsconfig": "tsconfig.json",
+            "option": "watch",
+        },
+        {
+            "label": "TypeScript ESM Build Watch",
+            "type": "typescript",
+            "tsconfig": "tsconfig.esm.json",
             "option": "watch",
         },
         {

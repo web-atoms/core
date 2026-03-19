@@ -1,8 +1,8 @@
-import { AtomDisposableList } from "../core/AtomDisposableList";
-import { AtomOnce } from "../core/AtomOnce";
-import { AtomUri } from "../core/AtomUri";
-import { IDisposable } from "../core/types";
-import { AtomViewModel } from "./AtomViewModel";
+import { AtomDisposableList } from "../core/AtomDisposableList.js";
+import { AtomOnce } from "../core/AtomOnce.js";
+import { AtomUri } from "../core/AtomUri.js";
+import { IDisposable } from "../core/types.js";
+import { AtomViewModel } from "./AtomViewModel.js";
 /**
  * Binds property of View Model to URL Parameter, it can read query string as well,
  * however it will only persist value in hash

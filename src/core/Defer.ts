@@ -1,4 +1,4 @@
-import { CancelToken } from "./types";
+import { CancelToken } from "./types.js";
 
 /**
  * Defers execution for given milliseconds. And previous pending

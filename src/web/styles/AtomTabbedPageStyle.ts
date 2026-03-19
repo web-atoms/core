@@ -1,8 +1,8 @@
 import CloseButtonDataUrl from "@web-atoms/core/src/web/images/close-button-hover.svg";
 import CloseButtonHoverDataUrl from "@web-atoms/core/src/web/images/close-button.svg";
-import { AtomStyle } from "./AtomStyle";
-import { AtomTheme } from "./AtomTheme";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { AtomStyle } from "./AtomStyle.js";
+import { AtomTheme } from "./AtomTheme.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 export class AtomTabbedPageStyle extends AtomStyle {
 

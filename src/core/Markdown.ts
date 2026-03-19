@@ -1,6 +1,6 @@
-import { App } from "../App";
-import MarkdownService from "../web/services/MarkdownService";
-import FormattedString from "./FormattedString";
+import { App } from "../App.js";
+import MarkdownService from "../web/services/MarkdownService.js";
+import FormattedString from "./FormattedString.js";
 
 export default class Markdown extends FormattedString {
 

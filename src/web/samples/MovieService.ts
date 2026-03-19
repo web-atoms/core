@@ -1,5 +1,5 @@
-import { RegisterSingleton } from "../../di/RegisterSingleton";
-import { BaseService, Get } from "../../services/http/RestService";
+import { RegisterSingleton } from "../../di/RegisterSingleton.js";
+import { BaseService, Get } from "../../services/http/RestService.js";
 
 @RegisterSingleton
 export class MovieService extends BaseService {

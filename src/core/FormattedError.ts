@@ -1,4 +1,4 @@
-import FormattedString from "./FormattedString";
+import FormattedString from "./FormattedString.js";
 
 export default class FormattedError implements Error {
     public name: string;

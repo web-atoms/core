@@ -1,9 +1,9 @@
-import { App } from "../App";
-import { AtomComponent } from "../core/AtomComponent";
-import { AtomUri } from "../core/AtomUri";
-import FormattedString from "../core/FormattedString";
-import { ArrayHelper, CancelToken, IDisposable, INameValuePairs } from "../core/types";
-import ReferenceService, { ObjectReference } from "./ReferenceService";
+import { App } from "../App.js";
+import { AtomComponent } from "../core/AtomComponent.js";
+import { AtomUri } from "../core/AtomUri.js";
+import FormattedString from "../core/FormattedString.js";
+import { ArrayHelper, CancelToken, IDisposable, INameValuePairs } from "../core/types.js";
+import ReferenceService, { ObjectReference } from "./ReferenceService.js";
 
 // export interface ILocation {
 //     href?: string;

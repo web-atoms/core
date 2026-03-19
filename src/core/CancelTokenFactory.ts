@@ -1,7 +1,7 @@
-import DITransient from "../di/DITransient";
-import { AtomBinder } from "./AtomBinder";
-import TransientDisposable from "./TransientDisposable";
-import { CancelToken, IDisposable } from "./types";
+import DITransient from "../di/DITransient.js";
+import { AtomBinder } from "./AtomBinder.js";
+import TransientDisposable from "./TransientDisposable.js";
+import { CancelToken, IDisposable } from "./types.js";
 
 /**
  * We recommend using CancelTokenFactory instead of using CancelToken directly.

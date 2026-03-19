@@ -1,13 +1,13 @@
-import { App } from "../App";
-import { Atom } from "../Atom";
-import { AtomUri } from "../core/AtomUri";
-import { IDisposable, INameValuePairs, INameValues } from "../core/types";
-import { Inject } from "../di/Inject";
-import { RegisterSingleton } from "../di/RegisterSingleton";
-import { ServiceCollection } from "../di/ServiceCollection";
-import { AtomViewModel } from "../view-model/AtomViewModel";
-import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import { NavigationService } from "./NavigationService";
+import { App } from "../App.js";
+import { Atom } from "../Atom.js";
+import { AtomUri } from "../core/AtomUri.js";
+import { IDisposable, INameValuePairs, INameValues } from "../core/types.js";
+import { Inject } from "../di/Inject.js";
+import { RegisterSingleton } from "../di/RegisterSingleton.js";
+import { ServiceCollection } from "../di/ServiceCollection.js";
+import { AtomViewModel } from "../view-model/AtomViewModel.js";
+import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel.js";
+import { NavigationService } from "./NavigationService.js";
 
 export interface IWindowRegistration {
     windowType: string;

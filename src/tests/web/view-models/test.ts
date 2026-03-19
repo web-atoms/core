@@ -1,10 +1,10 @@
-import { App } from "../../../App";
-import { BindableProperty } from "../../../core/BindableProperty";
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import { AtomViewModel, waitForReady, Watch } from "../../../view-model/AtomViewModel";
+import { App } from "../../../App.js";
+import { BindableProperty } from "../../../core/BindableProperty.js";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import TestItem from "@web-atoms/unit-test/dist/TestItem.js";
+import { AtomViewModel, waitForReady, Watch } from "../../../view-model/AtomViewModel.js";
 
 interface ICustomer {
     firstName: string;

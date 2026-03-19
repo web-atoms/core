@@ -1,7 +1,7 @@
-import { BindableProperty } from "../../core/BindableProperty";
-import { AtomStyle } from "./AtomStyle";
-import { AtomTheme } from "./AtomTheme";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { AtomStyle } from "./AtomStyle.js";
+import { AtomTheme } from "./AtomTheme.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 export class AtomListBoxStyle extends AtomStyle {
 

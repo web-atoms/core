@@ -1,7 +1,7 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { parsePath, parsePathLists } from "../../core/ExpressionParser";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { parsePath, parsePathLists } from "../../core/ExpressionParser.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 
 export class ExpressionParserTest extends AtomTest {
 

@@ -1,19 +1,19 @@
-import { AtomWindowStyle } from "./AtomWindowStyle";
+import { AtomWindowStyle } from "./AtomWindowStyle.js";
 
-import { AtomPopupStyle } from "./AtomPopupStyle";
+import { AtomPopupStyle } from "./AtomPopupStyle.js";
 
-import { App } from "../../App";
-import { BindableProperty } from "../../core/BindableProperty";
-import Color from "../../core/Color";
-import Colors, { ColorItem } from "../../core/Colors";
-import { IDisposable, INotifyPropertyChanging } from "../../core/types";
-import { Inject } from "../../di/Inject";
-import { RegisterSingleton } from "../../di/RegisterSingleton";
-import { NavigationService } from "../../services/NavigationService";
-import { AtomListBox } from "../controls/AtomListBox";
-import { AtomWindow } from "../controls/AtomWindow";
-import { AtomStyleSheet } from "../styles/AtomStyleSheet";
-import { AtomListBoxStyle } from "./AtomListBoxStyle";
+import { App } from "../../App.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import Color from "../../core/Color.js";
+import Colors, { ColorItem } from "../../core/Colors.js";
+import { IDisposable, INotifyPropertyChanging } from "../../core/types.js";
+import { Inject } from "../../di/Inject.js";
+import { RegisterSingleton } from "../../di/RegisterSingleton.js";
+import { NavigationService } from "../../services/NavigationService.js";
+import { AtomListBox } from "../controls/AtomListBox.js";
+import { AtomWindow } from "../controls/AtomWindow.js";
+import { AtomStyleSheet } from "../styles/AtomStyleSheet.js";
+import { AtomListBoxStyle } from "./AtomListBoxStyle.js";
 
 @RegisterSingleton
 export class AtomTheme extends AtomStyleSheet

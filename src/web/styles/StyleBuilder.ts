@@ -1,5 +1,5 @@
-import Color from "../../core/Color";
-import { BorderStyleType, IStyleDeclaration } from "./IStyleDeclaration";
+import Color from "../../core/Color.js";
+import { BorderStyleType, IStyleDeclaration } from "./IStyleDeclaration.js";
 
 export type CssNumber = number | string;
 

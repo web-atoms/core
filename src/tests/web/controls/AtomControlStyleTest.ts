@@ -1,11 +1,11 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import AtomWebTest from "../../../unit/AtomWebTest";
-import { AtomViewModel } from "../../../view-model/AtomViewModel";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import { AtomStyle } from "../../../web/styles/AtomStyle";
-import { IStyleDeclaration } from "../../../web/styles/IStyleDeclaration";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import AtomWebTest from "../../../unit/AtomWebTest.js";
+import { AtomViewModel } from "../../../view-model/AtomViewModel.js";
+import { AtomControl } from "../../../web/controls/AtomControl.js";
+import { AtomStyle } from "../../../web/styles/AtomStyle.js";
+import { IStyleDeclaration } from "../../../web/styles/IStyleDeclaration.js";
 
 class TestControl extends AtomControl {
 

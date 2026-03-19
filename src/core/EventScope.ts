@@ -1,6 +1,6 @@
-import DateTime from "@web-atoms/date-time/dist/DateTime";
-import { CancelToken, IDisposable } from "./types";
-import type { AtomControl } from "../web/controls/AtomControl";
+import DateTime from "@web-atoms/date-time/dist/DateTime.js";
+import { CancelToken, IDisposable } from "./types.js";
+import type { AtomControl } from "../web/controls/AtomControl.js";
 
 const key = DateTime.now.msSinceEpoch;
 let id = 1;

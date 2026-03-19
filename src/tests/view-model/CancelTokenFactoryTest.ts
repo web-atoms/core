@@ -1,12 +1,12 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import { Atom } from "../../Atom";
-import CancelTokenFactory from "../../core/CancelTokenFactory";
-import { Inject } from "../../di/Inject";
-import { AtomTest } from "../../unit/AtomTest";
-import { AtomViewModel, waitForReady } from "../../view-model/AtomViewModel";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import TestItem from "@web-atoms/unit-test/dist/TestItem.js";
+import { Atom } from "../../Atom.js";
+import CancelTokenFactory from "../../core/CancelTokenFactory.js";
+import { Inject } from "../../di/Inject.js";
+import { AtomTest } from "../../unit/AtomTest.js";
+import { AtomViewModel, waitForReady } from "../../view-model/AtomViewModel.js";
 
 class CVM extends AtomViewModel {
 

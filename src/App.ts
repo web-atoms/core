@@ -1,11 +1,11 @@
-import { AtomBinder } from "./core/AtomBinder";
-import { AtomDispatcher } from "./core/AtomDispatcher";
-import { AtomUri } from "./core/AtomUri";
-import { IScreen } from "./core/IScreen";
-import { CancelToken, IDisposable } from "./core/types";
-import { RegisterSingleton } from "./di/RegisterSingleton";
-import { ServiceProvider } from "./di/ServiceProvider";
-import { BusyIndicatorService, IBackgroundTaskInfo } from "./services/BusyIndicatorService";
+import { AtomBinder } from "./core/AtomBinder.js";
+import { AtomDispatcher } from "./core/AtomDispatcher.js";
+import { AtomUri } from "./core/AtomUri.js";
+import { IScreen } from "./core/IScreen.js";
+import { CancelToken, IDisposable } from "./core/types.js";
+import { RegisterSingleton } from "./di/RegisterSingleton.js";
+import { ServiceProvider } from "./di/ServiceProvider.js";
+import { BusyIndicatorService, IBackgroundTaskInfo } from "./services/BusyIndicatorService.js";
 
 import "./core/AtomList";
 import "@web-atoms/date-time/dist/DateTime";

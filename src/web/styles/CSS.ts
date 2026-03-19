@@ -1,5 +1,5 @@
-import { AtomStyleRules } from "../../style/StyleRule";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { AtomStyleRules } from "../../style/StyleRule.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 let styleId = 1;
 

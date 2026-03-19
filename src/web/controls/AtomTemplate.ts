@@ -1,4 +1,4 @@
-import { AtomControl } from "./AtomControl";
+import { AtomControl } from "./AtomControl.js";
 
 export class AtomTemplate extends AtomControl {
 

@@ -1,14 +1,14 @@
-import { App } from "../../App";
-import Bind from "../../core/Bind";
-import { BindableProperty } from "../../core/BindableProperty";
-import { IClassOf, IDisposable, IRect } from "../../core/types";
-import XNode from "../../core/XNode";
-import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
-import { AtomUI } from "../core/AtomUI";
-import { AtomTheme } from "../styles/AtomTheme";
-import { AtomWindowStyle } from "../styles/AtomWindowStyle";
-import { AtomControl } from "./AtomControl";
-import { AtomTemplate } from "./AtomTemplate";
+import { App } from "../../App.js";
+import Bind from "../../core/Bind.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { IClassOf, IDisposable, IRect } from "../../core/types.js";
+import XNode from "../../core/XNode.js";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel.js";
+import { AtomUI } from "../core/AtomUI.js";
+import { AtomTheme } from "../styles/AtomTheme.js";
+import { AtomWindowStyle } from "../styles/AtomWindowStyle.js";
+import { AtomControl } from "./AtomControl.js";
+import { AtomTemplate } from "./AtomTemplate.js";
 
 export function getTemplateParent(e: HTMLElement) {
     const tp = e._templateParent;

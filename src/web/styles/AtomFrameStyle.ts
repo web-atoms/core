@@ -1,6 +1,6 @@
-import { AtomStyle } from "./AtomStyle";
-import { IStyleDeclaration } from "./IStyleDeclaration";
-import StyleBuilder from "./StyleBuilder";
+import { AtomStyle } from "./AtomStyle.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
+import StyleBuilder from "./StyleBuilder.js";
 
 export default class AtomFrameStyle extends AtomStyle {
 

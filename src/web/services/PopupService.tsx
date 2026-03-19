@@ -1,14 +1,14 @@
-import { App } from "../../App";
-import { AtomDisposableList } from "../../core/AtomDisposableList";
-import { getOwnInheritedProperty } from "../../core/InheritedProperty";
-import { CancelToken } from "../../core/types";
-import XNode from "../../core/XNode";
-import { AtomControl } from "../controls/AtomControl";
-import { LastTarget } from "./LastTarget";
+import { App } from "../../App.js";
+import { AtomDisposableList } from "../../core/AtomDisposableList.js";
+import { getOwnInheritedProperty } from "../../core/InheritedProperty.js";
+import { CancelToken } from "../../core/types.js";
+import XNode from "../../core/XNode.js";
+import { AtomControl } from "../controls/AtomControl.js";
+import { LastTarget } from "./LastTarget.js";
 
 import "./PopupService.global.css";
 
-import PopupWindowA, { ConfirmPopup } from "./PopupWindow";
+import PopupWindowA, { ConfirmPopup } from "./PopupWindow.js";
 
 
 export const PopupWindow = PopupWindowA;

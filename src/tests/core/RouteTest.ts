@@ -1,7 +1,7 @@
-import Test from "@web-atoms/unit-test/dist/Test";
-import { AtomTest } from "../../unit/AtomTest";
-import Route from "../../core/Route";
-import Assert from "@web-atoms/unit-test/dist/Assert";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { AtomTest } from "../../unit/AtomTest.js";
+import Route from "../../core/Route.js";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
 
 export default class RouteTest extends AtomTest {
 

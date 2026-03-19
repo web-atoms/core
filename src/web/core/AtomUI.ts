@@ -1,4 +1,4 @@
-import { INameValues, IRect } from "../../core/types";
+import { INameValues, IRect } from "../../core/types.js";
 
 export class AncestorEnumerator {
 

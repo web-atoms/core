@@ -1,11 +1,11 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { App } from "../App";
-import { Atom } from "../Atom";
-import { CancelToken } from "../core/types";
-import { MockNavigationService } from "../services/MockNavigationService";
-import { NavigationService } from "../services/NavigationService";
-import { AtomTest } from "../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { App } from "../App.js";
+import { Atom } from "../Atom.js";
+import { CancelToken } from "../core/types.js";
+import { MockNavigationService } from "../services/MockNavigationService.js";
+import { NavigationService } from "../services/NavigationService.js";
+import { AtomTest } from "../unit/AtomTest.js";
 
 class TestApp extends App {
 

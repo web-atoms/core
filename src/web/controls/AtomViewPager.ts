@@ -1,12 +1,12 @@
-import { AtomBinder } from "../../core/AtomBinder";
-import { AtomLoader } from "../../core/AtomLoader";
-import { AtomUri } from "../../core/AtomUri";
-import { BindableProperty } from "../../core/BindableProperty";
-import { IClassOf } from "../../core/types";
-import { JsonService } from "../../services/JsonService";
-import { AtomContentControl } from "./AtomContentControl";
-import { AtomControl } from "./AtomControl";
-import { AtomItemsControl } from "./AtomItemsControl";
+import { AtomBinder } from "../../core/AtomBinder.js";
+import { AtomLoader } from "../../core/AtomLoader.js";
+import { AtomUri } from "../../core/AtomUri.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { IClassOf } from "../../core/types.js";
+import { JsonService } from "../../services/JsonService.js";
+import { AtomContentControl } from "./AtomContentControl.js";
+import { AtomControl } from "./AtomControl.js";
+import { AtomItemsControl } from "./AtomItemsControl.js";
 
 export class AtomViewPager extends AtomItemsControl {
 

@@ -1,7 +1,7 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import DISingleton from "../../di/DISingleton";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import DISingleton from "../../di/DISingleton.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 
 export default class DIGlobalTest extends AtomTest {
 

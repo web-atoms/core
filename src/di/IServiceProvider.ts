@@ -1,4 +1,4 @@
-import { IClassOf } from "../core/types";
+import { IClassOf } from "../core/types.js";
 
 export interface IServiceProvider {
 

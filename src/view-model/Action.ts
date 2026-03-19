@@ -1,14 +1,14 @@
-import { App } from "../App";
-import Command from "../core/Command";
-import EventScope from "../core/EventScope";
-import FormattedString from "../core/FormattedString";
-import { StringHelper } from "../core/StringHelper";
-import { CancelToken, errorHandled } from "../core/types";
-import XNode from "../core/XNode";
-import JsonError from "../services/http/JsonError";
-import { NavigationService, NotifyType } from "../services/NavigationService";
-import type { AtomControl } from "../web/controls/AtomControl";
-import PopupService from "../web/services/PopupService";
+import { App } from "../App.js";
+import Command from "../core/Command.js";
+import EventScope from "../core/EventScope.js";
+import FormattedString from "../core/FormattedString.js";
+import { StringHelper } from "../core/StringHelper.js";
+import { CancelToken, errorHandled } from "../core/types.js";
+import XNode from "../core/XNode.js";
+import JsonError from "../services/http/JsonError.js";
+import { NavigationService, NotifyType } from "../services/NavigationService.js";
+import type { AtomControl } from "../web/controls/AtomControl.js";
+import PopupService from "../web/services/PopupService.js";
 
 export type onEventSetBusyTypes = "target" | "current-target" | "till-current-target" | "ancestors" | "button";
 

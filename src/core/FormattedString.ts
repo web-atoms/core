@@ -1,4 +1,4 @@
-import { App } from "../App";
+import { App } from "../App.js";
 
 export default abstract class FormattedString {
 

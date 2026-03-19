@@ -1,4 +1,4 @@
-import { StringHelper } from "./StringHelper";
+import { StringHelper } from "./StringHelper.js";
 
 export type ISubstitution = string | { variable: string };
 

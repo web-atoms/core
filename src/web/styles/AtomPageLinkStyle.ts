@@ -1,5 +1,5 @@
-import { AtomStyle } from "./AtomStyle";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { AtomStyle } from "./AtomStyle.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 export default class AtomPageLinkStyle extends AtomStyle {
 

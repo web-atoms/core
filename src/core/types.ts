@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import Map from "./AtomMap";
+import Map from "./AtomMap.js";
 
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {

@@ -1,4 +1,4 @@
-import { AtomViewModel } from "./AtomViewModel";
+import { AtomViewModel } from "./AtomViewModel.js";
 
 const Disposable = (target: AtomViewModel, key: string) => {
     // property value

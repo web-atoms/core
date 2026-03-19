@@ -1,4 +1,4 @@
-import { TypeKey } from "./TypeKey";
+import { TypeKey } from "./TypeKey.js";
 
 export interface IPropertyTypes {
     [key: string]: {new ()};

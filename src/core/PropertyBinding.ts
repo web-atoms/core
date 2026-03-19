@@ -1,1 +1,1 @@
-export { PropertyBinding } from "./AtomComponent";
+export { PropertyBinding } from "./AtomComponent.js";

@@ -1,7 +1,7 @@
-import XNode from "../../../core/XNode";
-import { AtomViewModel } from "../../../view-model/AtomViewModel";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import { AtomListBox } from "../../../web/controls/AtomListBox";
+import XNode from "../../../core/XNode.js";
+import { AtomViewModel } from "../../../view-model/AtomViewModel.js";
+import { AtomControl } from "../../../web/controls/AtomControl.js";
+import { AtomListBox } from "../../../web/controls/AtomListBox.js";
 
 class PageSampleViewModel extends AtomViewModel {}
 

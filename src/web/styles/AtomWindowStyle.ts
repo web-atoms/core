@@ -1,7 +1,7 @@
 import closeButtonHover from "@web-atoms/core/src/web/images/close-button-hover.svg";
 import closeButton from "@web-atoms/core/src/web/images/images/close-button.svg";
-import { AtomStyle } from "../styles/AtomStyle";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { AtomStyle } from "../styles/AtomStyle.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 /**
  * Represents Window Style, in order to add more subclasses

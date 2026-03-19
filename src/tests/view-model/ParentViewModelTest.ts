@@ -1,7 +1,7 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { AtomTest } from "../../unit/AtomTest";
-import { AtomViewModel, Validate } from "../../view-model/AtomViewModel";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { AtomTest } from "../../unit/AtomTest.js";
+import { AtomViewModel, Validate } from "../../view-model/AtomViewModel.js";
 
 export default class ParentViewModelTest extends AtomTest {
 

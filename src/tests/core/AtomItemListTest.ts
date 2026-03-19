@@ -1,8 +1,8 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { AtomDisposableList } from "../../core/AtomDisposableList";
-import AtomSelectableList from "../../core/AtomSelectableList";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { AtomDisposableList } from "../../core/AtomDisposableList.js";
+import AtomSelectableList from "../../core/AtomSelectableList.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 
 export class AtomItemListTest extends AtomTest {
 

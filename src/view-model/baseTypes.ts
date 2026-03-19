@@ -1,4 +1,4 @@
-import { IDisposable } from "../core/types";
+import { IDisposable } from "../core/types.js";
 
 export interface IAtomViewModel {
     setupWatch(ft: () => any, proxy?: () => any, forValidation?: boolean, name?: string): IDisposable ;

@@ -1,4 +1,4 @@
-import WebImage from "../../core/WebImage";
+import WebImage from "../../core/WebImage.js";
 
 // tslint:disable
 declare var UMD: any;

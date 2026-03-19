@@ -1,5 +1,5 @@
-import { AtomUI } from "../web/core/AtomUI";
-import { INameValuePairs, INameValues } from "./types";
+import { AtomUI } from "../web/core/AtomUI.js";
+import { INameValuePairs, INameValues } from "./types.js";
 
 export class AtomUri {
     public protocol: string;

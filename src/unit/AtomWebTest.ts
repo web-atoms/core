@@ -1,11 +1,11 @@
-import { AtomDispatcher } from "../core/AtomDispatcher";
-import { MockApp } from "../MockApp";
-import { MockNavigationService } from "../services/MockNavigationService";
-import { NavigationService } from "../services/NavigationService";
-import { AtomTest } from "./AtomTest";
-import { AtomGridView } from "../web/controls/AtomGridView";
-import { AtomStyleSheet } from "../web/styles/AtomStyleSheet";
-import { AtomTheme } from "../web/styles/AtomTheme";
+import { AtomDispatcher } from "../core/AtomDispatcher.js";
+import { MockApp } from "../MockApp.js";
+import { MockNavigationService } from "../services/MockNavigationService.js";
+import { NavigationService } from "../services/NavigationService.js";
+import { AtomTest } from "./AtomTest.js";
+import { AtomGridView } from "../web/controls/AtomGridView.js";
+import { AtomStyleSheet } from "../web/styles/AtomStyleSheet.js";
+import { AtomTheme } from "../web/styles/AtomTheme.js";
 
 export class MockWebApp extends MockApp {
 

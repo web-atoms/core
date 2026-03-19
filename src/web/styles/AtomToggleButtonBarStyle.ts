@@ -1,8 +1,8 @@
-import { BindableProperty } from "../../core/BindableProperty";
-import { AtomListBoxStyle } from "./AtomListBoxStyle";
-import { AtomStyleSheet } from "./AtomStyleSheet";
-import { AtomTheme } from "./AtomTheme";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { AtomListBoxStyle } from "./AtomListBoxStyle.js";
+import { AtomStyleSheet } from "./AtomStyleSheet.js";
+import { AtomTheme } from "./AtomTheme.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 export class AtomToggleButtonBarStyle extends AtomListBoxStyle {
 

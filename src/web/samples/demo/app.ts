@@ -1,6 +1,6 @@
-import WebApp from "../../../web/WebApp";
-import { MovieList } from "./views/MovieList";
-import { MovieListViewModel } from "./views/MovieListViewModel";
+import WebApp from "../../../web/WebApp.js";
+import { MovieList } from "./views/MovieList.js";
+import { MovieListViewModel } from "./views/MovieListViewModel.js";
 
 export class SampleApp extends WebApp {
 

@@ -1,12 +1,12 @@
-import { App, AtomAction } from "../App";
-import { Atom } from "../Atom";
-import { AtomBinder } from "../core/AtomBinder";
-import { AtomDisposableList } from "../core/AtomDisposableList";
-import { AtomWatcher } from "../core/AtomWatcher";
-import { BindableProperty } from "../core/BindableProperty";
-import { IDisposable } from "../core/types";
-import { Inject } from "../di/Inject";
-import { IAtomViewModel, registerInit, viewModelInitFunc } from "./baseTypes";
+import { App, AtomAction } from "../App.js";
+import { Atom } from "../Atom.js";
+import { AtomBinder } from "../core/AtomBinder.js";
+import { AtomDisposableList } from "../core/AtomDisposableList.js";
+import { AtomWatcher } from "../core/AtomWatcher.js";
+import { BindableProperty } from "../core/BindableProperty.js";
+import { IDisposable } from "../core/types.js";
+import { Inject } from "../di/Inject.js";
+import { IAtomViewModel, registerInit, viewModelInitFunc } from "./baseTypes.js";
 
 function runDecoratorInits(): void {
     const v: any = this.constructor.prototype;

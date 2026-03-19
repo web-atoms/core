@@ -1,12 +1,12 @@
-import { App } from "../../App";
-import { IDisposable } from "../../core/types";
-import { Inject } from "../../di/Inject";
-import { RegisterSingleton } from "../../di/RegisterSingleton";
-import { BusyIndicatorService } from "../../services/BusyIndicatorService";
-import { NavigationService } from "../../services/NavigationService";
-import { AtomControl } from "../controls/AtomControl";
-import { cssNumberToString } from "../styles/StyleBuilder";
-import { WindowService } from "./WindowService";
+import { App } from "../../App.js";
+import { IDisposable } from "../../core/types.js";
+import { Inject } from "../../di/Inject.js";
+import { RegisterSingleton } from "../../di/RegisterSingleton.js";
+import { BusyIndicatorService } from "../../services/BusyIndicatorService.js";
+import { NavigationService } from "../../services/NavigationService.js";
+import { AtomControl } from "../controls/AtomControl.js";
+import { cssNumberToString } from "../styles/StyleBuilder.js";
+import { WindowService } from "./WindowService.js";
 
 @RegisterSingleton
 export class WebBusyIndicatorService extends BusyIndicatorService {

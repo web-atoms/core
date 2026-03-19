@@ -1,7 +1,7 @@
-import { App } from "../App";
-import { Atom } from "../Atom";
-import DISingleton from "../di/DISingleton";
-import { Inject } from "../di/Inject";
+import { App } from "../App.js";
+import { Atom } from "../Atom.js";
+import DISingleton from "../di/DISingleton.js";
+import { Inject } from "../di/Inject.js";
 
 export type CacheSeconds<T> = number | ((result: T) => number);
 export interface ICacheEntry<T> {

@@ -1,4 +1,4 @@
-import { ArrayHelper, IDisposable  } from "./types";
+import { ArrayHelper, IDisposable  } from "./types.js";
 
 export const symbolHandlers = Symbol.for("handlers");
 export const symbolBindable = Symbol.for("bindable");

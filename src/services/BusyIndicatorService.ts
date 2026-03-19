@@ -1,5 +1,5 @@
-import { IDisposable } from "../core/types";
-import { RegisterSingleton } from "../di/RegisterSingleton";
+import { IDisposable } from "../core/types.js";
+import { RegisterSingleton } from "../di/RegisterSingleton.js";
 
 export interface IBackgroundTaskInfo {
     title?: string;

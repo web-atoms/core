@@ -1,6 +1,6 @@
-import DISingleton from "../../di/DISingleton";
-import { RegisterSingleton } from "../../di/RegisterSingleton";
-import { Register } from "../../di/Register";
+import DISingleton from "../../di/DISingleton.js";
+import { RegisterSingleton } from "../../di/RegisterSingleton.js";
+import { Register } from "../../di/Register.js";
 
 type Processor = [string, string, (s: string, e: string, t: string) => string ];
 

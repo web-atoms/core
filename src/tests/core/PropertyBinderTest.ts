@@ -1,7 +1,7 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { PropertyBinding } from "../../core/PropertyBinding";
-import { AtomTest } from "../../unit/AtomTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { PropertyBinding } from "../../core/PropertyBinding.js";
+import { AtomTest } from "../../unit/AtomTest.js";
 
 class SourceClass {
 

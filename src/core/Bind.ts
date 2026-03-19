@@ -1,7 +1,7 @@
-import type { App } from "../App";
-import { parsePath, parsePathLists } from "./ExpressionParser";
-import { IValueConverter } from "./IValueConverter";
-import { CancelToken, ignoreValue } from "./types";
+import type { App } from "../App.js";
+import { parsePath, parsePathLists } from "./ExpressionParser.js";
+import { IValueConverter } from "./IValueConverter.js";
+import { CancelToken, ignoreValue } from "./types.js";
 
 export interface IAtomComponent {
     element: any;

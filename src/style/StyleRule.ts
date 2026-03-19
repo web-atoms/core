@@ -1,6 +1,6 @@
-import { ColorItem } from "../core/Colors";
-import WebImage from "../core/WebImage";
-import { IStyleDeclaration } from "../web/styles/IStyleDeclaration";
+import { ColorItem } from "../core/Colors.js";
+import WebImage from "../core/WebImage.js";
+import { IStyleDeclaration } from "../web/styles/IStyleDeclaration.js";
 
 export type StylePosition = "" | "default" | "initial" | "static" | "relative" | "absolute" | string;
 export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "center" | "justify";

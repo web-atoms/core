@@ -1,13 +1,13 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { App } from "../../../App";
-import { Atom } from "../../../Atom";
-import { BindableProperty } from "../../../core/BindableProperty";
-import { AtomTest } from "../../../unit/AtomTest";
-import { AtomViewModel, waitForReady } from "../../../view-model/AtomViewModel";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { App } from "../../../App.js";
+import { Atom } from "../../../Atom.js";
+import { BindableProperty } from "../../../core/BindableProperty.js";
+import { AtomTest } from "../../../unit/AtomTest.js";
+import { AtomViewModel, waitForReady } from "../../../view-model/AtomViewModel.js";
+import { AtomControl } from "../../../web/controls/AtomControl.js";
+import { AtomItemsControl } from "../../../web/controls/AtomItemsControl.js";
 
 interface IMovie {
     label: string;

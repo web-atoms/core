@@ -1,12 +1,12 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import XNode, { IMergedControl } from "../../../core/XNode";
-import { MockNavigationService } from "../../../services/MockNavigationService";
-import { NavigationService } from "../../../services/NavigationService";
-import AtomWebTest from "../../../unit/AtomWebTest";
-import { AtomComboBox } from "../../../web/controls/AtomComboBox";
-import { AtomPageLink } from "../../../web/controls/AtomPageLink";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import TestItem from "@web-atoms/unit-test/dist/TestItem.js";
+import XNode, { IMergedControl } from "../../../core/XNode.js";
+import { MockNavigationService } from "../../../services/MockNavigationService.js";
+import { NavigationService } from "../../../services/NavigationService.js";
+import AtomWebTest from "../../../unit/AtomWebTest.js";
+import { AtomComboBox } from "../../../web/controls/AtomComboBox.js";
+import { AtomPageLink } from "../../../web/controls/AtomPageLink.js";
 
 export class TestCase extends AtomWebTest {
 

@@ -1,7 +1,7 @@
-import { AtomBinder } from "../../core/AtomBinder";
-import { AtomStyle } from "../styles/AtomStyle";
-import { IStyleDeclaration } from "../styles/IStyleDeclaration";
-import { AtomControl } from "./AtomControl";
+import { AtomBinder } from "../../core/AtomBinder.js";
+import { AtomStyle } from "../styles/AtomStyle.js";
+import { IStyleDeclaration } from "../styles/IStyleDeclaration.js";
+import { AtomControl } from "./AtomControl.js";
 
 export class AtomContentControl extends AtomControl {
 

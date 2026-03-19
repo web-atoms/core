@@ -1,6 +1,6 @@
-import { App } from "./App";
-import { MockNavigationService } from "./services/MockNavigationService";
-import { NavigationService } from "./services/NavigationService";
+import { App } from "./App.js";
+import { MockNavigationService } from "./services/MockNavigationService.js";
+import { NavigationService } from "./services/NavigationService.js";
 
 export class MockApp extends App {
 

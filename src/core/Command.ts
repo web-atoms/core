@@ -1,8 +1,8 @@
-import type { App } from "../App";
-import type { AtomControl } from "../web/controls/AtomControl";
-import EventScope from "./EventScope";
-import Route from "./Route";
-import { CancelToken, type IDisposable } from "./types";
+import type { App } from "../App.js";
+import type { AtomControl } from "../web/controls/AtomControl.js";
+import EventScope from "./EventScope.js";
+import Route from "./Route.js";
+import { CancelToken, type IDisposable } from "./types.js";
 
 export const routeSymbol = Symbol("routeSymbol");
 export const displayRouteSymbol = Symbol("displayRouteSymbol");

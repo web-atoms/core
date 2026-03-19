@@ -1,4 +1,4 @@
-import { PathList } from "./types";
+import { PathList } from "./types.js";
 
 const viewModelParseWatchCache: {[key: string]: PathList[] } = {};
 

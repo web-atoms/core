@@ -1,7 +1,7 @@
-import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import { IClassOf } from "../core/types";
-import { MockApp } from "../MockApp";
-import { AtomViewModel, waitForReady } from "../view-model/AtomViewModel";
+import TestItem from "@web-atoms/unit-test/dist/TestItem.js";
+import { IClassOf } from "../core/types.js";
+import { MockApp } from "../MockApp.js";
+import { AtomViewModel, waitForReady } from "../view-model/AtomViewModel.js";
 
 export class AtomTest extends TestItem {
 

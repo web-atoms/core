@@ -1,11 +1,11 @@
-import { App } from "../../App";
-import { AtomBinder } from "../../core/AtomBinder";
-import { ColorItem } from "../../core/Colors";
-import { StringHelper } from "../../core/StringHelper";
-import { IClassOf, INameValuePairs } from "../../core/types";
-import { TypeKey } from "../../di/TypeKey";
-import { AtomStyleSheet } from "./AtomStyleSheet";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { App } from "../../App.js";
+import { AtomBinder } from "../../core/AtomBinder.js";
+import { ColorItem } from "../../core/Colors.js";
+import { StringHelper } from "../../core/StringHelper.js";
+import { IClassOf, INameValuePairs } from "../../core/types.js";
+import { TypeKey } from "../../di/TypeKey.js";
+import { AtomStyleSheet } from "./AtomStyleSheet.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 
 export type StyleItem = AtomStyle;
 

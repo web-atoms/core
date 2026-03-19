@@ -1,17 +1,17 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { Atom } from "../../../Atom";
-import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder";
-import { AtomComponent } from "../../../core/AtomComponent";
-import { AtomDispatcher } from "../../../core/AtomDispatcher";
-import { AtomWatcher } from "../../../core/AtomWatcher";
-import { BindableProperty } from "../../../core/BindableProperty";
-import WebImage from "../../../core/WebImage";
-import { AtomTest } from "../../../unit/AtomTest";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import { AtomItemsControl } from "../../../web/controls/AtomItemsControl";
-import AtomWebTest from "../../../unit/AtomWebTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { Atom } from "../../../Atom.js";
+import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder.js";
+import { AtomComponent } from "../../../core/AtomComponent.js";
+import { AtomDispatcher } from "../../../core/AtomDispatcher.js";
+import { AtomWatcher } from "../../../core/AtomWatcher.js";
+import { BindableProperty } from "../../../core/BindableProperty.js";
+import WebImage from "../../../core/WebImage.js";
+import { AtomTest } from "../../../unit/AtomTest.js";
+import { AtomControl } from "../../../web/controls/AtomControl.js";
+import { AtomItemsControl } from "../../../web/controls/AtomItemsControl.js";
+import AtomWebTest from "../../../unit/AtomWebTest.js";
 
 class TestViewModel {
 

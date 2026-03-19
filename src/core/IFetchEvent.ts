@@ -1,4 +1,4 @@
-import { CancelToken } from "./types";
+import { CancelToken } from "./types.js";
 
 export default interface IFetchEvent {
     search?: string;

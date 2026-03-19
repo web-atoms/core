@@ -1,4 +1,4 @@
-import { AtomComponent } from "./AtomComponent";
+import { AtomComponent } from "./AtomComponent.js";
 
 export default function InjectProperty(target: AtomComponent, key: string): void {
 

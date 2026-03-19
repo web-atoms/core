@@ -1,13 +1,13 @@
-import type { App } from "../App";
-import { JsonService } from "../services/JsonService";
-import ReferenceService from "../services/ReferenceService";
-import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel";
-import type { AtomControl } from "../web/controls/AtomControl";
-import type { AtomDisposableList } from "./AtomDisposableList";
-import { AtomUri } from "./AtomUri";
-import { displayRouteSymbol } from "./Command";
-import { getOwnInheritedProperty } from "./InheritedProperty";
-import { CancelToken, DI, IClassOf, IDisposable } from "./types";
+import type { App } from "../App.js";
+import { JsonService } from "../services/JsonService.js";
+import ReferenceService from "../services/ReferenceService.js";
+import { AtomWindowViewModel } from "../view-model/AtomWindowViewModel.js";
+import type { AtomControl } from "../web/controls/AtomControl.js";
+import type { AtomDisposableList } from "./AtomDisposableList.js";
+import { AtomUri } from "./AtomUri.js";
+import { displayRouteSymbol } from "./Command.js";
+import { getOwnInheritedProperty } from "./InheritedProperty.js";
+import { CancelToken, DI, IClassOf, IDisposable } from "./types.js";
 
 export class AtomLoader {
 

@@ -1,4 +1,4 @@
-import { TypeKey } from "../di/TypeKey";
+import { TypeKey } from "../di/TypeKey.js";
 
 export interface IPropertyMap {
     [key: string]: boolean;

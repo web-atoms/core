@@ -1,5 +1,5 @@
-import { AtomStyle } from "../styles/AtomStyle";
-import { IStyleDeclaration } from "./IStyleDeclaration";
+import { AtomStyle } from "../styles/AtomStyle.js";
+import { IStyleDeclaration } from "./IStyleDeclaration.js";
 export class AtomPopupStyle extends AtomStyle {
 
     public get root(): IStyleDeclaration {

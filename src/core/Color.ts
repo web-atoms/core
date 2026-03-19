@@ -1,4 +1,4 @@
-import { ColorItem } from "./Colors";
+import { ColorItem } from "./Colors.js";
 
 type Color = string | ColorItem;
 

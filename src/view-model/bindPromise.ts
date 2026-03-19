@@ -1,6 +1,6 @@
-import { AtomBinder } from "../core/AtomBinder";
-import { NavigationService, NotifyType } from "../services/NavigationService";
-import { AtomViewModel } from "./AtomViewModel";
+import { AtomBinder } from "../core/AtomBinder.js";
+import { NavigationService, NotifyType } from "../services/NavigationService.js";
+import { AtomViewModel } from "./AtomViewModel.js";
 /**
  * Use this method to create an object/array that will refresh
  * when promise is resolved

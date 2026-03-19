@@ -1,12 +1,12 @@
-import { AtomBinder } from "../../core/AtomBinder";
-import { AtomDispatcher } from "../../core/AtomDispatcher";
-import AtomEnumerator from "../../core/AtomEnumerator";
+import { AtomBinder } from "../../core/AtomBinder.js";
+import { AtomDispatcher } from "../../core/AtomDispatcher.js";
+import AtomEnumerator from "../../core/AtomEnumerator.js";
 import "../../core/AtomList";
-import { BindableProperty } from "../../core/BindableProperty";
-import { IAtomElement, IClassOf, IDisposable } from "../../core/types";
-import XNode from "../../core/XNode";
-import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI";
-import { AtomControl } from "./AtomControl";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { IAtomElement, IClassOf, IDisposable } from "../../core/types.js";
+import XNode from "../../core/XNode.js";
+import { AtomUI, ChildEnumerator } from "../../web/core/AtomUI.js";
+import { AtomControl } from "./AtomControl.js";
 
 export class AtomItemsControl extends AtomControl {
 

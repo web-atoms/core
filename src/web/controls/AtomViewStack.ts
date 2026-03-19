@@ -1,5 +1,5 @@
-import { BindableProperty } from "../../core/BindableProperty";
-import { AtomControl } from "./AtomControl";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { AtomControl } from "./AtomControl.js";
 
 export class AtomViewStack extends AtomControl {
 

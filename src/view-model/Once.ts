@@ -1,6 +1,6 @@
-import { App } from "../App";
-import { AtomViewModel } from "./AtomViewModel";
-import { registerInit } from "./baseTypes";
+import { App } from "../App.js";
+import { AtomViewModel } from "./AtomViewModel.js";
+import { registerInit } from "./baseTypes.js";
 
 const timerSymbol = Symbol();
 

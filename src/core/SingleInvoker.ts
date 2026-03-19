@@ -1,6 +1,6 @@
-import DITransient from "../di/DITransient";
-import TransientDisposable from "./TransientDisposable";
-import { IDisposable } from "./types";
+import DITransient from "../di/DITransient.js";
+import TransientDisposable from "./TransientDisposable.js";
+import { IDisposable } from "./types.js";
 
 @DITransient()
 export default class SingleInvoker extends TransientDisposable {

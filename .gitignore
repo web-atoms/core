@@ -1,5 +1,6 @@
 bin
 dist
+dist-esm
 node_modules
 coverage
 html-report

@@ -1,5 +1,5 @@
 // tslint:disable
-import WebImage from "../../core/WebImage";
+import WebImage from "../../core/WebImage.js";
 
 const base64 = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6"+
 		"IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246"+

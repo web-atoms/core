@@ -1,21 +1,21 @@
-import { App } from "../../App";
-import { AtomBinder } from "../../core/AtomBinder";
-import { AtomComponent } from "../../core/AtomComponent";
-import { AtomDispatcher } from "../../core/AtomDispatcher";
-import { BindableProperty } from "../../core/BindableProperty";
-import Command from "../../core/Command";
-import FormattedString from "../../core/FormattedString";
-import { refreshInherited, visitDescendents } from "../../core/Hacks";
-import WebImage from "../../core/WebImage";
-import XNode, { elementFactorySymbol, isControl } from "../../core/XNode";
-import { TypeKey } from "../../di/TypeKey";
-import { NavigationService } from "../../services/NavigationService";
-import { AtomStyle } from "../styles/AtomStyle";
-import { AtomStyleSheet } from "../styles/AtomStyleSheet";
+import { App } from "../../App.js";
+import { AtomBinder } from "../../core/AtomBinder.js";
+import { AtomComponent } from "../../core/AtomComponent.js";
+import { AtomDispatcher } from "../../core/AtomDispatcher.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import Command from "../../core/Command.js";
+import FormattedString from "../../core/FormattedString.js";
+import { refreshInherited, visitDescendents } from "../../core/Hacks.js";
+import WebImage from "../../core/WebImage.js";
+import XNode, { elementFactorySymbol, isControl } from "../../core/XNode.js";
+import { TypeKey } from "../../di/TypeKey.js";
+import { NavigationService } from "../../services/NavigationService.js";
+import { AtomStyle } from "../styles/AtomStyle.js";
+import { AtomStyleSheet } from "../styles/AtomStyleSheet.js";
 
 const isAtomControl = isControl;
 
-// export { default as WebApp } from "../WebApp";
+// export { default as WebApp } from "../WebApp.js";
 
 // if (!AtomBridge.platform) {
 //     AtomBridge.platform = "web";

@@ -1,11 +1,11 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import { App } from "../../App";
-import { Inject } from "../../di/Inject";
-import { ServiceCollection } from "../../di/ServiceCollection";
-import { ServiceProvider } from "../../di/ServiceProvider";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import TestItem from "@web-atoms/unit-test/dist/TestItem.js";
+import { App } from "../../App.js";
+import { Inject } from "../../di/Inject.js";
+import { ServiceCollection } from "../../di/ServiceCollection.js";
+import { ServiceProvider } from "../../di/ServiceProvider.js";
 
 class GlobalClass {
 

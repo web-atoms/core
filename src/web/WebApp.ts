@@ -1,14 +1,14 @@
-import { App } from "../App";
-import { AtomOnce } from "../core/AtomOnce";
-import { AtomUri } from "../core/AtomUri";
-import { ServiceCollection } from "../di/ServiceCollection";
-import { BusyIndicatorService } from "../services/BusyIndicatorService";
-import { NavigationService } from "../services/NavigationService";
-import { ChildEnumerator } from "./core/AtomUI";
-import { WebBusyIndicatorService } from "./services/WebBusyIndicatorService";
-import { WindowService } from "./services/WindowService";
-import { AtomStyleSheet } from "./styles/AtomStyleSheet";
-import { AtomTheme } from "./styles/AtomTheme";
+import { App } from "../App.js";
+import { AtomOnce } from "../core/AtomOnce.js";
+import { AtomUri } from "../core/AtomUri.js";
+import { ServiceCollection } from "../di/ServiceCollection.js";
+import { BusyIndicatorService } from "../services/BusyIndicatorService.js";
+import { NavigationService } from "../services/NavigationService.js";
+import { ChildEnumerator } from "./core/AtomUI.js";
+import { WebBusyIndicatorService } from "./services/WebBusyIndicatorService.js";
+import { WindowService } from "./services/WindowService.js";
+import { AtomStyleSheet } from "./styles/AtomStyleSheet.js";
+import { AtomTheme } from "./styles/AtomTheme.js";
 
 declare var UMD: any;
 

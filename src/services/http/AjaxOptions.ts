@@ -1,4 +1,4 @@
-import { CancelToken, INameValues } from "../../core/types";
+import { CancelToken, INameValues } from "../../core/types.js";
 export class AjaxOptions {
     public dataType?: string;
     public contentType?: string;

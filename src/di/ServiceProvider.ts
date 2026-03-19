@@ -1,8 +1,8 @@
-import TransientDisposable from "../core/TransientDisposable";
-import { DI, IAnyInstanceType, IClassOf, IDisposable } from "../core/types";
-import { InjectedTypes } from "./Inject";
-import { Scope, ServiceCollection, ServiceDescription } from "./ServiceCollection";
-import { TypeKey } from "./TypeKey";
+import TransientDisposable from "../core/TransientDisposable.js";
+import { DI, IAnyInstanceType, IClassOf, IDisposable } from "../core/types.js";
+import { InjectedTypes } from "./Inject.js";
+import { Scope, ServiceCollection, ServiceDescription } from "./ServiceCollection.js";
+import { TypeKey } from "./TypeKey.js";
 
 export class ServiceProvider implements IDisposable {
 

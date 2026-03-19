@@ -1,6 +1,6 @@
-import { App } from "../App";
-import { CancelToken, IDisposable } from "../core/types";
-import { BusyIndicatorService } from "./BusyIndicatorService";
+import { App } from "../App.js";
+import { CancelToken, IDisposable } from "../core/types.js";
+import { BusyIndicatorService } from "./BusyIndicatorService.js";
 
 type IRequest = {
     jsonPostProcessor?: (x) => any,

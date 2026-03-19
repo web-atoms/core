@@ -1,6 +1,6 @@
-import { IClassOf } from "../core/types";
-import { Register } from "./Register";
-import { Scope } from "./ServiceCollection";
+import { IClassOf } from "../core/types.js";
+import { Register } from "./Register.js";
+import { Scope } from "./ServiceCollection.js";
 
 export function RegisterScoped(id: any): any {
     Register({scope: Scope.Scoped})(id);

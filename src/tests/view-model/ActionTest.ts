@@ -1,13 +1,13 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { Atom } from "../../Atom";
-import { CancelToken } from "../../core/types";
-import DISingleton from "../../di/DISingleton";
-import { Inject, InjectedTypes } from "../../di/Inject";
-import Action from "../../view-model/Action";
-import { AtomViewModel, Validate } from "../../view-model/AtomViewModel";
-import AtomWebTest from "../../unit/AtomWebTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { Atom } from "../../Atom.js";
+import { CancelToken } from "../../core/types.js";
+import DISingleton from "../../di/DISingleton.js";
+import { Inject, InjectedTypes } from "../../di/Inject.js";
+import Action from "../../view-model/Action.js";
+import { AtomViewModel, Validate } from "../../view-model/AtomViewModel.js";
+import AtomWebTest from "../../unit/AtomWebTest.js";
 
 interface IUser {
     name?: string;

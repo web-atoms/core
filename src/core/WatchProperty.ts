@@ -1,6 +1,6 @@
-import { AtomBinder } from "./AtomBinder";
-import type { AtomComponent } from "./AtomComponent";
-import { AtomWatcher } from "./AtomWatcher";
+import { AtomBinder } from "./AtomBinder.js";
+import type { AtomComponent } from "./AtomComponent.js";
+import { AtomWatcher } from "./AtomWatcher.js";
 
 export default function WatchProperty(target: AtomComponent, key: string, descriptor: any): any {
 

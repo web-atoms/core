@@ -1,6 +1,6 @@
-import { AtomBinder } from "./AtomBinder";
-import { parsePath } from "./ExpressionParser";
-import { IDisposable, PathList } from "./types";
+import { AtomBinder } from "./AtomBinder.js";
+import { parsePath } from "./ExpressionParser.js";
+import { IDisposable, PathList } from "./types.js";
 
 export class ObjectProperty {
 

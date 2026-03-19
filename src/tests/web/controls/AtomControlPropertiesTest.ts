@@ -1,9 +1,9 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import TestItem from "@web-atoms/unit-test/dist/TestItem";
-import Markdown from "../../../core/Markdown";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import AtomWebTest from "../../../unit/AtomWebTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import TestItem from "@web-atoms/unit-test/dist/TestItem.js";
+import Markdown from "../../../core/Markdown.js";
+import { AtomControl } from "../../../web/controls/AtomControl.js";
+import AtomWebTest from "../../../unit/AtomWebTest.js";
 
 class TestViewModel {
 

@@ -1,5 +1,5 @@
-import type { AtomControl } from "../web/controls/AtomControl";
-import { AtomBinder } from "./AtomBinder";
+import type { AtomControl } from "../web/controls/AtomControl.js";
+import { AtomBinder } from "./AtomBinder.js";
 
 const cache = {};
 

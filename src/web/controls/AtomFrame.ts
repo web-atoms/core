@@ -1,17 +1,17 @@
-import { App } from "../../App";
-import { Atom } from "../../Atom";
-import { AtomBinder } from "../../core/AtomBinder";
-import { AtomDispatcher } from "../../core/AtomDispatcher";
-import { AtomLoader } from "../../core/AtomLoader";
-import { AtomUri } from "../../core/AtomUri";
-import { BindableProperty } from "../../core/BindableProperty";
-import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types";
-import { NavigationService } from "../../services/NavigationService";
-import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
-import { AtomUI } from "../core/AtomUI";
-import { WindowService } from "../services/WindowService";
-import AtomFrameStyle from "../styles/AtomFrameStyle";
-import { AtomControl } from "./AtomControl";
+import { App } from "../../App.js";
+import { Atom } from "../../Atom.js";
+import { AtomBinder } from "../../core/AtomBinder.js";
+import { AtomDispatcher } from "../../core/AtomDispatcher.js";
+import { AtomLoader } from "../../core/AtomLoader.js";
+import { AtomUri } from "../../core/AtomUri.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { IClassOf, IDisposable, INotifyPropertyChanged } from "../../core/types.js";
+import { NavigationService } from "../../services/NavigationService.js";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel.js";
+import { AtomUI } from "../core/AtomUI.js";
+import { WindowService } from "../services/WindowService.js";
+import AtomFrameStyle from "../styles/AtomFrameStyle.js";
+import { AtomControl } from "./AtomControl.js";
 
 export interface IPageItem {
     url: string;

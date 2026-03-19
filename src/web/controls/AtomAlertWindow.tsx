@@ -1,14 +1,14 @@
-import { App } from "../../App";
-import Bind from "../../core/Bind";
-import { BindableProperty } from "../../core/BindableProperty";
-import FormattedString from "../../core/FormattedString";
-import XNode from "../../core/XNode";
-import { Inject } from "../../di/Inject";
-import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel";
-import MarkdownService from "../services/MarkdownService";
-import AtomAlertWindowStyle from "../styles/AtomAlertWindowStyle";
-import { AtomControl } from "./AtomControl";
-import { AtomWindow } from "./AtomWindow";
+import { App } from "../../App.js";
+import Bind from "../../core/Bind.js";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import FormattedString from "../../core/FormattedString.js";
+import XNode from "../../core/XNode.js";
+import { Inject } from "../../di/Inject.js";
+import { AtomWindowViewModel } from "../../view-model/AtomWindowViewModel.js";
+import MarkdownService from "../services/MarkdownService.js";
+import AtomAlertWindowStyle from "../styles/AtomAlertWindowStyle.js";
+import { AtomControl } from "./AtomControl.js";
+import { AtomWindow } from "./AtomWindow.js";
 
 export default class AtomAlertWindow extends AtomWindow {
 

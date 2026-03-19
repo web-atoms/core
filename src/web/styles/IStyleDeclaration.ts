@@ -1,5 +1,5 @@
-import { ColorItem } from "../../core/Colors";
-import WebImage from "../../core/WebImage";
+import { ColorItem } from "../../core/Colors.js";
+import WebImage from "../../core/WebImage.js";
 
 export type StylePosition = "" | "default" | "initial" | "static" | "relative" | "absolute" | string | null;
 export type TextAlignType = "" | "default" | "initial" | "left" | "right" | "center" | "justify" | string | null;

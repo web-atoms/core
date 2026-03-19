@@ -1,7 +1,7 @@
-import { AtomViewModel } from "../view-model/AtomViewModel";
-import { AtomBinder } from "./AtomBinder";
-import { AtomDisposableList } from "./AtomDisposableList";
-import { IDisposable } from "./types";
+import { AtomViewModel } from "../view-model/AtomViewModel.js";
+import { AtomBinder } from "./AtomBinder.js";
+import { AtomDisposableList } from "./AtomDisposableList.js";
+import { IDisposable } from "./types.js";
 
 export type valuePathOrFunc<T> = ((item: T) => any);
 

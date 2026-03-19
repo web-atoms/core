@@ -1,11 +1,11 @@
-import { App } from "../App";
-import { parsePath } from "../core/ExpressionParser";
-import FormattedString from "../core/FormattedString";
-import sleep from "../core/sleep";
-import { CancelToken } from "../core/types";
-import { NavigationService } from "../services/NavigationService";
-import { AtomViewModel, Watch } from "./AtomViewModel";
-import { registerInit } from "./baseTypes";
+import { App } from "../App.js";
+import { parsePath } from "../core/ExpressionParser.js";
+import FormattedString from "../core/FormattedString.js";
+import sleep from "../core/sleep.js";
+import { CancelToken } from "../core/types.js";
+import { NavigationService } from "../services/NavigationService.js";
+import { AtomViewModel, Watch } from "./AtomViewModel.js";
+import { registerInit } from "./baseTypes.js";
 
 export type ILoadOptions = {
 

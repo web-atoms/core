@@ -1,9 +1,9 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder";
-import { AtomViewModel } from "../../../view-model/AtomViewModel";
-import { AtomControl } from "../../../web/controls/AtomControl";
-import AtomWebTest from "../../../unit/AtomWebTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { AtomBinder, IWatchableObject } from "../../../core/AtomBinder.js";
+import { AtomViewModel } from "../../../view-model/AtomViewModel.js";
+import { AtomControl } from "../../../web/controls/AtomControl.js";
+import AtomWebTest from "../../../unit/AtomWebTest.js";
 
 class TestViewModel extends AtomViewModel {
 

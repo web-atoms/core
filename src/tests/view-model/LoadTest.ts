@@ -1,16 +1,16 @@
-import Assert from "@web-atoms/unit-test/dist/Assert";
-import Category from "@web-atoms/unit-test/dist/Category";
-import Test from "@web-atoms/unit-test/dist/Test";
-import { Atom } from "../../Atom";
-import CancelTokenFactory from "../../core/CancelTokenFactory";
-import { CancelToken } from "../../core/types";
-import DISingleton from "../../di/DISingleton";
-import { Inject } from "../../di/Inject";
-import { AtomTest } from "../../unit/AtomTest";
-import Action from "../../view-model/Action";
-import { AtomViewModel, Validate, waitForReady } from "../../view-model/AtomViewModel";
-import Load from "../../view-model/Load";
-import AtomWebTest from "../../unit/AtomWebTest";
+import Assert from "@web-atoms/unit-test/dist/Assert.js";
+import Category from "@web-atoms/unit-test/dist/Category.js";
+import Test from "@web-atoms/unit-test/dist/Test.js";
+import { Atom } from "../../Atom.js";
+import CancelTokenFactory from "../../core/CancelTokenFactory.js";
+import { CancelToken } from "../../core/types.js";
+import DISingleton from "../../di/DISingleton.js";
+import { Inject } from "../../di/Inject.js";
+import { AtomTest } from "../../unit/AtomTest.js";
+import Action from "../../view-model/Action.js";
+import { AtomViewModel, Validate, waitForReady } from "../../view-model/AtomViewModel.js";
+import Load from "../../view-model/Load.js";
+import AtomWebTest from "../../unit/AtomWebTest.js";
 
 @DISingleton()
 class RemoteService {

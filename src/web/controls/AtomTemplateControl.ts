@@ -1,6 +1,6 @@
-import { BindableProperty } from "../../core/BindableProperty";
-import { IClassOf } from "../../core/types";
-import { AtomControl } from "./AtomControl";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { IClassOf } from "../../core/types.js";
+import { AtomControl } from "./AtomControl.js";
 
 export class AtomTemplateControl extends AtomControl {
 

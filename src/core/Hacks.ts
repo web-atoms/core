@@ -1,7 +1,7 @@
-import type { AtomControl } from "../web/controls/AtomControl";
-import { ChildEnumerator } from "../web/core/AtomUI";
-import { AtomBinder } from "./AtomBinder";
-import { IDisposable } from "./types";
+import type { AtomControl } from "../web/controls/AtomControl.js";
+import { ChildEnumerator } from "../web/core/AtomUI.js";
+import { AtomBinder } from "./AtomBinder.js";
+import { IDisposable } from "./types.js";
 
 export const visitDescendents = (element: HTMLElement, action: (e: HTMLElement, ac: AtomControl) => boolean): void => {
 

@@ -1,5 +1,5 @@
-import { AtomBinder } from "./AtomBinder";
-import { INotifyPropertyChanging } from "./types";
+import { AtomBinder } from "./AtomBinder.js";
+import { INotifyPropertyChanging } from "./types.js";
 
 /**
  * Use this decorator only to watch property changes in `onPropertyChanged` method.

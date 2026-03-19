@@ -1,4 +1,4 @@
-import { descendentElementIterator } from "../core/AtomUI";
+import { descendentElementIterator } from "../core/AtomUI.js";
 
 interface IElementTarget {
     target: WeakRef<HTMLElement>;

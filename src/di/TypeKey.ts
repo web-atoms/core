@@ -1,4 +1,4 @@
-import AtomMap from "../core/AtomMap";
+import AtomMap from "../core/AtomMap.js";
 
 export class TypeKey {
 

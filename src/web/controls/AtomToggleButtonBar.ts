@@ -1,8 +1,8 @@
-import { App } from "../../App";
-import { AtomToggleButtonBarStyle } from "../styles/AtomToggleButtonBarStyle";
-import { AtomControl } from "./AtomControl";
-import { AtomItemsControl } from "./AtomItemsControl";
-import { AtomListBox } from "./AtomListBox";
+import { App } from "../../App.js";
+import { AtomToggleButtonBarStyle } from "../styles/AtomToggleButtonBarStyle.js";
+import { AtomControl } from "./AtomControl.js";
+import { AtomItemsControl } from "./AtomItemsControl.js";
+import { AtomListBox } from "./AtomListBox.js";
 
 export class AtomToggleButtonBar extends AtomListBox {
 

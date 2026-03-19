@@ -1,7 +1,7 @@
-import { BindableProperty } from "../../core/BindableProperty";
-import { visitDescendents } from "../../core/Hacks";
-import { IRect } from "../../core/types";
-import { AtomControl } from "./AtomControl";
+import { BindableProperty } from "../../core/BindableProperty.js";
+import { visitDescendents } from "../../core/Hacks.js";
+import { IRect } from "../../core/types.js";
+import { AtomControl } from "./AtomControl.js";
 
 interface IOffsetSize {
     offset: number;
