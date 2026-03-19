@@ -31,7 +31,7 @@ export class AtomTabbedPage extends AtomControl
 
     public static titleTemplate = XNode.prepare("titleTemplate", true, true);
 
-    public localViewModel: AtomTabViewModel;
+    declare public localViewModel: AtomTabViewModel;
 
     public tabChannelName: string;
 

@@ -17,7 +17,7 @@ export interface IWindowRegistration {
 export class MockConfirmViewModel extends AtomWindowViewModel {
 
     public message: string;
-    public title: string;
+    declare public title: string;
 
 }
 

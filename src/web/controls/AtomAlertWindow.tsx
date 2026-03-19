@@ -12,7 +12,7 @@ import { AtomWindow } from "./AtomWindow.js";
 
 export default class AtomAlertWindow extends AtomWindow {
 
-    public viewModel: AtomAlertViewModel;
+    declare public viewModel: AtomAlertViewModel;
 
     protected create(): void {
         this.defaultControlStyle =  AtomAlertWindowStyle ;
@@ -89,8 +89,8 @@ export default class AtomAlertWindow extends AtomWindow {
 // }
 class AtomAlertViewModel extends AtomWindowViewModel {
 
-    @BindableProperty
-    public title: string;
+    // @BindableProperty
+    declare public title: string;
 
     @BindableProperty
     public message: string;
