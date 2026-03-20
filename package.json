@@ -12,7 +12,8 @@
     "build-css-jex": "npx jex ./build.jsx",
     "build-css-watch-jex": "npx jex ./build.jsx --watch",
     "posttest": "remap-istanbul -i ./coverage/coverage.json -t html -o ./html-report",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "push": "git add -A && git commit -m \"dep vb\" && npm version patch"
   },
   "repository": {
     "type": "git",
@@ -52,7 +53,7 @@
     "postcss-preset-env": "^10.1.5"
   },
   "dependencies": {
-    "@web-atoms/date-time": "^3.0.12",
+    "@web-atoms/date-time": "^3.0.18",
     "reflect-metadata": "^0.2.2"
   }
 }
