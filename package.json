@@ -1,6 +1,6 @@
 {
   "name": "@web-atoms/core",
-  "version": "2.5.16",
+  "version": "2.5.17",
   "description": "Web Atoms Core",
   "main": "index.js",
   "esm": "dist-esm",
