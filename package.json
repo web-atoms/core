@@ -52,7 +52,7 @@
     "postcss-preset-env": "^10.1.5"
   },
   "dependencies": {
-    "@web-atoms/date-time": "^3.0.9",
+    "@web-atoms/date-time": "^3.0.12",
     "reflect-metadata": "^0.2.2"
   }
 }
