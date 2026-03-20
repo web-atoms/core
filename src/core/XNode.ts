@@ -130,7 +130,7 @@ export type AttachedNode = (n: any) => { [key: string]: any};
 
 export const xnodeSymbol = Symbol("XNode");
 
-export const isControl = Symbol("isControl");
+export const isControl = Symbol.for("isControl");
 
 export const elementFactorySymbol = Symbol("elementFactory");
 
