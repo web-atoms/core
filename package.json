@@ -3,7 +3,9 @@
   "version": "2.6.2",
   "description": "Web Atoms Core",
   "main": "index.js",
-  "esm": "dist-esm",
+  "esm": {
+    "dist": "dist-esm"
+  },
   "scripts": {
     "test1": "node ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
     "test": "istanbul cover ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
