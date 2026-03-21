@@ -349,3 +349,10 @@ export class App extends ServiceProvider {
     }
 
 }
+
+((window as any).ESMPack ??= {}).render = async (imports, element: HTMLElement) => {
+    const { default: WebApp } = await import("./web/WebApp.js");
+    const webApp = new WebApp();
+    const c = new imports.default(webApp);
+    element.replaceWith(c.element);
+};
