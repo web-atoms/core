@@ -62,9 +62,11 @@ export interface IPageOptions {
     onInit?: (view: any) => void;
 }
 
-declare var UMD: any;
+// declare var UMD: any;
 
-const nameSymbol = UMD.nameSymbol;
+// const nameSymbol = UMD.nameSymbol;
+
+const nameSymbol = Symbol.for("UMD.nameSymbol");
 
 function hasPageUrl(target: any): boolean {
     const url = target[nameSymbol];
