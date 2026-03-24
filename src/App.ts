@@ -12,7 +12,7 @@ import "@web-atoms/date-time/dist/DateTime";
 import "@web-atoms/date-time/dist/TimeSpan";
 
 
-declare var UMD: any;
+// declare var UMD: any;
 
 export type AtomAction = (channel: string, data: any) => void;
 
@@ -53,7 +53,7 @@ export class App extends ServiceProvider {
             ssConfig = { href: ssConfig };
         }
 
-        ssConfig.href = UMD.resolvePath(ssConfig.href);
+        // ssConfig.href = UMD.resolvePath(ssConfig.href);
         const links = document.getElementsByTagName("link");
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < links.length; index++) {
@@ -76,7 +76,7 @@ export class App extends ServiceProvider {
     }
 
     public static installScript(location: string) {
-        location = UMD.resolvePath(location);
+        // location = UMD.resolvePath(location);
         const links = document.getElementsByTagName("script");
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < links.length; index++) {
