@@ -353,6 +353,9 @@ export class App extends ServiceProvider {
 const ESMPack = ((window as any).ESMPack ??= {})
 ESMPack.render = async (imports, element: HTMLElement) => {
     const app = new App();
+    if (typeof imports === "string") {
+        imports = await import(imports);
+    }
     const c = new imports.default(app);
     element.replaceWith(c.element);
 };
