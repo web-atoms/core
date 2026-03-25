@@ -36,7 +36,7 @@
     "@neurospeech/jex": "^1.0.117",
     "@web-atoms/pack": "1.0.111",
     "@web-atoms/module-loader": "^2.1.89",
-    "@web-atoms/unit-test": "^1.0.54",
+    "@web-atoms/unit-test": "^2.0.5",
     "@web-atoms/postcss-styled-js": "^1.0.10",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",

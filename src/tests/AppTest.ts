@@ -7,9 +7,6 @@ import { MockNavigationService } from "../services/MockNavigationService.js";
 import { NavigationService } from "../services/NavigationService.js";
 import { AtomTest } from "../unit/AtomTest.js";
 
-declare var global: any;
-(window as any || global as any).requestAnimationFrame ??= (x) => setTimeout(x, 1);
-
 class TestApp extends App {
 
     constructor() {
