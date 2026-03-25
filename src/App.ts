@@ -44,6 +44,10 @@ export interface IAuthorize {
 }
 
 let first = document.head.firstElementChild;
+if (!first) {
+    first = document.createElement("title");
+    document.head.appendChild(first);
+}
 
 const addMarker = (name) => {
     const e = document.createElement("meta");
