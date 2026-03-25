@@ -1,5 +1,5 @@
 import TransientDisposable from "../core/TransientDisposable.js";
-import { DI, IAnyInstanceType, IClassOf, IDisposable } from "../core/types.js";
+import { IAnyInstanceType, IClassOf, IDisposable } from "../core/types.js";
 import { InjectedTypes } from "./Inject.js";
 import { Scope, ServiceCollection, ServiceDescription } from "./ServiceCollection.js";
 import { TypeKey } from "./TypeKey.js";
@@ -98,15 +98,15 @@ export class ServiceProvider implements IDisposable {
         const originalKey = key;
         const originalTypeKey = TypeKey.get(originalKey);
 
-        if (DI.resolveType) {
-            let mappedType = ServiceProvider.mappedTypes.get(originalTypeKey);
-            if (mappedType === void 0) {
-                mappedType = DI.resolveType(originalKey);
-                ServiceProvider.mappedTypes.set(originalKey, mappedType);
-            }
+        // if (DI.resolveType) {
+        //     let mappedType = ServiceProvider.mappedTypes.get(originalTypeKey);
+        //     if (mappedType === void 0) {
+        //         mappedType = DI.resolveType(originalKey);
+        //         ServiceProvider.mappedTypes.set(originalKey, mappedType);
+        //     }
 
-            key = mappedType;
-        }
+        //     key = mappedType;
+        // }
         const typeKey1 = TypeKey.get(key);
 
         const plist = InjectedTypes.getParamList(key, typeKey1);

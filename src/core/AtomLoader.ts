@@ -7,7 +7,7 @@ import type { AtomDisposableList } from "./AtomDisposableList.js";
 import { AtomUri } from "./AtomUri.js";
 import { displayRouteSymbol } from "./Command.js";
 import { getOwnInheritedProperty } from "./InheritedProperty.js";
-import { CancelToken, DI, IClassOf, IDisposable } from "./types.js";
+import { CancelToken, IClassOf, IDisposable } from "./types.js";
 
 export class AtomLoader {
 
@@ -15,13 +15,13 @@ export class AtomLoader {
 
     public static async load<T>(url: string | AtomUri | any, app: App): Promise<T> {
 
-        if (typeof url === "string") {
-            const type = await DI.resolveViewClassAsync(url);
-            if (!type) {
-                throw new Error(`Type not found for ${url}`);
-            }
-            url = type;
-        }
+        // if (typeof url === "string") {
+        //     const type = await DI.resolveViewClassAsync(url);
+        //     if (!type) {
+        //         throw new Error(`Type not found for ${url}`);
+        //     }
+        //     url = type;
+        // }
 
         if (url instanceof AtomUri) {
             if (url.host === "reference") {
@@ -40,11 +40,11 @@ export class AtomLoader {
             }
             url = url.path;
 
-            const type = await DI.resolveViewClassAsync(url);
-            if (!type) {
-                throw new Error(`Type not found for ${url}`);
-            }
-            url = type;
+            // const type = await DI.resolveViewClassAsync(url);
+            // if (!type) {
+            //     throw new Error(`Type not found for ${url}`);
+            // }
+            // url = type;
 
         }
         const obj = app.resolve(url, true);

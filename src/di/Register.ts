@@ -1,4 +1,3 @@
-import { DI } from "../core/types.js";
 import { IMockOrInject } from "./IMockOrInject.js";
 import { Scope, ServiceCollection } from "./ServiceCollection.js";
 
@@ -40,11 +39,7 @@ export function Register(id: string | IServiceDef, scope?: Scope): ((t: any) => 
                 id.scope || Scope.Transient, id.id);
 
             if (id.mockOrInject) {
-                if (id.mockOrInject.inject) {
-                    DI.inject(target, id.mockOrInject.inject);
-                } else if (id.mockOrInject.mock) {
-                    DI.mockType(target, id.mockOrInject.mock);
-                } else if (id.mockOrInject.globalVar) {
+                if (id.mockOrInject.globalVar) {
                     ServiceCollection.instance.register(
                         id.for || target, (sp) => evalGlobal(id.mockOrInject.globalVar),
                         id.scope || Scope.Global, id.id);
