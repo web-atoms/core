@@ -5,11 +5,17 @@ import { CancelToken } from "../../core/types.js";
 import XNode from "../../core/XNode.js";
 import { AtomControl } from "../controls/AtomControl.js";
 import { LastTarget } from "./LastTarget.js";
+import NotificationPopup from "./NotificationPopup.js";
 
 import "./PopupService.global.css";
 
 import PopupWindowA, { ConfirmPopup } from "./PopupWindow.js";
 
+export enum NotifyType {
+    Information = "info",
+    Warning = "warn",
+    Error = "error"
+}
 
 export const PopupWindow = PopupWindowA;
 
@@ -624,6 +630,24 @@ export default class PopupService {
             }
         });
     }
+
+    public static async notify(
+        message: string | XNode,
+        title?: string,
+        type?: NotifyType,
+        delay?: number): Promise<void> {
+        try {
+            const notification = NotificationPopup({ message, type });
+            const cancelToken = new CancelToken(delay ?? 5000);
+            await notification.showWindow(notification, {
+            title,
+            cancelToken
+            });
+        } catch (ex) {
+            console.error(ex);
+        }
+    }
+
 
     /**
      * Display given popup attached to given opener and returns

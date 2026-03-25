@@ -1,7 +1,7 @@
 import XNode from "../../core/XNode.js";
 import { PopupWindow } from "./PopupService.js";
 
-import "./NotifcationPopup.global.css";
+import "./NotificationPopup.global.css";
 
 const css = "web-atoms-notification-popup";
 
@@ -30,7 +30,7 @@ export default function NotificationPopup({
                     error: /error/i.test(type),
                     warning: /warn/i.test(type)
                 })}
-                formattedText={message}
+                text={message}
             />);
         }
     };
