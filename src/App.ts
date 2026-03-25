@@ -95,12 +95,14 @@ export class App extends ServiceProvider {
         }
 
         const matches = /((global|local)(\-(high|low))?)\.css/.exec(ss.href);
-        const m = matches[1];
-        if (m) {
-            const marker = markers[m] as HTMLElement;
-            if (marker) {
-                marker.insertAdjacentElement("afterend", ss);
-                return;
+        if (matches) {
+            const m = matches[1];
+            if (m) {
+                const marker = markers[m] as HTMLElement;
+                if (marker) {
+                    marker.insertAdjacentElement("afterend", ss);
+                    return;
+                }
             }
         }
         document.head.appendChild(ss);
