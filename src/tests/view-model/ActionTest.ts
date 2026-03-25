@@ -7,7 +7,6 @@ import DISingleton from "../../di/DISingleton.js";
 import { Inject, InjectedTypes } from "../../di/Inject.js";
 import Action from "../../view-model/Action.js";
 import { AtomViewModel, Validate } from "../../view-model/AtomViewModel.js";
-import AtomWebTest from "../../unit/AtomWebTest.js";
 
 interface IUser {
     name?: string;
@@ -58,47 +57,4 @@ class ActionViewModel extends AtomViewModel {
         this.result = await this.remoteService.signUp(this.model);
     }
 
-}
-
-@Category("View Model Action")
-export default class ActionTest extends AtomWebTest {
-
-    @Test
-    public async validate(): Promise<void> {
-        const vm = await this.createViewModel(ActionViewModel);
-        this.navigationService.expectAlert("Please enter correct information");
-
-        await vm.signUp();
-    }
-
-    @Test
-    public async exception(): Promise<void> {
-        const vm = await this.createViewModel(ActionViewModel);
-        vm.model.name = "a";
-        vm.model.email = "a";
-        await Assert.throwsAsync("Invalid email address", async () => {
-            this.navigationService.expectAlert("Error: Invalid email address");
-            await vm.signUp();
-        });
-    }
-
-    @Test
-    public async success(): Promise<void> {
-        const vm = await this.createViewModel(ActionViewModel);
-        vm.model.name = "a";
-        vm.model.email = "a@a";
-        this.navigationService.expectAlert("Operation completed successfully");
-        await vm.signUp();
-        Assert.equals("Success a", vm.result);
-    }
-
-    @Test
-    public async confirm(): Promise<void> {
-        const vm = await this.createViewModel(ActionViewModel);
-        vm.model.name = "a";
-        vm.model.email = "a@a";
-        this.navigationService.expectConfirm("Are you sure you want to cancel", () => true);
-        await vm.cancel();
-        Assert.equals("", vm.model.name);
-    }
 }

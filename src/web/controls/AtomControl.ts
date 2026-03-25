@@ -8,8 +8,6 @@ import { refreshInherited, visitDescendents } from "../../core/Hacks.js";
 import WebImage from "../../core/WebImage.js";
 import XNode, { isControl } from "../../core/XNode.js";
 import { TypeKey } from "../../di/TypeKey.js";
-import { AtomStyle } from "../styles/AtomStyle.js";
-import { AtomStyleSheet } from "../styles/AtomStyleSheet.js";
 
 const isAtomControl = isControl;
 
@@ -37,8 +35,6 @@ declare global {
         _templateParent: AtomControl;
     }
 }
-
-const defaultStyleSheets: { [key: string]: AtomStyle } = {};
 
 function setAttribute(name: string) {
     return (ctrl: AtomControl, e: HTMLElement, value: any) => {
@@ -293,54 +289,6 @@ export class AtomControl extends AtomComponent {
 
     public defaultControlStyle: any;
 
-    private mControlStyle: AtomStyle;
-    public get controlStyle(): AtomStyle {
-        if (this.mControlStyle === undefined) {
-            const key = TypeKey.getName(this.defaultControlStyle || this.constructor);
-
-            this.mControlStyle = defaultStyleSheets[key];
-            if (this.mControlStyle) {
-                return this.mControlStyle;
-            }
-
-            if (this.defaultControlStyle) {
-                this.mControlStyle = defaultStyleSheets[key] ||
-                ( defaultStyleSheets[key] = this.theme.createNamedStyle(this.defaultControlStyle, key));
-            }
-            this.mControlStyle = this.mControlStyle || null;
-        }
-        return this.mControlStyle;
-    }
-
-    public set controlStyle(v: AtomStyle) {
-        if (v instanceof AtomStyle) {
-            this.mControlStyle = v;
-        } else {
-            const key = TypeKey.getName(v);
-            this.mControlStyle = defaultStyleSheets[key] ||
-            ( defaultStyleSheets[key] = this.theme.createNamedStyle(v, key));
-        }
-        AtomBinder.refreshValue(this, "controlStyle");
-        this.invalidate();
-    }
-
-    private mTheme: AtomStyleSheet;
-    private mCachedTheme: AtomStyleSheet;
-
-    /**
-     * Represents associated AtomStyleSheet with this visual hierarchy. AtomStyleSheet is
-     * inherited by default.
-     */
-    public get theme(): AtomStyleSheet {
-        return this.mTheme ||
-            this.mCachedTheme ||
-            (this.mCachedTheme = (this.parent ? this.parent.theme : this.app.resolve(AtomStyleSheet, false, null) ));
-    }
-    public set theme(v: AtomStyleSheet) {
-        this.mTheme = v;
-        refreshInherited(this, "theme");
-    }
-
     /**
      * Gets Parent AtomControl of this control.
      */
@@ -369,10 +317,6 @@ export class AtomControl extends AtomComponent {
     public onPropertyChanged(name: string): void {
         super.onPropertyChanged(name);
         switch (name) {
-            case "theme":
-                this.mCachedTheme = null;
-                AtomBinder.refreshValue(this, "style");
-                break;
             case "renderer":
                 this.rendererChanged();
                 break;

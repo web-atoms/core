@@ -15,7 +15,7 @@
         "jsx": "react",
         "jsxFactory": "XNode.create",
         "lib": [
-            "es6",
+            "ES2017",
             "dom",
             "ESNext.Disposable",
             "ES2021.WeakRef"

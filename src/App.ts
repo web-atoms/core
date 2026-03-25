@@ -43,6 +43,23 @@ export interface IAuthorize {
     authorized: boolean;
 }
 
+let first = document.head.firstElementChild;
+
+const addMarker = (name) => {
+    const e = document.createElement("meta");
+    e.setAttribute("name", name);
+    return e;
+}
+
+const markers = {
+    "global-high": first.insertAdjacentElement("afterbegin", addMarker("global-high")),
+    global: first.insertAdjacentElement("afterbegin", addMarker("global")),
+    "global-low": first.insertAdjacentElement("afterbegin", addMarker("global-low")),
+    "local-low": first.insertAdjacentElement("beforeend", addMarker("local-low")),
+    local: first.insertAdjacentElement("beforeend", addMarker("local")),
+    "local-high": first.insertAdjacentElement("beforeend", addMarker("local-high")),
+};
+
 @RegisterSingleton
 export class App extends ServiceProvider {
 
@@ -71,6 +88,16 @@ export class App extends ServiceProvider {
         }
         if (ssConfig.integrity) {
             ss.integrity = ssConfig.integrity;
+        }
+
+        const matches = /((global|local)(\-(high|low))?)\.css/.exec(ss.href);
+        const m = matches[1];
+        if (m) {
+            const marker = markers[m] as HTMLElement;
+            if (marker) {
+                marker.insertAdjacentElement("afterend", ss);
+                return;
+            }
         }
         document.head.appendChild(ss);
     }
