@@ -33,6 +33,7 @@ jobs:
           CODECOV_TOKEN: ${{secrets.codecov_token}}
       - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
       - run: npm run build-css
+      - run: npm run build-css-esm
       - run: npm publish --access public
       # - run: npm install -D typescript typedocs
       # - run: npx typedoc  --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name @web-atoms/core --excludePrivate --excludeNotExported --exclude "**/tests/**/*"

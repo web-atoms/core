@@ -10,6 +10,7 @@
     "test1": "node ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
     "test": "istanbul cover ./node_modules/@web-atoms/unit-test/index.js ./dist/tests",
     "build-css": "npx postcss \"./src/**/*.css\" --base ./src --dir ./dist --map --verbose",
+    "build-css-esm": "npx postcss \"./src/**/*.css\" --base ./src --dir ./dist-esm --map --verbose",
     "build-css-watch": "npx postcss \"./src/**/*.css\" --base src --dir dist --map -w",
     "build-css-jex": "npx jex ./build.jsx",
     "build-css-watch-jex": "npx jex ./build.jsx --watch",
