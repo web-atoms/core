@@ -43,11 +43,7 @@ export interface IAuthorize {
     authorized: boolean;
 }
 
-let first = document.head.firstElementChild;
-if (!first) {
-    first = document.createElement("title");
-    document.head.appendChild(first);
-}
+const { head } = document;
 
 const addMarker = (name) => {
     const e = document.createElement("meta");
@@ -56,12 +52,12 @@ const addMarker = (name) => {
 }
 
 const markers = {
-    "global-high": first.insertAdjacentElement("afterbegin", addMarker("global-high")),
-    global: first.insertAdjacentElement("afterbegin", addMarker("global")),
-    "global-low": first.insertAdjacentElement("afterbegin", addMarker("global-low")),
-    "local-low": first.insertAdjacentElement("beforeend", addMarker("local-low")),
-    local: first.insertAdjacentElement("beforeend", addMarker("local")),
-    "local-high": first.insertAdjacentElement("beforeend", addMarker("local-high")),
+    "global-high": head.insertAdjacentElement("afterbegin", addMarker("global-high")),
+    global: head.insertAdjacentElement("afterbegin", addMarker("global")),
+    "global-low": head.insertAdjacentElement("afterbegin", addMarker("global-low")),
+    "local-low": head.insertAdjacentElement("beforeend", addMarker("local-low")),
+    local: head.insertAdjacentElement("beforeend", addMarker("local")),
+    "local-high": head.insertAdjacentElement("beforeend", addMarker("local-high")),
 };
 
 @RegisterSingleton
