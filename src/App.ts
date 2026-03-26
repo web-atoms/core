@@ -7,9 +7,9 @@ import { RegisterSingleton } from "./di/RegisterSingleton.js";
 import { ServiceProvider } from "./di/ServiceProvider.js";
 import { BusyIndicatorService, IBackgroundTaskInfo } from "./services/BusyIndicatorService.js";
 
-import "./core/AtomList";
-import "@web-atoms/date-time/dist/DateTime";
-import "@web-atoms/date-time/dist/TimeSpan";
+import "./core/AtomList.js";
+import "@web-atoms/date-time/dist/DateTime.js";
+import "@web-atoms/date-time/dist/TimeSpan.js";
 
 
 // declare var UMD: any;
