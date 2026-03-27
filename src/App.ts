@@ -230,7 +230,7 @@ export class App extends ServiceProvider {
     public setTimeoutAsync(
         task: () => Promise<any>,
         timeInMS: number = 1,
-        previousToken?: number) {
+        previousToken?: any): any {
         if (previousToken !== void 0) {
             clearTimeout(previousToken);
         }

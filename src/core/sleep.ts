@@ -1,7 +1,7 @@
 import { CancelToken } from "./types.js";
 
 export default function sleep(timeInMS: number, ct?: CancelToken, throwOnCancel = true) {
-    let token = 0;
+    let token = 0 as any;
     return new Promise<void>((resolve, reject) => {
         ct?.registerForCancel((reason) => {
             if (token) {

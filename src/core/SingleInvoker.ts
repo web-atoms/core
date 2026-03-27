@@ -5,7 +5,7 @@ import { IDisposable } from "./types.js";
 @DITransient()
 export default class SingleInvoker extends TransientDisposable {
 
-    private keys = new Map<string, number>();
+    private keys = new Map<string, any>();
 
     public dispose() {
         for (const [key, index] of this.keys.entries()) {
