@@ -35,7 +35,7 @@ jobs:
       - run: npm run build-css
       - run: npm run build-css-esm
       - run: npm publish --access public
-      - run: node ./node_modules/@package-verse/esmpack/pack.js
+      - run: node ./node_modules/@package-verse/esmpack/pack.js dist-esm
       # - run: npm install -D typescript typedocs
       # - run: npx typedoc  --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name @web-atoms/core --excludePrivate --excludeNotExported --exclude "**/tests/**/*"
       # - run: node ./core-docs/change-name.js
