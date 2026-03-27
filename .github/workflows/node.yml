@@ -20,7 +20,7 @@ jobs:
           registry-url: https://registry.npmjs.org/        
       - run: npm install
       - run: npm install -g codecov typescript@5.9.3
-      - run: npm install -D istanbul remap-istanbul @web-atoms/ts-to-systemjs @package-verse/esmpack
+      - run: npm install -D istanbul remap-istanbul @web-atoms/ts-to-systemjs
       - run: tsc
       - run: tsc -p tsconfig.esm.json
       # - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
@@ -34,8 +34,8 @@ jobs:
       - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
       - run: npm run build-css
       - run: npm run build-css-esm
-      - run: npm publish --access public
       - run: node ./node_modules/@package-verse/esmpack/pack.js dist-esm
+      - run: npm publish --access public
       # - run: npm install -D typescript typedocs
       # - run: npx typedoc  --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name @web-atoms/core --excludePrivate --excludeNotExported --exclude "**/tests/**/*"
       # - run: node ./core-docs/change-name.js
