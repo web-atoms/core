@@ -1,6 +1,6 @@
 {
   "name": "@web-atoms/core",
-  "version": "2.6.24",
+  "version": "2.6.25",
   "description": "Web Atoms Core",
   "main": "index.js",
   "esm": {
@@ -39,7 +39,7 @@
     "@web-atoms/module-loader": "^2.1.89",
     "@web-atoms/unit-test": "^2.0.5",
     "@web-atoms/postcss-styled-js": "^1.0.10",
-    "@package-verse/esmpack":"^1.0.34",
+    "@package-verse/esmpack": "^1.0.34",
     "colors": "^1.4.0",
     "istanbul": "^0.4.5",
     "jsdom": "^23.2.0",
