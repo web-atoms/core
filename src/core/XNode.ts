@@ -7,30 +7,6 @@ import { IClassOf, IDisposable } from "./types.js";
 export interface IAttributes {
     [key: string]: string | number | null | any;
 }
-
-declare var bridge: any;
-
-export class RootObject {
-
-    public get vsProps(): {
-        [k in keyof this]?: this[k] | Bind
-    } | { [k: string]: any } | {} {
-        return undefined;
-    }
-
-    public addEventListener(name: string, handler: EventListenerOrEventListenerObject): IDisposable {
-        return bridge.addEventHandler(this, name, handler);
-    }
-
-    public appendChild(e: any) {
-        bridge.appendChild(this, e);
-    }
-
-    public dispatchEvent(evt: Event) {
-        bridge.dispatchEvent(evt);
-    }
-}
-
 export interface IElementAttributes {
     [key: string]: unknown;
     "data-click-event"?: string;
@@ -230,17 +206,17 @@ export default class XNode {
     //     } as any;
     // }
 
-    public static getClass(fullTypeName: string, assemblyName: string) {
-        const n = fullTypeName + ";" + assemblyName;
-        const cx = XNode.classes[n] || (XNode.classes[n] =
-            bridge.getClass(
-                fullTypeName,
-                assemblyName,
-                RootObject,
-                (name, isProperty, isTemplate) =>
-                    (a?: any, ... nodes: any[]) => new XNode(name, a, nodes, isProperty, isTemplate )));
-        return cx;
-    }
+    // public static getClass(fullTypeName: string, assemblyName: string) {
+    //     const n = fullTypeName + ";" + assemblyName;
+    //     const cx = XNode.classes[n] || (XNode.classes[n] =
+    //         bridge.getClass(
+    //             fullTypeName,
+    //             assemblyName,
+    //             RootObject,
+    //             (name, isProperty, isTemplate) =>
+    //                 (a?: any, ... nodes: any[]) => new XNode(name, a, nodes, isProperty, isTemplate )));
+    //     return cx;
+    // }
 
     public static factory = (name, isProperty, isTemplate) => (a?: any, ... nodes: any[]) => {
         return new XNode(name, a, nodes, isProperty, isTemplate);
@@ -332,6 +308,4 @@ export default class XNode {
     }
 }
 
-if (typeof bridge !== "undefined") {
-    bridge.XNode = XNode;
-}
+const ESMPack = ((window as any).ESMPack ??= {})
