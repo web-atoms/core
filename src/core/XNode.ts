@@ -309,3 +309,4 @@ export default class XNode {
 }
 
 const ESMPack = ((window as any).ESMPack ??= {})
+ESMPack.installStyleSheet = (s) => setTimeout(() => ESMPack.installStyleSheet(s), 10);
