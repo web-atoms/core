@@ -387,6 +387,8 @@ ESMPack.render = async (imports, element: HTMLElement) => {
     }
     const c = new imports.default(app);
     element.replaceWith(c.element);
+    const loader = document.getElementById("webAtomsLoader");
+    loader?.remove();
 };
 
 ESMPack.installStyleSheet = App.installStyleSheet;
