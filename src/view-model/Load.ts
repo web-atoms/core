@@ -1,10 +1,8 @@
 import { App } from "../App.js";
 import { parsePath } from "../core/ExpressionParser.js";
-import FormattedString from "../core/FormattedString.js";
-import sleep from "../core/sleep.js";
 import { CancelToken } from "../core/types.js";
-import { NavigationService } from "../services/NavigationService.js";
-import { AtomViewModel, Watch } from "./AtomViewModel.js";
+import PopupService from "../web/services/PopupService.js";
+import { AtomViewModel } from "./AtomViewModel.js";
 import { registerInit } from "./baseTypes.js";
 
 export type ILoadOptions = {
@@ -89,7 +87,7 @@ export default function Load(
             let showError = init ? (showErrorOnInit ? true : false) : true;
             let ct: CancelToken;
 
-            const ns = app.resolve(NavigationService);
+            // const ns = app.resolve(NavigationService);
 
             const m = async (ctx?: CancelToken) => {
                 try {
@@ -106,7 +104,7 @@ export default function Load(
                         console.error(e);
                         return;
                     }
-                    await ns.alert(e, "Error");
+                    await PopupService.alert({ message: e, title: "Error"});
                 } finally {
                     ct = null;
                     showError = true;
