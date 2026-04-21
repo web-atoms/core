@@ -1,6 +1,9 @@
 import "reflect-metadata";
 import Map from "./AtomMap.js";
 
+(Symbol as any).dispose ??= Symbol.for("dispose");
+(Symbol as any).asyncDispose ??= Symbol.for("asyncDispose");
+
 // tslint:disable-next-line:no-empty-interface
 export interface INativeComponent {
     appendChild(e: any);
