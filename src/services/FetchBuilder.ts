@@ -56,6 +56,8 @@ export default class FetchBuilder {
     }
 
     private constructor(private readonly request: IRequest) {
+        request.headers ??= {};
+        request.headers["x-requested-with"] = "fetch";
     }
 
     public log(logger: (...a: any[]) => void) {
