@@ -19,7 +19,6 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org/        
       - run: npm install
-      - run: npm install -g codecov typescript@5.9.3
       - run: npm install -D istanbul remap-istanbul @web-atoms/ts-to-systemjs
       - run: tsc
       - run: tsc -p tsconfig.esm.json
