@@ -73,30 +73,43 @@ export function Inject(target: any, name: string, index?: number): void {
                 "parameter or a property without get/set methods");
         }
     } else {
-        const key = TypeKey.get(target.constructor);
-        const plist = (Reflect as any).getMetadata("design:type", target, name);
-        const p = InjectedTypes.propertyList[key] || (InjectedTypes.propertyList[key] = {});
-        p[name] = plist;
+        const key = name;
+        Object.defineProperty(target, key, {
+            get: function() {
+                const plist = (Reflect as any).getMetadata("design:type", target, key);
+                const result = this.app.resolve(plist);
+                // get is compatible with AtomWatcher
+                // as it will ignore getter and it will
+                // not try to set a binding refresher
+                Object.defineProperty(this, key, {
+                    get: () => result
+                });
+                return result;
+            },
+            configurable: true
+        });
+        // const p = InjectedTypes.propertyList[key] || (InjectedTypes.propertyList[key] = {});
+        // p[name] = plist;
 
-        // need to merge base properties..
-        let base = target.constructor;
-        while (true) {
-            base = Object.getPrototypeOf(base);
-            if (!base) {
-                break;
-            }
-            const baseKey = TypeKey.get(base);
-            const bp = InjectedTypes.propertyList[baseKey];
-            if (bp) {
-                for (const pKey in bp) {
-                    if (bp.hasOwnProperty(pKey)) {
-                        const element = bp[pKey];
-                        if (!p[pKey]) {
-                            p[pKey] = element;
-                        }
-                    }
-                }
-            }
-        }
+        // // need to merge base properties..
+        // let base = target.constructor;
+        // while (true) {
+        //     base = Object.getPrototypeOf(base);
+        //     if (!base) {
+        //         break;
+        //     }
+        //     const baseKey = TypeKey.get(base);
+        //     const bp = InjectedTypes.propertyList[baseKey];
+        //     if (bp) {
+        //         for (const pKey in bp) {
+        //             if (bp.hasOwnProperty(pKey)) {
+        //                 const element = bp[pKey];
+        //                 if (!p[pKey]) {
+        //                     p[pKey] = element;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
