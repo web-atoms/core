@@ -48,7 +48,7 @@ export default class FetchBuilder {
     }
 
     public static header(name: string, value: string) {
-        return new FetchBuilder({ headers: { url: "", method: "POST", [name]: value }});
+        return new FetchBuilder({ url: "", method: "POST", headers: { [name]: value }});
     }
 
     public static method(url, method: string) {
@@ -135,14 +135,16 @@ export default class FetchBuilder {
         if (encode) {
             body = JSON.stringify(body);
         }
-        const headers = this.request.headers ?? {};
+        const headers = { ... this.request.headers ?? {} };
         headers["content-type"] = "application/json";
         return this.append ({ body, headers });
     }
 
     public header(name: string, value: string) {
-        const headers = this.request.headers ?? {};
-        headers[name] = value;
+        const headers = { ... this.request.headers ?? {} };
+        if (value ?? false) {
+            headers[name] = value;
+        }
         return this.append({ headers });
     }
 
