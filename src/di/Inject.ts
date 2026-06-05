@@ -24,7 +24,7 @@ export function Inject(target: any, name: string, index?: number): void {
         Object.defineProperty(target, key, {
             get: function() {
                 const plist = (Reflect as any).getMetadata("design:type", target, key);
-                const result = ServiceProvider.from(this).resolve(plist);
+                const result = ServiceProvider.from(this.app ?? this).resolve(plist);
                 // get is compatible with AtomWatcher
                 // as it will ignore getter and it will
                 // not try to set a binding refresher
