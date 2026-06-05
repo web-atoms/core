@@ -9,6 +9,7 @@
         }
     },
     "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "js/ts.preferences.importModuleSpecifierEnding": "js",
     "coverage-gutters.lcovname": "./coverage/lcov.info",
     "cSpell.words": [
         "Akash",

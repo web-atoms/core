@@ -1,4 +1,4 @@
-import { Inject } from "../di/Inject";
+import { Inject } from "../di/Inject.js";
 
  /** @deprecated use `@Inject` instead */
 export default function InjectProperty(target, name) {
