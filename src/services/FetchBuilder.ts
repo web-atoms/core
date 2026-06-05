@@ -142,7 +142,10 @@ export default class FetchBuilder {
 
     public header(name: string, value: string) {
         const headers = { ... this.request.headers ?? {} };
-        if (value ?? false) {
+        if (value === null || value === undefined) {
+            delete headers[name];
+        }
+        else  {
             headers[name] = value;
         }
         return this.append({ headers });
