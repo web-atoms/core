@@ -55,9 +55,11 @@ export default class FetchBuilder {
         return new FetchBuilder({ url, method });
     }
 
-    private constructor(private readonly request: IRequest) {
+    private constructor(private readonly request: IRequest, noInit = false) {
         request.headers ??= {};
-        request.headers["x-requested-with"] = "fetch";
+        if (!noInit) {
+            request.headers["x-requested-with"] = "fetch";
+        }
     }
 
     public log(logger: (...a: any[]) => void) {
@@ -337,7 +339,7 @@ export default class FetchBuilder {
             ... this.request,
             ... r,
             url
-        });
+        }, true);
     }
 
 }
