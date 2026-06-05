@@ -1,6 +1,5 @@
 import { InjectedTypes } from "./InjectedTypes.js";
 import { ServiceProvider } from "./ServiceProvider.js";
-import { TypeKey } from "./TypeKey.js";
 
 export interface IPropertyTypes {
     [key: string]: {new ()};

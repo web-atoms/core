@@ -9,7 +9,7 @@ export class PropertyMap {
     // tslint:disable-next-line:ban-types
     public static from(o: any): PropertyMap {
         const c = Object.getPrototypeOf(o);
-        const key = TypeKey.get(c);
+        const key = c;
         const map = PropertyMap.map;
         const m = map[key] || (map[key] = PropertyMap.createMap(o));
         return m;

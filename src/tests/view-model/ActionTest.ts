@@ -4,7 +4,7 @@ import Test from "@web-atoms/unit-test/dist/Test.js";
 import { Atom } from "../../Atom.js";
 import { CancelToken } from "../../core/types.js";
 import DISingleton from "../../di/DISingleton.js";
-import { Inject, InjectedTypes } from "../../di/Inject.js";
+import { Inject } from "../../di/Inject.js";
 import Action from "../../view-model/Action.js";
 import { AtomViewModel, Validate } from "../../view-model/AtomViewModel.js";
 

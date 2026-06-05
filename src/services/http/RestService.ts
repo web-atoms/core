@@ -354,7 +354,7 @@ export class ServiceParameter {
 
 export default function BaseUrl(baseUrl: string): ((target: any) => void) {
     return (target: any): void => {
-        const key = TypeKey.get(target);
+        const key = target;
         BaseService.baseUrls[key] = baseUrl;
     };
 }
@@ -437,7 +437,7 @@ export class BaseService {
         if (this.baseUrl === undefined) {
             let p = Object.getPrototypeOf(this);
             while (p) {
-                const t = TypeKey.get(p.constructor || p);
+                const t = p.constructor || p;
                 const bu = BaseService.baseUrls[t];
                 if (bu) {
                     this.baseUrl = bu;
