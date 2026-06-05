@@ -1,6 +1,6 @@
 import TransientDisposable from "../core/TransientDisposable.js";
 import { IAnyInstanceType, IClassOf, IDisposable } from "../core/types.js";
-import { InjectedTypes } from "./Inject.js";
+import { InjectedTypes, serviceInstance } from "./InjectedTypes.js";
 import { Scope, ServiceCollection, ServiceDescription } from "./ServiceCollection.js";
 import { TypeKey } from "./TypeKey.js";
 
@@ -9,6 +9,10 @@ export class ServiceProvider implements IDisposable {
     private static mappedTypes: Map<string, any> = new Map();
 
     private instances: Map<string, any> = new Map();
+
+    public static from(instance) {
+        return instance[serviceInstance] as ServiceProvider;
+    }
 
     public get global(): ServiceProvider {
         return this.parent === null ? this : this.parent.global;
@@ -20,6 +24,7 @@ export class ServiceProvider implements IDisposable {
         }
         const sd = ServiceCollection.instance.get(ServiceProvider);
         this.instances.set(sd.id, this);
+        this[serviceInstance] = this;
     }
 
     public get<T>(key: IClassOf<T>): T {
@@ -68,13 +73,16 @@ export class ServiceProvider implements IDisposable {
 
     public getValue(sd: ServiceDescription): any {
         if (sd.scope === Scope.Transient) {
-            return sd.factory(this);
+            const v1 = sd.factory(this);
+            v1[serviceInstance] = this;
+            return v1;
         }
 
         let v: any = this.instances.get(sd.id);
         if (v === void 0) {
             v = sd.factory(this);
             this.instances.set(sd.id, v);
+            v[serviceInstance] = this;
         }
         return v;
     }
@@ -95,21 +103,7 @@ export class ServiceProvider implements IDisposable {
 
     private create(key: any): any {
 
-        const originalKey = key;
-        const originalTypeKey = TypeKey.get(originalKey);
-
-        // if (DI.resolveType) {
-        //     let mappedType = ServiceProvider.mappedTypes.get(originalTypeKey);
-        //     if (mappedType === void 0) {
-        //         mappedType = DI.resolveType(originalKey);
-        //         ServiceProvider.mappedTypes.set(originalKey, mappedType);
-        //     }
-
-        //     key = mappedType;
-        // }
-        const typeKey1 = TypeKey.get(key);
-
-        const plist = InjectedTypes.getParamList(key, typeKey1);
+        const plist = InjectedTypes.getParamList(key, key);
 
         let value: any = null;
 
@@ -126,7 +120,9 @@ export class ServiceProvider implements IDisposable {
             value = new (key)();
         }
 
-        const propList = InjectedTypes.getPropertyList(key, typeKey1);
+        value[serviceInstance] = this;
+
+        const propList = InjectedTypes.getPropertyList(key, key);
         if (propList) {
             for (const key1 in propList) {
                 if (propList.hasOwnProperty(key1)) {

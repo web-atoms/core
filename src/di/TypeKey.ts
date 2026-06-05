@@ -2,21 +2,21 @@ import AtomMap from "../core/AtomMap.js";
 
 export class TypeKey {
 
-    public static get(c: any) {
-        return c;
-        // for (const iterator of this.keys) {
-        //     if (iterator.c === c) {
-        //         return iterator.key;
-        //     }
-        // }
-        // const key = `${c.name || "key"}${this.keys.length}`;
-        // this.keys.push({ c, key});
-        // return key;
-        // return TypeKey.keys.getOrCreate(c, (c1) => {
-        //     const key = `${c1.name || "key"}${TypeKey.keys.size}`;
-        //     return key;
-        // });
-    }
+    // public static get(c: any) {
+    //     return c;
+    //     // for (const iterator of this.keys) {
+    //     //     if (iterator.c === c) {
+    //     //         return iterator.key;
+    //     //     }
+    //     // }
+    //     // const key = `${c.name || "key"}${this.keys.length}`;
+    //     // this.keys.push({ c, key});
+    //     // return key;
+    //     // return TypeKey.keys.getOrCreate(c, (c1) => {
+    //     //     const key = `${c1.name || "key"}${TypeKey.keys.size}`;
+    //     //     return key;
+    //     // });
+    // }
 
     // private static keys: AtomMap<any, any> = new AtomMap();
 

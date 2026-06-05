@@ -1,68 +1,16 @@
+import { InjectedTypes } from "./InjectedTypes.js";
+import { ServiceProvider } from "./ServiceProvider.js";
 import { TypeKey } from "./TypeKey.js";
 
 export interface IPropertyTypes {
     [key: string]: {new ()};
 }
 
-export class InjectedTypes {
-
-    public static paramList: {
-        [key: string]: Array<{ new ()}>
-    } = {};
-
-    public static propertyList: {
-        [key: string]: IPropertyTypes
-    } = {};
-
-    public static getParamList(key: any, typeKey1: any): Array<{ new ()}> {
-        let plist = InjectedTypes.paramList[typeKey1];
-
-        // We need to find @Inject for base types if
-        // current type does not define any constructor
-        let type = key;
-        while (plist === undefined) {
-            type = Object.getPrototypeOf(type);
-            if (!type) {
-                break;
-            }
-            const typeKey = TypeKey.get(type);
-            plist = InjectedTypes.paramList[typeKey];
-            if (!plist) {
-                InjectedTypes.paramList[typeKey] = plist;
-            }
-        }
-
-        return plist;
-    }
-
-    public static getPropertyList(key: any, typeKey1: any): IPropertyTypes {
-        let plist = InjectedTypes.propertyList[typeKey1];
-
-        // We need to find @Inject for base types if
-        // current type does not define any constructor
-        let type = key;
-        while (plist === undefined) {
-            type = Object.getPrototypeOf(type);
-            if (!type) {
-                break;
-            }
-            const typeKey = TypeKey.get(type);
-            plist = InjectedTypes.propertyList[typeKey];
-            if (!plist) {
-                InjectedTypes.propertyList[typeKey] = plist;
-            }
-        }
-
-        return plist;
-    }
-
-}
-
 // export function Inject(target: any, name: string): void;
 export function Inject(target: any, name: string, index?: number): void {
 
     if (index !== undefined) {
-        const key = TypeKey.get(target);
+        const key = target;
         const plist = (Reflect as any).getMetadata("design:paramtypes", target, name);
         if (typeof index === "number") {
             const pSavedList = InjectedTypes.paramList[key] || (InjectedTypes.paramList[key] = []);
@@ -77,7 +25,7 @@ export function Inject(target: any, name: string, index?: number): void {
         Object.defineProperty(target, key, {
             get: function() {
                 const plist = (Reflect as any).getMetadata("design:type", target, key);
-                const result = this.app.resolve(plist);
+                const result = ServiceProvider.from(this).resolve(plist);
                 // get is compatible with AtomWatcher
                 // as it will ignore getter and it will
                 // not try to set a binding refresher
@@ -88,28 +36,5 @@ export function Inject(target: any, name: string, index?: number): void {
             },
             configurable: true
         });
-        // const p = InjectedTypes.propertyList[key] || (InjectedTypes.propertyList[key] = {});
-        // p[name] = plist;
-
-        // // need to merge base properties..
-        // let base = target.constructor;
-        // while (true) {
-        //     base = Object.getPrototypeOf(base);
-        //     if (!base) {
-        //         break;
-        //     }
-        //     const baseKey = TypeKey.get(base);
-        //     const bp = InjectedTypes.propertyList[baseKey];
-        //     if (bp) {
-        //         for (const pKey in bp) {
-        //             if (bp.hasOwnProperty(pKey)) {
-        //                 const element = bp[pKey];
-        //                 if (!p[pKey]) {
-        //                     p[pKey] = element;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
 }
