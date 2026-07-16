@@ -64,6 +64,7 @@ export default class PopupWindow extends AtomControl {
             options = arguments[0];
             window = this;
         }
+        options ??= {};
         // this will force lastTarget to be set
         await sleep(1);
         const PS = await loadPopupService();
