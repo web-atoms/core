@@ -137,6 +137,8 @@ export interface IBinder<T extends IAtomComponent> {
      * @param events events on auto refresh
      */
     twoWays(path: bindingFunction<T>, events?: string[]): Bind;
+
+    onCreate(fx: (control: T, e: HTMLElement, creator: any) => void): Bind;
 }
 
 export const bindSymbol = Symbol("Bind");
@@ -157,6 +159,15 @@ export default class Bind {
 
     public static forLocalViewModel<D>(): IBinder<ILVM<D>> {
         return Bind as any;
+    }
+
+    public static onCreate(fx: (c: IAtomComponent,e: HTMLElement, n: string) => void) {
+        return {
+            [bindSymbol](cn: string, control: IAtomComponent, e: any, creator: any) {
+                fx(control, e, creator);
+                return;
+            }
+        }
     }
 
     public static presenter(name?: string | ((c: any) => any)): any {

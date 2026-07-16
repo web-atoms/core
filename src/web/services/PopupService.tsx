@@ -1,13 +1,15 @@
 import { App } from "../../App";
 import { AtomDisposableList } from "../../core/AtomDisposableList";
 import { getOwnInheritedProperty } from "../../core/InheritedProperty";
-import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
-import XNode, { constructorNeedsArgumentsSymbol } from "../../core/XNode";
-import styled from "../../style/styled";
+import { CancelToken } from "../../core/types";
+import XNode from "../../core/XNode";
 import { AtomControl } from "../controls/AtomControl";
+import { LastTarget } from "./LastTarget";
 
+import "./PopupService.global.css";
 
 import PopupWindowA, { ConfirmPopup } from "./PopupWindow";
+
 
 export const PopupWindow = PopupWindowA;
 
@@ -18,100 +20,7 @@ document.body.addEventListener("click", (e) => {
     }
 });
 
-    styled.css `
-
-    [data-force-contain=none] {
-        contain: none !important; 
-    }
-
-    *[data-inline-popup=left] {
-        position: relative;
-        height: 0px;
-        width: 0px;
-        left: 0px; 
-        
-        & > * {
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            padding: 5px;
-            max-height: 300px;
-            overflow: auto;
-            border-radius: 5px;
-            background-color: #ffffff;
-            z-index: 200;
-            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
-            border: solid 1px rgba(0, 0, 0, 0.05); 
-        }
-    }
-
-    *[data-inline-popup=right] {
-        position: absolute;
-        height: 0px;
-        width: 0px;
-        right: 0px; 
-    
-    
-        & > * {
-            position: absolute;
-            right: 0px;
-            top: 0px;
-            padding: 5px;
-            max-height: 300px;
-            overflow: auto;
-            border-radius: 5px;
-            background-color: #ffffff;
-            z-index: 200;
-            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
-            border: solid 1px rgba(0, 0, 0, 0.05); 
-        }
-    }
-
-    *[data-inline-popup=inline-left] {
-        position: relative;
-        height: 0px;
-        width: 0px;
-        left: 0px; 
-
-        & > * {
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            padding: 5px;
-            max-height: 300px;
-            overflow: auto;
-            border-radius: 5px;
-            background-color: #ffffff;
-            z-index: 200;
-            box-shadow: rgba(50, 50, 105, 0.07) 0px 2px 5px 0px, rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;;
-            border: solid 1px rgba(0, 0, 0, 0.05); 
-        }
-    }
-
-    *[data-center-popup] {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10000;
-        padding: 5px;
-        background-color: #ffffff;
-        border: solid 1px lightgray;
-        border-radius: 5px;
-        box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;;
-        display: inline-block; 
-    }    
-
-`.withId("popup-service-styles").installGlobal();
-
-const popupCss = styled.css `
-    padding: 5px;
-    background-color: #ffffff;
-    border: solid 1px lightgray;
-    border-radius: 5px;
-    box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;;
-    display: inline-block;
-`.installLocal();
+const popupCss = "web-atoms-popup-local";
 
 export interface IPopupOptions {
     /**
@@ -289,7 +198,7 @@ function findHost(opener: HTMLElement, offset?: {x: number, y: number}): HTMLEle
         offset.x += host.offsetLeft;
         offset.y += host.offsetTop - (parent?.scrollTop ?? 0);
     }
-    return host;
+    return host ?? document.body;
 }
 
 export const disableContain = (ce: HTMLElement) => {
@@ -366,12 +275,6 @@ function closeHandler(
 
 let popupId = 1001;
 
-let lastTarget = {
-    element: null,
-    x: 10,
-    y: 10
-};
-
 export interface IPopupAlertOptions {
     message: string | XNode;
     title?: string;
@@ -382,39 +285,76 @@ export interface IPopupAlertOptions {
 }
 export default class PopupService {
 
-    public static defaultElementTarget: HTMLElement;
-
-    public static get lastTarget() {
-        const { element, x = 0, y = 0 } = lastTarget;
-        if (element?.isConnected) {
-            return element;
-        }
-        let e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
-        if (this.defaultElementTarget?.isConnected
-            && (e === document.documentElement || e === document.body)) {
-                e = this.defaultElementTarget;
-            }
-        PopupService.lastTarget = e;
-        return e;
+    public static get lastTarget(): HTMLElement {
+        return LastTarget.target;
     }
 
-    public static set lastTarget(element: HTMLElement) {
-        if (!element.isConnected) {
-            return;
-        }
-        if (element === document.documentElement) {
-            return;
-        }
-        if (!this.defaultElementTarget && element !== document.body && element !== document.documentElement) {
-            this.defaultElementTarget = element;
-        }
-        const rect = element.getBoundingClientRect();
-        lastTarget = {
-            element,
-            x: rect.left + (rect.width / 2),
-            y: rect.top + (rect.height / 2)
-        };
+    public static set lastTarget(v: HTMLElement) {
+        LastTarget.target = v;
     }
+
+    // public static defaultElementTarget: HTMLElement;
+
+    // public static get lastTarget() {
+    //     const { element, x = 0, y = 0 } = lastTarget;
+    //     if (element?.isConnected) {
+    //         return element;
+    //     }
+
+
+    //     const targets = this.targetPath;
+    //     if (targets) {
+    //         for(;;) {
+    //             const first = targets[0];
+    //             if (!first) {
+    //                 break;
+    //             }
+    //             if (first.isConnected) {
+    //                 lastTarget = { element: first , x, y};
+    //                 return first;
+    //             }
+    //             targets.splice(0, 1);
+    //         }
+    //     }
+
+    //     let e = document.elementFromPoint?.(x, y) as HTMLElement ?? document.body;
+    //     if (this.defaultElementTarget?.isConnected
+    //         && (e === document.documentElement || e === document.body)) {
+    //             e = this.defaultElementTarget;
+    //         }
+    //     PopupService.lastTarget = e;
+    //     return e;
+    // }
+
+    // public static set lastTarget(element: HTMLElement) {
+    //     if (!element.isConnected) {
+    //         return;
+    //     }
+    //     if (element === document.documentElement) {
+    //         return;
+    //     }
+
+    //     let start = element;
+    //     const targets = [start];
+    //     while(start) {
+    //         start = start.parentElement;
+    //         if (start) {
+    //             targets.push(start);
+    //         }
+    //     }
+
+    //     this.targetPath = targets;
+
+    //     if (!this.defaultElementTarget && element !== document.body && element !== document.documentElement) {
+    //         this.defaultElementTarget = element;
+    //     }
+    //     const rect = element.getBoundingClientRect();
+    //     lastTarget = {
+    //         element,
+    //         x: rect.left + (rect.width / 2),
+    //         y: rect.top + (rect.height / 2)
+    //     };
+    // }
 
     public static async alert({
         message,
@@ -624,12 +564,26 @@ export default class PopupService {
                             vm[key] = e;
                         }
                     }
-                    (control as any).init?.()
-                        ?.catch((error) => {
-                            if (!CancelToken.isCancelled(error)) {
-                                console.error(error);
-                            }
-                        });
+                    const init = (control as any).init;
+                    if (init) {
+                        const c = (control as any).init();
+                        if (c?.then) {
+                            c.then(() => 
+                                control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })),
+                            (error) => {
+                                control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true }));
+                                if(!CancelToken.isCancelled(error)) {
+                                    console.error(error);
+                                }
+                            });
+                        } else {
+                            setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
+                        }
+                    } else {
+                        setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
+                    }
+                } else {
+                    setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
                 }
                 cancelToken?.registerForCancel(cancel);
                 isModal = modal;
@@ -819,5 +773,7 @@ export default class PopupService {
 
         return container;
     }
+
+    private static targetPath: HTMLElement[] = [];
 
 }

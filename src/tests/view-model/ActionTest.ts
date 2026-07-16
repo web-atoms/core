@@ -76,9 +76,10 @@ export default class ActionTest extends AtomWebTest {
         const vm = await this.createViewModel(ActionViewModel);
         vm.model.name = "a";
         vm.model.email = "a";
-        this.navigationService.expectAlert("Error: Invalid email address");
-
-        await vm.signUp();
+        await Assert.throwsAsync("Invalid email address", async () => {
+            this.navigationService.expectAlert("Error: Invalid email address");
+            await vm.signUp();
+        });
     }
 
     @Test

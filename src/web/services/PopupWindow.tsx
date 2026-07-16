@@ -3,11 +3,12 @@ import { BindableProperty } from "../../core/BindableProperty";
 import XNode from "../../core/XNode";
 import sleep from "../../core/sleep";
 import { CancelToken, IClassOf, IDisposable, IRect } from "../../core/types";
-import styled from "../../style/styled";
 import { AtomControl } from "../controls/AtomControl";
 import { ChildEnumerator } from "../core/AtomUI";
 import type PopupService from "./PopupService";
 import type { IDialogOptions } from "./PopupService";
+
+import "./PopupWindow.global.css";
 
 let popupService: typeof PopupService;
 
@@ -52,136 +53,6 @@ const focus = (popup: PopupWindow) => {
     (anyAutofocus as HTMLElement).focus?.();
 };
 
-    styled.css `
-        position: absolute;
-        border: solid 1px lightgray;
-        border-radius: 5px;
-        background-color: white;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 20px 1px rgba(0 0 0 / 75%);
-
-        display: grid;
-        align-items: stretch;
-        justify-items: stretch;
-        grid-template-rows: auto auto 1fr auto;
-        grid-template-columns: auto 1fr auto;
-        opacity: 0;
-        transition: opacity 0.3s cubic-bezier(0.55, 0.09, 0.97, 0.32) ;
-        overflow: hidden;
-
-        [data-window-modal-background=background] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-        }
-
-        &[data-no-width=true] {
-            max-width: 95%;
-            min-width: 300px;
-        }
-        &[data-no-height=true] {
-            max-height: 95%;
-            min-height: 100px;
-        }
-
-        &[data-maximize=true] {
-            width: 90%;
-            height: 90%;
-        }
-
-        &[data-ready=true] {
-            opacity: 1;
-        }
-        &[data-dragging=true] {
-            opacity: 0.5;
-        }
-        & > [data-window-element=icon] {
-            grid-row: 1;
-            grid-column: 1;
-            z-index: 2;
-        }
-        & > [data-window-element=title] {
-            grid-row: 1;
-            grid-column: 2;
-            font-size: medium;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            cursor: move;
-            padding: var(--spacing, 5px);
-            color: var(--accent-text-color, #424242);
-            z-index: 2;
-        }
-        & > [data-window-element=close] {
-            grid-row: 1;
-            grid-column: 3;
-            color: white;
-            background-color: red;
-            border-radius: 9999px;
-            border: none;
-            outline: none;
-            /* padding: 5px; */
-            font-family: monospace;
-            height: 20px;
-            width: 20px;
-            margin: 5px;
-            cursor: pointer;
-            text-transform: capitalize;
-            z-index: 2;
-        }
-        & > [data-window-element=action-bar] {
-            grid-row: 1;
-            grid-column: 1 / span 3;
-            align-self: stretch;
-            justify-self: stretch;
-            background-color: var(--accent-color, rgba(211, 211, 211, 0.2));
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-            z-index: 1;
-        }
-        & > [data-window-element=header] {
-            margin-top: 5px;
-            grid-row: 2;
-            grid-column: 1 / span 3;
-        }
-        & > [data-window-element=content] {
-            margin-top: 5px;
-            grid-row: 3;
-            grid-column: 1 / span 3;
-            position: relative;
-            overflow: auto;
-            padding: var(--spacing-medium, 7px);
-            &[data-maximize=true] {
-                width: 90vw;
-                height: 90vh;
-            }
-        }
-        & > [data-window-element=footer] {
-            margin-top: 5px;
-            grid-row: 4;
-            grid-column: 1 / span 3;
-            padding-top: 5px;
-            padding-bottom: 5px;
-            background-color: var(--command-bar-color, #80808025);
-
-            & > button, & > * > button {
-                border-radius: 9999px;
-                padding: 5px;
-                padding-left: 20px;
-                padding-right: 20px;
-                border-width: 1px;
-                border-color: transparent;
-                margin: 5px;
-                margin-left: 10px;
-            }            
-        }
-
-    `.installGlobal("[data-popup-window=popup-window]")
-
 export default class PopupWindow extends AtomControl {
 
     public static async showWindow<T>(options?: IDialogOptions): Promise<T>;
@@ -193,6 +64,7 @@ export default class PopupWindow extends AtomControl {
             options = arguments[0];
             window = this;
         }
+        options ??= {};
         // this will force lastTarget to be set
         await sleep(1);
         const PS = await loadPopupService();
@@ -331,6 +203,7 @@ export default class PopupWindow extends AtomControl {
     protected preCreate(): void {
         this.title = null;
         this.viewModelTitle = null;
+        this.element.setAttribute("not-ready", "1");
         const c = new CancelToken();
         // @ts-expect-error
         this.cancelToken = c;
@@ -357,10 +230,19 @@ export default class PopupWindow extends AtomControl {
 
         // init will be called if parameters are set...
         // this.runAfterInit(() => this.app.runAsync(() => this.init?.()));
-
-        setTimeout((p: HTMLElement) => {
+        const p = this.element;
+        this.bindEvent(this.element, "popupReady", (e) => {
+            if (e.defaultPrevented) {
+                return;
+            }
             p.setAttribute("data-ready", "true");
-        }, 10, this.element);
+            const parent = (p.offsetParent ?? document.body) as HTMLElement;
+            const left = `${(parent.offsetWidth - p.offsetWidth) / 2}px`;
+            const top = `${(parent.offsetHeight - p.offsetHeight) / 2}px`;
+            p.style.left = left;
+            p.style.top = top;
+            p.removeAttribute("not-ready");
+        });
     }
 
     protected render(node: XNode, e?: any, creator?: any): void {
@@ -409,13 +291,10 @@ export default class PopupWindow extends AtomControl {
             // const offset = AtomUI.screenOffset(tp);
             const element = this.element;
             const offset = { x: element.offsetLeft, y: element.offsetTop };
-            if (element.style.transform !== "none") {
-                offset.x -= element.offsetWidth / 2;
-                offset.y -= element.offsetHeight / 2;
-                element.style.left = offset.x + "px";
-                element.style.top = offset.y + "px";
-                element.style.transform = "none";
-            }
+            // offset.x -= element.offsetWidth / 2;
+            // offset.y -= element.offsetHeight / 2;
+            // element.style.left = offset.x + "px";
+            // element.style.top = offset.y + "px";
             this.element.dataset.dragging = "true";
             const rect: IRect = { x: startEvent.clientX, y: startEvent.clientY };
             const cursor = tp.style.cursor;
@@ -455,30 +334,6 @@ export default class PopupWindow extends AtomControl {
 
 // @ts-ignore
 delete PopupWindow.prototype.init;
-
-    styled.css `
-        & >[data-window-element=content] > [data-element=details] {
-            margin-top: 5px;
-            overflow: auto;
-            max-width: 80vw;
-            max-height: 50vh;
-        }
-        & > [data-window-element=footer] {
-
-            & > .yes {
-                background-color: #01af01;
-                color: white;
-            }
-            & > .no {
-                background-color: red;
-                color: white;
-            }
-            & > .cancel {
-                background-color: gray;
-                color: white;
-            }
-        }
-    `.installGlobal("[data-confirm-popup=confirm-popup]")
 
 export class ConfirmPopup extends PopupWindow {
 

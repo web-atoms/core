@@ -42,29 +42,36 @@ let id = 1;
 
 const nextId = () => `styled-r${id++}`;
 
-const globalLow = document.createElement("meta");
-globalLow.name = "global-low-style";
-document.head.appendChild(globalLow);
+let first = document.head.firstElementChild;
 
-const global = document.createElement("meta");
-global.name = "global-style";
-document.head.appendChild(global);
+const markers = {
 
-const globalHigh = document.createElement("meta");
-globalHigh.name = "global-high-style";
-document.head.appendChild(globalHigh);
+};
 
-const localLow = document.createElement("meta");
-localLow.name = "local-low-style";
-document.head.appendChild(localLow);
+const addMarker = (name) => {
+    let m = document.head.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
+    if (m) {
+        first = m;
+        return markers[name] = m;
+    }
+    m = document.createElement("meta");
+    m.name = name;
+    if (first) {
+        first.insertAdjacentElement("afterend", m);
+    } else {
+        document.head.insertAdjacentElement("afterbegin", m);
+    }
+    first = m;
+    return markers[name] = m;
+}
 
-const local = document.createElement("meta");
-local.name = "local-style";
-document.head.appendChild(local);
+addMarker("global-low-marker");
+addMarker("global-marker");
+addMarker("global-high-marker");
 
-const localHigh = document.createElement("meta");
-localHigh.name = "local-high-style";
-document.head.appendChild(localHigh);
+addMarker("local-low-marker");
+addMarker("local-marker");
+addMarker("local-high-marker");
 
 // export type IStyleFragment = Partial<StyleFragment>;
 
@@ -168,14 +175,14 @@ class StyleFragment {
         }
         switch(this.order) {
             case "low":
-                document.head.insertBefore(style, globalLow);
+                document.head.insertBefore(style, markers["global-low-marker"]);
                 break;
             case "default":
             case "medium":
-                document.head.insertBefore(style, global);
+                document.head.insertBefore(style, markers["global-marker"]);
                 break;
             case "high":
-                document.head.insertBefore(style, globalHigh);
+                document.head.insertBefore(style, markers["global-high-marker"]);
                 break;
         }
         style.id = id;
@@ -198,14 +205,14 @@ class StyleFragment {
         }
         switch(this.order) {
             case "low":
-                document.head.insertBefore(style, localLow);
+                document.head.insertBefore(style, markers["local-low-marker"]);
                 break;
             case "default":
             case "medium":
-                document.head.insertBefore(style, local);
+                document.head.insertBefore(style, markers["local-marker"]);
                 break;
             case "high":
-                document.head.insertBefore(style, localHigh);
+                document.head.insertBefore(style, markers["local-high-marker"]);
                 break;
         }
         return selector;
@@ -266,3 +273,5 @@ const styled = {
 };
 
 export default styled;
+
+export const svgAsCssDataUrl = (text: string) => `url(${JSON.stringify(`data:image/svg+xml,${text}`)})`;

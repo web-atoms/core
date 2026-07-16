@@ -2,7 +2,6 @@ import { AjaxOptions } from "./AjaxOptions";
 
 import { App } from "../../App";
 import { Atom } from "../../Atom";
-import { AtomBridge } from "../../core/AtomBridge";
 import { CancelToken, INameValuePairs } from "../../core/types";
 import { Inject } from "../../di/Inject";
 import { TypeKey } from "../../di/TypeKey";
@@ -457,157 +456,151 @@ export class BaseService {
             }
         }
 
-        const busyIndicator = this.showProgress ? ( this.app.createBusyIndicator({
+        using _busyIndicator = this.showProgress ? ( this.app.createBusyIndicator({
             title: url,
             description: `${method} ${url}`
         }) ) : null;
 
-        try {
 
-            url = UMD.resolvePath(url);
+        url = UMD.resolvePath(url);
 
-            let options: AjaxOptions = new AjaxOptions();
-            options.method = method;
+        let options: AjaxOptions = new AjaxOptions();
+        options.method = method;
 
-            if (methodOptions) {
-                options.headers = methodOptions.headers;
-                options.dataType = methodOptions.accept;
-            }
+        if (methodOptions) {
+            options.headers = methodOptions.headers;
+            options.dataType = methodOptions.accept;
+        }
 
-            const methodHeaders = (options.headers = options.headers || {});
+        const methodHeaders = (options.headers = options.headers || {});
 
-            const headers = this.headers
-                ? ({ ... this.headers, ...  methodHeaders })
-                : methodHeaders;
+        const headers = this.headers
+            ? ({ ... this.headers, ...  methodHeaders })
+            : methodHeaders;
 
-            // this is necessary to support IsAjaxRequest in ASP.NET MVC
-            if (!headers["X-Requested-With"]) {
-                headers["X-Requested-With"] = "XMLHttpRequest";
-            }
+        // this is necessary to support IsAjaxRequest in ASP.NET MVC
+        if (!headers["X-Requested-With"]) {
+            headers["X-Requested-With"] = "XMLHttpRequest";
+        }
 
-            options.dataType = options.dataType || "application/json";
+        options.dataType = options.dataType || "application/json";
 
-            const jsonOptions = {
-                ... this.jsonOptions,
-                ... (methodOptions ? methodOptions.jsonOptions : {})
-            };
+        const jsonOptions = {
+            ... this.jsonOptions,
+            ... (methodOptions ? methodOptions.jsonOptions : {})
+        };
 
-            if (bag) {
+        if (bag) {
 
-                for (let i: number = 0; i < bag.length; i++) {
-                    const p: ServiceParameter = bag[i];
-                    const vi = values[i];
-                    const v: any = vi === undefined ? p.defaultValue : vi;
-                    if (v instanceof CancelToken) {
-                        options.cancel = v;
-                        continue;
-                    }
-                    switch (p.type) {
-                        case "path":
-                            if (v === undefined) {
-                                continue;
-                            }
-                            const vs: string = v + "";
-                            const replacer = `{${p.key}}`;
-                            url = url.split(replacer).join(vs);
-                            break;
-                        case "query":
-                            if (v === undefined) {
-                                continue;
-                            }
-                            if (url.indexOf("?") === -1) {
-                                url += "?";
-                            }
-                            if (! /(\&|\?)$/.test(url)) {
-                                url += "&";
-                            }
-                            url += `${encodeURIComponent(p.key)}=${encodeURIComponent(v)}`;
-                            break;
-                        case "queries":
-                            if (url.indexOf("?") === -1) {
-                                url += "?";
-                            }
-                            if (! /(\&|\?)$/.test(url)) {
-                                url += "&";
-                            }
-                            for (const key in v) {
-                                if (v.hasOwnProperty(key)) {
-                                    const element = v[key];
-                                    if (element !== undefined) {
-                                        url += `${encodeURIComponent(key)}=${encodeURIComponent(element)}&`;
-                                    }
+            for (let i: number = 0; i < bag.length; i++) {
+                const p: ServiceParameter = bag[i];
+                const vi = values[i];
+                const v: any = vi === undefined ? p.defaultValue : vi;
+                if (v instanceof CancelToken) {
+                    options.cancel = v;
+                    continue;
+                }
+                switch (p.type) {
+                    case "path":
+                        if (v === undefined) {
+                            continue;
+                        }
+                        const vs: string = v + "";
+                        const replacer = `{${p.key}}`;
+                        url = url.split(replacer).join(vs);
+                        break;
+                    case "query":
+                        if (v === undefined) {
+                            continue;
+                        }
+                        if (url.indexOf("?") === -1) {
+                            url += "?";
+                        }
+                        if (! /(\&|\?)$/.test(url)) {
+                            url += "&";
+                        }
+                        url += `${encodeURIComponent(p.key)}=${encodeURIComponent(v)}`;
+                        break;
+                    case "queries":
+                        if (url.indexOf("?") === -1) {
+                            url += "?";
+                        }
+                        if (! /(\&|\?)$/.test(url)) {
+                            url += "&";
+                        }
+                        for (const key in v) {
+                            if (v.hasOwnProperty(key)) {
+                                const element = v[key];
+                                if (element !== undefined) {
+                                    url += `${encodeURIComponent(key)}=${encodeURIComponent(element)}&`;
                                 }
                             }
-                            break;
-                        case "body":
-                            options.data = v;
-                            options = this.encodeData(options);
-                            break;
-                        case "bodyformmodel":
-                            options.data = v;
-                            break;
-                        case "rawbody":
-                            options.data = v;
-                            break;
-                        case "xmlbody":
-                            options.contentType = "text/xml";
-                            options.data = v;
-                            break;
-                        case "cancel":
-                            options.cancel = v as CancelToken;
-                            break;
-                        case "header":
-                            if (v === undefined) {
-                                continue;
-                            }
-                            headers[p.key] = v;
-                            break;
-                    }
+                        }
+                        break;
+                    case "body":
+                        options.data = v;
+                        options = this.encodeData(options);
+                        break;
+                    case "bodyformmodel":
+                        options.data = v;
+                        break;
+                    case "rawbody":
+                        options.data = v;
+                        break;
+                    case "xmlbody":
+                        options.contentType = "text/xml";
+                        options.data = v;
+                        break;
+                    case "cancel":
+                        options.cancel = v as CancelToken;
+                        break;
+                    case "header":
+                        if (v === undefined) {
+                            continue;
+                        }
+                        headers[p.key] = v;
+                        break;
                 }
             }
-            options.url = url;
+        }
+        options.url = url;
 
-            const xhr = await this.ajax(url, options);
+        const xhr = await this.ajax(url, options);
 
-            if (/json/i.test(xhr.responseType)) {
-                const text = xhr.responseText;
-                const response = this.jsonService.parse(text, jsonOptions );
+        if (/json/i.test(xhr.responseType)) {
+            const text = xhr.responseText;
+            const response = this.jsonService.parse(text, jsonOptions );
 
-                if (xhr.status >= 400) {
-                    throw new JsonError(
-                        typeof response === "string"
-                        ? response
-                        : ( response.title
-                        ?? response.detail
-                        ?? response.message
-                        ?? response.exceptionMessage
-                        ?? text
-                        ?? "Json Server Error"), response);
-                }
-                if (methodOptions && methodOptions.returnHeaders) {
-                    return {
-                        headers: this.parseHeaders(xhr.responseHeaders),
-                        value: response
-                    };
-                }
-                return response;
-            }
             if (xhr.status >= 400) {
-                throw new Error(xhr.responseText || "Server Error");
+                throw new JsonError(
+                    typeof response === "string"
+                    ? response
+                    : ( response.title
+                    ?? response.detail
+                    ?? response.message
+                    ?? response.exceptionMessage
+                    ?? text
+                    ?? "Json Server Error"), response);
             }
-
             if (methodOptions && methodOptions.returnHeaders) {
                 return {
                     headers: this.parseHeaders(xhr.responseHeaders),
-                    value: xhr.responseText
+                    value: response
                 };
             }
-            return xhr.responseText;
-        } finally {
-            if (busyIndicator) {
-                busyIndicator.dispose();
-            }
+            return response;
         }
+        if (xhr.status >= 400) {
+            throw new Error(xhr.responseText || "Server Error");
+        }
+
+        if (methodOptions && methodOptions.returnHeaders) {
+            return {
+                headers: this.parseHeaders(xhr.responseHeaders),
+                value: xhr.responseText
+            };
+        }
+        return xhr.responseText;
 
     }
 
@@ -637,15 +630,15 @@ export class BaseService {
             throw new Error("cancelled");
         }
 
-        if (AtomBridge.instance.ajax) {
-            return await new Promise<AjaxOptions>((resolve, reject) => {
-                AtomBridge.instance.ajax(url, options, (r) => {
-                    resolve(options);
-                }, (e) => {
-                    reject(e);
-                }, null);
-            });
-        }
+        // if (AtomBridge.instance.ajax) {
+        //     return await new Promise<AjaxOptions>((resolve, reject) => {
+        //         AtomBridge.instance.ajax(url, options, (r) => {
+        //             resolve(options);
+        //         }, (e) => {
+        //             reject(e);
+        //         }, null);
+        //     });
+        // }
 
         const xhr = new XMLHttpRequest();
 

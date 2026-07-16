@@ -7,6 +7,7 @@
             "label": "All Build",
             "dependsOn":[
                 "TypeScript Build Watch",
+                "Build CSS Watch",
                 "Web Atoms Dev Server",
             ],
             "problemMatcher": [],
@@ -22,6 +23,14 @@
             "option": "watch",
         },
         {
+            "label": "Build CSS Watch",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+                "run",
+                "build-css-watch"
+            ]
+        },        {
             "label": "Web Atoms Dev Server",
             "type": "shell",
             "command": "wads",

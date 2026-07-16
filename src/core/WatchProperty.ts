@@ -2,7 +2,7 @@ import { AtomBinder } from "./AtomBinder";
 import type { AtomComponent } from "./AtomComponent";
 import { AtomWatcher } from "./AtomWatcher";
 
-export default function WatchProperty(target: AtomComponent<any, any>, key: string, descriptor: any): any {
+export default function WatchProperty(target: AtomComponent, key: string, descriptor: any): any {
 
     const { get } = descriptor;
     const isSetup = Symbol.for(`isSetup${key}`);

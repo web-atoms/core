@@ -1,11 +1,11 @@
 import { App } from "../../App";
 import { AtomBinder } from "../../core/AtomBinder";
-import { AtomBridge, AtomElementBridge } from "../../core/AtomBridge";
 import { AtomComponent } from "../../core/AtomComponent";
 import { AtomDispatcher } from "../../core/AtomDispatcher";
 import { BindableProperty } from "../../core/BindableProperty";
 import Command from "../../core/Command";
 import FormattedString from "../../core/FormattedString";
+import { refreshInherited, visitDescendents } from "../../core/Hacks";
 import WebImage from "../../core/WebImage";
 import XNode, { elementFactorySymbol, isControl } from "../../core/XNode";
 import { TypeKey } from "../../di/TypeKey";
@@ -30,8 +30,6 @@ declare var bridge;
 if (typeof bridge !== "undefined" && bridge.platform) {
     throw new Error("AtomControl of Web should not be used with Xamarin Forms");
 }
-
-const bridgeInstance = AtomBridge.instance;
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -172,6 +170,9 @@ export const ElementValueSetters: ISetters = {
         e.removeAttribute("disabled");
     },
     autofocus(ctrl: AtomControl, element: HTMLElement, value) {
+        if (value === false) {
+            return;
+        }
         ctrl.app.callLater(() => {
             const ie = element as HTMLInputElement;
             if (ie) {
@@ -249,7 +250,8 @@ ElementValueSetters["on-create"] = ElementValueSetters.onCreate;
 
 let propertyId = 1;
 
-export type PropertyRegistration = ((value) => ({[key: string]: any})) & {
+export interface PropertyRegistration<T> {
+    (value: T): ({[key: string]: T});
     property: string;
 };
 
@@ -257,7 +259,7 @@ export type PropertyRegistration = ((value) => ({[key: string]: any})) & {
 /**
  * AtomControl class represents UI Component for a web browser.
  */
-export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
+export class AtomControl extends AtomComponent {
 
     public static from<T = AtomControl>(e1: Element | EventTarget): T {
         let e = e1 as any;
@@ -270,13 +272,13 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
         }
     }
 
-    public static registerProperty(
+    public static registerProperty<T = any>(
         attributeName: string,
         attributeValue: string,
-        setter: (ctrl: AtomControl, element: HTMLElement, value: any) => void): PropertyRegistration {
+        setter: (ctrl: AtomControl, element: HTMLElement, value: T) => void): PropertyRegistration<T> {
         const setterSymbol = `${attributeName}_${attributeValue}_${propertyId++}`;
         ElementValueSetters[setterSymbol] = setter;
-        function setterFx(v) {
+        function setterFx(v: T) {
             return {
                 [setterSymbol]: v
             };
@@ -285,7 +287,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return setterSymbol;
         };
         setterFx.property = setterSymbol;
-        return setterFx;
+        return setterFx as any;
     }
 
     @BindableProperty
@@ -338,14 +340,14 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
     }
     public set theme(v: AtomStyleSheet) {
         this.mTheme = v;
-        bridgeInstance.refreshInherited(this, "theme");
+        refreshInherited(this, "theme");
     }
 
     /**
      * Gets Parent AtomControl of this control.
      */
     public get parent(): AtomControl {
-        let e = this.element._logicalParent || this.element.parentElement;
+        let e = this.element?._logicalParent || this.element?.parentElement;
         if (!e) {
             return null;
         }
@@ -400,7 +402,7 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
 
     public updateSize(): void {
         this.onUpdateSize();
-        bridgeInstance.visitDescendents(this.element, (e, ac) => {
+        visitDescendents(this.element, (e, ac) => {
             if (ac) {
                 ac.updateSize();
                 return false;
@@ -480,8 +482,12 @@ export class AtomControl extends AtomComponent<HTMLElement, AtomControl> {
             return;
         }
 
-        if (name.startsWith("aria-")) {
-            element.setAttribute(name, value);
+        if (name.startsWith("attr-")) {
+            if (value === null) {
+                element.removeAttribute(name.substring(5));
+                return;
+            }
+            element.setAttribute(name.substring(5), value);
         } else {
             element[name] = value;
         }
@@ -675,8 +681,12 @@ const getSelection = () => {
     return "";
 };
 
+const body = document.body;
+const html = body.parentElement;
+
 // any cancellation must happen at body level...
 window.addEventListener("click", (e) => {
+
     if (e.defaultPrevented) {
         return;
     }
@@ -687,10 +697,14 @@ window.addEventListener("click", (e) => {
 
     const originalTarget = e.target as HTMLElement;
     let start = originalTarget;
-    while (start) {
+    if (originalTarget === html) {
+        return;
+    }
+    let clickEvent;
+    while (start && start !== body ) {
+        clickEvent ||= start.getAttribute("data-click-event");
         if (start.tagName === "A") {
-            const clickEvent = start.getAttribute("data-click-event");
-            if(clickEvent === null) {
+            if(!clickEvent) {
                 // let default handler run here
                 // get href...
                 return;
@@ -733,5 +747,3 @@ window.addEventListener("click", (e) => {
         control.dispatchClickEvent(e, data);
     }
 });
-
-bridgeInstance.controlFactory = AtomControl;

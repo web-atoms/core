@@ -7,6 +7,11 @@ import { RegisterSingleton } from "./di/RegisterSingleton";
 import { ServiceProvider } from "./di/ServiceProvider";
 import { BusyIndicatorService, IBackgroundTaskInfo } from "./services/BusyIndicatorService";
 
+import "./core/AtomList";
+import "@web-atoms/date-time/dist/DateTime";
+import "@web-atoms/date-time/dist/TimeSpan";
+
+
 declare var UMD: any;
 
 export type AtomAction = (channel: string, data: any) => void;
@@ -115,6 +120,8 @@ export class App extends ServiceProvider {
         return true;
     }
 
+    public static current: App;
+
     public readonly dispatcher: AtomDispatcher;
 
     public readonly screen: IScreen;
@@ -127,7 +134,6 @@ export class App extends ServiceProvider {
 
     private bag: any;
 
-    private busyIndicators: IDisposable[] = [];
     private busyIndicatorService: BusyIndicatorService;
     // tslint:disable-next-line:ban-types
     private readyHandlers: Array<() => any> = [];
@@ -148,6 +154,7 @@ export class App extends ServiceProvider {
 
     constructor() {
         super(null);
+        App.current = this;
         this.screen = {};
         this.bag = {};
         this.put(App, this);
@@ -159,7 +166,7 @@ export class App extends ServiceProvider {
         }, 5);
     }
 
-    public createBusyIndicator(taskInfo?: IBackgroundTaskInfo ): IDisposable {
+    public createBusyIndicator(taskInfo?: IBackgroundTaskInfo ): Disposable {
         this.busyIndicatorService = this.busyIndicatorService
             || this.resolve(BusyIndicatorService);
         return this.busyIndicatorService.createIndicator(taskInfo);
@@ -311,11 +318,13 @@ export class App extends ServiceProvider {
     }
 
     protected invokeReady(): void {
-        for (const iterator of this.readyHandlers) {
-            this.invokeReadyHandler(iterator);
+        if (this.invokeReadyHandler) {
+            for (const iterator of this.readyHandlers) {
+                this.invokeReadyHandler(iterator);
+            }
         }
         this.readyHandlers = null;
-}
+    }
 
     // tslint:disable-next-line:ban-types
     private invokeReadyHandler(f: () => any): void {
@@ -325,16 +334,18 @@ export class App extends ServiceProvider {
         if (a && a.then && a.catch) {
             a.then((r) => {
                 // do nothing
-                indicator.dispose();
+                indicator[Symbol.dispose]();
             });
             a.catch((e) => {
-                indicator.dispose();
+                indicator[Symbol.dispose]();
                 // tslint:disable-next-line:no-console
                 // console.error("XFApp.onReady");
                 // tslint:disable-next-line:no-console
                 console.error(typeof e === "string" ? e : JSON.stringify(e));
             });
+            return;
         }
+        indicator[Symbol.dispose]();
     }
 
 }

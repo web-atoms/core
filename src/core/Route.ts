@@ -12,14 +12,23 @@ export class Variable {
 
     public readonly optional: boolean;
 
+    public prefix = "";
+    public suffix = "";
+
+    private readonly parseAsNumber: boolean;
+
     public get regex() {
         if (this.catchAll) {
             return `(/(?<${this.variable}>.+)?)?`;
         }
-        if (this.optional) {
-            return `(/?(?<${this.variable}>[^\\/]+))?`;
+        let r = "[^\\/]{1,500}";
+        if (this.parseAsNumber) {
+            r = "[0-9]{1,500}";
         }
-        return `/(?<${this.variable}>[^\\/]+)`;
+        if (this.optional) {
+            return `(/(?<${this.variable}>${r}))?`;
+        }
+        return `/${ StringHelper.escapeRegExp(this.prefix)}(?<${this.variable}>${r})${ StringHelper.escapeRegExp(this.suffix)}`;
     }
 
     constructor(public readonly variable: string, public readonly name?: string) {
@@ -40,6 +49,7 @@ export class Variable {
 
             switch(parseAs) {
                 case "number":
+                    this.parseAsNumber = true;
                     this.convert = (v) => {
                         const r = parseFloat(v);
                         if (Number.isNaN(r)) {
@@ -118,19 +128,26 @@ export default class Route {
             if (regex.length > 2) {
                 this.substitutions.push("/");
             }
-            if (!iterator.startsWith("{")) {
+
+            const match = /\{(\*?[\p{L}:]{1,50}\??)\}/u.exec(iterator);
+
+            if (!match) {
                 this.substitutions.push(iterator);
                 regex += StringHelper.escapeRegExp("/");
                 regex += StringHelper.escapeRegExp(iterator);
                 continue;
             }
 
-            if (!iterator.endsWith("}")) {
-                throw new Error("invalid route, missing end curly brace");
-            }
+            const start = match.index;
+            const index = match[0].length;
+            const name = match[1];
 
-            const v = new Variable(iterator.substring(1, iterator.length - 1));
+            const prefix = iterator.substring(0, start);
+            const suffix = iterator.substring(index + 1);
 
+            const v = new Variable(name);
+            v.prefix = prefix;
+            v.suffix = suffix;
             regex += v.regex;
 
             this.variables.push(v);

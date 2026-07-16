@@ -5,14 +5,18 @@ on:
     tags:
       - '*'
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v3.2.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 24
           registry-url: https://registry.npmjs.org/        
       - run: npm install
       - run: npm install -g codecov
@@ -27,9 +31,8 @@ jobs:
         env:
           CODECOV_TOKEN: ${{secrets.codecov_token}}
       - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
+      - run: npm run build-css
       - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       # - run: npm install -D typescript typedocs
       # - run: npx typedoc  --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name @web-atoms/core --excludePrivate --excludeNotExported --exclude "**/tests/**/*"
       # - run: node ./core-docs/change-name.js

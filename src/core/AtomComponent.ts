@@ -1,22 +1,21 @@
 import { App } from "../App";
-import { AtomBridge } from "../core/AtomBridge";
-import { ArrayHelper, CancelToken, IAnyInstanceType, IAtomElement,
+import { ArrayHelper, CancelToken, IAnyInstanceType, 
     IDisposable, ignoreValue, INotifyPropertyChanged, PathList } from "../core/types";
 import { Inject } from "../di/Inject";
-import { NavigationService } from "../services/NavigationService";
+import type { AtomControl } from "../web/controls/AtomControl";
 import { AtomDisposableList } from "./AtomDisposableList";
-import { AtomOnce } from "./AtomOnce";
 import { AtomWatcher, ObjectProperty } from "./AtomWatcher";
-import Bind, { bindSymbol } from "./Bind";
+import { bindSymbol } from "./Bind";
+import { visitDescendents, watchProperty } from "./Hacks";
 import { InheritedProperty } from "./InheritedProperty";
 import { IValueConverter } from "./IValueConverter";
 import { PropertyMap } from "./PropertyMap";
-import XNode, { attachedSymbol, constructorNeedsArgumentsSymbol,
-    elementFactorySymbol, IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
+import XNode, { 
+    IElementAttributes, isControl, isFactorySymbol, xnodeSymbol } from "./XNode";
 
-interface IEventObject<T> {
+interface IEventObject {
 
-    element: T;
+    element: HTMLElement;
 
     name?: string;
 
@@ -28,38 +27,10 @@ interface IEventObject<T> {
 
 }
 
-export interface IAtomComponent<T> {
-    element: T;
-    data: any;
-    viewModel: any;
-    localViewModel: any;
-    app: App;
-    setLocalValue(e: T, name: string, value: any): void;
-    hasProperty(name: string);
-    runAfterInit(f: () => void ): void;
-}
-
-const objectHasOwnProperty = Object.prototype.hasOwnProperty;
-
 const localBindSymbol = bindSymbol;
 const localXNodeSymbol = xnodeSymbol;
 
-const elementFactory = elementFactorySymbol;
-
-const isFactory = isFactorySymbol;
-
-const isAtomControl = isControl;
-
-const localBridge = AtomBridge;
-
-const renderFirst = AtomBridge.platform === "xf";
-
-const attached = attachedSymbol;
-
-const constructorNeedsArguments = constructorNeedsArgumentsSymbol;
-
-export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComponent<T>>
-    implements IAtomComponent<IAtomElement>,
+export abstract class AtomComponent implements
     INotifyPropertyChanged {
 
     public static readonly [isControl] = true;
@@ -69,7 +40,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     // public element: T;
     public readonly disposables: AtomDisposableList;
 
-    public readonly element: T;
+    public readonly element: HTMLElement;
 
     @InheritedProperty
     public data: any;
@@ -79,6 +50,8 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     @InheritedProperty
     public localViewModel: any;
+
+    public creator: any;
 
     protected pendingInits: Array<() => void>;
 
@@ -145,7 +118,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     //     AtomBridge.refreshInherited(this, "localViewModel");
     // }
 
-    public abstract get parent(): TC;
+    public abstract get parent(): AtomControl;
 
     /** Do not ever use, only available as intellisense feature for
      * vs code editor.
@@ -159,13 +132,13 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     //     return AtomBridge.instance.templateParent(this.element);
     // }
 
-    private readonly eventHandlers: Array<IEventObject<T>>;
+    private readonly eventHandlers: Array<IEventObject>;
 
-    private readonly bindings: Array<PropertyBinding<T>>;
+    private readonly bindings: Array<PropertyBinding>;
 
     constructor(
         @Inject public readonly app: App,
-        element: T = null) {
+        element = null as HTMLElement) {
         this.disposables = new AtomDisposableList();
         this.bindings = [];
         this.eventHandlers = [];
@@ -178,10 +151,10 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         app.callLater(() => a.dispose());
     }
 
-    public abstract atomParent(e: T): TC;
+    public abstract atomParent(e: HTMLElement): AtomControl;
 
     public bind(
-        element: T,
+        element: HTMLElement,
         name: string,
         path: PathList[],
         twoWays?: boolean | string[],
@@ -210,7 +183,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
      * @param element T
      * @param name string
      */
-    public unbind(element: T, name?: string): void {
+    public unbind(element: HTMLElement, name?: string): void {
         const toDelete = this.bindings.filter( (x) => x.element === element && (!name || (x.name === name)));
         for (const iterator of toDelete) {
             iterator.dispose();
@@ -219,7 +192,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public bindEvent(
-        element: T,
+        element: HTMLElement,
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string,
@@ -230,7 +203,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         if (!method) {
             return;
         }
-        const be: IEventObject<T> = {
+        const be: IEventObject = {
             element,
             name,
             handler: method
@@ -281,7 +254,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
     }
 
     public unbindEvent(
-        element: T,
+        element: HTMLElement,
         name?: string,
         method?: EventListenerOrEventListenerObject,
         key?: string): void {
@@ -335,7 +308,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
      * @param name string
      * @param value any
      */
-    public setPrimitiveValue(element: T, name: string, value: any): void {
+    public setPrimitiveValue(element: HTMLElement, name: string, value: any): void {
         const p = value as Promise<any>;
         if (p && p.then && p.catch) {
             // tslint:disable-next-line: no-console
@@ -372,7 +345,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    public setLocalValue(element: T, name: string, value: any): void {
+    public setLocalValue(element: HTMLElement, name: string, value: any): void {
 
         // if value is a promise
         const p = value as Promise<any>;
@@ -404,14 +377,14 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    public dispose(e?: T): void {
+    public dispose(e?: HTMLElement): void {
 
         if (this.mInvalidated) {
             clearTimeout(this.mInvalidated);
             this.mInvalidated = 0;
         }
 
-        AtomBridge.instance.visitDescendents(e || this.element, (ex, ac) => {
+        visitDescendents(e || this.element as any, (ex, ac) => {
             if (ac) {
                 ac.dispose();
                 return false;
@@ -451,7 +424,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         }
     }
 
-    public abstract append(element: T | TC): TC;
+    public abstract append(element: HTMLElement | AtomControl): AtomControl;
 
     // tslint:disable-next-line:no-empty
     public onPropertyChanged(name: string): void {
@@ -506,7 +479,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return this.disposables.add(d);
     }
 
-    protected render(node: XNode, e: any = this.element, creator: any = this): void {
+    protected render(node: XNode, e: any = this.element, creator: any = this.creator || this): void {
 
         const app = this.app;
 
@@ -629,8 +602,9 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
     }
 
-    protected setElementValue(element: T, name: string, value: any): void {
-        AtomBridge.instance.setValue(element, name, value);
+    protected setElementValue(element: HTMLElement, name: string, value: any): void {
+        // setValue(element, name, value);
+        element[name] = value;
     }
 
     protected resolve<TService>(
@@ -659,6 +633,12 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
         return result;
     }
 
+    protected pushInit() {
+        this.runAfterInit(() => {
+            (this as any).init?.()?.catch((error) => CancelToken.isCancelled(error) ? void 0 : console.error(error));
+        })
+    }
+
     protected abstract createNode(app, e, iterator, creator);
 
     protected abstract toTemplate(app, iterator, creator);
@@ -667,7 +647,7 @@ export abstract class AtomComponent<T extends IAtomElement, TC extends IAtomComp
 
 }
 
-export class PropertyBinding<T extends IAtomElement> implements IDisposable {
+export class PropertyBinding implements IDisposable {
 
     public path: ObjectProperty[][];
 
@@ -681,8 +661,8 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
     private disposed: boolean;
 
     constructor(
-        private target: IAtomComponent<T> | any,
-        public readonly element: T,
+        private target: AtomControl | any,
+        public readonly element: HTMLElement,
         public readonly name: string,
         path: PathList[],
         private twoWays: boolean | string[],
@@ -763,7 +743,7 @@ export class PropertyBinding<T extends IAtomElement> implements IDisposable {
                     events = this.twoWays;
                 }
 
-                this.twoWaysDisposable = AtomBridge.instance.watchProperty(
+                this.twoWaysDisposable = watchProperty(
                     this.element,
                     this.name,
                     events,

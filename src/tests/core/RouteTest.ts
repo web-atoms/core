@@ -21,6 +21,11 @@ export default class RouteTest extends AtomTest {
         Assert.isNull(r.matches("/public/jobs/a"));
 
         Assert.isNotNull(r.matches("/public/jobs"));
+
+        r = Route.create("/public/jobs/{id:number?}");
+        p = r.matches("/public/jobs/3-");
+        Assert.isNull(p);
+
     }
 
     
@@ -78,4 +83,21 @@ export default class RouteTest extends AtomTest {
         Assert.equals("/feed/post/2?a=9&", url);
     }
 
+    @Test
+    public parsePrefix() {
+        let r = Route.create("/@{channel}/{tag}");
+
+        let p = r.matches("/@social/mail");
+        Assert.equals("social",p.channel);
+        Assert.equals("mail",p.tag);
+    }
+
+
+    @Test
+    public parsePhotos() {
+        let r = Route.create("/@{channel}/photos/{start?}");
+
+        let p = r.matches("/@joren-duskeye-social/photoshoot-event-dmet");
+        Assert.isNull(p);
+    }
 }

@@ -10,9 +10,9 @@ export interface IBackgroundTaskInfo {
 @RegisterSingleton
 export class BusyIndicatorService {
 
-    public createIndicator(info?: IBackgroundTaskInfo): IDisposable {
+    public createIndicator(info?: IBackgroundTaskInfo): Disposable {
         return {
-            dispose() {
+            [Symbol.dispose]() {
                 // do nothing.
             }
         };
