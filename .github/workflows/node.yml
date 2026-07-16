@@ -20,7 +20,7 @@ jobs:
           registry-url: https://registry.npmjs.org/        
       - run: npm install
       - run: npm install -D istanbul remap-istanbul @web-atoms/ts-to-systemjs
-      - run: tsc
+      - run: npx tsc
       # - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
       # - run: typedoc --mode modules --out ./docs  --tsconfig ./tsconfig.json src --excludeExternals --module umd --name web-atoms-core --excludePrivate --excludeNotExported --exclude "tests/**/*.ts"
       # - run: node ./node_modules/.bin/istanbul cover ./node_modules/@web-atoms/unit-test/index.js ./dist/test.js
@@ -31,7 +31,7 @@ jobs:
       #     CODECOV_TOKEN: ${{secrets.codecov_token}}
       - run: node ./node_modules/@web-atoms/ts-to-systemjs/index.js
       - run: npm run build-css
-      - run: tsc -p tsconfig.esm.json
+      - run: npx tsc -p tsconfig.esm.json
       - run: npm run build-css-esm
       - run: node ./node_modules/@package-verse/esmpack/pack.js dist-esm
       - run: npm publish --access public
