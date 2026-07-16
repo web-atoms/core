@@ -570,21 +570,19 @@ export default class PopupService {
                             vm[key] = e;
                         }
                     }
-                    const init = (control as any).init;
-                    if (init) {
-                        const c = (control as any).init();
-                        if (c?.then) {
-                            c.then(() => 
-                                control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })),
-                            (error) => {
-                                control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true }));
-                                if(!CancelToken.isCancelled(error)) {
-                                    console.error(error);
-                                }
-                            });
-                        } else {
-                            setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
-                        }
+                }
+                const init = (control as any).init;
+                if (init) {
+                    const c = (control as any).init();
+                    if (c?.then) {
+                        c.then(() => 
+                            control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })),
+                        (error) => {
+                            control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true }));
+                            if(!CancelToken.isCancelled(error)) {
+                                console.error(error);
+                            }
+                        });
                     } else {
                         setTimeout(() => control.element.dispatchEvent(new CustomEvent("popupReady", { bubbles: true })), 1);
                     }

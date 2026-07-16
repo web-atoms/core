@@ -11,6 +11,7 @@
         "useDefineForClassFields": false,
         "outDir": "dist",
         "rootDir": "./src",
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
         "strict": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
