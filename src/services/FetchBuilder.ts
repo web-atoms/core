@@ -55,11 +55,8 @@ export default class FetchBuilder {
         return new FetchBuilder({ url, method });
     }
 
-    private constructor(private readonly request: IRequest, noInit = false) {
+    private constructor(private readonly request: IRequest) {
         request.headers ??= {};
-        if (!noInit) {
-            request.headers["x-requested-with"] = "fetch";
-        }
     }
 
     public log(logger: (...a: any[]) => void) {
@@ -76,6 +73,10 @@ export default class FetchBuilder {
 
     public put(url) {
         return this.method(url, "PUT");
+    }
+
+    public patch(url) {
+        return this.method(url, "PATCH");
     }
 
     public post(url) {
@@ -339,7 +340,7 @@ export default class FetchBuilder {
             ... this.request,
             ... r,
             url
-        }, true);
+        });
     }
 
 }
@@ -351,3 +352,28 @@ class JsonError extends Error {
 }
 
 FetchBuilder.JsonError = JsonError;
+
+export class LegacyFetchBuilder {
+
+    static get(url) {
+        return LegacyFetchBuilder.requestedWith.get(url);
+    }
+
+    static post(url) {
+        return LegacyFetchBuilder.requestedWith.post(url);
+    }
+
+    static put(url) {
+        return LegacyFetchBuilder.requestedWith.put(url);
+    }
+
+    static delete(url) {
+        return LegacyFetchBuilder.requestedWith.delete(url);
+    }
+
+    static patch(url) {
+        return LegacyFetchBuilder.requestedWith.patch(url);
+    }
+
+    private static requestedWith = FetchBuilder.header("x-requested-with", "fetch")
+}
