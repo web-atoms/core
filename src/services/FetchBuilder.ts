@@ -257,7 +257,7 @@ export default class FetchBuilder {
         postProcessor: (r: Response, next?: (data) => any) => T | Promise<T>): Promise<{ result: T, headers: any, status: number }> {
 
         let { log, logError, hideBusyIndicator } = this.request;
-        using _d = !hideBusyIndicator ? App.current.createBusyIndicator() : null;
+        using _d = !hideBusyIndicator ? App.current?.createBusyIndicator() : null;
         try {
 
             const { headers, fetchProxy, jsonPostProcessor } = this.request;
